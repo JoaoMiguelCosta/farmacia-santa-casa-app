@@ -1,0 +1,307 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum PedidoStatus {
+  PENDENTE
+  VALIDADO
+  REJEITADO
+  CANCELADO
+}
+
+enum PedidoItemStatus {
+  PENDENTE
+  VALIDADO
+  REJEITADO
+  CANCELADO_POR_EXPIRACAO
+}
+
+enum PedidoItemTipo {
+  COM_RECEITA
+  SEM_RECEITA
+  EXTRA
+}
+
+enum LinhaReceitaStatus {
+  ATIVA
+  EXPIRADA
+}
+
+enum ExtraStatus {
+  PENDENTE
+  PARCIALMENTE_REGULARIZADO
+  REGULARIZADO
+  EXPIRADO
+}
+
+enum RegularizacaoStatus {
+  PENDENTE
+  PARCIALMENTE_REGULARIZADO
+  REGULARIZADO
+}
+
+enum MedicamentoTipo {
+  COM_RECEITA
+  SEM_RECEITA
+}
+
+model Utente {
+  id            String    @id @default(cuid())
+  numero9       String    @db.Char(9)
+  nome          String
+  isValid       Boolean   @default(true)
+  invalidReason String?
+  deletedAt     DateTime?
+
+  receitas       Receita[]
+  semReceita     SemReceita[]
+  extras         Extra[]
+  pedidoItens    PedidoItem[]
+  regularizacoes RegularizacaoExtra[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([numero9])
+  @@index([nome])
+  @@index([deletedAt])
+}
+
+model Medicamento {
+  id   String          @id @default(cuid())
+  nome String          @unique
+  tipo MedicamentoTipo
+
+  receitaLinhas  ReceitaLinha[]
+  extras         Extra[]
+  regularizacoes RegularizacaoExtra[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Receita {
+  id         String @id @default(cuid())
+  utenteId   String
+  utente     Utente @relation(fields: [utenteId], references: [id])
+
+  numero19   String @unique @db.Char(19)
+  pinAcesso6 String @db.Char(6)
+  pinOpcao4  String @db.Char(4)
+
+  linhas ReceitaLinha[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([utenteId])
+}
+
+model ReceitaLinha {
+  id        String  @id @default(cuid())
+  receitaId String
+  receita   Receita @relation(fields: [receitaId], references: [id])
+
+  medicamentoId  String?
+  medicamentoRef Medicamento? @relation(fields: [medicamentoId], references: [id])
+
+  nome                  String
+  quantidade            Int
+  quantidadeDispensada  Int                 @default(0)
+  validade              DateTime
+  status                LinhaReceitaStatus  @default(ATIVA)
+
+  pedidoItens           PedidoItem[]
+  dispensas             Dispensa[]
+  regularizacaoEventos  RegularizacaoEvento[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([receitaId])
+  @@index([medicamentoId])
+  @@index([validade])
+  @@index([status])
+}
+
+model SemReceita {
+  id       String @id @default(cuid())
+  utenteId String
+  utente   Utente @relation(fields: [utenteId], references: [id])
+
+  medicamento String
+  quantidade  Int
+
+  pedidoItens PedidoItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([utenteId])
+  @@index([createdAt])
+}
+
+model Extra {
+  id       String @id @default(cuid())
+  utenteId String
+  utente   Utente @relation(fields: [utenteId], references: [id])
+
+  medicamentoId   String?
+  medicamentoRef  Medicamento? @relation(fields: [medicamentoId], references: [id])
+
+  medicamento     String
+  medicamentoNorm String?
+
+  quantidadeSolicitada   Int
+  quantidadeRegularizada Int         @default(0)
+  status                 ExtraStatus @default(PENDENTE)
+
+  pedidoItens     PedidoItem[]
+  regularizacoes  RegularizacaoExtra[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([utenteId])
+  @@index([medicamentoId])
+  @@index([medicamentoNorm])
+  @@index([status])
+}
+
+model Pedido {
+  id     String       @id @default(cuid())
+  numero Int          @unique @default(autoincrement())
+  status PedidoStatus @default(PENDENTE)
+
+  itens PedidoItem[]
+
+  validatedAt   DateTime?
+  validatedById String?
+
+  rejectedAt   DateTime?
+  cancelReason String?
+
+  regularizacoesCriadas RegularizacaoExtra[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+  @@index([createdAt])
+  @@index([validatedAt])
+  @@index([rejectedAt])
+}
+
+model PedidoItem {
+  id       String @id @default(cuid())
+  pedidoId String
+  pedido   Pedido @relation(fields: [pedidoId], references: [id])
+
+  utenteId String
+  utente   Utente @relation(fields: [utenteId], references: [id])
+
+  tipo        PedidoItemTipo
+  status      PedidoItemStatus @default(PENDENTE)
+  medicamento String
+  quantidade  Int
+
+  receitaLinhaId String?
+  receitaLinha   ReceitaLinha? @relation(fields: [receitaLinhaId], references: [id])
+
+  semReceitaId String?
+  semReceita   SemReceita? @relation(fields: [semReceitaId], references: [id])
+
+  extraId String?
+  extra   Extra? @relation(fields: [extraId], references: [id])
+
+  dispensas Dispensa[]
+
+  validatedAt   DateTime?
+  validatedById String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([pedidoId])
+  @@index([utenteId])
+  @@index([tipo])
+  @@index([status])
+  @@index([receitaLinhaId])
+  @@index([semReceitaId])
+  @@index([extraId])
+}
+
+model Dispensa {
+  id String @id @default(cuid())
+
+  receitaLinhaId String
+  receitaLinha   ReceitaLinha @relation(fields: [receitaLinhaId], references: [id])
+
+  pedidoItemId String
+  pedidoItem   PedidoItem @relation(fields: [pedidoItemId], references: [id])
+
+  quantidade Int
+
+  createdAt DateTime @default(now())
+
+  @@index([receitaLinhaId])
+  @@index([pedidoItemId])
+}
+
+model RegularizacaoExtra {
+  id       String @id @default(cuid())
+  utenteId String
+  utente   Utente @relation(fields: [utenteId], references: [id])
+
+  extraId String?
+  extra   Extra? @relation(fields: [extraId], references: [id])
+
+  pedidoId String?
+  pedido   Pedido? @relation(fields: [pedidoId], references: [id])
+
+  pedidoNumero Int?
+
+  medicamentoId   String?
+  medicamentoRef  Medicamento? @relation(fields: [medicamentoId], references: [id])
+
+  medicamento     String
+  medicamentoNorm String?
+
+  quantidadeSolicitada   Int
+  quantidadeRegularizada Int                  @default(0)
+  status                 RegularizacaoStatus  @default(PENDENTE)
+
+  eventos RegularizacaoEvento[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([utenteId])
+  @@index([extraId])
+  @@index([pedidoId])
+  @@index([pedidoNumero])
+  @@index([medicamentoNorm])
+  @@index([status])
+}
+
+model RegularizacaoEvento {
+  id String @id @default(cuid())
+
+  regularizacaoId String
+  regularizacao   RegularizacaoExtra @relation(fields: [regularizacaoId], references: [id])
+
+  receitaLinhaId String
+  receitaLinha   ReceitaLinha @relation(fields: [receitaLinhaId], references: [id])
+
+  quantidade Int
+
+  createdAt DateTime @default(now())
+
+  @@index([regularizacaoId])
+  @@index([receitaLinhaId])
+}

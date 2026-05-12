@@ -1,0 +1,31 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "private": true,
+  "main": "src/app/server.js",
+  "license": "ISC",
+  "scripts": {
+    "dev": "nodemon --watch src --watch prisma --ext js,json,prisma --exec node src/app/server.js",
+    "start": "node src/app/server.js",
+    "prisma:generate": "npx prisma generate",
+    "prisma:studio": "npx prisma studio",
+    "prisma:migrate": "npx prisma migrate dev",
+    "test:api": "node scripts/test-current-api.js",
+    "test:receita-expiry": "node scripts/test-receita-expiry-job.js",
+    "test:higiene": "node scripts/test-higiene-job.js",
+    "test:purge-history": "node scripts/test-purge-history-job.js",
+    "job:receita-expiry": "node -e \"require('./src/jobs/receitaExpiry.job').runOnce().then(console.log).catch((e)=>{console.error(e);process.exit(1)})\"",
+    "job:higiene": "node -e \"require('./src/jobs/higiene.job').runOnce().then(console.log).catch((e)=>{console.error(e);process.exit(1)})\"",
+    "job:purge-history": "node -e \"require('./src/jobs/purgeHistory.job').runOnce().then(console.log).catch((e)=>{console.error(e);process.exit(1)})\""
+  },
+  "dependencies": {
+    "@prisma/client": "^5.22.0",
+    "dotenv": "^16.6.1",
+    "express": "^4.21.2",
+    "node-cron": "^4.2.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10",
+    "prisma": "^5.22.0"
+  }
+}

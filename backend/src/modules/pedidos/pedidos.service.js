@@ -1,0 +1,232 @@
+// src/modules/pedidos/pedidos.service.js
+const repository = require("./pedidos.repository");
+
+const {
+  validateCreatePedidoPayload,
+  parseHistoricoQuery,
+} = require("./pedidos.validators");
+
+const { toPedidoDTO } = require("./pedidos.mappers");
+
+const {
+  conflict,
+  forbidden,
+  notFound,
+} = require("../../shared/errors/AppError");
+
+function sumPendingQuantity(items = []) {
+  return items.reduce((total, item) => {
+    return total + (Number(item.quantidade) || 0);
+  }, 0);
+}
+
+async function ensureUtenteActive(utenteId) {
+  const utente = await repository.findUtenteById(utenteId);
+
+  if (!utente) {
+    throw notFound("Utente não encontrado.");
+  }
+
+  if (utente.deletedAt) {
+    throw conflict("Utente removido. Operação não permitida.");
+  }
+
+  return utente;
+}
+
+function assertOwnership(actualUtenteId, expectedUtenteId, message) {
+  if (actualUtenteId !== expectedUtenteId) {
+    throw forbidden(message);
+  }
+}
+
+function validateReceitaLinhaAvailability(linha, quantidade) {
+  if (linha.status !== "ATIVA") {
+    throw conflict("Linha de receita não está ativa.");
+  }
+
+  if (new Date(linha.validade) <= new Date()) {
+    throw conflict("Linha de receita expirada.");
+  }
+
+  const reservadoPendente = sumPendingQuantity(linha.pedidoItens);
+
+  const disponivel = Math.max(
+    0,
+    Number(linha.quantidade || 0) -
+      Number(linha.quantidadeDispensada || 0) -
+      reservadoPendente,
+  );
+
+  if (quantidade > disponivel) {
+    throw conflict(
+      `Quantidade indisponível para "${linha.nome}". Disponível: ${disponivel}.`,
+    );
+  }
+
+  return disponivel;
+}
+
+function validateSemReceitaAvailability(row, quantidade) {
+  const reservadoPendente = sumPendingQuantity(row.pedidoItens);
+
+  const disponivel = Math.max(
+    0,
+    Number(row.quantidade || 0) - reservadoPendente,
+  );
+
+  if (quantidade > disponivel) {
+    throw conflict(
+      `Quantidade indisponível para "${row.medicamento}". Disponível: ${disponivel}.`,
+    );
+  }
+
+  return disponivel;
+}
+
+function validateExtraAvailability(row, quantidade) {
+  if (!["PENDENTE", "PARCIALMENTE_REGULARIZADO"].includes(row.status)) {
+    throw conflict("Extra não está em aberto.");
+  }
+
+  const reservadoPendente = sumPendingQuantity(row.pedidoItens);
+
+  const disponivel = Math.max(
+    0,
+    Number(row.quantidadeSolicitada || 0) -
+      Number(row.quantidadeRegularizada || 0) -
+      reservadoPendente,
+  );
+
+  if (quantidade > disponivel) {
+    throw conflict(
+      `Quantidade indisponível para "${row.medicamento}". Disponível: ${disponivel}.`,
+    );
+  }
+
+  return disponivel;
+}
+
+async function buildPedidoItem(rawItem) {
+  await ensureUtenteActive(rawItem.utenteId);
+
+  if (rawItem.tipo === "COM_RECEITA") {
+    const linha = await repository.findReceitaLinhaById(rawItem.id);
+
+    if (!linha) {
+      throw notFound("Linha de receita não encontrada.");
+    }
+
+    assertOwnership(
+      linha.receita?.utenteId,
+      rawItem.utenteId,
+      "Linha de receita não pertence a este utente.",
+    );
+
+    validateReceitaLinhaAvailability(linha, rawItem.quantidade);
+
+    return {
+      utenteId: rawItem.utenteId,
+      tipo: "COM_RECEITA",
+      referenciaId: linha.id,
+      medicamento: linha.medicamentoRef?.nome || linha.nome,
+      quantidade: rawItem.quantidade,
+    };
+  }
+
+  if (rawItem.tipo === "SEM_RECEITA") {
+    const semReceita = await repository.findSemReceitaById(rawItem.id);
+
+    if (!semReceita) {
+      throw notFound("Registo sem receita não encontrado.");
+    }
+
+    assertOwnership(
+      semReceita.utenteId,
+      rawItem.utenteId,
+      "Registo sem receita não pertence a este utente.",
+    );
+
+    validateSemReceitaAvailability(semReceita, rawItem.quantidade);
+
+    return {
+      utenteId: rawItem.utenteId,
+      tipo: "SEM_RECEITA",
+      referenciaId: semReceita.id,
+      medicamento: semReceita.medicamento,
+      quantidade: rawItem.quantidade,
+    };
+  }
+
+  if (rawItem.tipo === "EXTRA") {
+    const extra = await repository.findExtraById(rawItem.id);
+
+    if (!extra) {
+      throw notFound("Extra não encontrado.");
+    }
+
+    assertOwnership(
+      extra.utenteId,
+      rawItem.utenteId,
+      "Extra não pertence a este utente.",
+    );
+
+    validateExtraAvailability(extra, rawItem.quantidade);
+
+    return {
+      utenteId: rawItem.utenteId,
+      tipo: "EXTRA",
+      referenciaId: extra.id,
+      medicamento: extra.medicamento,
+      quantidade: rawItem.quantidade,
+    };
+  }
+
+  throw conflict("Tipo de item inválido.");
+}
+
+async function createPedido(payload) {
+  const parsed = validateCreatePedidoPayload(payload);
+
+  const builtItems = [];
+
+  for (const item of parsed.items) {
+    builtItems.push(await buildPedidoItem(item));
+  }
+
+  const pedido = await repository.createPedidoWithItems(builtItems);
+
+  return toPedidoDTO(pedido);
+}
+
+async function getPedidoById(pedidoId) {
+  const pedido = await repository.findPedidoById(pedidoId);
+
+  if (!pedido) {
+    throw notFound("Pedido não encontrado.");
+  }
+
+  return toPedidoDTO(pedido);
+}
+
+async function listHistorico(query = {}) {
+  const params = parseHistoricoQuery(query);
+  const result = await repository.listHistorico(params);
+
+  return {
+    rows: result.rows.map(toPedidoDTO),
+    total: result.total,
+    params: {
+      skip: result.skip,
+      take: result.take,
+      search: result.search,
+      status: params.status,
+    },
+  };
+}
+
+module.exports = {
+  createPedido,
+  getPedidoById,
+  listHistorico,
+};
