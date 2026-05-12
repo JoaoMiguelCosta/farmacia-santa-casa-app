@@ -1,0 +1,59 @@
+.brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+
+    min-width: 0;
+}
+
+.symbol {
+    display: grid;
+    place-items: center;
+
+    width: clamp(2.45rem, 4vw, 3rem);
+    height: clamp(2.45rem, 4vw, 3rem);
+
+    border: 1px solid var(--clinic-border-gold);
+    border-radius: 1rem;
+
+    color: var(--clinic-white);
+    background:
+        radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.24), transparent 38%),
+        linear-gradient(135deg, var(--clinic-green-800), var(--clinic-blue-700));
+
+    box-shadow: 0 14px 32px rgba(16, 44, 54, 0.16);
+
+    font-size: 1.45rem;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.text {
+    display: grid;
+    gap: 0.1rem;
+
+    min-width: 0;
+}
+
+.text strong {
+    color: var(--clinic-ink);
+    font-size: clamp(1rem, 1.5vw, 1.15rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+}
+
+.text small {
+    color: var(--clinic-muted);
+    font-size: 0.76rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    line-height: 1;
+    text-transform: uppercase;
+}
+
+@media (max-width: 420px) {
+    .text small {
+        display: none;
+    }
+}

@@ -1,0 +1,60 @@
+:root {
+    color-scheme: light;
+
+    --clinic-white: #ffffff;
+    --clinic-cream: #fbfaf6;
+    --clinic-mist: #f3f7f5;
+    --clinic-soft: #eef5f1;
+    --clinic-surface: rgba(255, 255, 255, 0.82);
+    --clinic-surface-strong: rgba(255, 255, 255, 0.94);
+
+    --clinic-ink: #14211d;
+    --clinic-ink-soft: #34433e;
+    --clinic-muted: #6d7b76;
+    --clinic-muted-strong: #52645d;
+
+    --clinic-green-900: #10392f;
+    --clinic-green-800: #16493e;
+    --clinic-green-700: #1f5f51;
+    --clinic-green-600: #287567;
+    --clinic-green-500: #4f9b8b;
+
+    --clinic-sage-500: #91b7a6;
+    --clinic-sage-300: #c8ddd3;
+    --clinic-sage-200: #dcebe4;
+
+    --clinic-blue-900: #102c36;
+    --clinic-blue-700: #1e5364;
+    --clinic-blue-500: #33798d;
+
+    --clinic-gold-500: #c6a15b;
+    --clinic-gold-300: #e3cf9f;
+    --clinic-gold-soft: rgba(198, 161, 91, 0.18);
+
+    --clinic-danger: #b54747;
+    --clinic-warning: #b8792d;
+    --clinic-success: #2f7d63;
+
+    --clinic-border: rgba(31, 95, 81, 0.14);
+    --clinic-border-strong: rgba(31, 95, 81, 0.24);
+    --clinic-border-gold: rgba(198, 161, 91, 0.34);
+
+    --clinic-shadow-soft: 0 18px 55px rgba(16, 44, 54, 0.08);
+    --clinic-shadow-card: 0 20px 70px rgba(16, 44, 54, 0.1);
+    --clinic-shadow-hover: 0 28px 90px rgba(16, 44, 54, 0.14);
+
+    --clinic-radius-sm: 0.75rem;
+    --clinic-radius-md: 1rem;
+    --clinic-radius-lg: 1.35rem;
+    --clinic-radius-xl: 1.75rem;
+    --clinic-radius-2xl: 2.25rem;
+
+    --clinic-page-max: 1180px;
+    --clinic-page-pad: clamp(1rem, 3vw, 2rem);
+
+    --clinic-font:
+        Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
+
+    --clinic-transition: 180ms ease;
+}
