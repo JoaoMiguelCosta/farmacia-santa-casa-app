@@ -1,0 +1,76 @@
+.field {
+    display: grid;
+    gap: 0.45rem;
+}
+
+.label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+
+    color: var(--clinic-ink-soft);
+
+    font-size: 0.9rem;
+    font-weight: 800;
+    line-height: 1.2;
+}
+
+.label strong {
+    color: var(--clinic-danger);
+}
+
+.control :global(input),
+.control :global(select),
+.control :global(textarea) {
+    width: 100%;
+    min-height: 2.8rem;
+    padding: 0.8rem 0.95rem;
+
+    border: 1px solid var(--clinic-border);
+    border-radius: var(--clinic-radius-md);
+
+    color: var(--clinic-ink);
+    background: rgba(255, 255, 255, 0.86);
+
+    font-size: 0.95rem;
+    font-weight: 520;
+    line-height: 1.4;
+
+    box-shadow: 0 8px 24px rgba(16, 44, 54, 0.04);
+
+    transition:
+        border-color var(--clinic-transition),
+        box-shadow var(--clinic-transition),
+        background var(--clinic-transition);
+}
+
+.control :global(textarea) {
+    min-height: 7rem;
+    resize: vertical;
+}
+
+.control :global(input:focus),
+.control :global(select:focus),
+.control :global(textarea:focus) {
+    border-color: rgba(79, 155, 139, 0.42);
+    background: var(--clinic-white);
+    box-shadow: 0 0 0 4px rgba(79, 155, 139, 0.12);
+    outline: none;
+}
+
+.hint,
+.error {
+    margin: 0;
+
+    font-size: 0.82rem;
+    font-weight: 650;
+    line-height: 1.45;
+}
+
+.hint {
+    color: var(--clinic-muted);
+}
+
+.error {
+    color: var(--clinic-danger);
+}
