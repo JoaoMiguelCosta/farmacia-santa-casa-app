@@ -4,6 +4,7 @@ const ACTIONS = [
   {
     title: "Utentes",
     description: "Criar, consultar e gerir utentes ativos.",
+    to: "/santacasa/utentes",
   },
   {
     title: "Receitas",

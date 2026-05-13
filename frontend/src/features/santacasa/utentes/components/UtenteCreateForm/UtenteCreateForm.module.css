@@ -1,0 +1,29 @@
+.form {
+    display: grid;
+    gap: 1rem;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.4fr);
+    gap: clamp(0.85rem, 2vw, 1rem);
+}
+
+.actions {
+    display: flex;
+    justify-content: flex-end;
+}
+
+@media (max-width: 760px) {
+    .grid {
+        grid-template-columns: 1fr;
+    }
+
+    .actions {
+        justify-content: stretch;
+    }
+
+    .actions>* {
+        width: 100%;
+    }
+}

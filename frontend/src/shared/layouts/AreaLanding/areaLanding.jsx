@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 import styles from "./AreaLanding.module.css";
 
 export default function AreaLanding({
@@ -20,16 +22,32 @@ export default function AreaLanding({
       </div>
 
       <div className={styles.panel} aria-label={`Módulos — ${eyebrow}`}>
-        {actions.map((action) => (
-          <article key={action.title} className={styles.item}>
-            <span className={styles.dot} aria-hidden="true" />
+        {actions.map((action) => {
+          const content = (
+            <>
+              <span className={styles.dot} aria-hidden="true" />
 
-            <div className={styles.itemContent}>
-              <h2>{action.title}</h2>
-              <p>{action.description}</p>
-            </div>
-          </article>
-        ))}
+              <div className={styles.itemContent}>
+                <h2>{action.title}</h2>
+                <p>{action.description}</p>
+              </div>
+            </>
+          );
+
+          if (action.to) {
+            return (
+              <Link key={action.title} to={action.to} className={styles.item}>
+                {content}
+              </Link>
+            );
+          }
+
+          return (
+            <article key={action.title} className={styles.item}>
+              {content}
+            </article>
+          );
+        })}
       </div>
     </section>
   );

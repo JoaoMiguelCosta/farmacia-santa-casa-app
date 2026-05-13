@@ -1,0 +1,124 @@
+.overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+
+    display: grid;
+    place-items: center;
+
+    padding: clamp(1rem, 4vw, 2rem);
+
+    background:
+        radial-gradient(circle at 50% 18%, rgba(198, 161, 91, 0.16), transparent 24rem),
+        rgba(16, 33, 29, 0.42);
+
+    backdrop-filter: blur(12px);
+}
+
+.dialog {
+    position: relative;
+    overflow: hidden;
+
+    display: grid;
+    gap: 1rem;
+
+    width: min(100%, 520px);
+    padding: clamp(1.25rem, 3vw, 1.75rem);
+
+    border: 1px solid var(--clinic-border-strong);
+    border-radius: var(--clinic-radius-2xl);
+
+    background:
+        radial-gradient(circle at 92% 0%, rgba(198, 161, 91, 0.18), transparent 14rem),
+        linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(238, 245, 241, 0.94));
+
+    box-shadow:
+        0 34px 90px rgba(16, 44, 54, 0.24),
+        inset 0 1px 0 rgba(255, 255, 255, 0.82);
+}
+
+.dialog::before {
+    content: "";
+    position: absolute;
+    inset-inline: 0;
+    inset-block-start: 0;
+
+    height: 4px;
+
+    background: linear-gradient(90deg,
+            var(--clinic-danger),
+            var(--clinic-gold-500),
+            var(--clinic-green-700));
+}
+
+.icon {
+    display: grid;
+    place-items: center;
+
+    width: 3rem;
+    height: 3rem;
+
+    border: 1px solid rgba(181, 71, 71, 0.18);
+    border-radius: 999px;
+
+    color: var(--clinic-danger);
+    background: rgba(181, 71, 71, 0.1);
+
+    font-size: 1.35rem;
+    font-weight: 900;
+}
+
+.content {
+    display: grid;
+    gap: 0.55rem;
+}
+
+.kicker {
+    margin: 0;
+
+    color: var(--clinic-gold-500);
+
+    font-size: 0.72rem;
+    font-weight: 850;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+}
+
+.title {
+    margin: 0;
+
+    color: var(--clinic-ink);
+
+    font-size: clamp(1.35rem, 4vw, 2rem);
+    font-weight: 850;
+    letter-spacing: -0.05em;
+    line-height: 1.05;
+}
+
+.description {
+    margin: 0;
+
+    color: var(--clinic-muted-strong);
+
+    font-size: 0.98rem;
+    font-weight: 560;
+    line-height: 1.65;
+}
+
+.actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.7rem;
+
+    padding-top: 0.4rem;
+}
+
+@media (max-width: 520px) {
+    .actions {
+        flex-direction: column-reverse;
+    }
+
+    .actions>* {
+        width: 100%;
+    }
+}
