@@ -1,0 +1,228 @@
+.panel {
+    display: grid;
+    gap: clamp(1rem, 2vw, 1.35rem);
+
+    padding: clamp(1.15rem, 2.5vw, 1.6rem);
+
+    border: 1px solid var(--clinic-border);
+    border-radius: var(--clinic-radius-xl);
+
+    background:
+        radial-gradient(circle at 92% 8%, rgba(198, 161, 91, 0.13), transparent 16rem),
+        linear-gradient(135deg, rgba(255, 255, 255, 0.86), rgba(238, 245, 241, 0.72));
+
+    box-shadow: var(--clinic-shadow-soft);
+    backdrop-filter: blur(16px);
+}
+
+.header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.kicker {
+    margin: 0 0 0.35rem;
+
+    color: var(--clinic-green-700);
+
+    font-size: 0.72rem;
+    font-weight: 850;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+}
+
+.title {
+    margin: 0;
+
+    color: var(--clinic-ink);
+
+    font-size: clamp(1.35rem, 3vw, 2rem);
+    font-weight: 850;
+    letter-spacing: -0.05em;
+    line-height: 1.05;
+}
+
+.description {
+    max-width: 620px;
+    margin: 0.5rem 0 0;
+
+    color: var(--clinic-muted);
+
+    font-size: 0.96rem;
+    font-weight: 500;
+    line-height: 1.6;
+}
+
+.refreshButton {
+    flex: 0 0 auto;
+
+    min-height: 2.65rem;
+    padding: 0.75rem 1rem;
+
+    border: 1px solid var(--clinic-border-strong);
+    border-radius: 999px;
+
+    color: var(--clinic-green-900);
+    background: rgba(255, 255, 255, 0.78);
+
+    font-size: 0.9rem;
+    font-weight: 800;
+
+    box-shadow: 0 10px 24px rgba(16, 44, 54, 0.08);
+
+    transition:
+        transform var(--clinic-transition),
+        box-shadow var(--clinic-transition),
+        opacity var(--clinic-transition);
+}
+
+.refreshButton:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 16px 34px rgba(16, 44, 54, 0.12);
+}
+
+.refreshButton:disabled {
+    cursor: not-allowed;
+    opacity: 0.68;
+}
+
+.warning {
+    margin: 0;
+    padding: 0.85rem 1rem;
+
+    border: 1px solid rgba(181, 71, 71, 0.22);
+    border-radius: var(--clinic-radius-md);
+
+    color: var(--clinic-danger);
+    background: rgba(181, 71, 71, 0.08);
+
+    font-size: 0.92rem;
+    font-weight: 700;
+    line-height: 1.5;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: clamp(0.85rem, 2vw, 1rem);
+}
+
+.card {
+    display: grid;
+    gap: 0.75rem;
+
+    min-width: 0;
+    padding: 1rem;
+
+    border: 1px solid var(--clinic-border);
+    border-radius: var(--clinic-radius-lg);
+
+    background: rgba(255, 255, 255, 0.78);
+    box-shadow: 0 12px 30px rgba(16, 44, 54, 0.06);
+}
+
+.cardTop {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.statusDot {
+    width: 0.68rem;
+    height: 0.68rem;
+
+    border-radius: 999px;
+
+    background: var(--clinic-muted);
+    box-shadow: 0 0 0 0.32rem rgba(109, 123, 118, 0.12);
+}
+
+.loading {
+    background: var(--clinic-warning);
+    box-shadow: 0 0 0 0.32rem rgba(184, 121, 45, 0.13);
+}
+
+.online {
+    background: var(--clinic-success);
+    box-shadow: 0 0 0 0.32rem rgba(47, 125, 99, 0.14);
+}
+
+.offline {
+    background: var(--clinic-danger);
+    box-shadow: 0 0 0 0.32rem rgba(181, 71, 71, 0.14);
+}
+
+.statusText {
+    color: var(--clinic-muted-strong);
+
+    font-size: 0.78rem;
+    font-weight: 850;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.cardTitle {
+    margin: 0;
+
+    color: var(--clinic-green-900);
+
+    font-size: 1.05rem;
+    font-weight: 850;
+    letter-spacing: -0.035em;
+    line-height: 1.15;
+}
+
+.cardDescription {
+    margin: 0;
+
+    color: var(--clinic-muted);
+
+    font-size: 0.9rem;
+    font-weight: 500;
+    line-height: 1.5;
+}
+
+.payload {
+    overflow-x: auto;
+
+    max-width: 100%;
+    margin: 0;
+    padding: 0.85rem;
+
+    border: 1px solid rgba(31, 95, 81, 0.1);
+    border-radius: var(--clinic-radius-md);
+
+    color: var(--clinic-ink-soft);
+    background: rgba(243, 247, 245, 0.8);
+
+    font-size: 0.78rem;
+    line-height: 1.5;
+}
+
+.error {
+    margin: 0;
+
+    color: var(--clinic-danger);
+
+    font-size: 0.88rem;
+    font-weight: 700;
+    line-height: 1.45;
+}
+
+@media (max-width: 900px) {
+    .grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 620px) {
+    .header {
+        flex-direction: column;
+    }
+
+    .refreshButton {
+        width: 100%;
+    }
+}

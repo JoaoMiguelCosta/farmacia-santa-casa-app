@@ -1,5 +1,7 @@
 import { Link } from "react-router-dom";
 
+import SystemHealthPanel from "../features/system/components/SystemHealthPanel/SystemHealthPanel";
+
 import styles from "./HomePage.module.css";
 
 const AREAS = [
@@ -50,6 +52,8 @@ export default function HomePage() {
           </article>
         ))}
       </div>
+
+      <SystemHealthPanel />
     </section>
   );
 }
