@@ -1,0 +1,111 @@
+.form {
+    display: grid;
+    gap: 1.1rem;
+}
+
+.notice {
+    margin: 0;
+    padding: 0.85rem 1rem;
+
+    border: 1px solid rgba(184, 121, 45, 0.2);
+    border-radius: var(--clinic-radius-md);
+
+    color: var(--clinic-warning);
+    background: rgba(184, 121, 45, 0.08);
+
+    font-size: 0.9rem;
+    font-weight: 800;
+}
+
+.recipeGrid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.5fr) minmax(0, 0.8fr) minmax(0, 0.8fr);
+    gap: clamp(0.85rem, 2vw, 1rem);
+}
+
+.linesHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.linesHeader h3 {
+    margin: 0;
+
+    color: var(--clinic-green-900);
+
+    font-size: 1.05rem;
+    font-weight: 850;
+    letter-spacing: -0.035em;
+}
+
+.lines {
+    display: grid;
+    gap: 0.9rem;
+}
+
+.line {
+    display: grid;
+    gap: 0.85rem;
+
+    min-width: 0;
+    margin: 0;
+    padding: 1rem;
+
+    border: 1px solid var(--clinic-border);
+    border-radius: var(--clinic-radius-lg);
+
+    background: rgba(255, 255, 255, 0.62);
+}
+
+.line legend {
+    padding-inline: 0.35rem;
+
+    color: var(--clinic-gold-500);
+
+    font-size: 0.74rem;
+    font-weight: 850;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.lineGrid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.5fr) minmax(0, 0.55fr) minmax(0, 0.8fr);
+    gap: clamp(0.85rem, 2vw, 1rem);
+}
+
+.lineActions,
+.actions {
+    display: flex;
+    justify-content: flex-end;
+}
+
+@media (max-width: 900px) {
+
+    .recipeGrid,
+    .lineGrid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 560px) {
+    .linesHeader {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .linesHeader>button,
+    .actions>button {
+        width: 100%;
+    }
+
+    .lineActions {
+        justify-content: stretch;
+    }
+
+    .lineActions>button {
+        width: 100%;
+    }
+}

@@ -1,0 +1,43 @@
+.form {
+    display: grid;
+    gap: 1rem;
+}
+
+.notice {
+    margin: 0;
+    padding: 0.85rem 1rem;
+
+    border: 1px solid rgba(184, 121, 45, 0.2);
+    border-radius: var(--clinic-radius-md);
+
+    color: var(--clinic-warning);
+    background: rgba(184, 121, 45, 0.08);
+
+    font-size: 0.9rem;
+    font-weight: 800;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 0.6fr);
+    gap: clamp(0.85rem, 2vw, 1rem);
+}
+
+.actions {
+    display: flex;
+    justify-content: flex-end;
+}
+
+@media (max-width: 760px) {
+    .grid {
+        grid-template-columns: 1fr;
+    }
+
+    .actions {
+        justify-content: stretch;
+    }
+
+    .actions>button {
+        width: 100%;
+    }
+}

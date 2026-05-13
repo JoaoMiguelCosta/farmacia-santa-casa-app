@@ -8,6 +8,9 @@ import SantaCasaUtentesPage from "../pages/santacasa/SantaCasaUtentesPage.jsx";
 import SantaCasaPlaceholderPage from "../pages/santacasa/SantaCasaPlaceholderPage.jsx";
 import FarmaciaHomePage from "../pages/farmacia/FarmaciaHomePage.jsx";
 import NotFoundPage from "../pages/NotFoundPage.jsx";
+import SantaCasaReceitasPage from "../pages/santacasa/SantaCasaReceitasPage.jsx";
+import SantaCasaSemReceitaPage from "../pages/santacasa/SantaCasaSemReceitaPage.jsx";
+import SantaCasaExtrasPage from "../pages/santacasa/SantaCasaExtrasPage.jsx";
 
 export const router = createBrowserRouter([
   {
@@ -28,33 +31,15 @@ export const router = createBrowserRouter([
       },
       {
         path: "santacasa/receitas",
-        element: (
-          <SantaCasaPlaceholderPage
-            title="Receitas"
-            description="Criação e consulta de receitas associadas a utentes."
-            nextStep="Este será o próximo módulo real a implementar."
-          />
-        ),
+        element: <SantaCasaReceitasPage />,
       },
       {
         path: "santacasa/sem-receita",
-        element: (
-          <SantaCasaPlaceholderPage
-            title="Sem Receita"
-            description="Gestão de medicamentos disponíveis sem receita."
-            nextStep="Este módulo será implementado depois das receitas."
-          />
-        ),
+        element: <SantaCasaSemReceitaPage />,
       },
       {
         path: "santacasa/extras",
-        element: (
-          <SantaCasaPlaceholderPage
-            title="Extras"
-            description="Gestão de vendas suspensas e saldos por regularizar."
-            nextStep="Este módulo será implementado depois de Sem Receita."
-          />
-        ),
+        element: <SantaCasaExtrasPage />,
       },
       {
         path: "santacasa/pedidos",

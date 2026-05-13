@@ -2,8 +2,10 @@ import { useEffect, useState } from "react";
 
 import Button from "../../shared/ui/Button/Button";
 import ConfirmDialog from "../../shared/ui/ConfirmDialog/ConfirmDialog";
+import FeedbackDialog from "../../shared/ui/FeedbackDialog/FeedbackDialog";
 import PageHeader from "../../shared/ui/PageHeader/PageHeader";
 
+import SantaCasaSectionNav from "../../features/santacasa/shared/components/SantaCasaSectionNav/SantaCasaSectionNav";
 import { UTENTES_PAGE } from "../../features/santacasa/utentes/config/utentesPage.config";
 import {
   createUtente,
@@ -12,8 +14,7 @@ import {
 } from "../../features/santacasa/utentes/api/utentesApi";
 import UtenteCreateForm from "../../features/santacasa/utentes/components/UtenteCreateForm/UtenteCreateForm";
 import UtentesList from "../../features/santacasa/utentes/components/UtentesList/UtentesList";
-import { sortUtentesByName } from "../../shared/utils/sortUtentes.js";
-import SantaCasaSectionNav from "../../features/santacasa/shared/components/SantaCasaSectionNav/SantaCasaSectionNav";
+import { sortUtentesByName } from "../../features/santacasa/utentes/utils/sortUtentes";
 
 import styles from "./SantaCasaUtentesPage.module.css";
 
@@ -156,15 +157,6 @@ export default function SantaCasaUtentesPage() {
 
       <SantaCasaSectionNav />
 
-      {feedback ? (
-        <div
-          className={`${styles.feedback} ${styles[feedback.type]}`}
-          role="status"
-        >
-          {feedback.message}
-        </div>
-      ) : null}
-
       <UtenteCreateForm
         onCreate={handleCreateUtente}
         isSubmitting={isCreating}
@@ -192,6 +184,13 @@ export default function SantaCasaUtentesPage() {
         isLoading={Boolean(deletingUtenteId)}
         onConfirm={handleConfirmDeleteUtente}
         onCancel={handleCancelDeleteUtente}
+      />
+
+      <FeedbackDialog
+        isOpen={Boolean(feedback)}
+        type={feedback?.type}
+        message={feedback?.message}
+        onClose={() => setFeedback(null)}
       />
     </section>
   );
