@@ -1,37 +1,40 @@
-import styles from "./FarmaciaHomePage.module.css";
+import AreaLanding from "../../shared/layouts/AreaLanding/AreaLanding.jsx";
 
 const ACTIONS = [
-  "Pedidos Pendentes",
-  "Validação",
-  "Rejeição",
-  "Regularizações",
-  "Dashboard",
-  "Manutenção",
+  {
+    title: "Pedidos Pendentes",
+    description: "Consultar pedidos enviados pela Santa Casa.",
+  },
+  {
+    title: "Validação",
+    description: "Validar pedidos e aplicar os efeitos nas quantidades.",
+  },
+  {
+    title: "Rejeição",
+    description: "Rejeitar pedidos com motivo registado.",
+  },
+  {
+    title: "Regularizações",
+    description: "Acompanhar Extras regularizados por receitas futuras.",
+  },
+  {
+    title: "Dashboard",
+    description: "Ver sinais operacionais e totais relevantes.",
+  },
+  {
+    title: "Manutenção",
+    description: "Aceder a previews e execução controlada de jobs.",
+  },
 ];
 
 export default function FarmaciaHomePage() {
   return (
-    <section className={styles.page} aria-labelledby="farmacia-title">
-      <div className={styles.header}>
-        <p className={styles.kicker}>Área Farmácia</p>
-        <h1 id="farmacia-title" className={styles.title}>
-          Controlo farmacêutico com rastreabilidade.
-        </h1>
-        <p className={styles.lead}>
-          Esta área vai reunir pedidos pendentes, validações, rejeições,
-          regularizações, histórico e sinais operacionais.
-        </p>
-      </div>
-
-      <div className={styles.panel}>
-        {ACTIONS.map((action) => (
-          <article key={action} className={styles.item}>
-            <span className={styles.dot} aria-hidden="true" />
-            <h2>{action}</h2>
-            <p>Módulo a construir no próximo passo.</p>
-          </article>
-        ))}
-      </div>
-    </section>
+    <AreaLanding
+      eyebrow="Área Farmácia"
+      title="Controlo farmacêutico com rastreabilidade."
+      description="Pedidos pendentes, validações, rejeições, regularizações, histórico e sinais operacionais."
+      tone="blue"
+      actions={ACTIONS}
+    />
   );
 }
