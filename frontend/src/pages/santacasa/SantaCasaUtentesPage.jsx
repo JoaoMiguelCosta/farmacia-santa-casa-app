@@ -13,6 +13,7 @@ import {
 import UtenteCreateForm from "../../features/santacasa/utentes/components/UtenteCreateForm/UtenteCreateForm";
 import UtentesList from "../../features/santacasa/utentes/components/UtentesList/UtentesList";
 import { sortUtentesByName } from "../../shared/utils/sortUtentes.js";
+import SantaCasaSectionNav from "../../features/santacasa/shared/components/SantaCasaSectionNav/SantaCasaSectionNav";
 
 import styles from "./SantaCasaUtentesPage.module.css";
 
@@ -152,6 +153,8 @@ export default function SantaCasaUtentesPage() {
           </Button>
         }
       />
+
+      <SantaCasaSectionNav />
 
       {feedback ? (
         <div
