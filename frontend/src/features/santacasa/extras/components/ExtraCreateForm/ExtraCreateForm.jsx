@@ -96,9 +96,9 @@ export default function ExtraCreateForm({
       description={EXTRAS_PAGE.form.description}
       tone="green"
     >
-      <form className={styles.form} onSubmit={handleSubmit}>
+      <form className={styles.form} onSubmit={handleSubmit} noValidate>
         {!selectedUtenteId ? (
-          <p className={styles.notice}>
+          <p className={styles.notice} role="status">
             Seleciona um utente antes de criar Extra.
           </p>
         ) : null}
@@ -120,6 +120,7 @@ export default function ExtraCreateForm({
                 updateField("medicamento", event.target.value)
               }
               disabled={isDisabled}
+              autoComplete="off"
             />
           </FormField>
 
@@ -134,12 +135,14 @@ export default function ExtraCreateForm({
               id={EXTRAS_PAGE.fields.quantidadeSolicitada.id}
               type="text"
               inputMode="numeric"
+              pattern="[0-9]*"
               placeholder={EXTRAS_PAGE.fields.quantidadeSolicitada.placeholder}
               value={values.quantidadeSolicitada}
               onChange={(event) =>
                 updateField("quantidadeSolicitada", event.target.value)
               }
               disabled={isDisabled}
+              autoComplete="off"
             />
           </FormField>
         </div>

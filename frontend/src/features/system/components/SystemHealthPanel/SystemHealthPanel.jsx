@@ -29,6 +29,19 @@ function getStatusLabel(status) {
   return "Pendente";
 }
 
+function getStatusClassName(status) {
+  return `${styles.statusDot} ${styles[status] || styles.idle}`;
+}
+
+function buildOfflineItems(errorMessage = "Erro ao contactar a API.") {
+  return SYSTEM_HEALTH_CHECKS.map((item) => ({
+    ...item,
+    status: STATUS.offline,
+    payload: null,
+    error: errorMessage,
+  }));
+}
+
 function buildUpdatedItems(results) {
   return SYSTEM_HEALTH_CHECKS.map((item, index) => {
     const result = results[index];
@@ -52,11 +65,15 @@ function buildUpdatedItems(results) {
 }
 
 async function fetchHealthItems() {
-  const results = await Promise.allSettled(
-    SYSTEM_HEALTH_CHECKS.map((item) => getSystemHealth(item.endpointKey)),
-  );
+  try {
+    const results = await Promise.allSettled(
+      SYSTEM_HEALTH_CHECKS.map((item) => getSystemHealth(item.endpointKey)),
+    );
 
-  return buildUpdatedItems(results);
+    return buildUpdatedItems(results);
+  } catch (error) {
+    return buildOfflineItems(error?.message || "Erro ao contactar a API.");
+  }
 }
 
 export default function SystemHealthPanel() {
@@ -68,6 +85,11 @@ export default function SystemHealthPanel() {
     [items],
   );
 
+  const isChecking = useMemo(
+    () => items.some((item) => item.status === STATUS.loading),
+    [items],
+  );
+
   async function handleRefresh() {
     setIsRefreshing(true);
 
@@ -75,6 +97,7 @@ export default function SystemHealthPanel() {
       currentItems.map((item) => ({
         ...item,
         status: STATUS.loading,
+        payload: null,
         error: null,
       })),
     );
@@ -110,9 +133,13 @@ export default function SystemHealthPanel() {
   }, []);
 
   return (
-    <section className={styles.panel} aria-labelledby="system-health-title">
+    <section
+      className={styles.panel}
+      aria-labelledby="system-health-title"
+      aria-busy={isChecking}
+    >
       <div className={styles.header}>
-        <div>
+        <div className={styles.headerContent}>
           <p className={styles.kicker}>Ligação ao backend</p>
 
           <h2 id="system-health-title" className={styles.title}>
@@ -129,24 +156,25 @@ export default function SystemHealthPanel() {
           type="button"
           onClick={handleRefresh}
           disabled={isRefreshing}
+          aria-label="Atualizar estado dos serviços"
         >
           {isRefreshing ? "A verificar..." : "Atualizar"}
         </button>
       </div>
 
       {hasOfflineServices ? (
-        <p className={styles.warning}>
+        <p className={styles.warning} role="alert">
           Há serviços indisponíveis. Confirma se o backend está ativo em
           http://localhost:3001.
         </p>
       ) : null}
 
-      <div className={styles.grid}>
+      <div className={styles.grid} role="list" aria-live="polite">
         {items.map((item) => (
-          <article key={item.key} className={styles.card}>
+          <article key={item.key} className={styles.card} role="listitem">
             <div className={styles.cardTop}>
               <span
-                className={`${styles.statusDot} ${styles[item.status]}`}
+                className={getStatusClassName(item.status)}
                 aria-hidden="true"
               />
 

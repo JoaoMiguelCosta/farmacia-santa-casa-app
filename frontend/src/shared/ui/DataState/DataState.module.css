@@ -1,48 +1,138 @@
 .state {
+    position: relative;
+    isolation: isolate;
+
     display: flex;
     align-items: flex-start;
-    gap: 1rem;
+    gap: clamp(0.85rem, 2vw, 1.1rem);
 
-    padding: clamp(1.1rem, 2.5vw, 1.5rem);
+    width: 100%;
+    min-width: 0;
+    overflow: hidden;
+
+    padding: clamp(1.05rem, 2.6vw, 1.55rem);
 
     border: 1px solid var(--clinic-border);
     border-radius: var(--clinic-radius-xl);
 
-    background: rgba(255, 255, 255, 0.78);
-    box-shadow: var(--clinic-shadow-soft);
+    background:
+        radial-gradient(circle at 100% 0%,
+            rgba(227, 207, 159, 0.12),
+            transparent 14rem),
+        linear-gradient(135deg,
+            rgba(255, 255, 255, 0.9),
+            rgba(255, 255, 255, 0.72));
+
+    box-shadow:
+        var(--clinic-shadow-soft),
+        inset 0 1px 0 rgba(255, 255, 255, 0.78);
+}
+
+.state::before {
+    content: "";
+
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: 0;
+    z-index: 1;
+
+    width: 4px;
+
+    background: var(--clinic-green-600);
+}
+
+.state::after {
+    content: "";
+
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+
+    pointer-events: none;
+
+    opacity: 0.72;
+
+    background:
+        radial-gradient(circle at 0% 100%,
+            rgba(145, 183, 166, 0.14),
+            transparent 16rem);
 }
 
 .icon {
     display: grid;
     place-items: center;
-
     flex: 0 0 auto;
 
-    width: 2.55rem;
-    height: 2.55rem;
+    width: clamp(2.45rem, 6vw, 2.85rem);
+    height: clamp(2.45rem, 6vw, 2.85rem);
 
+    border: 1px solid rgba(31, 95, 81, 0.14);
     border-radius: 999px;
 
     color: var(--clinic-green-900);
-    background: rgba(79, 155, 139, 0.12);
 
-    font-size: 1.2rem;
+    background:
+        radial-gradient(circle at 32% 18%,
+            rgba(255, 255, 255, 0.86),
+            transparent 42%),
+        linear-gradient(135deg,
+            rgba(79, 155, 139, 0.14),
+            rgba(220, 235, 228, 0.38));
+
+    box-shadow:
+        0 12px 26px rgba(16, 44, 54, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.78);
+
+    font-size: clamp(1.05rem, 3vw, 1.28rem);
     font-weight: 900;
+    line-height: 1;
+}
+
+.loading::before {
+    background: var(--clinic-warning);
 }
 
 .loading .icon {
     color: var(--clinic-warning);
-    background: rgba(184, 121, 45, 0.12);
+
+    border-color: rgba(184, 121, 45, 0.18);
+
+    background:
+        radial-gradient(circle at 32% 18%,
+            rgba(255, 255, 255, 0.86),
+            transparent 42%),
+        linear-gradient(135deg,
+            rgba(184, 121, 45, 0.13),
+            rgba(227, 207, 159, 0.18));
+
+    animation: loadingPulse 1.1s ease-in-out infinite;
+}
+
+.error::before {
+    background: var(--clinic-danger);
 }
 
 .error .icon {
     color: var(--clinic-danger);
-    background: rgba(181, 71, 71, 0.1);
+
+    border-color: rgba(181, 71, 71, 0.2);
+
+    background:
+        radial-gradient(circle at 32% 18%,
+            rgba(255, 255, 255, 0.86),
+            transparent 42%),
+        linear-gradient(135deg,
+            rgba(181, 71, 71, 0.12),
+            rgba(198, 161, 91, 0.1));
+
+    box-shadow:
+        0 12px 26px rgba(181, 71, 71, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.78);
 }
 
 .content {
     display: grid;
-    gap: 0.55rem;
+    gap: clamp(0.48rem, 1vw, 0.62rem);
 
     min-width: 0;
 }
@@ -52,25 +142,84 @@
 
     color: var(--clinic-ink);
 
-    font-size: clamp(1.1rem, 2vw, 1.35rem);
-    font-weight: 850;
-    letter-spacing: -0.04em;
-    line-height: 1.1;
+    font-size: clamp(1.08rem, 2.4vw, 1.38rem);
+    font-weight: 870;
+    letter-spacing: -0.045em;
+    line-height: 1.08;
 }
 
 .content p {
     max-width: 46rem;
     margin: 0;
 
-    color: var(--clinic-muted);
+    color: var(--clinic-muted-strong);
 
-    font-size: 0.94rem;
-    font-weight: 500;
-    line-height: 1.6;
+    font-size: clamp(0.9rem, 1.3vw, 0.96rem);
+    font-weight: 520;
+    line-height: 1.62;
+}
+
+.action {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+
+    padding-top: 0.22rem;
+}
+
+@keyframes loadingPulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+        box-shadow:
+            0 12px 26px rgba(184, 121, 45, 0.08),
+            inset 0 1px 0 rgba(255, 255, 255, 0.78);
+    }
+
+    50% {
+        transform: scale(1.04);
+        box-shadow:
+            0 16px 34px rgba(184, 121, 45, 0.14),
+            inset 0 1px 0 rgba(255, 255, 255, 0.82);
+    }
 }
 
 @media (max-width: 520px) {
     .state {
         flex-direction: column;
+
+        padding: 1rem;
+        border-radius: var(--clinic-radius-lg);
+    }
+
+    .content {
+        width: 100%;
+    }
+
+    .action,
+    .action>* {
+        width: 100%;
+    }
+}
+
+@media (max-width: 360px) {
+    .state {
+        gap: 0.78rem;
+        padding: 0.9rem;
+    }
+
+    .icon {
+        width: 2.35rem;
+        height: 2.35rem;
+    }
+
+    .content h2 {
+        font-size: 1.02rem;
+    }
+
+    .content p {
+        font-size: 0.86rem;
+        line-height: 1.55;
     }
 }

@@ -13,6 +13,7 @@ export default function SantaCasaPlaceholderPage({
   return (
     <section className={styles.page} aria-labelledby="placeholder-title">
       <PageHeader
+        titleId="placeholder-title"
         eyebrow="Santa Casa"
         title={title}
         description={description}

@@ -22,6 +22,12 @@ const DIALOG_COPY = Object.freeze({
   },
 });
 
+const VALID_DIALOG_TYPES = ["success", "error", "info"];
+
+function getSafeDialogType(type) {
+  return VALID_DIALOG_TYPES.includes(type) ? type : "info";
+}
+
 export default function FeedbackDialog({
   isOpen = false,
   type = "info",
@@ -30,7 +36,9 @@ export default function FeedbackDialog({
   closeLabel = "Fechar",
   onClose,
 }) {
-  const copy = DIALOG_COPY[type] ?? DIALOG_COPY.info;
+  const dialogType = getSafeDialogType(type);
+  const copy = DIALOG_COPY[dialogType];
+  const isError = dialogType === "error";
 
   useEffect(() => {
     if (!isOpen) return undefined;
@@ -53,11 +61,11 @@ export default function FeedbackDialog({
   return (
     <div className={styles.overlay} role="presentation">
       <section
-        className={`${styles.dialog} ${styles[type]}`}
-        role="dialog"
+        className={`${styles.dialog} ${styles[dialogType]}`}
+        role={isError ? "alertdialog" : "dialog"}
         aria-modal="true"
         aria-labelledby="feedback-dialog-title"
-        aria-describedby="feedback-dialog-description"
+        aria-describedby={message ? "feedback-dialog-description" : undefined}
       >
         <div className={styles.icon} aria-hidden="true">
           {copy.symbol}

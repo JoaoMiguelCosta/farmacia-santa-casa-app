@@ -39,7 +39,9 @@ export default function ConfirmDialog({
         role="dialog"
         aria-modal="true"
         aria-labelledby="confirm-dialog-title"
-        aria-describedby="confirm-dialog-description"
+        aria-describedby={
+          description ? "confirm-dialog-description" : undefined
+        }
       >
         <div className={styles.icon} aria-hidden="true">
           !

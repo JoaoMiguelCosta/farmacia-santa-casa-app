@@ -8,6 +8,15 @@ export default function UtenteSelector({
   isLoading = false,
   error = null,
 }) {
+  const hasUtentes = utentes.length > 0;
+  const isDisabled = isLoading || !hasUtentes;
+
+  const hint = isLoading
+    ? "A carregar utentes..."
+    : hasUtentes
+      ? "Escolhe o utente para carregar os dados da operação."
+      : "Ainda não existem utentes disponíveis.";
+
   return (
     <SurfaceCard
       title="Selecionar utente"
@@ -17,11 +26,7 @@ export default function UtenteSelector({
       <FormField
         id="utente-selector"
         label="Utente"
-        hint={
-          isLoading
-            ? "A carregar utentes..."
-            : "A lista mostra apenas utentes ativos."
-        }
+        hint={hint}
         error={error}
         required
       >
@@ -29,9 +34,11 @@ export default function UtenteSelector({
           id="utente-selector"
           value={value}
           onChange={(event) => onChange?.(event.target.value)}
-          disabled={isLoading || Boolean(error)}
+          disabled={isDisabled}
         >
-          <option value="">Seleciona um utente</option>
+          <option value="">
+            {hasUtentes ? "Seleciona um utente" : "Nenhum utente disponível"}
+          </option>
 
           {utentes.map((utente) => (
             <option key={utente.id} value={utente.id}>

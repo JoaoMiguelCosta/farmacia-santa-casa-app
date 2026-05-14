@@ -16,7 +16,7 @@ export default function NotFoundPage() {
           A página que tentaste abrir não existe ou foi movida.
         </p>
 
-        <Link className={styles.link} to="/">
+        <Link className={styles.link} to="/" aria-label="Voltar ao início">
           Voltar ao início
         </Link>
       </div>

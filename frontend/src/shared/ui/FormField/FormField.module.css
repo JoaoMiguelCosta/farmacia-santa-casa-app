@@ -1,68 +1,163 @@
 .field {
     display: grid;
-    gap: 0.45rem;
+    gap: 0.48rem;
+
+    width: 100%;
+    min-width: 0;
 }
 
 .label {
     display: inline-flex;
     align-items: center;
-    gap: 0.25rem;
+    gap: 0.28rem;
+
+    width: fit-content;
+    max-width: 100%;
 
     color: var(--clinic-ink-soft);
 
-    font-size: 0.9rem;
-    font-weight: 800;
+    font-size: clamp(0.84rem, 1vw, 0.9rem);
+    font-weight: 820;
+    letter-spacing: -0.012em;
     line-height: 1.2;
+}
+
+.label span {
+    min-width: 0;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .label strong {
     color: var(--clinic-danger);
+
+    font-size: 0.95em;
+    font-weight: 900;
+    line-height: 1;
+}
+
+.control {
+    position: relative;
+
+    width: 100%;
+    min-width: 0;
 }
 
 .control :global(input),
 .control :global(select),
 .control :global(textarea) {
     width: 100%;
-    min-height: 2.8rem;
-    padding: 0.8rem 0.95rem;
+    min-width: 0;
+    min-height: 2.9rem;
+    padding: 0.82rem 0.98rem;
 
     border: 1px solid var(--clinic-border);
     border-radius: var(--clinic-radius-md);
 
     color: var(--clinic-ink);
-    background: rgba(255, 255, 255, 0.86);
 
+    background:
+        radial-gradient(circle at 100% 0%,
+            rgba(227, 207, 159, 0.08),
+            transparent 10rem),
+        rgba(255, 255, 255, 0.88);
+
+    box-shadow:
+        0 10px 28px rgba(16, 44, 54, 0.045),
+        inset 0 1px 0 rgba(255, 255, 255, 0.82);
+
+    font: inherit;
     font-size: 0.95rem;
-    font-weight: 520;
+    font-weight: 540;
     line-height: 1.4;
-
-    box-shadow: 0 8px 24px rgba(16, 44, 54, 0.04);
 
     transition:
         border-color var(--clinic-transition),
         box-shadow var(--clinic-transition),
-        background var(--clinic-transition);
+        background var(--clinic-transition),
+        color var(--clinic-transition);
+}
+
+.control :global(input::placeholder),
+.control :global(textarea::placeholder) {
+    color: rgba(109, 123, 118, 0.72);
+}
+
+.control :global(select) {
+    cursor: pointer;
 }
 
 .control :global(textarea) {
-    min-height: 7rem;
+    min-height: 7.25rem;
     resize: vertical;
+}
+
+.control :global(input:hover:not(:disabled)),
+.control :global(select:hover:not(:disabled)),
+.control :global(textarea:hover:not(:disabled)) {
+    border-color: var(--clinic-border-strong);
+    background:
+        radial-gradient(circle at 100% 0%,
+            rgba(227, 207, 159, 0.1),
+            transparent 10rem),
+        rgba(255, 255, 255, 0.94);
 }
 
 .control :global(input:focus),
 .control :global(select:focus),
 .control :global(textarea:focus) {
-    border-color: rgba(79, 155, 139, 0.42);
-    background: var(--clinic-white);
-    box-shadow: 0 0 0 4px rgba(79, 155, 139, 0.12);
     outline: none;
+
+    border-color: rgba(79, 155, 139, 0.48);
+
+    background: var(--clinic-white);
+
+    box-shadow:
+        0 0 0 4px rgba(79, 155, 139, 0.12),
+        0 14px 34px rgba(16, 44, 54, 0.07),
+        inset 0 1px 0 rgba(255, 255, 255, 0.92);
+}
+
+.control :global(input:disabled),
+.control :global(select:disabled),
+.control :global(textarea:disabled) {
+    cursor: not-allowed;
+    opacity: 0.64;
+
+    background: rgba(238, 245, 241, 0.64);
+}
+
+.hasError .control :global(input),
+.hasError .control :global(select),
+.hasError .control :global(textarea) {
+    border-color: rgba(181, 71, 71, 0.34);
+
+    background:
+        radial-gradient(circle at 100% 0%,
+            rgba(181, 71, 71, 0.07),
+            transparent 10rem),
+        rgba(255, 255, 255, 0.9);
+}
+
+.hasError .control :global(input:focus),
+.hasError .control :global(select:focus),
+.hasError .control :global(textarea:focus) {
+    border-color: rgba(181, 71, 71, 0.52);
+
+    box-shadow:
+        0 0 0 4px rgba(181, 71, 71, 0.11),
+        0 14px 34px rgba(181, 71, 71, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.92);
 }
 
 .hint,
 .error {
     margin: 0;
 
-    font-size: 0.82rem;
+    font-size: clamp(0.78rem, 1vw, 0.83rem);
     font-weight: 650;
     line-height: 1.45;
 }
@@ -73,4 +168,28 @@
 
 .error {
     color: var(--clinic-danger);
+}
+
+@media (max-width: 420px) {
+    .field {
+        gap: 0.42rem;
+    }
+
+    .control :global(input),
+    .control :global(select),
+    .control :global(textarea) {
+        min-height: 2.7rem;
+        padding: 0.76rem 0.86rem;
+
+        font-size: 0.9rem;
+    }
+
+    .control :global(textarea) {
+        min-height: 6.75rem;
+    }
+
+    .hint,
+    .error {
+        font-size: 0.76rem;
+    }
 }

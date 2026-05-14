@@ -14,25 +14,29 @@ export default function Button({
   ...props
 }) {
   const isDisabled = disabled || isLoading;
+  const variantClassName = styles[variant] || styles.primary;
+  const sizeClassName = styles[size] || styles.md;
 
   return (
     <button
       className={classNames(
         styles.button,
-        styles[variant],
-        styles[size],
+        variantClassName,
+        sizeClassName,
         fullWidth && styles.fullWidth,
         className,
       )}
       type={type}
       disabled={isDisabled}
-      aria-busy={isLoading}
+      aria-busy={isLoading || undefined}
+      data-loading={isLoading ? "true" : undefined}
       {...props}
     >
       {isLoading ? (
         <span className={styles.spinner} aria-hidden="true" />
       ) : null}
-      <span>{children}</span>
+
+      <span className={styles.label}>{children}</span>
     </button>
   );
 }

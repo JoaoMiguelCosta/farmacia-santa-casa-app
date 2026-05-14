@@ -6,13 +6,18 @@ export default function PageHeader({
   description,
   actions = null,
   align = "left",
+  titleId,
 }) {
+  const alignClassName = styles[align] || "";
+
   return (
-    <header className={`${styles.header} ${styles[align]}`}>
+    <header className={`${styles.header} ${alignClassName}`}>
       <div className={styles.content}>
         {eyebrow ? <p className={styles.eyebrow}>{eyebrow}</p> : null}
 
-        <h1 className={styles.title}>{title}</h1>
+        <h1 id={titleId} className={styles.title}>
+          {title}
+        </h1>
 
         {description ? (
           <p className={styles.description}>{description}</p>

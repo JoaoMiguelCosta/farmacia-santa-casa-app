@@ -53,15 +53,27 @@ export default function SantaCasaUtentesPage() {
         sortUtentesByName([createdUtente, ...currentUtentes]),
       );
 
+      setError(null);
+
       setFeedback({
         type: "success",
         message: UTENTES_PAGE.form.successMessage,
       });
+
+      return {
+        ok: true,
+        fieldErrors: {},
+      };
     } catch (requestError) {
       setFeedback({
         type: "error",
         message: requestError.message || "Erro ao criar utente.",
       });
+
+      return {
+        ok: false,
+        fieldErrors: {},
+      };
     } finally {
       setIsCreating(false);
     }
@@ -141,14 +153,17 @@ export default function SantaCasaUtentesPage() {
   return (
     <section className={styles.page} aria-labelledby="utentes-title">
       <PageHeader
+        titleId="utentes-title"
         eyebrow={UTENTES_PAGE.header.eyebrow}
         title={UTENTES_PAGE.header.title}
         description={UTENTES_PAGE.header.description}
         actions={
           <Button
+            type="button"
             variant="secondary"
             onClick={handleRefreshUtentes}
             isLoading={isRefreshing}
+            disabled={isRefreshing || isLoading}
           >
             {isRefreshing ? "A atualizar..." : "Atualizar lista"}
           </Button>
@@ -157,19 +172,21 @@ export default function SantaCasaUtentesPage() {
 
       <SantaCasaSectionNav />
 
-      <UtenteCreateForm
-        onCreate={handleCreateUtente}
-        isSubmitting={isCreating}
-      />
+      <div className={styles.content}>
+        <UtenteCreateForm
+          onCreate={handleCreateUtente}
+          isSubmitting={isCreating}
+        />
 
-      <UtentesList
-        utentes={utentes}
-        isLoading={isLoading}
-        error={error}
-        deletingUtenteId={deletingUtenteId}
-        onRetry={handleRefreshUtentes}
-        onDelete={handleRequestDeleteUtente}
-      />
+        <UtentesList
+          utentes={utentes}
+          isLoading={isLoading}
+          error={error}
+          deletingUtenteId={deletingUtenteId}
+          onRetry={handleRefreshUtentes}
+          onDelete={handleRequestDeleteUtente}
+        />
+      </div>
 
       <ConfirmDialog
         isOpen={Boolean(utenteToDelete)}

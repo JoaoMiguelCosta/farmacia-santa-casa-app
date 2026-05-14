@@ -36,6 +36,22 @@ function getExtraMedicamentoNorm(extra) {
   return normalizeText(extra.medicamentoRef?.nome || extra.medicamento);
 }
 
+function buildDraftQuantityMap(receitaDraftItems = []) {
+  return receitaDraftItems.reduce((map, item) => {
+    return {
+      ...map,
+      [item.linhaId]: Number(item.quantidade) || 0,
+    };
+  }, {});
+}
+
+function getReceitaLinhaRestanteVisual(linha, draftQuantityMap) {
+  const quantidadeRestante = getReceitaLinhaRestanteDTO(linha);
+  const quantidadeEmPedidoDraft = Number(draftQuantityMap[linha.id]) || 0;
+
+  return Math.max(0, quantidadeRestante - quantidadeEmPedidoDraft);
+}
+
 async function listByUtente(utenteId) {
   await ensureUtenteActive(utenteId);
 
@@ -52,13 +68,15 @@ async function createForUtente(utenteId, payload) {
   const receitaLinhas =
     await extrasRepository.findActiveReceitaLinhasByUtente(utenteId);
 
+  const draftQuantityMap = buildDraftQuantityMap(data.receitaDraftItems);
+
   const matchingReceitaLinha = receitaLinhas.find((linha) => {
     const sameMedicamento =
       getLinhaMedicamentoNorm(linha) === data.medicamentoNorm;
 
     if (!sameMedicamento) return false;
 
-    return getReceitaLinhaRestanteDTO(linha) > 0;
+    return getReceitaLinhaRestanteVisual(linha, draftQuantityMap) > 0;
   });
 
   if (matchingReceitaLinha) {

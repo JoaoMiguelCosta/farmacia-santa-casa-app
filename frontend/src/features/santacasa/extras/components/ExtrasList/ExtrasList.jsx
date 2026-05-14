@@ -20,12 +20,52 @@ function getQuantidadeRegularizada(item) {
 function getQuantidadeRestante(item) {
   const restante = Number(item.quantidadeRestante);
 
-  if (Number.isFinite(restante)) return restante;
+  if (Number.isFinite(restante)) {
+    return Math.max(0, restante);
+  }
 
   return Math.max(
     0,
     getQuantidadeSolicitada(item) - getQuantidadeRegularizada(item),
   );
+}
+
+function buildPedidoItem(item) {
+  const quantidadeRestante = getQuantidadeRestante(item);
+
+  return {
+    key: `EXTRA:${item.id}`,
+    tipo: "EXTRA",
+    id: item.id,
+    title: item.medicamento,
+    description: "Extra por regularizar",
+    meta: `Quantidade restante ${quantidadeRestante}`,
+    quantidadeRestante,
+    source: item,
+  };
+}
+
+function getInputQuantity(value, max) {
+  if (max <= 0) return 0;
+
+  const quantity = Math.floor(Number(value));
+
+  if (!Number.isFinite(quantity) || quantity < 1) return 1;
+
+  return Math.min(quantity, max);
+}
+
+function getStatusLabel({ quantidadeDisponivel, quantidadeEmPedido }) {
+  if (quantidadeDisponivel > 0) return "Pendente";
+  if (quantidadeEmPedido > 0) return "Selecionado";
+
+  return "Regularizado";
+}
+
+function getStatusClassName({ quantidadeDisponivel }) {
+  return quantidadeDisponivel > 0
+    ? `${styles.status} ${styles.pendente}`
+    : `${styles.status} ${styles.regularizado}`;
 }
 
 export default function ExtrasList({
@@ -35,9 +75,17 @@ export default function ExtrasList({
   isLoading = false,
   error = null,
   deletingItemId = null,
+  pedidoQuantities = {},
+  pedidoItemsQuantities = {},
+  onPedidoQuantityChange,
+  onAddToPedido,
   onRetry,
+  onBlockedDelete,
   onDelete,
 }) {
+  const hasPedidoActions = typeof onAddToPedido === "function";
+  const hasDeleteActions = typeof onDelete === "function";
+
   if (!selectedUtenteId) {
     return (
       <DataState
@@ -88,67 +136,151 @@ export default function ExtrasList({
     >
       <div className={styles.tableWrap}>
         <table className={styles.table}>
+          <caption className={styles.srOnly}>
+            Lista de Extras do utente selecionado
+          </caption>
+
           <thead>
             <tr>
-              <th>Utente</th>
-              <th>Medicamento</th>
-              <th>Quantidade</th>
-              <th>Estado</th>
-              <th>Criado em</th>
-              <th>Ações</th>
+              <th scope="col">Utente</th>
+              <th scope="col">Medicamento</th>
+              <th scope="col">Quantidade</th>
+              <th scope="col">Estado</th>
+              <th scope="col">Criado em</th>
+              {hasPedidoActions ? <th scope="col">Pedido</th> : null}
+              {hasDeleteActions ? <th scope="col">Remover</th> : null}
             </tr>
           </thead>
 
           <tbody>
             {items.map((item) => {
+              const pedidoItem = buildPedidoItem(item);
+
+              const quantidadeEmPedido =
+                Number(pedidoItemsQuantities[pedidoItem.key]) || 0;
+
+              const isDeleteBlocked = quantidadeEmPedido > 0;
+
+              const quantidadeDisponivel = Math.max(
+                0,
+                pedidoItem.quantidadeRestante - quantidadeEmPedido,
+              );
+
+              const quantity = getInputQuantity(
+                pedidoQuantities[pedidoItem.key],
+                quantidadeDisponivel,
+              );
+
               const isDeleting = deletingItemId === item.id;
               const quantidadeSolicitada = getQuantidadeSolicitada(item);
               const quantidadeRegularizada = getQuantidadeRegularizada(item);
-              const quantidadeRestante = getQuantidadeRestante(item);
 
               return (
                 <tr key={item.id}>
-                  <td>
+                  <td className={styles.identityCell}>
                     <strong>
                       {selectedUtente?.nome || "Utente selecionado"}
                     </strong>
                     <span>{selectedUtente?.numero9 || selectedUtenteId}</span>
                   </td>
 
-                  <td>
+                  <td className={styles.medicineCell}>
                     <strong>{item.medicamento}</strong>
                     <span>{item.id}</span>
                   </td>
 
-                  <td>
-                    <strong>{quantidadeRestante}</strong>
+                  <td className={styles.quantityCell}>
+                    <strong>{quantidadeDisponivel}</strong>
                     <span>
                       Total {quantidadeSolicitada} · Regularizada{" "}
                       {quantidadeRegularizada}
                     </span>
+                    <span>Em pedido {quantidadeEmPedido}</span>
                   </td>
 
                   <td>
-                    <span className={styles.status}>
-                      {quantidadeRestante > 0 ? "Pendente" : "Regularizado"}
+                    <span
+                      className={getStatusClassName({
+                        quantidadeDisponivel,
+                      })}
+                    >
+                      {getStatusLabel({
+                        quantidadeDisponivel,
+                        quantidadeEmPedido,
+                      })}
                     </span>
                   </td>
 
-                  <td>{formatDateTime(item.createdAt)}</td>
-
                   <td>
-                    <Button
-                      variant="danger"
-                      size="sm"
-                      isLoading={isDeleting}
-                      disabled={Boolean(deletingItemId)}
-                      onClick={() => onDelete?.(item)}
-                    >
-                      {isDeleting
-                        ? EXTRAS_PAGE.list.deletingLabel
-                        : EXTRAS_PAGE.list.deleteLabel}
-                    </Button>
+                    <span className={styles.dateValue}>
+                      {formatDateTime(item.createdAt)}
+                    </span>
                   </td>
+
+                  {hasPedidoActions ? (
+                    <td className={styles.actionCell}>
+                      <div className={styles.actionStack}>
+                        <label htmlFor={`extra-pedido-${item.id}`}>Qtd</label>
+
+                        <input
+                          id={`extra-pedido-${item.id}`}
+                          type="text"
+                          inputMode="numeric"
+                          pattern="[0-9]*"
+                          value={quantity}
+                          disabled={quantidadeDisponivel <= 0}
+                          aria-label={`Quantidade para pedido de ${item.medicamento}`}
+                          onChange={(event) =>
+                            onPedidoQuantityChange?.(
+                              pedidoItem.key,
+                              event.target.value,
+                              quantidadeDisponivel,
+                            )
+                          }
+                        />
+
+                        <Button
+                          type="button"
+                          size="sm"
+                          disabled={quantidadeDisponivel <= 0}
+                          onClick={() =>
+                            onAddToPedido({
+                              ...pedidoItem,
+                              quantidade: quantity,
+                            })
+                          }
+                        >
+                          {quantidadeDisponivel <= 0
+                            ? "Sem saldo"
+                            : "Adicionar"}
+                        </Button>
+                      </div>
+                    </td>
+                  ) : null}
+
+                  {hasDeleteActions ? (
+                    <td className={styles.actionCell}>
+                      <Button
+                        type="button"
+                        variant="danger"
+                        size="sm"
+                        isLoading={isDeleting}
+                        disabled={Boolean(deletingItemId)}
+                        onClick={() => {
+                          if (isDeleteBlocked) {
+                            onBlockedDelete?.(item, quantidadeEmPedido);
+                            return;
+                          }
+
+                          onDelete(item);
+                        }}
+                      >
+                        {isDeleting
+                          ? EXTRAS_PAGE.list.deletingLabel
+                          : EXTRAS_PAGE.list.deleteLabel}
+                      </Button>
+                    </td>
+                  ) : null}
                 </tr>
               );
             })}

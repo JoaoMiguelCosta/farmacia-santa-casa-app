@@ -47,6 +47,29 @@ function groupReceitasByRecipe(receitas = []) {
   return groups;
 }
 
+function buildPedidoItem(linha) {
+  return {
+    key: `COM_RECEITA:${linha.linhaId}`,
+    tipo: "COM_RECEITA",
+    id: linha.linhaId,
+    title: linha.medicamento,
+    description: `Receita ${linha.numero19}`,
+    meta: `PIN ${linha.pinAcesso6} · Opção ${linha.pinOpcao4}`,
+    quantidadeRestante: Number(linha.quantidadeRestante) || 0,
+    source: linha,
+  };
+}
+
+function getInputQuantity(value, max) {
+  if (max <= 0) return 0;
+
+  const quantity = Math.floor(Number(value));
+
+  if (!Number.isFinite(quantity) || quantity < 1) return 1;
+
+  return Math.min(quantity, max);
+}
+
 export default function ReceitasList({
   receitas = [],
   selectedUtenteId = "",
@@ -54,9 +77,17 @@ export default function ReceitasList({
   isLoading = false,
   error = null,
   deletingLinhaId = null,
+  pedidoQuantities = {},
+  pedidoItemsQuantities = {},
+  onPedidoQuantityChange,
+  onAddToPedido,
   onRetry,
+  onBlockedDelete,
   onDelete,
 }) {
+  const hasPedidoActions = typeof onAddToPedido === "function";
+  const hasDeleteActions = typeof onDelete === "function";
+
   if (!selectedUtenteId) {
     return (
       <DataState
@@ -118,13 +149,27 @@ export default function ReceitasList({
               <th>Validade</th>
               <th>Estado</th>
               <th>Criado em</th>
-              <th>Ações</th>
+              {hasPedidoActions ? <th>Pedido</th> : null}
+              {hasDeleteActions ? <th>Remover</th> : null}
             </tr>
           </thead>
 
           <tbody>
             {receitaGroups.map((group) =>
               group.linhas.map((linha, index) => {
+                const pedidoItem = buildPedidoItem(linha);
+                const quantidadeEmPedido =
+                  Number(pedidoItemsQuantities[pedidoItem.key]) || 0;
+                const isDeleteBlocked = quantidadeEmPedido > 0;
+                const quantidadeDisponivel = Math.max(
+                  0,
+                  pedidoItem.quantidadeRestante - quantidadeEmPedido,
+                );
+                const quantity = getInputQuantity(
+                  pedidoQuantities[pedidoItem.key],
+                  quantidadeDisponivel,
+                );
+
                 const isDeleting = deletingLinhaId === linha.linhaId;
                 const isFirstRecipeLine = index === 0;
 
@@ -162,11 +207,12 @@ export default function ReceitasList({
                     </td>
 
                     <td>
-                      <strong>{linha.quantidadeRestante}</strong>
+                      <strong>{quantidadeDisponivel}</strong>
                       <span>
                         Total {linha.quantidade} · Dispensada{" "}
                         {linha.quantidadeDispensada}
                       </span>
+                      <span>Em pedido {quantidadeEmPedido}</span>
                     </td>
 
                     <td>{formatDateOnly(linha.validade)}</td>
@@ -177,19 +223,70 @@ export default function ReceitasList({
 
                     <td>{formatDateTime(linha.createdAt)}</td>
 
-                    <td>
-                      <Button
-                        variant="danger"
-                        size="sm"
-                        isLoading={isDeleting}
-                        disabled={Boolean(deletingLinhaId)}
-                        onClick={() => onDelete?.(linha)}
-                      >
-                        {isDeleting
-                          ? RECEITAS_PAGE.list.deletingLabel
-                          : RECEITAS_PAGE.list.deleteLabel}
-                      </Button>
-                    </td>
+                    {hasPedidoActions ? (
+                      <td className={styles.actionCell}>
+                        <div className={styles.actionStack}>
+                          <label htmlFor={`receita-pedido-${linha.linhaId}`}>
+                            Qtd
+                          </label>
+
+                          <input
+                            id={`receita-pedido-${linha.linhaId}`}
+                            type="number"
+                            min="1"
+                            max={quantidadeDisponivel}
+                            value={quantity}
+                            disabled={quantidadeDisponivel <= 0}
+                            onChange={(event) =>
+                              onPedidoQuantityChange?.(
+                                pedidoItem.key,
+                                event.target.value,
+                                quantidadeDisponivel,
+                              )
+                            }
+                          />
+
+                          <Button
+                            type="button"
+                            size="sm"
+                            disabled={quantidadeDisponivel <= 0}
+                            onClick={() =>
+                              onAddToPedido({
+                                ...pedidoItem,
+                                quantidade: quantity,
+                              })
+                            }
+                          >
+                            {quantidadeDisponivel <= 0
+                              ? "Sem saldo"
+                              : "Adicionar"}
+                          </Button>
+                        </div>
+                      </td>
+                    ) : null}
+
+                    {hasDeleteActions ? (
+                      <td className={styles.actionCell}>
+                        <Button
+                          variant="danger"
+                          size="sm"
+                          isLoading={isDeleting}
+                          disabled={Boolean(deletingLinhaId)}
+                          onClick={() => {
+                            if (isDeleteBlocked) {
+                              onBlockedDelete?.(linha, quantidadeEmPedido);
+                              return;
+                            }
+
+                            onDelete(linha);
+                          }}
+                        >
+                          {isDeleting
+                            ? RECEITAS_PAGE.list.deletingLabel
+                            : RECEITAS_PAGE.list.deleteLabel}
+                        </Button>
+                      </td>
+                    ) : null}
                   </tr>
                 );
               }),

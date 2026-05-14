@@ -95,9 +95,9 @@ export default function SemReceitaCreateForm({
       description={SEM_RECEITA_PAGE.form.description}
       tone="green"
     >
-      <form className={styles.form} onSubmit={handleSubmit}>
+      <form className={styles.form} onSubmit={handleSubmit} noValidate>
         {!selectedUtenteId ? (
-          <p className={styles.notice}>
+          <p className={styles.notice} role="status">
             Seleciona um utente antes de adicionar medicamento.
           </p>
         ) : null}
@@ -119,6 +119,7 @@ export default function SemReceitaCreateForm({
                 updateField("medicamento", event.target.value)
               }
               disabled={isDisabled}
+              autoComplete="off"
             />
           </FormField>
 
@@ -133,12 +134,14 @@ export default function SemReceitaCreateForm({
               id={SEM_RECEITA_PAGE.fields.quantidade.id}
               type="text"
               inputMode="numeric"
+              pattern="[0-9]*"
               placeholder={SEM_RECEITA_PAGE.fields.quantidade.placeholder}
               value={values.quantidade}
               onChange={(event) =>
                 updateField("quantidade", event.target.value)
               }
               disabled={isDisabled}
+              autoComplete="off"
             />
           </FormField>
         </div>

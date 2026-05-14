@@ -11,24 +11,10 @@ const ACTIONS = [
     to: "/santacasa/utentes",
   },
   {
-    title: "Receitas",
-    description: "Adicionar receitas e controlar linhas disponíveis.",
-    to: "/santacasa/receitas",
-  },
-  {
-    title: "Sem Receita",
-    description: "Registar medicamentos disponíveis sem receita.",
-    to: "/santacasa/sem-receita",
-  },
-  {
-    title: "Extras",
-    description: "Gerir vendas suspensas e saldos por regularizar.",
-    to: "/santacasa/extras",
-  },
-  {
-    title: "Criar Pedido",
-    description: "Enviar pedidos para validação da Farmácia.",
-    to: "/santacasa/pedidos",
+    title: "Operação diária",
+    description:
+      "Gerir receitas, medicamentos sem receita, Extras e pedidos numa página única.",
+    to: "/santacasa/operacao",
   },
   {
     title: "Histórico",

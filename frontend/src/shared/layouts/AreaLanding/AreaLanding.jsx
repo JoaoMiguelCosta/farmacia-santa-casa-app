@@ -9,9 +9,12 @@ export default function AreaLanding({
   tone = "green",
   actions = [],
 }) {
+  const toneClassName = styles[tone] || styles.green;
+  const areaLabel = eyebrow || title || "Área";
+
   return (
     <section className={styles.page} aria-labelledby="area-title">
-      <div className={`${styles.header} ${styles[tone]}`}>
+      <div className={`${styles.header} ${toneClassName}`}>
         <p className={styles.kicker}>{eyebrow}</p>
 
         <h1 id="area-title" className={styles.title}>
@@ -21,7 +24,7 @@ export default function AreaLanding({
         <p className={styles.lead}>{description}</p>
       </div>
 
-      <div className={styles.panel} aria-label={`Módulos — ${eyebrow}`}>
+      <div className={styles.panel} aria-label={`Módulos — ${areaLabel}`}>
         {actions.map((action) => {
           const content = (
             <>
@@ -36,7 +39,11 @@ export default function AreaLanding({
 
           if (action.to) {
             return (
-              <Link key={action.title} to={action.to} className={styles.item}>
+              <Link
+                key={action.title}
+                to={action.to}
+                className={`${styles.item} ${styles.interactive}`}
+              >
                 {content}
               </Link>
             );

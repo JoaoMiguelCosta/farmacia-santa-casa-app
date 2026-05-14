@@ -2,6 +2,12 @@ import Button from "../Button/Button";
 
 import styles from "./DataState.module.css";
 
+const VALID_TYPES = ["empty", "loading", "error"];
+
+function getSafeType(type) {
+  return VALID_TYPES.includes(type) ? type : "empty";
+}
+
 export default function DataState({
   type = "empty",
   title,
@@ -9,10 +15,19 @@ export default function DataState({
   actionLabel,
   onAction,
 }) {
+  const stateType = getSafeType(type);
+  const isError = stateType === "error";
+  const isLoading = stateType === "loading";
+
   return (
-    <div className={`${styles.state} ${styles[type]}`} role="status">
+    <div
+      className={`${styles.state} ${styles[stateType]}`}
+      role={isError ? "alert" : "status"}
+      aria-live={isError ? "assertive" : "polite"}
+      aria-busy={isLoading || undefined}
+    >
       <span className={styles.icon} aria-hidden="true">
-        {type === "loading" ? "…" : type === "error" ? "!" : "∅"}
+        {isLoading ? "…" : isError ? "!" : "∅"}
       </span>
 
       <div className={styles.content}>
@@ -21,12 +36,14 @@ export default function DataState({
         {description ? <p>{description}</p> : null}
 
         {actionLabel && onAction ? (
-          <Button
-            variant={type === "error" ? "danger" : "secondary"}
-            onClick={onAction}
-          >
-            {actionLabel}
-          </Button>
+          <div className={styles.action}>
+            <Button
+              variant={isError ? "danger" : "secondary"}
+              onClick={onAction}
+            >
+              {actionLabel}
+            </Button>
+          </div>
         ) : null}
       </div>
     </div>

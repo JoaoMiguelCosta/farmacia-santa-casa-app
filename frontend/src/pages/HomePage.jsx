@@ -37,16 +37,22 @@ export default function HomePage() {
         </p>
       </div>
 
-      <div className={styles.grid} aria-label="Áreas principais">
+      <div className={styles.grid} role="list" aria-label="Áreas principais">
         {AREAS.map((area) => (
-          <article key={area.to} className={styles.card}>
-            <div>
+          <article key={area.to} className={styles.card} role="listitem">
+            <div className={styles.cardContent}>
               <p className={styles.cardEyebrow}>Área</p>
+
               <h2 className={styles.cardTitle}>{area.title}</h2>
+
               <p className={styles.cardText}>{area.description}</p>
             </div>
 
-            <Link className={styles.cardLink} to={area.to}>
+            <Link
+              className={styles.cardLink}
+              to={area.to}
+              aria-label={area.label}
+            >
               {area.label}
             </Link>
           </article>

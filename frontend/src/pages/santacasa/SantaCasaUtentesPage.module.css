@@ -1,5 +1,54 @@
 .page {
+    position: relative;
+    isolation: isolate;
+
     display: grid;
-    gap: clamp(1rem, 2.5vw, 1.5rem);
+    gap: clamp(1rem, 2.6vw, 1.65rem);
+
+    width: 100%;
+    min-width: 0;
 }
 
+.page::before {
+    content: "";
+
+    position: absolute;
+    inset: -2rem -1rem auto;
+    z-index: -1;
+
+    height: clamp(16rem, 38vw, 28rem);
+
+    pointer-events: none;
+
+    background:
+        radial-gradient(circle at 18% 8%,
+            rgba(145, 183, 166, 0.14),
+            transparent 22rem),
+        radial-gradient(circle at 88% 4%,
+            rgba(198, 161, 91, 0.13),
+            transparent 24rem);
+
+    opacity: 0.9;
+}
+
+.page>* {
+    min-width: 0;
+}
+
+.content {
+    display: grid;
+    gap: clamp(1.2rem, 3vw, 1.8rem);
+
+    width: 100%;
+    min-width: 0;
+}
+
+@media (max-width: 620px) {
+    .page {
+        gap: 1rem;
+    }
+
+    .content {
+        gap: 1.15rem;
+    }
+}

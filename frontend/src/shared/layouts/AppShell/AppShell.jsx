@@ -27,6 +27,10 @@ function getNavLinkClassName({ isActive }) {
 export default function AppShell() {
   return (
     <div className={styles.shell}>
+      <a href="#main-content" className={styles.skipLink}>
+        Saltar para o conteúdo
+      </a>
+
       <header className={styles.header}>
         <div className={styles.headerInner}>
           <NavLink
@@ -52,7 +56,7 @@ export default function AppShell() {
         </div>
       </header>
 
-      <main className={styles.main}>
+      <main id="main-content" className={styles.main}>
         <Outlet />
       </main>
     </div>

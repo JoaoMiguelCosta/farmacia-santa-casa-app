@@ -14,12 +14,25 @@ const INITIAL_LINE = Object.freeze({
   validade: "",
 });
 
-const INITIAL_FORM = Object.freeze({
-  numero19: "",
-  pinAcesso6: "",
-  pinOpcao4: "",
-  linhas: [{ ...INITIAL_LINE }],
-});
+function createLineId() {
+  return `linha-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+}
+
+function createLine() {
+  return {
+    id: createLineId(),
+    ...INITIAL_LINE,
+  };
+}
+
+function createInitialForm() {
+  return {
+    numero19: "",
+    pinAcesso6: "",
+    pinOpcao4: "",
+    linhas: [createLine()],
+  };
+}
 
 function onlyDigits(value, maxLength) {
   return String(value || "")
@@ -98,7 +111,7 @@ export default function ReceitaCreateForm({
   onCreate,
   isSubmitting = false,
 }) {
-  const [values, setValues] = useState(INITIAL_FORM);
+  const [values, setValues] = useState(() => createInitialForm());
   const [errors, setErrors] = useState({});
 
   const todayInputValue = useMemo(() => getTodayInputValue(), []);
@@ -147,7 +160,7 @@ export default function ReceitaCreateForm({
   function addLine() {
     setValues((currentValues) => ({
       ...currentValues,
-      linhas: [...currentValues.linhas, { ...INITIAL_LINE }],
+      linhas: [...currentValues.linhas, createLine()],
     }));
   }
 
@@ -161,6 +174,8 @@ export default function ReceitaCreateForm({
               (_, linhaIndex) => linhaIndex !== index,
             ),
     }));
+
+    setErrors({});
   }
 
   async function handleSubmit(event) {
@@ -184,7 +199,7 @@ export default function ReceitaCreateForm({
       return;
     }
 
-    setValues(INITIAL_FORM);
+    setValues(createInitialForm());
     setErrors({});
   }
 
@@ -194,9 +209,9 @@ export default function ReceitaCreateForm({
       description={RECEITAS_PAGE.form.description}
       tone="green"
     >
-      <form className={styles.form} onSubmit={handleSubmit}>
+      <form className={styles.form} onSubmit={handleSubmit} noValidate>
         {!selectedUtenteId ? (
-          <p className={styles.notice}>
+          <p className={styles.notice} role="status">
             Seleciona um utente antes de criar receita.
           </p>
         ) : null}
@@ -213,10 +228,12 @@ export default function ReceitaCreateForm({
               id={RECEITAS_PAGE.fields.numero19.id}
               type="text"
               inputMode="numeric"
+              pattern="[0-9]*"
               placeholder={RECEITAS_PAGE.fields.numero19.placeholder}
               value={values.numero19}
               onChange={(event) => updateField("numero19", event.target.value)}
               disabled={isDisabled}
+              autoComplete="off"
             />
           </FormField>
 
@@ -231,12 +248,14 @@ export default function ReceitaCreateForm({
               id={RECEITAS_PAGE.fields.pinAcesso6.id}
               type="text"
               inputMode="numeric"
+              pattern="[0-9]*"
               placeholder={RECEITAS_PAGE.fields.pinAcesso6.placeholder}
               value={values.pinAcesso6}
               onChange={(event) =>
                 updateField("pinAcesso6", event.target.value)
               }
               disabled={isDisabled}
+              autoComplete="off"
             />
           </FormField>
 
@@ -251,16 +270,21 @@ export default function ReceitaCreateForm({
               id={RECEITAS_PAGE.fields.pinOpcao4.id}
               type="text"
               inputMode="numeric"
+              pattern="[0-9]*"
               placeholder={RECEITAS_PAGE.fields.pinOpcao4.placeholder}
               value={values.pinOpcao4}
               onChange={(event) => updateField("pinOpcao4", event.target.value)}
               disabled={isDisabled}
+              autoComplete="off"
             />
           </FormField>
         </div>
 
         <div className={styles.linesHeader}>
-          <h3>Linhas da receita</h3>
+          <div className={styles.linesTitleGroup}>
+            <p>Composição</p>
+            <h3>Linhas da receita</h3>
+          </div>
 
           <Button
             type="button"
@@ -275,10 +299,10 @@ export default function ReceitaCreateForm({
 
         <div className={styles.lines}>
           {values.linhas.map((linha, index) => {
-            const baseId = `receita-linha-${index}`;
+            const baseId = `receita-linha-${linha.id}`;
 
             return (
-              <fieldset key={baseId} className={styles.line}>
+              <fieldset key={linha.id} className={styles.line}>
                 <legend>Linha {index + 1}</legend>
 
                 <div className={styles.lineGrid}>
@@ -297,6 +321,7 @@ export default function ReceitaCreateForm({
                         updateLine(index, "medicamento", event.target.value)
                       }
                       disabled={isDisabled}
+                      autoComplete="off"
                     />
                   </FormField>
 
@@ -310,12 +335,14 @@ export default function ReceitaCreateForm({
                       id={`${baseId}-quantidade`}
                       type="text"
                       inputMode="numeric"
+                      pattern="[0-9]*"
                       placeholder={RECEITAS_PAGE.fields.quantidade.placeholder}
                       value={linha.quantidade}
                       onChange={(event) =>
                         updateLine(index, "quantidade", event.target.value)
                       }
                       disabled={isDisabled}
+                      autoComplete="off"
                     />
                   </FormField>
 

@@ -10,25 +10,41 @@ const baseSelect = Object.freeze({
   updatedAt: true,
 });
 
+const selectWithPendingPedidoItems = Object.freeze({
+  ...baseSelect,
+  pedidoItens: {
+    where: {
+      status: "PENDENTE",
+    },
+    select: {
+      id: true,
+      quantidade: true,
+    },
+  },
+});
+
 function findByUtente(utenteId) {
   return prisma.semReceita.findMany({
     where: {
       utenteId,
     },
-    select: {
-      ...baseSelect,
-      pedidoItens: {
-        where: {
-          status: "PENDENTE",
-        },
-        select: {
-          quantidade: true,
-        },
-      },
-    },
+    select: selectWithPendingPedidoItems,
     orderBy: {
       createdAt: "desc",
     },
+  });
+}
+
+function findExistingByMedicamento(utenteId, medicamento) {
+  return prisma.semReceita.findFirst({
+    where: {
+      utenteId,
+      medicamento: {
+        equals: medicamento,
+        mode: "insensitive",
+      },
+    },
+    select: selectWithPendingPedidoItems,
   });
 }
 
@@ -39,17 +55,21 @@ function create(utenteId, data) {
       medicamento: data.medicamento,
       quantidade: data.quantidade,
     },
-    select: {
-      ...baseSelect,
-      pedidoItens: {
-        where: {
-          status: "PENDENTE",
-        },
-        select: {
-          quantidade: true,
-        },
+    select: selectWithPendingPedidoItems,
+  });
+}
+
+function incrementQuantidade(id, quantidadeToAdd) {
+  return prisma.semReceita.update({
+    where: {
+      id,
+    },
+    data: {
+      quantidade: {
+        increment: quantidadeToAdd,
       },
     },
+    select: selectWithPendingPedidoItems,
   });
 }
 
@@ -58,18 +78,7 @@ function findById(id) {
     where: {
       id,
     },
-    select: {
-      ...baseSelect,
-      pedidoItens: {
-        where: {
-          status: "PENDENTE",
-        },
-        select: {
-          id: true,
-          quantidade: true,
-        },
-      },
-    },
+    select: selectWithPendingPedidoItems,
   });
 }
 
@@ -92,7 +101,9 @@ function deleteById(id) {
 
 module.exports = {
   findByUtente,
+  findExistingByMedicamento,
   create,
+  incrementQuantidade,
   findById,
   countPedidoItemsBySemReceita,
   deleteById,

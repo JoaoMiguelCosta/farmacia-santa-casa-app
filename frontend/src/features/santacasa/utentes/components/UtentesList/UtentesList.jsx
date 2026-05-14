@@ -7,6 +7,12 @@ import { UTENTES_PAGE } from "../../config/utentesPage.config";
 
 import styles from "./UtentesList.module.css";
 
+function getStatusClassName(isValid) {
+  return isValid
+    ? `${styles.status} ${styles.active}`
+    : `${styles.status} ${styles.invalid}`;
+}
+
 export default function UtentesList({
   utentes = [],
   isLoading = false,
@@ -55,43 +61,56 @@ export default function UtentesList({
     >
       <div className={styles.tableWrap}>
         <table className={styles.table}>
+          <caption className={styles.srOnly}>
+            Lista de utentes registados
+          </caption>
+
           <thead>
             <tr>
-              <th>Utente</th>
-              <th>Número</th>
-              <th>Estado</th>
-              <th>Criado em</th>
-              <th>Ações</th>
+              <th scope="col">Utente</th>
+              <th scope="col">Número</th>
+              <th scope="col">Estado</th>
+              <th scope="col">Criado em</th>
+              <th scope="col">Ações</th>
             </tr>
           </thead>
 
           <tbody>
             {utentes.map((utente) => {
               const isDeleting = deletingUtenteId === utente.id;
+              const isValid = Boolean(utente.isValid);
 
               return (
                 <tr key={utente.id}>
-                  <td>
+                  <td className={styles.identityCell}>
                     <strong>{utente.nome}</strong>
                     <span>{utente.id}</span>
                   </td>
 
-                  <td>{utente.numero9}</td>
+                  <td>
+                    <span className={styles.numberValue}>{utente.numero9}</span>
+                  </td>
 
                   <td>
-                    <span className={styles.status}>
-                      {utente.isValid ? "Ativo" : "Inválido"}
+                    <span className={getStatusClassName(isValid)}>
+                      {isValid ? "Ativo" : "Inválido"}
                     </span>
                   </td>
 
-                  <td>{formatDateTime(utente.createdAt)}</td>
-
                   <td>
+                    <span className={styles.dateValue}>
+                      {formatDateTime(utente.createdAt)}
+                    </span>
+                  </td>
+
+                  <td className={styles.actionCell}>
                     <Button
+                      type="button"
                       variant="danger"
                       size="sm"
                       isLoading={isDeleting}
                       disabled={Boolean(deletingUtenteId)}
+                      aria-label={`Remover utente ${utente.nome}`}
                       onClick={() => onDelete?.(utente)}
                     >
                       {isDeleting

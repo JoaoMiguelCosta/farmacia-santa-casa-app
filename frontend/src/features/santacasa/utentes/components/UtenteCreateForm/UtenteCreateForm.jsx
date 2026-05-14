@@ -72,7 +72,7 @@ export default function UtenteCreateForm({ onCreate, isSubmitting = false }) {
       description={UTENTES_PAGE.form.description}
       tone="green"
     >
-      <form className={styles.form} onSubmit={handleSubmit}>
+      <form className={styles.form} onSubmit={handleSubmit} noValidate>
         <div className={styles.grid}>
           <FormField
             id={UTENTES_PAGE.fields.numero9.id}
@@ -86,9 +86,12 @@ export default function UtenteCreateForm({ onCreate, isSubmitting = false }) {
               name="numero9"
               type="text"
               inputMode="numeric"
+              pattern="[0-9]*"
+              maxLength={9}
               autoComplete="off"
               placeholder={UTENTES_PAGE.fields.numero9.placeholder}
               value={values.numero9}
+              disabled={isSubmitting}
               onChange={(event) => updateField("numero9", event.target.value)}
             />
           </FormField>
@@ -107,13 +110,18 @@ export default function UtenteCreateForm({ onCreate, isSubmitting = false }) {
               autoComplete="name"
               placeholder={UTENTES_PAGE.fields.nome.placeholder}
               value={values.nome}
+              disabled={isSubmitting}
               onChange={(event) => updateField("nome", event.target.value)}
             />
           </FormField>
         </div>
 
         <div className={styles.actions}>
-          <Button type="submit" isLoading={isSubmitting}>
+          <Button
+            type="submit"
+            isLoading={isSubmitting}
+            disabled={isSubmitting}
+          >
             {isSubmitting
               ? UTENTES_PAGE.form.submittingLabel
               : UTENTES_PAGE.form.submitLabel}

@@ -40,6 +40,20 @@ async function createForUtente(utenteId, payload) {
 
   const data = validateCreateSemReceitaPayload(payload);
 
+  const existing = await semReceitaRepository.findExistingByMedicamento(
+    utenteId,
+    data.medicamento,
+  );
+
+  if (existing) {
+    const updated = await semReceitaRepository.incrementQuantidade(
+      existing.id,
+      data.quantidade,
+    );
+
+    return toSemReceitaDTO(updated);
+  }
+
   const created = await semReceitaRepository.create(utenteId, data);
 
   return toSemReceitaDTO(created);

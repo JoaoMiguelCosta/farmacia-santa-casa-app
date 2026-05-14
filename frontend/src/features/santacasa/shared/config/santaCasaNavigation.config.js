@@ -9,20 +9,8 @@ export const SANTACASA_NAV_ITEMS = Object.freeze([
     to: "/santacasa/utentes",
   },
   {
-    label: "Receitas",
-    to: "/santacasa/receitas",
-  },
-  {
-    label: "Sem Receita",
-    to: "/santacasa/sem-receita",
-  },
-  {
-    label: "Extras",
-    to: "/santacasa/extras",
-  },
-  {
-    label: "Pedidos",
-    to: "/santacasa/pedidos",
+    label: "Operação",
+    to: "/santacasa/operacao",
   },
   {
     label: "Histórico",
