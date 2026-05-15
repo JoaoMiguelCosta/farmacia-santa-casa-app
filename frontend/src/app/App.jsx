@@ -1,7 +1,12 @@
 import { RouterProvider } from "react-router-dom";
 
-import { router } from "./router.jsx";
+import { PedidoDraftProvider } from "../features/santacasa/pedidos/state/PedidoDraftProvider";
+import { router } from "./router";
 
 export default function App() {
-  return <RouterProvider router={router} />;
+  return (
+    <PedidoDraftProvider>
+      <RouterProvider router={router} />
+    </PedidoDraftProvider>
+  );
 }

@@ -9,6 +9,7 @@ import SantaCasaOperacaoPage from "../pages/santacasa/SantaCasaOperacaoPage.jsx"
 import SantaCasaPlaceholderPage from "../pages/santacasa/SantaCasaPlaceholderPage.jsx";
 import FarmaciaHomePage from "../pages/farmacia/FarmaciaHomePage.jsx";
 import NotFoundPage from "../pages/NotFoundPage.jsx";
+import SantaCasaPedidosPage from "../pages/santacasa/SantaCasaPedidosPage.jsx";
 
 export const router = createBrowserRouter([
   {
@@ -46,7 +47,7 @@ export const router = createBrowserRouter([
       },
       {
         path: "santacasa/pedidos",
-        element: <Navigate to="/santacasa/operacao" replace />,
+        element: <SantaCasaPedidosPage />,
       },
 
       {

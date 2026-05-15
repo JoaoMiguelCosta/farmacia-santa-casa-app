@@ -10,11 +10,15 @@ function toExtraDTO(row) {
 
   const quantidadeSolicitada = Number(row.quantidadeSolicitada) || 0;
   const quantidadeRegularizada = Number(row.quantidadeRegularizada) || 0;
+  const quantidadeCancelada = Number(row.quantidadeCancelada) || 0;
   const quantidadeReservadaPendente = calculateReservedQuantity(row);
 
   const quantidadeRestante = Math.max(
     0,
-    quantidadeSolicitada - quantidadeRegularizada - quantidadeReservadaPendente,
+    quantidadeSolicitada -
+      quantidadeRegularizada -
+      quantidadeCancelada -
+      quantidadeReservadaPendente,
   );
 
   return {
@@ -26,6 +30,7 @@ function toExtraDTO(row) {
 
     quantidadeSolicitada,
     quantidadeRegularizada,
+    quantidadeCancelada,
     quantidadeReservadaPendente,
     quantidadeRestante,
 

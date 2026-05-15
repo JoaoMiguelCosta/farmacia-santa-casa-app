@@ -80,6 +80,7 @@ const pedidoSelect = {
           medicamento: true,
           quantidadeSolicitada: true,
           quantidadeRegularizada: true,
+          quantidadeCancelada: true,
           status: true,
         },
       },
@@ -187,6 +188,7 @@ function findExtraById(extraId) {
       medicamento: true,
       quantidadeSolicitada: true,
       quantidadeRegularizada: true,
+      quantidadeCancelada: true,
       status: true,
 
       pedidoItens: {

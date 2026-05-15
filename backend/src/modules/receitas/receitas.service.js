@@ -57,7 +57,11 @@ async function createForUtente(utenteId, payload) {
     data,
   );
 
-  return toReceitaCreatedDTO(result.receita, result.linhas);
+  return toReceitaCreatedDTO(
+    result.receita,
+    result.linhas,
+    result.extrasResolvidos,
+  );
 }
 
 async function removeLinhaForUtente(utenteId, linhaId) {

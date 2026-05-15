@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { useMemo, useState } from "react";
 
 import Button from "../../shared/ui/Button/Button";
@@ -33,64 +34,13 @@ import {
 } from "../../features/santacasa/extras/api/extrasApi";
 import { EXTRAS_PAGE } from "../../features/santacasa/extras/config/extrasPage.config";
 
-import PedidoDraft from "../../features/santacasa/pedidos/components/PedidoDraft/PedidoDraft";
-import { createPedido } from "../../features/santacasa/pedidos/api/pedidosApi";
-import { PEDIDOS_PAGE } from "../../features/santacasa/pedidos/config/pedidosPage.config";
-import {
-  clampQuantity,
-  normalizeExtraItems,
-  normalizeReceitaItems,
-  normalizeSemReceitaItems,
-  sortPedidoItems,
-} from "../../features/santacasa/pedidos/utils/pedidoItems";
+import { clampQuantity } from "../../features/santacasa/pedidos/utils/pedidoItems";
+import { usePedidoDraft } from "../../features/santacasa/pedidos/state/usePedidoDraft";
 
 import OperationSection from "../../features/santacasa/operacao/components/OperationSection/OperationSection";
 import { useSantaCasaOperacao } from "../../features/santacasa/operacao/hooks/useSantaCasaOperacao";
 
 import styles from "./SantaCasaOperacaoPage.module.css";
-
-function buildAvailablePedidoItems({ receitas, semReceita, extras }) {
-  return sortPedidoItems([
-    ...normalizeReceitaItems(receitas),
-    ...normalizeSemReceitaItems(semReceita),
-    ...normalizeExtraItems(extras),
-  ]);
-}
-
-function buildDraftPedidoItems({ selectedPedidoItems, availablePedidoItems }) {
-  const availableItemsByKey = new Map(
-    availablePedidoItems.map((item) => [item.key, item]),
-  );
-
-  const draftItems = selectedPedidoItems
-    .map((selectedItem) => {
-      const availableItem = availableItemsByKey.get(selectedItem.key);
-
-      if (!availableItem) return null;
-
-      return {
-        ...availableItem,
-        quantidade: clampQuantity(
-          selectedItem.quantidade,
-          availableItem.quantidadeRestante,
-        ),
-      };
-    })
-    .filter(Boolean);
-
-  return sortPedidoItems(draftItems);
-}
-
-function buildPedidoPayload(utenteId, draftItems) {
-  return {
-    items: draftItems.map((item) => ({
-      utenteId,
-      tipo: item.tipo,
-      id: item.id,
-      quantidade: Number(item.quantidade),
-    })),
-  };
-}
 
 function buildDraftQuantityMap(items = []) {
   const map = {};
@@ -102,9 +52,10 @@ function buildDraftQuantityMap(items = []) {
   return map;
 }
 
-function buildReceitaDraftItems(draftItems = []) {
-  return draftItems
+function buildReceitaDraftItems(items = [], utenteId) {
+  return items
     .filter((item) => item.tipo === "COM_RECEITA")
+    .filter((item) => item.utenteId === utenteId)
     .map((item) => ({
       linhaId: item.id,
       quantidade: Number(item.quantidade) || 0,
@@ -157,7 +108,12 @@ function formatVerbByQuantity(quantity, singular, plural) {
   return Number(quantity) === 1 ? singular : plural;
 }
 
-function buildAddToPedidoMessage({ item, addedQuantity, remainingQuantity }) {
+function buildAddToPedidoMessage({
+  item,
+  addedQuantity,
+  remainingQuantity,
+  utenteNome,
+}) {
   const medicamento = getItemMedicationName(item);
   const originLabel = getOriginListLabel(item.tipo);
   const addVerb = formatVerbByQuantity(
@@ -168,10 +124,10 @@ function buildAddToPedidoMessage({ item, addedQuantity, remainingQuantity }) {
 
   const baseMessage = `${formatUnitsLabel(
     addedQuantity,
-  )} de ${medicamento} ${addVerb} ao pedido.`;
+  )} de ${medicamento} ${addVerb} ao pedido geral de ${utenteNome}.`;
 
   if (remainingQuantity <= 0) {
-    return `${baseMessage} Toda a quantidade disponível ficou no pedido. O item deixou de aparecer em ${originLabel}.`;
+    return `${baseMessage} Toda a quantidade disponível ficou no pedido geral. O item deixou de aparecer em ${originLabel} para este utente.`;
   }
 
   const remainVerb = formatVerbByQuantity(
@@ -189,6 +145,34 @@ function buildAddToPedidoMessage({ item, addedQuantity, remainingQuantity }) {
   return `${baseMessage} ${formatUnitsLabel(
     remainingQuantity,
   )} ${remainVerb} ${availableWord} em ${originLabel}.`;
+}
+
+function getResolvedExtraKeys(extrasResolvidos = []) {
+  return extrasResolvidos
+    .map((extra) => extra?.id)
+    .filter(Boolean)
+    .map((extraId) => `EXTRA:${extraId}`);
+}
+
+function buildResolvedExtrasMessage(extrasResolvidos = []) {
+  if (!Array.isArray(extrasResolvidos) || extrasResolvidos.length === 0) {
+    return "";
+  }
+
+  if (extrasResolvidos.length === 1) {
+    const extra = extrasResolvidos[0];
+    const quantidade = Number(extra.quantidadeRemovida) || 0;
+
+    if (extra.action === "DELETED") {
+      return ` O Extra ${extra.medicamento} foi removido porque passou a existir receita ativa para o mesmo medicamento.`;
+    }
+
+    return ` No Extra ${extra.medicamento}, ${formatUnitsLabel(
+      quantidade,
+    )} que ainda não tinham sido enviadas à Farmácia foram removidas. A parte já enviada foi preservada.`;
+  }
+
+  return ` ${extrasResolvidos.length} Extras compatíveis foram ajustados/removidos porque passaram a ter receita ativa.`;
 }
 
 function getReceitaFieldErrors(requestError) {
@@ -317,6 +301,15 @@ function getQuantidadeDisponivelVisual(totalRestante, pedidoKey, pedidoMap) {
   return Math.max(0, quantidadeRestante - quantidadeEmPedido);
 }
 
+function buildGlobalDraftItem({ item, selectedUtente, selectedUtenteId }) {
+  return {
+    ...item,
+    utenteId: selectedUtenteId,
+    utenteNome: selectedUtente?.nome || "Utente selecionado",
+    utenteNumero9: selectedUtente?.numero9 || "",
+  };
+}
+
 export default function SantaCasaOperacaoPage() {
   const {
     utentes,
@@ -338,40 +331,25 @@ export default function SantaCasaOperacaoPage() {
     refreshOperationData,
   } = useSantaCasaOperacao();
 
-  const [selectedPedidoItems, setSelectedPedidoItems] = useState([]);
+  const {
+    items: pedidoDraftItems,
+    count: pedidoDraftCount,
+    addItem: addPedidoDraftItem,
+    removeItemsByKeys,
+  } = usePedidoDraft();
+
   const [pedidoQuantities, setPedidoQuantities] = useState({});
-  const [pedidoReturnQuantities, setPedidoReturnQuantities] = useState({});
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [deletingTargetKey, setDeletingTargetKey] = useState(null);
 
   const [isCreatingReceita, setIsCreatingReceita] = useState(false);
   const [isCreatingSemReceita, setIsCreatingSemReceita] = useState(false);
   const [isCreatingExtra, setIsCreatingExtra] = useState(false);
-  const [isSubmittingPedido, setIsSubmittingPedido] = useState(false);
   const [feedback, setFeedback] = useState(null);
 
-  const availablePedidoItems = useMemo(
-    () =>
-      buildAvailablePedidoItems({
-        receitas,
-        semReceita,
-        extras,
-      }),
-    [receitas, semReceita, extras],
-  );
-
-  const draftItems = useMemo(
-    () =>
-      buildDraftPedidoItems({
-        selectedPedidoItems,
-        availablePedidoItems,
-      }),
-    [selectedPedidoItems, availablePedidoItems],
-  );
-
   const pedidoItemsQuantities = useMemo(
-    () => buildDraftQuantityMap(draftItems),
-    [draftItems],
+    () => buildDraftQuantityMap(pedidoDraftItems),
+    [pedidoDraftItems],
   );
 
   const visibleReceitas = useMemo(
@@ -424,28 +402,7 @@ export default function SantaCasaOperacaoPage() {
 
   const deleteDialogData = getDeleteDialogData(deleteTarget);
 
-  function removeExtraFromDraft(extraId) {
-    const extraPedidoKey = `EXTRA:${extraId}`;
-
-    setSelectedPedidoItems((currentItems) =>
-      currentItems.filter((item) => item.key !== extraPedidoKey),
-    );
-
-    setPedidoQuantities((currentQuantities) => ({
-      ...currentQuantities,
-      [extraPedidoKey]: 1,
-    }));
-
-    setPedidoReturnQuantities((currentQuantities) => ({
-      ...currentQuantities,
-      [extraPedidoKey]: 1,
-    }));
-  }
-
-  async function deleteCompatibleExtrasFromBackend(
-    receitaItem,
-    { showFeedback = true } = {},
-  ) {
+  async function deleteCompatibleExtrasFromBackend(receitaItem) {
     if (!selectedUtenteId) {
       return {
         removedCount: 0,
@@ -464,9 +421,11 @@ export default function SantaCasaOperacaoPage() {
       };
     }
 
-    matchingExtras.forEach((extra) => {
-      removeExtraFromDraft(extra.id);
-    });
+    const matchingExtraKeys = matchingExtras.map(
+      (extra) => `EXTRA:${extra.id}`,
+    );
+
+    removeItemsByKeys(matchingExtraKeys);
 
     const removedLabel =
       matchingExtras.length === 1
@@ -479,13 +438,6 @@ export default function SantaCasaOperacaoPage() {
       );
 
       await refreshOperationData();
-
-      if (showFeedback) {
-        setFeedback({
-          type: "info",
-          message: `${removedLabel} removido do pedido e dos Extras em aberto, porque voltou a existir quantidade disponível com receita para o mesmo medicamento.`,
-        });
-      }
 
       return {
         removedCount: matchingExtras.length,
@@ -509,9 +461,7 @@ export default function SantaCasaOperacaoPage() {
   }
 
   function handleSelectOperationUtente(utenteId) {
-    setSelectedPedidoItems([]);
     setPedidoQuantities({});
-    setPedidoReturnQuantities({});
     setFeedback(null);
     handleSelectUtente(utenteId);
   }
@@ -523,72 +473,6 @@ export default function SantaCasaOperacaoPage() {
       ...currentQuantities,
       [itemKey]: nextQuantity,
     }));
-  }
-
-  function handlePedidoReturnQuantityChange(itemKey, value, max) {
-    const quantity = max > 0 ? clampQuantity(value, max) : 0;
-
-    setPedidoReturnQuantities((currentQuantities) => ({
-      ...currentQuantities,
-      [itemKey]: quantity,
-    }));
-  }
-
-  async function handleReturnPedidoQuantity(itemKey, quantityToReturn) {
-    const draftItem = draftItems.find((item) => item.key === itemKey);
-
-    if (!draftItem) return;
-
-    const currentQuantity = Number(draftItem.quantidade) || 0;
-    const returnQuantity = clampQuantity(quantityToReturn, currentQuantity);
-    const medicamento = getItemMedicationName(draftItem);
-
-    setSelectedPedidoItems((currentItems) =>
-      currentItems
-        .map((item) => {
-          if (item.key !== itemKey) return item;
-
-          const nextQuantity = currentQuantity - returnQuantity;
-
-          if (nextQuantity <= 0) return null;
-
-          return {
-            ...item,
-            quantidade: nextQuantity,
-          };
-        })
-        .filter(Boolean),
-    );
-
-    setPedidoReturnQuantities((currentQuantities) => ({
-      ...currentQuantities,
-      [itemKey]: 1,
-    }));
-
-    setPedidoQuantities((currentQuantities) => ({
-      ...currentQuantities,
-      [itemKey]: 1,
-    }));
-
-    let extraInfo = null;
-
-    if (draftItem.tipo === "COM_RECEITA") {
-      extraInfo = await deleteCompatibleExtrasFromBackend(draftItem, {
-        showFeedback: false,
-      });
-    }
-
-    const baseMessage = `${formatUnitsLabel(returnQuantity)} de ${medicamento} retiradas do pedido. A quantidade voltou a ficar disponível na lista correspondente.`;
-
-    const extraMessage =
-      extraInfo?.removedCount > 0
-        ? ` ${extraInfo.removedLabel} foi removido dos Extras em aberto porque voltou a existir quantidade disponível com receita para o mesmo medicamento.`
-        : "";
-
-    setFeedback({
-      type: "success",
-      message: `${baseMessage}${extraMessage}`,
-    });
   }
 
   async function handleCreateReceita(payload) {
@@ -603,12 +487,25 @@ export default function SantaCasaOperacaoPage() {
     setFeedback(null);
 
     try {
-      await createReceita(selectedUtenteId, payload);
+      const createdReceita = await createReceita(selectedUtenteId, payload);
+
+      const extrasResolvidos = Array.isArray(createdReceita?.extrasResolvidos)
+        ? createdReceita.extrasResolvidos
+        : [];
+
+      const extraKeysToRemove = getResolvedExtraKeys(extrasResolvidos);
+
+      if (extraKeysToRemove.length > 0) {
+        removeItemsByKeys(extraKeysToRemove);
+      }
+
       await refreshOperationData();
 
       setFeedback({
         type: "success",
-        message: RECEITAS_PAGE.form.successMessage,
+        message: `${RECEITAS_PAGE.form.successMessage}${buildResolvedExtrasMessage(
+          extrasResolvidos,
+        )}`,
       });
 
       return {
@@ -686,7 +583,10 @@ export default function SantaCasaOperacaoPage() {
     try {
       await createExtra(selectedUtenteId, {
         ...payload,
-        receitaDraftItems: buildReceitaDraftItems(draftItems),
+        receitaDraftItems: buildReceitaDraftItems(
+          pedidoDraftItems,
+          selectedUtenteId,
+        ),
       });
 
       await refreshOperationData();
@@ -716,9 +616,11 @@ export default function SantaCasaOperacaoPage() {
   }
 
   function handleAddPedidoItem(item) {
+    if (!selectedUtenteId) return;
+
     const maxAvailable = Number(item.quantidadeRestante) || 0;
 
-    const existingItem = selectedPedidoItems.find(
+    const existingItem = pedidoDraftItems.find(
       (currentItem) => currentItem.key === item.key,
     );
 
@@ -730,7 +632,7 @@ export default function SantaCasaOperacaoPage() {
         type: "info",
         message: `${getItemMedicationName(
           item,
-        )} já está totalmente no pedido em preparação.`,
+        )} já está totalmente no pedido geral.`,
       });
 
       return;
@@ -743,30 +645,16 @@ export default function SantaCasaOperacaoPage() {
     );
     const remainingQuantity = Math.max(0, maxAvailable - nextQuantityInPedido);
 
-    setSelectedPedidoItems((currentItems) => {
-      const alreadyExists = currentItems.some(
-        (currentItem) => currentItem.key === item.key,
-      );
-
-      if (!alreadyExists) {
-        return [
-          ...currentItems,
-          {
-            key: item.key,
-            quantidade: quantityToAdd,
-          },
-        ];
-      }
-
-      return currentItems.map((currentItem) => {
-        if (currentItem.key !== item.key) return currentItem;
-
-        return {
-          ...currentItem,
-          quantidade: nextQuantityInPedido,
-        };
-      });
-    });
+    addPedidoDraftItem(
+      buildGlobalDraftItem({
+        item: {
+          ...item,
+          quantidade: quantityToAdd,
+        },
+        selectedUtente,
+        selectedUtenteId,
+      }),
+    );
 
     setPedidoQuantities((currentQuantities) => ({
       ...currentQuantities,
@@ -779,54 +667,9 @@ export default function SantaCasaOperacaoPage() {
         item,
         addedQuantity: quantityToAdd,
         remainingQuantity,
+        utenteNome: selectedUtente?.nome || "utente selecionado",
       }),
     });
-  }
-
-  async function handlePedidoDraftQuantityChange(itemKey, value) {
-    const draftItem = draftItems.find((item) => item.key === itemKey);
-
-    if (!draftItem) return;
-
-    const currentQuantity = Number(draftItem.quantidade) || 0;
-    const nextQuantity = clampQuantity(value, draftItem.quantidadeRestante);
-
-    setSelectedPedidoItems((currentItems) =>
-      currentItems.map((item) =>
-        item.key === itemKey
-          ? {
-              ...item,
-              quantidade: nextQuantity,
-            }
-          : item,
-      ),
-    );
-
-    if (draftItem.tipo === "COM_RECEITA" && nextQuantity < currentQuantity) {
-      await deleteCompatibleExtrasFromBackend(draftItem);
-    }
-  }
-
-  async function handleRemovePedidoItem(itemKey) {
-    const draftItem = draftItems.find((item) => item.key === itemKey);
-
-    setSelectedPedidoItems((currentItems) =>
-      currentItems.filter((item) => item.key !== itemKey),
-    );
-
-    setPedidoQuantities((currentQuantities) => ({
-      ...currentQuantities,
-      [itemKey]: 1,
-    }));
-
-    setPedidoReturnQuantities((currentQuantities) => ({
-      ...currentQuantities,
-      [itemKey]: 1,
-    }));
-
-    if (draftItem?.tipo === "COM_RECEITA") {
-      await deleteCompatibleExtrasFromBackend(draftItem);
-    }
   }
 
   function handleBlockedDelete(item, quantidadeEmPedido) {
@@ -835,7 +678,7 @@ export default function SantaCasaOperacaoPage() {
 
     setFeedback({
       type: "info",
-      message: `Não é possível remover ${medicamento} porque ainda existem ${quantityLabel} no pedido em preparação. Retira primeiro essa quantidade do pedido.`,
+      message: `Não é possível remover ${medicamento} porque ainda existem ${quantityLabel} no pedido geral. Retira primeiro essa quantidade na página Pedidos.`,
     });
   }
 
@@ -875,10 +718,7 @@ export default function SantaCasaOperacaoPage() {
       }
 
       const pedidoKey = getPedidoKeyFromDeleteTarget(deleteTarget);
-
-      setSelectedPedidoItems((currentItems) =>
-        currentItems.filter((item) => item.key !== pedidoKey),
-      );
+      removeItemsByKeys([pedidoKey]);
 
       await refreshOperationData();
 
@@ -898,34 +738,14 @@ export default function SantaCasaOperacaoPage() {
     }
   }
 
-  async function handleSubmitPedido(event) {
-    event.preventDefault();
+  async function handleAfterReceitaQuantityBackToList(receitaItem) {
+    const extraInfo = await deleteCompatibleExtrasFromBackend(receitaItem);
 
-    if (!selectedUtenteId || draftItems.length === 0) return;
-
-    setIsSubmittingPedido(true);
-    setFeedback(null);
-
-    try {
-      await createPedido(buildPedidoPayload(selectedUtenteId, draftItems));
-
-      setSelectedPedidoItems([]);
-      setPedidoQuantities({});
-      setPedidoReturnQuantities({});
-
-      await refreshOperationData();
-
+    if (extraInfo.removedCount > 0) {
       setFeedback({
-        type: "success",
-        message: PEDIDOS_PAGE.sections.draft.successMessage,
+        type: "info",
+        message: `${extraInfo.removedLabel} removido dos Extras em aberto e do pedido geral, porque voltou a existir quantidade disponível com receita para o mesmo medicamento.`,
       });
-    } catch (requestError) {
-      setFeedback({
-        type: "error",
-        message: requestError.message || "Erro ao criar pedido.",
-      });
-    } finally {
-      setIsSubmittingPedido(false);
     }
   }
 
@@ -935,7 +755,7 @@ export default function SantaCasaOperacaoPage() {
         titleId="operacao-title"
         eyebrow="Santa Casa"
         title="Operação diária"
-        description="Centraliza receitas, medicamentos sem receita, Extras e criação de pedidos numa única página organizada."
+        description="Gere receitas, medicamentos sem receita e Extras. A partir daqui podes adicionar itens ao pedido geral para a Farmácia."
         actions={
           <Button
             type="button"
@@ -997,11 +817,29 @@ export default function SantaCasaOperacaoPage() {
             </article>
 
             <article role="listitem">
-              <strong>{draftItems.length}</strong>
-              <span>No pedido</span>
+              <strong>{pedidoDraftCount}</strong>
+              <span>No pedido geral</span>
             </article>
           </div>
         ) : null}
+      </SurfaceCard>
+
+      <SurfaceCard
+        eyebrow="Pedido geral"
+        title="Itens selecionados para Farmácia"
+        description="Os itens adicionados nesta página ficam guardados no pedido geral. Podes adicionar itens de vários utentes e enviar tudo pela página Pedidos."
+        tone="gold"
+      >
+        <div className={styles.draftNotice}>
+          <p>
+            Existem <strong>{pedidoDraftCount}</strong>{" "}
+            {pedidoDraftCount === 1 ? "item" : "itens"} no pedido geral.
+          </p>
+
+          <Link to="/santacasa/pedidos" className={styles.draftLink}>
+            Ver pedido geral
+          </Link>
+        </div>
       </SurfaceCard>
 
       <div className={styles.sections}>
@@ -1009,7 +847,7 @@ export default function SantaCasaOperacaoPage() {
           id="operacao-receitas"
           eyebrow="Receitas"
           title="Receitas do utente"
-          description="Cria receitas, seleciona linhas para pedido ou remove linhas ainda removíveis."
+          description="Cria receitas, seleciona linhas para o pedido geral ou remove linhas ainda removíveis."
         >
           <ReceitaCreateForm
             selectedUtenteId={selectedUtenteId}
@@ -1031,6 +869,7 @@ export default function SantaCasaOperacaoPage() {
             onRetry={refreshOperationData}
             onBlockedDelete={handleBlockedDelete}
             onDelete={(linha) => handleRequestDelete("receita", linha)}
+            onQuantityBackToList={handleAfterReceitaQuantityBackToList}
           />
         </OperationSection>
 
@@ -1038,7 +877,7 @@ export default function SantaCasaOperacaoPage() {
           id="operacao-sem-receita"
           eyebrow="Sem Receita"
           title="Medicamentos sem receita"
-          description="Adiciona medicamentos sem receita, seleciona para pedido ou remove registos ainda removíveis."
+          description="Adiciona medicamentos sem receita, seleciona para o pedido geral ou remove registos ainda removíveis."
         >
           <SemReceitaCreateForm
             selectedUtenteId={selectedUtenteId}
@@ -1067,7 +906,7 @@ export default function SantaCasaOperacaoPage() {
           id="operacao-extras"
           eyebrow="Extras"
           title="Extras em aberto"
-          description="Cria Extras, seleciona para pedido ou remove Extras ainda removíveis."
+          description="Cria Extras, seleciona para o pedido geral ou remove Extras ainda removíveis."
         >
           <ExtraCreateForm
             selectedUtenteId={selectedUtenteId}
@@ -1089,24 +928,6 @@ export default function SantaCasaOperacaoPage() {
             onRetry={refreshOperationData}
             onBlockedDelete={handleBlockedDelete}
             onDelete={(item) => handleRequestDelete("extra", item)}
-          />
-        </OperationSection>
-
-        <OperationSection
-          id="operacao-pedidos"
-          eyebrow="Pedido"
-          title="Pedido para Farmácia"
-          description="Aqui aparecem apenas os itens selecionados nas listas acima."
-        >
-          <PedidoDraft
-            items={draftItems}
-            returnQuantities={pedidoReturnQuantities}
-            isSubmitting={isSubmittingPedido}
-            onQuantityChange={handlePedidoDraftQuantityChange}
-            onReturnQuantityChange={handlePedidoReturnQuantityChange}
-            onReturnQuantity={handleReturnPedidoQuantity}
-            onRemove={handleRemovePedidoItem}
-            onSubmit={handleSubmitPedido}
           />
         </OperationSection>
       </div>

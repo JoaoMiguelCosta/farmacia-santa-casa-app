@@ -159,6 +159,7 @@ model Extra {
 
   quantidadeSolicitada   Int
   quantidadeRegularizada Int         @default(0)
+  quantidadeCancelada    Int         @default(0)
   status                 ExtraStatus @default(PENDENTE)
 
   pedidoItens     PedidoItem[]

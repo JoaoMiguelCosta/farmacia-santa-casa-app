@@ -95,6 +95,7 @@ function validateExtraAvailability(row, quantidade) {
     0,
     Number(row.quantidadeSolicitada || 0) -
       Number(row.quantidadeRegularizada || 0) -
+      Number(row.quantidadeCancelada || 0) -
       reservadoPendente,
   );
 

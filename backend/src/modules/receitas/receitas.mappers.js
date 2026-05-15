@@ -42,7 +42,22 @@ function toReceitaLinhaDTO(row) {
   };
 }
 
-function toReceitaCreatedDTO(receita, linhas = []) {
+function toResolvedExtraDTO(row) {
+  if (!row) return null;
+
+  return {
+    id: row.id,
+    utenteId: row.utenteId,
+    medicamento: row.medicamento,
+    action: row.action,
+    quantidadeRemovida: row.quantidadeRemovida,
+    quantidadeSolicitada: row.quantidadeSolicitada,
+    quantidadeRegularizada: row.quantidadeRegularizada,
+    quantidadeCancelada: row.quantidadeCancelada,
+  };
+}
+
+function toReceitaCreatedDTO(receita, linhas = [], extrasResolvidos = []) {
   return {
     receitaId: receita.id,
     utenteId: receita.utenteId,
@@ -50,6 +65,7 @@ function toReceitaCreatedDTO(receita, linhas = []) {
     pinAcesso6: receita.pinAcesso6,
     pinOpcao4: receita.pinOpcao4,
     linhas: linhas.map(toReceitaLinhaDTO),
+    extrasResolvidos: extrasResolvidos.map(toResolvedExtraDTO).filter(Boolean),
     createdAt: receita.createdAt,
     updatedAt: receita.updatedAt,
   };

@@ -11,6 +11,7 @@ const extraSelect = Object.freeze({
 
   quantidadeSolicitada: true,
   quantidadeRegularizada: true,
+  quantidadeCancelada: true,
   status: true,
 
   createdAt: true,

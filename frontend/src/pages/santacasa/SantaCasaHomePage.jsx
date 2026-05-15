@@ -13,8 +13,14 @@ const ACTIONS = [
   {
     title: "Operação diária",
     description:
-      "Gerir receitas, medicamentos sem receita, Extras e pedidos numa página única.",
+      "Gerir receitas, medicamentos sem receita e Extras por utente.",
     to: "/santacasa/operacao",
+  },
+  {
+    title: "Pedidos",
+    description:
+      "Rever a lista geral multiutente e enviar um único pedido para a Farmácia.",
+    to: "/santacasa/pedidos",
   },
   {
     title: "Histórico",
@@ -25,7 +31,10 @@ const ACTIONS = [
 
 export default function SantaCasaHomePage() {
   return (
-    <div className={styles.page}>
+    <section
+      className={styles.page}
+      aria-label="Área operacional da Santa Casa"
+    >
       <SantaCasaSectionNav />
 
       <AreaLanding
@@ -35,6 +44,6 @@ export default function SantaCasaHomePage() {
         tone="green"
         actions={ACTIONS}
       />
-    </div>
+    </section>
   );
 }

@@ -13,6 +13,10 @@ export const SANTACASA_NAV_ITEMS = Object.freeze([
     to: "/santacasa/operacao",
   },
   {
+    label: "Pedidos",
+    to: "/santacasa/pedidos",
+  },
+  {
     label: "Histórico",
     to: "/santacasa/historico",
   },
