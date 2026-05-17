@@ -1,0 +1,172 @@
+.bar {
+    inline-size: 100%;
+    border-bottom: 1px solid rgba(39, 92, 72, 0.1);
+    background:
+        linear-gradient(135deg,
+            rgba(255, 255, 255, 0.88),
+            rgba(247, 251, 249, 0.78)),
+        radial-gradient(circle at top right,
+            rgba(93, 160, 126, 0.1),
+            transparent 42%);
+    backdrop-filter: blur(14px);
+}
+
+.inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: clamp(0.85rem, 2vw, 1.25rem);
+    inline-size: min(100% - 2rem, 1180px);
+    margin-inline: auto;
+    padding-block: 0.55rem;
+}
+
+.identity {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    min-width: 0;
+}
+
+.statusDot {
+    flex: 0 0 auto;
+    inline-size: 0.65rem;
+    block-size: 0.65rem;
+    border-radius: 999px;
+    background: #2b9a78;
+    box-shadow: 0 0 0 0.38rem rgba(43, 154, 120, 0.12);
+}
+
+.userText {
+    display: grid;
+    gap: 0.1rem;
+    min-width: 0;
+}
+
+.label {
+    color: #52786a;
+    font-size: 0.68rem;
+    font-weight: 900;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.name {
+    min-width: 0;
+    overflow: hidden;
+    color: #16251f;
+    font-size: 0.9rem;
+    font-weight: 900;
+    line-height: 1.2;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.meta {
+    min-width: 0;
+    overflow: hidden;
+    color: #60766d;
+    font-size: 0.78rem;
+    font-weight: 650;
+    line-height: 1.25;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.55rem;
+    flex: 0 0 auto;
+}
+
+.areaLink,
+.logoutButton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.25rem;
+    padding: 0.56rem 0.8rem;
+    border-radius: 999px;
+    font: inherit;
+    font-size: 0.78rem;
+    font-weight: 850;
+    line-height: 1;
+    text-decoration: none;
+    transition:
+        transform 160ms ease,
+        border-color 160ms ease,
+        background 160ms ease,
+        box-shadow 160ms ease,
+        opacity 160ms ease;
+}
+
+.areaLink {
+    border: 1px solid rgba(39, 92, 72, 0.15);
+    background: rgba(255, 255, 255, 0.78);
+    color: #275c48;
+}
+
+.logoutButton {
+    border: 1px solid rgba(150, 61, 61, 0.18);
+    background: rgba(255, 247, 247, 0.88);
+    color: #8a2f2f;
+    cursor: pointer;
+}
+
+.areaLink:hover,
+.logoutButton:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 12px 28px rgba(24, 43, 35, 0.08);
+}
+
+.areaLink:hover {
+    border-color: rgba(39, 92, 72, 0.28);
+    background: rgba(247, 251, 249, 0.96);
+}
+
+.logoutButton:hover {
+    border-color: rgba(150, 61, 61, 0.28);
+    background: rgba(255, 241, 241, 0.96);
+}
+
+.areaLink:focus-visible,
+.logoutButton:focus-visible {
+    outline: 3px solid rgba(72, 128, 102, 0.24);
+    outline-offset: 3px;
+}
+
+.logoutButton:disabled {
+    cursor: not-allowed;
+    opacity: 0.58;
+    transform: none;
+    box-shadow: none;
+}
+
+@media (max-width: 760px) {
+    .inner {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .actions {
+        justify-content: stretch;
+    }
+
+    .areaLink,
+    .logoutButton {
+        flex: 1;
+    }
+}
+
+@media (max-width: 460px) {
+    .actions {
+        flex-direction: column;
+    }
+
+    .areaLink,
+    .logoutButton {
+        inline-size: 100%;
+    }
+}

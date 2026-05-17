@@ -1048,7 +1048,7 @@ curl "http://localhost:3001/api/farmacia/dashboard/sinais"
 Todas as rotas de manutenção exigem o header:
 
 ```txt
-x-maintenance-key: dev-maintenance-key
+Requer sessão autenticada com role ADMIN.
 ```
 
 Sem este header, devolve:
@@ -1082,7 +1082,7 @@ Lista jobs disponíveis.
 
 ```bash
 curl "http://localhost:3001/api/farmacia/manutencao/jobs" \
-  -H "x-maintenance-key: dev-maintenance-key"
+  -H "Requer sessão autenticada com role ADMIN."
 ```
 
 ---
@@ -1095,7 +1095,7 @@ Pré-visualiza linhas de receita expiradas.
 
 ```bash
 curl "http://localhost:3001/api/farmacia/manutencao/jobs/receita-expiry/preview" \
-  -H "x-maintenance-key: dev-maintenance-key"
+  -H "Requer sessão autenticada com role ADMIN."
 ```
 
 ---
@@ -1108,7 +1108,7 @@ Executa manualmente o job `receita-expiry`.
 
 ```bash
 curl -X POST "http://localhost:3001/api/farmacia/manutencao/jobs/receita-expiry/run" \
-  -H "x-maintenance-key: dev-maintenance-key"
+  -H "Requer sessão autenticada com role ADMIN."
 ```
 
 ---
@@ -1127,7 +1127,7 @@ Pré-visualiza utentes removidos antigos candidatos a higiene.
 
 ```bash
 curl "http://localhost:3001/api/farmacia/manutencao/jobs/higiene/preview?offsetMonths=12" \
-  -H "x-maintenance-key: dev-maintenance-key"
+  -H "Requer sessão autenticada com role ADMIN."
 ```
 
 ---
@@ -1150,7 +1150,7 @@ Executa manualmente o job de higiene.
 ```bash
 curl -X POST "http://localhost:3001/api/farmacia/manutencao/jobs/higiene/run" \
   -H "Content-Type: application/json" \
-  -H "x-maintenance-key: dev-maintenance-key" \
+  -H "Requer sessão autenticada com role ADMIN." \
   -d "{\"offsetMonths\":12,\"anonymize\":false}"
 ```
 
@@ -1170,7 +1170,7 @@ Pré-visualiza histórico antigo candidato a purge.
 
 ```bash
 curl "http://localhost:3001/api/farmacia/manutencao/jobs/purge-history/preview?offsetMonths=6" \
-  -H "x-maintenance-key: dev-maintenance-key"
+  -H "Requer sessão autenticada com role ADMIN."
 ```
 
 ---
@@ -1192,7 +1192,7 @@ Executa manualmente o job de purge histórico.
 ```bash
 curl -X POST "http://localhost:3001/api/farmacia/manutencao/jobs/purge-history/run" \
   -H "Content-Type: application/json" \
-  -H "x-maintenance-key: dev-maintenance-key" \
+  -H "Requer sessão autenticada com role ADMIN." \
   -d "{\"offsetMonths\":6}"
 ```
 

@@ -1,6 +1,5 @@
 import { formatDateTime } from "../../../../shared/utils/formatDate";
-
-import { FARMACIA_MANUTENCAO_PAGE as SYSTEM_MANUTENCAO_PAGE } from "../config/systemManutencaoPage.config";
+import { SYSTEM_MANUTENCAO_PAGE } from "../config/systemManutencaoPage.config";
 
 const UNKNOWN_LABEL = "—";
 
@@ -22,52 +21,6 @@ function isPlainObject(value) {
 
 function getConfiguredJobs() {
   return Object.values(SYSTEM_MANUTENCAO_PAGE.jobs);
-}
-
-export function getMaintenanceStorageKey() {
-  return SYSTEM_MANUTENCAO_PAGE.access.storageKey;
-}
-
-export function getStoredMaintenanceKey() {
-  if (typeof window === "undefined") return "";
-
-  try {
-    return window.sessionStorage.getItem(getMaintenanceStorageKey()) || "";
-  } catch {
-    return "";
-  }
-}
-
-export function saveStoredMaintenanceKey(value) {
-  const key = toText(value);
-
-  if (typeof window === "undefined") return key;
-
-  try {
-    if (key) {
-      window.sessionStorage.setItem(getMaintenanceStorageKey(), key);
-    } else {
-      window.sessionStorage.removeItem(getMaintenanceStorageKey());
-    }
-  } catch {
-    return key;
-  }
-
-  return key;
-}
-
-export function clearStoredMaintenanceKey() {
-  if (typeof window === "undefined") return;
-
-  try {
-    window.sessionStorage.removeItem(getMaintenanceStorageKey());
-  } catch {
-    // Sem ação: sessionStorage pode estar indisponível.
-  }
-}
-
-export function hasMaintenanceKey(value) {
-  return toText(value).length > 0;
 }
 
 export function getJobConfig(jobKey) {
@@ -101,6 +54,20 @@ export function supportsAnonymizeOption(jobKey) {
   return jobKey === "higiene";
 }
 
+export function sortMaintenanceJobs(jobs = []) {
+  const order = SYSTEM_MANUTENCAO_PAGE.jobOrder;
+
+  return [...jobs].sort((a, b) => {
+    const indexA = order.indexOf(a?.key);
+    const indexB = order.indexOf(b?.key);
+
+    const safeIndexA = indexA === -1 ? Number.MAX_SAFE_INTEGER : indexA;
+    const safeIndexB = indexB === -1 ? Number.MAX_SAFE_INTEGER : indexB;
+
+    return safeIndexA - safeIndexB;
+  });
+}
+
 export function normalizeMaintenanceJobs(response) {
   const rows = Array.isArray(response?.data)
     ? response.data
@@ -124,20 +91,6 @@ export function normalizeMaintenanceJobs(response) {
   });
 
   return sortMaintenanceJobs(jobs);
-}
-
-export function sortMaintenanceJobs(jobs = []) {
-  const order = SYSTEM_MANUTENCAO_PAGE.jobOrder;
-
-  return [...jobs].sort((a, b) => {
-    const indexA = order.indexOf(a?.key);
-    const indexB = order.indexOf(b?.key);
-
-    const safeIndexA = indexA === -1 ? Number.MAX_SAFE_INTEGER : indexA;
-    const safeIndexB = indexB === -1 ? Number.MAX_SAFE_INTEGER : indexB;
-
-    return safeIndexA - safeIndexB;
-  });
 }
 
 export function buildMaintenanceOptions(jobKey, values = {}) {

@@ -1,6 +1,6 @@
 import styles from "./SystemManutencaoJobs.module.css";
 
-import { FARMACIA_MANUTENCAO_PAGE as SYSTEM_MANUTENCAO_PAGE } from "../../config/systemManutencaoPage.config";
+import { SYSTEM_MANUTENCAO_PAGE } from "../../config/systemManutencaoPage.config";
 
 import {
   getJobRiskLabel,
@@ -84,7 +84,6 @@ function SystemManutencaoJobOptions({
 function SystemManutencaoJobCard({
   job,
   values,
-  hasKey = false,
   isBusy = false,
   isPreviewing = false,
   isRunning = false,
@@ -96,7 +95,7 @@ function SystemManutencaoJobCard({
   const warning = getJobWarning(job.key);
   const risk = getJobRiskLabel(job.key);
 
-  const isDisabled = !hasKey || isBusy;
+  const isDisabled = isBusy;
   const isCurrentJobBusy = isPreviewing || isRunning;
 
   return (
@@ -162,7 +161,6 @@ function SystemManutencaoJobCard({
 export default function SystemManutencaoJobs({
   jobs = [],
   jobOptions = {},
-  hasKey = false,
   isLoading = false,
   isRefreshing = false,
   isBusy = false,
@@ -219,7 +217,7 @@ export default function SystemManutencaoJobs({
         <button
           type="button"
           className={styles.refreshButton}
-          disabled={!hasKey || isRefreshing || isBusy}
+          disabled={isRefreshing || isBusy}
           onClick={onRefresh}
         >
           {isRefreshing
@@ -228,28 +226,18 @@ export default function SystemManutencaoJobs({
         </button>
       </header>
 
-      {!hasKey ? (
-        <SystemManutencaoJobsState
-          title={SYSTEM_MANUTENCAO_PAGE.access.missingLabel}
-          description="Guarda primeiro a chave de manutenção para carregar e executar jobs."
-        />
-      ) : null}
-
-      {hasKey && !hasJobs ? (
+      {!hasJobs ? (
         <SystemManutencaoJobsState
           title={sectionConfig.emptyTitle}
           description={sectionConfig.emptyDescription}
         />
-      ) : null}
-
-      {hasKey && hasJobs ? (
+      ) : (
         <div className={styles.list}>
           {jobs.map((job) => (
             <SystemManutencaoJobCard
               key={job.key}
               job={job}
               values={jobOptions[job.key]}
-              hasKey={hasKey}
               isBusy={isBusy}
               isPreviewing={previewingJobKey === job.key}
               isRunning={runningJobKey === job.key}
@@ -260,7 +248,7 @@ export default function SystemManutencaoJobs({
             />
           ))}
         </div>
-      ) : null}
+      )}
     </section>
   );
 }

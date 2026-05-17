@@ -14,6 +14,12 @@ const SYSTEM_MANUTENCAO_ENDPOINTS = Object.freeze({
 export const API_ENDPOINTS = Object.freeze({
   health: "/health",
 
+  auth: {
+    login: "/auth/login",
+    logout: "/auth/logout",
+    me: "/auth/me",
+  },
+
   santacasa: {
     health: "/santacasa/health",
 

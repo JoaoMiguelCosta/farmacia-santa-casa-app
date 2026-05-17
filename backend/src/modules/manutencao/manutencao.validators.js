@@ -1,18 +1,6 @@
 // src/modules/manutencao/manutencao.validators.js
-const { unauthorized, badRequest } = require("../../shared/errors/AppError");
+const { badRequest } = require("../../shared/errors/AppError");
 const { env } = require("../../config/env");
-
-function assertMaintenanceKey(req) {
-  const receivedKey = String(req.headers["x-maintenance-key"] || "").trim();
-
-  if (!env.MAINTENANCE_API_KEY) {
-    throw unauthorized("Manutenção indisponível: chave não configurada.");
-  }
-
-  if (receivedKey !== env.MAINTENANCE_API_KEY) {
-    throw unauthorized("Chave de manutenção inválida.");
-  }
-}
 
 function parseOffsetMonths(value, fallback) {
   if (value === undefined || value === null || value === "") {
@@ -61,7 +49,6 @@ function parsePurgeOptions(source = {}) {
 }
 
 module.exports = {
-  assertMaintenanceKey,
   parseHigieneOptions,
   parsePurgeOptions,
 };

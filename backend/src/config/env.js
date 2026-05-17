@@ -57,10 +57,6 @@ const env = Object.freeze({
   ),
   AUTH_COOKIE_SECURE: getBoolean("AUTH_COOKIE_SECURE", false),
 
-  MAINTENANCE_API_KEY:
-    process.env.MAINTENANCE_API_KEY ||
-    (process.env.NODE_ENV === "production" ? "" : "dev-maintenance-key"),
-
   ALLOWED_ORIGINS: getList("ALLOWED_ORIGINS", [
     "http://localhost:5173",
     "http://localhost:5174",

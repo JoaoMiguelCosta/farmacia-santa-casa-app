@@ -1,22 +1,16 @@
-export const FARMACIA_MANUTENCAO_PAGE = Object.freeze({
+export const SYSTEM_MANUTENCAO_PAGE = Object.freeze({
   header: {
-    eyebrow: "Farmácia",
+    eyebrow: "Sistema/Admin",
     title: "Manutenção",
     description:
-      "Execução controlada de jobs operacionais da Farmácia, com pré-visualização obrigatória antes de ações reais.",
+      "Execução controlada de jobs técnicos do sistema, com pré-visualização obrigatória antes de ações reais.",
   },
 
   sections: {
-    access: {
-      title: "Acesso de manutenção",
-      description:
-        "Introduz a chave de manutenção para consultar previews e executar jobs protegidos.",
-    },
-
     jobs: {
       title: "Jobs disponíveis",
       description:
-        "Rotinas operacionais disponíveis para execução manual controlada.",
+        "Rotinas técnicas disponíveis para execução manual controlada por administradores.",
       loadingTitle: "A carregar jobs...",
       errorTitle: "Não foi possível carregar os jobs.",
       emptyTitle: "Sem jobs disponíveis.",
@@ -32,16 +26,6 @@ export const FARMACIA_MANUTENCAO_PAGE = Object.freeze({
       emptyDescription:
         "Executa uma pré-visualização para veres o impacto previsto.",
     },
-  },
-
-  access: {
-    keyLabel: "Chave de manutenção",
-    keyPlaceholder: "Introduz a chave de manutenção...",
-    saveLabel: "Guardar chave",
-    clearLabel: "Limpar chave",
-    savedLabel: "Chave ativa nesta sessão.",
-    missingLabel: "Chave de manutenção em falta.",
-    storageKey: "farmacia-santa-casa:maintenance-key",
   },
 
   jobs: {
@@ -152,7 +136,6 @@ export const FARMACIA_MANUTENCAO_PAGE = Object.freeze({
 
   feedback: {
     genericError: "Ocorreu um erro inesperado.",
-    missingKey: "Introduz a chave de manutenção antes de continuar.",
     previewFirst: "Faz primeiro uma pré-visualização antes de executar.",
     previewSuccess: "Pré-visualização concluída.",
     runSuccess: "Job executado com sucesso.",

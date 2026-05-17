@@ -1,6 +1,6 @@
 import styles from "./SystemManutencaoResult.module.css";
 
-import { FARMACIA_MANUTENCAO_PAGE as SYSTEM_MANUTENCAO_PAGE } from "../../config/systemManutencaoPage.config";
+import { SYSTEM_MANUTENCAO_PAGE } from "../../config/systemManutencaoPage.config";
 
 import {
   buildMaintenanceResultSections,

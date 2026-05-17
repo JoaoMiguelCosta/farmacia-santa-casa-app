@@ -2,11 +2,10 @@ import { useState } from "react";
 
 import PageHeader from "../../shared/ui/PageHeader/PageHeader";
 
-import SystemManutencaoAccess from "../../features/system/manutencao/components/SystemManutencaoAccess/SystemManutencaoAccess";
 import SystemManutencaoJobs from "../../features/system/manutencao/components/SystemManutencaoJobs/SystemManutencaoJobs";
 import SystemManutencaoResult from "../../features/system/manutencao/components/SystemManutencaoResult/SystemManutencaoResult";
 
-import { FARMACIA_MANUTENCAO_PAGE as SYSTEM_MANUTENCAO_PAGE } from "../../features/system/manutencao/config/systemManutencaoPage.config";
+import { SYSTEM_MANUTENCAO_PAGE } from "../../features/system/manutencao/config/systemManutencaoPage.config";
 import { useSystemManutencao } from "../../features/system/manutencao/hooks/useSystemManutencao";
 import { getJobLabel } from "../../features/system/manutencao/utils/systemManutencao.utils";
 
@@ -16,9 +15,6 @@ export default function SystemManutencaoPage() {
   const [pendingRunJobKey, setPendingRunJobKey] = useState(null);
 
   const {
-    keyInput,
-    hasKey,
-
     jobs,
     jobOptions,
     latestResult,
@@ -33,11 +29,6 @@ export default function SystemManutencaoPage() {
     canRunByJob,
 
     error,
-    feedback,
-
-    updateKeyInput,
-    saveMaintenanceKey,
-    clearMaintenanceKey,
 
     refreshJobs,
 
@@ -72,20 +63,9 @@ export default function SystemManutencaoPage() {
         description={SYSTEM_MANUTENCAO_PAGE.header.description}
       />
 
-      <SystemManutencaoAccess
-        keyInput={keyInput}
-        hasKey={hasKey}
-        feedback={feedback}
-        isDisabled={isBusy}
-        onKeyChange={updateKeyInput}
-        onSaveKey={saveMaintenanceKey}
-        onClearKey={clearMaintenanceKey}
-      />
-
       <SystemManutencaoJobs
         jobs={jobs}
         jobOptions={jobOptions}
-        hasKey={hasKey}
         isLoading={isLoadingJobs}
         isRefreshing={isRefreshingJobs}
         isBusy={isBusy}

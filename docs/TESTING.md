@@ -611,7 +611,7 @@ curl -X POST "http://localhost:3001/api/farmacia/pedidos/PEDIDO_ID/rejeitar" \
 As rotas de manutenção exigem header:
 
 ```txt
-x-maintenance-key: dev-maintenance-key
+Requer sessão autenticada com role ADMIN.
 ```
 
 ---
@@ -634,7 +634,7 @@ HTTP/1.1 401 Unauthorized
 
 ```bash
 curl "http://localhost:3001/api/farmacia/manutencao/jobs" \
-  -H "x-maintenance-key: dev-maintenance-key"
+  -H "Requer sessão autenticada com role ADMIN."
 ```
 
 Resultado esperado:
@@ -670,7 +670,7 @@ Resultado esperado:
 
 ```bash
 curl "http://localhost:3001/api/farmacia/manutencao/jobs/receita-expiry/preview" \
-  -H "x-maintenance-key: dev-maintenance-key"
+  -H "Requer sessão autenticada com role ADMIN."
 ```
 
 ---
@@ -679,7 +679,7 @@ curl "http://localhost:3001/api/farmacia/manutencao/jobs/receita-expiry/preview"
 
 ```bash
 curl -X POST "http://localhost:3001/api/farmacia/manutencao/jobs/receita-expiry/run" \
-  -H "x-maintenance-key: dev-maintenance-key"
+  -H "Requer sessão autenticada com role ADMIN."
 ```
 
 ---
@@ -688,7 +688,7 @@ curl -X POST "http://localhost:3001/api/farmacia/manutencao/jobs/receita-expiry/
 
 ```bash
 curl "http://localhost:3001/api/farmacia/manutencao/jobs/higiene/preview?offsetMonths=12" \
-  -H "x-maintenance-key: dev-maintenance-key"
+  -H "Requer sessão autenticada com role ADMIN."
 ```
 
 ---
@@ -698,7 +698,7 @@ curl "http://localhost:3001/api/farmacia/manutencao/jobs/higiene/preview?offsetM
 ```bash
 curl -X POST "http://localhost:3001/api/farmacia/manutencao/jobs/higiene/run" \
   -H "Content-Type: application/json" \
-  -H "x-maintenance-key: dev-maintenance-key" \
+  -H "Requer sessão autenticada com role ADMIN." \
   -d "{\"offsetMonths\":12,\"anonymize\":false}"
 ```
 
@@ -708,7 +708,7 @@ curl -X POST "http://localhost:3001/api/farmacia/manutencao/jobs/higiene/run" \
 
 ```bash
 curl "http://localhost:3001/api/farmacia/manutencao/jobs/purge-history/preview?offsetMonths=6" \
-  -H "x-maintenance-key: dev-maintenance-key"
+  -H "Requer sessão autenticada com role ADMIN."
 ```
 
 ---
@@ -718,7 +718,7 @@ curl "http://localhost:3001/api/farmacia/manutencao/jobs/purge-history/preview?o
 ```bash
 curl -X POST "http://localhost:3001/api/farmacia/manutencao/jobs/purge-history/run" \
   -H "Content-Type: application/json" \
-  -H "x-maintenance-key: dev-maintenance-key" \
+  -H "Requer sessão autenticada com role ADMIN." \
   -d "{\"offsetMonths\":6}"
 ```
 
@@ -801,7 +801,7 @@ Solução:
 
 ```bash
 curl "http://localhost:3001/api/farmacia/manutencao/jobs" \
-  -H "x-maintenance-key: dev-maintenance-key"
+  -H "Requer sessão autenticada com role ADMIN."
 ```
 
 ---
@@ -898,7 +898,7 @@ Melhor prática:
 
 ```js
 const linhaParacetamol = createdReceita.data.linhas.find(
-  (linha) => linha.medicamento === "Paracetamol 1000mg"
+  (linha) => linha.medicamento === "Paracetamol 1000mg",
 );
 
 linhaReceitaId = linhaParacetamol.linhaId;

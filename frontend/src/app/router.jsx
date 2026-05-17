@@ -1,9 +1,15 @@
 import { Navigate, createBrowserRouter } from "react-router-dom";
 
+import { AUTH_ROLES } from "../features/auth/config/auth.config";
+import AuthHomeRedirect from "../features/auth/components/AuthHomeRedirect";
+import RequireAuth from "../features/auth/components/RequireAuth";
+import RequireRole from "../features/auth/components/RequireRole";
+
 import AppShell from "../shared/layouts/AppShell/AppShell.jsx";
 
-import HomePage from "../pages/HomePage.jsx";
 import NotFoundPage from "../pages/NotFoundPage.jsx";
+
+import LoginPage from "../pages/auth/LoginPage.jsx";
 
 import SantaCasaHomePage from "../pages/santacasa/SantaCasaHomePage.jsx";
 import SantaCasaDashboardPage from "../pages/santacasa/SantaCasaDashboardPage.jsx";
@@ -22,6 +28,18 @@ import FarmaciaRegularizacoesPage from "../pages/farmacia/FarmaciaRegularizacoes
 import SystemHomePage from "../pages/system/SystemHomePage.jsx";
 import SystemManutencaoPage from "../pages/system/SystemManutencaoPage.jsx";
 
+const SANTACASA_ROLES = [AUTH_ROLES.SANTACASA, AUTH_ROLES.ADMIN];
+const FARMACIA_ROLES = [AUTH_ROLES.FARMACIA, AUTH_ROLES.ADMIN];
+const ADMIN_ROLES = [AUTH_ROLES.ADMIN];
+
+function protectedElement(element, allowedRoles) {
+  return (
+    <RequireAuth>
+      <RequireRole allowedRoles={allowedRoles}>{element}</RequireRole>
+    </RequireAuth>
+  );
+}
+
 export const router = createBrowserRouter([
   {
     path: "/",
@@ -29,24 +47,28 @@ export const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <HomePage />,
+        element: <AuthHomeRedirect />,
+      },
+      {
+        path: "login",
+        element: <LoginPage />,
       },
 
       {
         path: "santacasa",
-        element: <SantaCasaHomePage />,
+        element: protectedElement(<SantaCasaHomePage />, SANTACASA_ROLES),
       },
       {
         path: "santacasa/dashboard",
-        element: <SantaCasaDashboardPage />,
+        element: protectedElement(<SantaCasaDashboardPage />, SANTACASA_ROLES),
       },
       {
         path: "santacasa/utentes",
-        element: <SantaCasaUtentesPage />,
+        element: protectedElement(<SantaCasaUtentesPage />, SANTACASA_ROLES),
       },
       {
         path: "santacasa/operacao",
-        element: <SantaCasaOperacaoPage />,
+        element: protectedElement(<SantaCasaOperacaoPage />, SANTACASA_ROLES),
       },
       {
         path: "santacasa/receitas",
@@ -62,45 +84,51 @@ export const router = createBrowserRouter([
       },
       {
         path: "santacasa/pedidos",
-        element: <SantaCasaPedidosPage />,
+        element: protectedElement(<SantaCasaPedidosPage />, SANTACASA_ROLES),
       },
       {
         path: "santacasa/regularizacoes",
-        element: <SantaCasaRegularizacoesPage />,
+        element: protectedElement(
+          <SantaCasaRegularizacoesPage />,
+          SANTACASA_ROLES,
+        ),
       },
       {
         path: "santacasa/historico",
-        element: <SantaCasaHistoricoPage />,
+        element: protectedElement(<SantaCasaHistoricoPage />, SANTACASA_ROLES),
       },
 
       {
         path: "farmacia",
-        element: <FarmaciaHomePage />,
+        element: protectedElement(<FarmaciaHomePage />, FARMACIA_ROLES),
       },
       {
         path: "farmacia/dashboard",
-        element: <FarmaciaDashboardPage />,
+        element: protectedElement(<FarmaciaDashboardPage />, FARMACIA_ROLES),
       },
       {
         path: "farmacia/pedidos",
-        element: <FarmaciaPedidosPage />,
+        element: protectedElement(<FarmaciaPedidosPage />, FARMACIA_ROLES),
       },
       {
         path: "farmacia/historico",
-        element: <FarmaciaHistoricoPage />,
+        element: protectedElement(<FarmaciaHistoricoPage />, FARMACIA_ROLES),
       },
       {
         path: "farmacia/regularizacoes",
-        element: <FarmaciaRegularizacoesPage />,
+        element: protectedElement(
+          <FarmaciaRegularizacoesPage />,
+          FARMACIA_ROLES,
+        ),
       },
 
       {
         path: "sistema",
-        element: <SystemHomePage />,
+        element: protectedElement(<SystemHomePage />, ADMIN_ROLES),
       },
       {
         path: "sistema/manutencao",
-        element: <SystemManutencaoPage />,
+        element: protectedElement(<SystemManutencaoPage />, ADMIN_ROLES),
       },
 
       {

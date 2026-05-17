@@ -10,17 +10,13 @@ import {
   runReceitaExpiry,
 } from "../api/systemManutencaoApi";
 
-import { FARMACIA_MANUTENCAO_PAGE as SYSTEM_MANUTENCAO_PAGE } from "../config/systemManutencaoPage.config";
+import { SYSTEM_MANUTENCAO_PAGE } from "../config/systemManutencaoPage.config";
 
 import {
   buildMaintenanceOptions,
   canRunMaintenanceJob,
-  clearStoredMaintenanceKey,
   getMaintenanceErrorMessage,
-  getStoredMaintenanceKey,
-  hasMaintenanceKey,
   normalizeMaintenanceJobs,
-  saveStoredMaintenanceKey,
 } from "../utils/systemManutencao.utils";
 
 const DEFAULT_OPTIONS = Object.freeze({
@@ -54,31 +50,13 @@ function getRunAction(jobKey) {
   return actions[jobKey] || null;
 }
 
-function getInitialAccessState() {
-  const storedKey = getStoredMaintenanceKey();
-
-  return {
-    storedKey,
-    hasStoredKey: hasMaintenanceKey(storedKey),
-  };
-}
-
 export function useSystemManutencao() {
-  const [initialAccessState] = useState(() => getInitialAccessState());
-
-  const [maintenanceKey, setMaintenanceKey] = useState(
-    initialAccessState.storedKey,
-  );
-  const [keyInput, setKeyInput] = useState(initialAccessState.storedKey);
-
   const [jobs, setJobs] = useState([]);
   const [jobOptions, setJobOptions] = useState(DEFAULT_OPTIONS);
 
   const [latestResult, setLatestResult] = useState(null);
 
-  const [isLoadingJobs, setIsLoadingJobs] = useState(
-    initialAccessState.hasStoredKey,
-  );
+  const [isLoadingJobs, setIsLoadingJobs] = useState(true);
   const [isRefreshingJobs, setIsRefreshingJobs] = useState(false);
 
   const [previewingJobKey, setPreviewingJobKey] = useState(null);
@@ -87,7 +65,6 @@ export function useSystemManutencao() {
   const [error, setError] = useState(null);
   const [feedback, setFeedback] = useState(null);
 
-  const hasKey = hasMaintenanceKey(maintenanceKey);
   const hasJobs = jobs.length > 0;
   const isBusy = Boolean(previewingJobKey || runningJobKey);
 
@@ -103,86 +80,34 @@ export function useSystemManutencao() {
     }, {});
   }, [jobs, latestResult, runningJobKey]);
 
-  const updateKeyInput = useCallback((value) => {
-    setKeyInput(value);
-  }, []);
-
   const clearFeedback = useCallback(() => {
     setFeedback(null);
   }, []);
 
-  const loadJobs = useCallback(
-    async ({ showRefreshing = false, keyOverride = null } = {}) => {
-      const finalKey = String(keyOverride ?? maintenanceKey).trim();
+  const loadJobs = useCallback(async ({ showRefreshing = false } = {}) => {
+    if (showRefreshing) {
+      setIsRefreshingJobs(true);
+    } else {
+      setIsLoadingJobs(true);
+    }
 
-      if (!hasMaintenanceKey(finalKey)) {
-        setJobs([]);
-        setIsLoadingJobs(false);
-        setIsRefreshingJobs(false);
-        setError(SYSTEM_MANUTENCAO_PAGE.feedback.missingKey);
-        return;
-      }
+    setError(null);
 
-      if (showRefreshing) {
-        setIsRefreshingJobs(true);
-      } else {
-        setIsLoadingJobs(true);
-      }
+    try {
+      const response = await getSystemManutencaoJobs();
 
-      setError(null);
-
-      try {
-        const response = await getSystemManutencaoJobs(finalKey);
-
-        setJobs(normalizeMaintenanceJobs(response));
-      } catch (loadError) {
-        setError(getMaintenanceErrorMessage(loadError));
-      } finally {
-        setIsLoadingJobs(false);
-        setIsRefreshingJobs(false);
-      }
-    },
-    [maintenanceKey],
-  );
+      setJobs(normalizeMaintenanceJobs(response));
+    } catch (loadError) {
+      setError(getMaintenanceErrorMessage(loadError));
+    } finally {
+      setIsLoadingJobs(false);
+      setIsRefreshingJobs(false);
+    }
+  }, []);
 
   const refreshJobs = useCallback(async () => {
     await loadJobs({ showRefreshing: true });
   }, [loadJobs]);
-
-  const saveMaintenanceKey = useCallback(async () => {
-    const savedKey = saveStoredMaintenanceKey(keyInput);
-
-    if (!hasMaintenanceKey(savedKey)) {
-      setFeedback({
-        type: "error",
-        message: SYSTEM_MANUTENCAO_PAGE.feedback.missingKey,
-      });
-
-      return;
-    }
-
-    setMaintenanceKey(savedKey);
-    setKeyInput(savedKey);
-    setFeedback({
-      type: "success",
-      message: SYSTEM_MANUTENCAO_PAGE.access.savedLabel,
-    });
-
-    await loadJobs({ keyOverride: savedKey });
-  }, [keyInput, loadJobs]);
-
-  const clearMaintenanceKey = useCallback(() => {
-    clearStoredMaintenanceKey();
-
-    setMaintenanceKey("");
-    setKeyInput("");
-    setJobs([]);
-    setLatestResult(null);
-    setError(null);
-    setFeedback(null);
-    setIsLoadingJobs(false);
-    setIsRefreshingJobs(false);
-  }, []);
 
   const updateJobOption = useCallback((jobKey, optionName, value) => {
     setJobOptions((currentOptions) => ({
@@ -202,15 +127,6 @@ export function useSystemManutencao() {
 
   const previewJob = useCallback(
     async (jobKey) => {
-      if (!hasMaintenanceKey(maintenanceKey)) {
-        setFeedback({
-          type: "error",
-          message: SYSTEM_MANUTENCAO_PAGE.feedback.missingKey,
-        });
-
-        return;
-      }
-
       const action = getPreviewAction(jobKey);
 
       if (!action) {
@@ -229,7 +145,7 @@ export function useSystemManutencao() {
       setFeedback(null);
 
       try {
-        const result = await action(maintenanceKey, options);
+        const result = await action(options);
 
         setLatestResult(result);
         setFeedback({
@@ -245,20 +161,11 @@ export function useSystemManutencao() {
         setPreviewingJobKey(null);
       }
     },
-    [jobOptions, maintenanceKey],
+    [jobOptions],
   );
 
   const runJob = useCallback(
     async (jobKey) => {
-      if (!hasMaintenanceKey(maintenanceKey)) {
-        setFeedback({
-          type: "error",
-          message: SYSTEM_MANUTENCAO_PAGE.feedback.missingKey,
-        });
-
-        return;
-      }
-
       if (
         !canRunMaintenanceJob({
           jobKey,
@@ -292,7 +199,7 @@ export function useSystemManutencao() {
       setFeedback(null);
 
       try {
-        const result = await action(maintenanceKey, options);
+        const result = await action(options);
 
         setLatestResult(result);
         setFeedback({
@@ -310,21 +217,18 @@ export function useSystemManutencao() {
         setRunningJobKey(null);
       }
     },
-    [jobOptions, latestResult, loadJobs, maintenanceKey, runningJobKey],
+    [jobOptions, latestResult, loadJobs, runningJobKey],
   );
 
   useEffect(() => {
-    const storedKey = initialAccessState.storedKey;
-
-    if (!hasMaintenanceKey(storedKey)) {
-      return undefined;
-    }
-
     let isMounted = true;
 
     async function loadInitialJobs() {
+      setIsLoadingJobs(true);
+      setError(null);
+
       try {
-        const response = await getSystemManutencaoJobs(storedKey);
+        const response = await getSystemManutencaoJobs();
 
         if (!isMounted) return;
 
@@ -345,13 +249,9 @@ export function useSystemManutencao() {
     return () => {
       isMounted = false;
     };
-  }, [initialAccessState.storedKey]);
+  }, []);
 
   return {
-    maintenanceKey,
-    keyInput,
-    hasKey,
-
     jobs,
     hasJobs,
     jobOptions,
@@ -368,10 +268,6 @@ export function useSystemManutencao() {
 
     error,
     feedback,
-
-    updateKeyInput,
-    saveMaintenanceKey,
-    clearMaintenanceKey,
 
     loadJobs,
     refreshJobs,

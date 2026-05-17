@@ -6,6 +6,7 @@ function buildUrl(path, query = {}) {
 
   Object.entries(query).forEach(([key, value]) => {
     if (value === undefined || value === null || value === "") return;
+
     url.searchParams.set(key, value);
   });
 
@@ -25,13 +26,13 @@ async function parseResponse(response) {
 }
 
 export async function apiRequest(path, options = {}) {
-  const { method = "GET", body, query, headers = {}, maintenanceKey } = options;
+  const { method = "GET", body, query, headers = {} } = options;
 
   const response = await fetch(buildUrl(path, query), {
     method,
+    credentials: "include",
     headers: {
       ...(body ? { "Content-Type": "application/json" } : {}),
-      ...(maintenanceKey ? { "x-maintenance-key": maintenanceKey } : {}),
       ...headers,
     },
     body: body ? JSON.stringify(body) : undefined,
@@ -57,9 +58,12 @@ export async function apiRequest(path, options = {}) {
 
 export const httpClient = Object.freeze({
   get: (path, options) => apiRequest(path, { ...options, method: "GET" }),
+
   post: (path, body, options) =>
     apiRequest(path, { ...options, method: "POST", body }),
+
   patch: (path, body, options) =>
     apiRequest(path, { ...options, method: "PATCH", body }),
+
   delete: (path, options) => apiRequest(path, { ...options, method: "DELETE" }),
 });
