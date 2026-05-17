@@ -9,13 +9,17 @@ async function listPedidos(req, res) {
 }
 
 async function validarPedido(req, res) {
-  const data = await service.validarPedido(req.params.pedidoId, req.body);
+  const data = await service.validarPedido(req.params.pedidoId, req.body, {
+    userId: req.user?.id,
+  });
 
   return ok(res, { data });
 }
 
 async function rejeitarPedido(req, res) {
-  const data = await service.rejeitarPedido(req.params.pedidoId, req.body);
+  const data = await service.rejeitarPedido(req.params.pedidoId, req.body, {
+    userId: req.user?.id,
+  });
 
   return ok(res, { data });
 }

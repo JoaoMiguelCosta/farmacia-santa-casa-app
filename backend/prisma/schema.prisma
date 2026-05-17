@@ -50,6 +50,33 @@ enum MedicamentoTipo {
   SEM_RECEITA
 }
 
+enum UserRole {
+  SANTACASA
+  FARMACIA
+  ADMIN
+}
+
+model User {
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  role         UserRole
+  isActive     Boolean  @default(true)
+
+  validatedPedidos     Pedido[]     @relation("PedidoValidatedBy")
+  validatedPedidoItems PedidoItem[] @relation("PedidoItemValidatedBy")
+
+  rejectedPedidos     Pedido[]     @relation("PedidoRejectedBy")
+  rejectedPedidoItems PedidoItem[] @relation("PedidoItemRejectedBy")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([role])
+  @@index([isActive])
+}
+
 model Utente {
   id            String    @id @default(cuid())
   numero9       String    @db.Char(9)
@@ -86,9 +113,9 @@ model Medicamento {
 }
 
 model Receita {
-  id         String @id @default(cuid())
-  utenteId   String
-  utente     Utente @relation(fields: [utenteId], references: [id])
+  id       String @id @default(cuid())
+  utenteId String
+  utente   Utente @relation(fields: [utenteId], references: [id])
 
   numero19   String @unique @db.Char(19)
   pinAcesso6 String @db.Char(6)
@@ -110,15 +137,15 @@ model ReceitaLinha {
   medicamentoId  String?
   medicamentoRef Medicamento? @relation(fields: [medicamentoId], references: [id])
 
-  nome                  String
-  quantidade            Int
-  quantidadeDispensada  Int                 @default(0)
-  validade              DateTime
-  status                LinhaReceitaStatus  @default(ATIVA)
+  nome                 String
+  quantidade           Int
+  quantidadeDispensada Int                @default(0)
+  validade             DateTime
+  status               LinhaReceitaStatus @default(ATIVA)
 
-  pedidoItens           PedidoItem[]
-  dispensas             Dispensa[]
-  regularizacaoEventos  RegularizacaoEvento[]
+  pedidoItens          PedidoItem[]
+  dispensas            Dispensa[]
+  regularizacaoEventos RegularizacaoEvento[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -151,8 +178,8 @@ model Extra {
   utenteId String
   utente   Utente @relation(fields: [utenteId], references: [id])
 
-  medicamentoId   String?
-  medicamentoRef  Medicamento? @relation(fields: [medicamentoId], references: [id])
+  medicamentoId  String?
+  medicamentoRef Medicamento? @relation(fields: [medicamentoId], references: [id])
 
   medicamento     String
   medicamentoNorm String?
@@ -162,8 +189,8 @@ model Extra {
   quantidadeCancelada    Int         @default(0)
   status                 ExtraStatus @default(PENDENTE)
 
-  pedidoItens     PedidoItem[]
-  regularizacoes  RegularizacaoExtra[]
+  pedidoItens    PedidoItem[]
+  regularizacoes RegularizacaoExtra[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -183,9 +210,13 @@ model Pedido {
 
   validatedAt   DateTime?
   validatedById String?
+  validatedBy   User?     @relation("PedidoValidatedBy", fields: [validatedById], references: [id])
 
-  rejectedAt    DateTime?
-  closedReason  String?
+  rejectedAt   DateTime?
+  rejectedById String?
+  rejectedBy   User?     @relation("PedidoRejectedBy", fields: [rejectedById], references: [id])
+
+  closedReason String?
 
   regularizacoesCriadas RegularizacaoExtra[]
 
@@ -195,7 +226,9 @@ model Pedido {
   @@index([status])
   @@index([createdAt])
   @@index([validatedAt])
+  @@index([validatedById])
   @@index([rejectedAt])
+  @@index([rejectedById])
 }
 
 model PedidoItem {
@@ -218,12 +251,17 @@ model PedidoItem {
   semReceita   SemReceita? @relation(fields: [semReceitaId], references: [id])
 
   extraId String?
-  extra   Extra? @relation(fields: [extraId], references: [id])
+  extra   Extra?  @relation(fields: [extraId], references: [id])
 
   dispensas Dispensa[]
 
   validatedAt   DateTime?
   validatedById String?
+  validatedBy   User?     @relation("PedidoItemValidatedBy", fields: [validatedById], references: [id])
+
+  rejectedAt   DateTime?
+  rejectedById String?
+  rejectedBy   User?     @relation("PedidoItemRejectedBy", fields: [rejectedById], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -235,6 +273,8 @@ model PedidoItem {
   @@index([receitaLinhaId])
   @@index([semReceitaId])
   @@index([extraId])
+  @@index([validatedById])
+  @@index([rejectedById])
 }
 
 model Dispensa {
@@ -260,22 +300,22 @@ model RegularizacaoExtra {
   utente   Utente @relation(fields: [utenteId], references: [id])
 
   extraId String?
-  extra   Extra? @relation(fields: [extraId], references: [id])
+  extra   Extra?  @relation(fields: [extraId], references: [id])
 
   pedidoId String?
   pedido   Pedido? @relation(fields: [pedidoId], references: [id])
 
   pedidoNumero Int?
 
-  medicamentoId   String?
-  medicamentoRef  Medicamento? @relation(fields: [medicamentoId], references: [id])
+  medicamentoId  String?
+  medicamentoRef Medicamento? @relation(fields: [medicamentoId], references: [id])
 
   medicamento     String
   medicamentoNorm String?
 
   quantidadeSolicitada   Int
-  quantidadeRegularizada Int                  @default(0)
-  status                 RegularizacaoStatus  @default(PENDENTE)
+  quantidadeRegularizada Int                 @default(0)
+  status                 RegularizacaoStatus @default(PENDENTE)
 
   eventos RegularizacaoEvento[]
 

@@ -1,6 +1,13 @@
 // src/modules/pedidos/pedidos.repository.js
 const { prisma } = require("../../db/prisma");
 
+const auditUserSelect = {
+  id: true,
+  name: true,
+  email: true,
+  role: true,
+};
+
 const pedidoSelect = {
   id: true,
   numero: true,
@@ -8,8 +15,16 @@ const pedidoSelect = {
 
   validatedAt: true,
   validatedById: true,
+  validatedBy: {
+    select: auditUserSelect,
+  },
 
   rejectedAt: true,
+  rejectedById: true,
+  rejectedBy: {
+    select: auditUserSelect,
+  },
+
   closedReason: true,
 
   createdAt: true,
@@ -35,6 +50,16 @@ const pedidoSelect = {
       extraId: true,
 
       validatedAt: true,
+      validatedById: true,
+      validatedBy: {
+        select: auditUserSelect,
+      },
+
+      rejectedAt: true,
+      rejectedById: true,
+      rejectedBy: {
+        select: auditUserSelect,
+      },
 
       createdAt: true,
       updatedAt: true,
@@ -346,13 +371,13 @@ async function listHistorico({ status, from, to, search, skip, take }) {
       select: pedidoSelect,
       orderBy: [
         {
-          validatedAt: "desc",
-        },
-        {
-          rejectedAt: "desc",
+          updatedAt: "desc",
         },
         {
           createdAt: "desc",
+        },
+        {
+          numero: "desc",
         },
       ],
       skip,

@@ -3,14 +3,8 @@ const { Router } = require("express");
 
 const controller = require("./manutencao.controller");
 const { asyncHandler } = require("../../shared/utils/asyncHandler");
-const { assertMaintenanceKey } = require("./manutencao.validators");
 
 const router = Router();
-
-router.use((req, _res, next) => {
-  assertMaintenanceKey(req);
-  next();
-});
 
 router.get("/jobs", asyncHandler(controller.listJobs));
 

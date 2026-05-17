@@ -4,6 +4,13 @@ const { normalizeText } = require("../../shared/utils/normalize");
 
 const { conflict, notFound } = require("../../shared/errors/AppError");
 
+const auditUserSelect = {
+  id: true,
+  name: true,
+  email: true,
+  role: true,
+};
+
 const pedidoSelect = {
   id: true,
   numero: true,
@@ -11,8 +18,16 @@ const pedidoSelect = {
 
   validatedAt: true,
   validatedById: true,
+  validatedBy: {
+    select: auditUserSelect,
+  },
 
   rejectedAt: true,
+  rejectedById: true,
+  rejectedBy: {
+    select: auditUserSelect,
+  },
+
   closedReason: true,
 
   createdAt: true,
@@ -38,6 +53,16 @@ const pedidoSelect = {
       extraId: true,
 
       validatedAt: true,
+      validatedById: true,
+      validatedBy: {
+        select: auditUserSelect,
+      },
+
+      rejectedAt: true,
+      rejectedById: true,
+      rejectedBy: {
+        select: auditUserSelect,
+      },
 
       createdAt: true,
       updatedAt: true,
@@ -83,6 +108,7 @@ const pedidoSelect = {
           medicamento: true,
           quantidadeSolicitada: true,
           quantidadeRegularizada: true,
+          quantidadeCancelada: true,
           status: true,
         },
       },
@@ -448,7 +474,10 @@ async function validarPedido(pedidoId, { validatedById = null } = {}) {
   });
 }
 
-async function rejeitarPedido(pedidoId, { motivo = null } = {}) {
+async function rejeitarPedido(
+  pedidoId,
+  { motivo = null, rejectedById = null } = {},
+) {
   return prisma.$transaction(async (tx) => {
     const pedido = await tx.pedido.findUnique({
       where: {
@@ -472,6 +501,8 @@ async function rejeitarPedido(pedidoId, { motivo = null } = {}) {
       },
       data: {
         status: "REJEITADO",
+        rejectedAt: now,
+        rejectedById,
       },
     });
 
@@ -482,6 +513,7 @@ async function rejeitarPedido(pedidoId, { motivo = null } = {}) {
       data: {
         status: "REJEITADO",
         rejectedAt: now,
+        rejectedById,
         closedReason: motivo,
       },
     });
@@ -564,7 +596,9 @@ async function getDashboardSignals() {
         status: true,
         createdAt: true,
         validatedAt: true,
+        validatedById: true,
         rejectedAt: true,
+        rejectedById: true,
       },
     }),
 

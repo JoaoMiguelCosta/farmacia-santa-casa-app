@@ -1,13 +1,16 @@
 // src/routes/index.js
 const { Router } = require("express");
 
+const authRoutes = require("./auth.routes");
 const santacasaRoutes = require("./santacasa.routes");
 const farmaciaRoutes = require("./farmacia.routes");
 const manutencaoRoutes = require("./manutencao.routes");
 
+const { requireAuth, requireRole } = require("../middlewares/authMiddleware");
+
 const router = Router();
 
-router.get("/health", (_req, res) => {
+router.get("/health", requireAuth, requireRole(["ADMIN"]), (_req, res) => {
   return res.status(200).json({
     status: "ok",
     service: "farmacia-santacasa-api",
@@ -15,8 +18,27 @@ router.get("/health", (_req, res) => {
   });
 });
 
-router.use("/santacasa", santacasaRoutes);
-router.use("/farmacia", farmaciaRoutes);
-router.use("/manutencao", manutencaoRoutes);
+router.use("/auth", authRoutes);
+
+router.use(
+  "/santacasa",
+  requireAuth,
+  requireRole(["SANTACASA", "ADMIN"]),
+  santacasaRoutes,
+);
+
+router.use(
+  "/farmacia",
+  requireAuth,
+  requireRole(["FARMACIA", "ADMIN"]),
+  farmaciaRoutes,
+);
+
+router.use(
+  "/manutencao",
+  requireAuth,
+  requireRole(["ADMIN"]),
+  manutencaoRoutes,
+);
 
 module.exports = router;

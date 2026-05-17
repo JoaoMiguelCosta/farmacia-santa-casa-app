@@ -1,4 +1,15 @@
 // src/modules/pedidos/pedidos.mappers.js
+function toAuditUserDTO(user) {
+  if (!user) return null;
+
+  return {
+    id: user.id,
+    name: user.name,
+    email: user.email,
+    role: user.role,
+  };
+}
+
 function toPedidoItemDTO(item) {
   if (!item) return null;
 
@@ -58,11 +69,19 @@ function toPedidoItemDTO(item) {
           medicamento: item.extra.medicamento,
           quantidadeSolicitada: item.extra.quantidadeSolicitada,
           quantidadeRegularizada: item.extra.quantidadeRegularizada,
+          quantidadeCancelada: item.extra.quantidadeCancelada,
           status: item.extra.status,
         }
       : null,
 
     validatedAt: item.validatedAt,
+    validatedById: item.validatedById,
+    validatedBy: toAuditUserDTO(item.validatedBy),
+
+    rejectedAt: item.rejectedAt,
+    rejectedById: item.rejectedById,
+    rejectedBy: toAuditUserDTO(item.rejectedBy),
+
     createdAt: item.createdAt,
     updatedAt: item.updatedAt,
   };
@@ -71,6 +90,8 @@ function toPedidoItemDTO(item) {
 function toPedidoDTO(pedido) {
   if (!pedido) return null;
 
+  const closedReason = pedido.closedReason ?? pedido.cancelReason ?? null;
+
   return {
     id: pedido.id,
     numero: pedido.numero,
@@ -78,9 +99,14 @@ function toPedidoDTO(pedido) {
 
     validatedAt: pedido.validatedAt,
     validatedById: pedido.validatedById,
+    validatedBy: toAuditUserDTO(pedido.validatedBy),
 
     rejectedAt: pedido.rejectedAt,
-    closedReason: pedido.closedReason,
+    rejectedById: pedido.rejectedById,
+    rejectedBy: toAuditUserDTO(pedido.rejectedBy),
+
+    closedReason,
+    cancelReason: closedReason,
 
     itens: Array.isArray(pedido.itens) ? pedido.itens.map(toPedidoItemDTO) : [],
 

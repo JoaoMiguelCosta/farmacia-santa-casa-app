@@ -1,5 +1,6 @@
 // src/app/app.js
 const express = require("express");
+const cookieParser = require("cookie-parser");
 
 const routes = require("../routes");
 const { env } = require("../config/env");
@@ -38,6 +39,7 @@ function createApp() {
   app.disable("x-powered-by");
 
   app.use(corsMiddleware);
+  app.use(cookieParser());
   app.use(express.json({ limit: env.JSON_LIMIT }));
 
   app.use("/api", routes);

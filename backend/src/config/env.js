@@ -47,6 +47,16 @@ const env = Object.freeze({
   DATABASE_URL: process.env.DATABASE_URL,
   JSON_LIMIT: process.env.JSON_LIMIT || "1mb",
 
+  AUTH_JWT_SECRET: process.env.AUTH_JWT_SECRET,
+  AUTH_COOKIE_NAME:
+    process.env.AUTH_COOKIE_NAME || "farmacia_santacasa_session",
+  AUTH_TOKEN_EXPIRES_IN: process.env.AUTH_TOKEN_EXPIRES_IN || "8h",
+  AUTH_COOKIE_MAX_AGE_MS: getNumber(
+    "AUTH_COOKIE_MAX_AGE_MS",
+    1000 * 60 * 60 * 8,
+  ),
+  AUTH_COOKIE_SECURE: getBoolean("AUTH_COOKIE_SECURE", false),
+
   MAINTENANCE_API_KEY:
     process.env.MAINTENANCE_API_KEY ||
     (process.env.NODE_ENV === "production" ? "" : "dev-maintenance-key"),
@@ -69,6 +79,11 @@ const env = Object.freeze({
   CRON_MONTHLY_03H: process.env.CRON_MONTHLY_03H || "0 3 1 * *",
   CRON_DAILY_03H: process.env.CRON_DAILY_03H || "0 3 * * *",
 });
+
+if (!env.AUTH_JWT_SECRET) {
+  console.error("[env] AUTH_JWT_SECRET em falta.");
+  process.exit(1);
+}
 
 process.env.TZ = env.TZ;
 
