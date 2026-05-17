@@ -13,7 +13,7 @@ const pedidoSelect = {
   validatedById: true,
 
   rejectedAt: true,
-  cancelReason: true,
+  closedReason: true,
 
   createdAt: true,
   updatedAt: true,
@@ -482,7 +482,7 @@ async function rejeitarPedido(pedidoId, { motivo = null } = {}) {
       data: {
         status: "REJEITADO",
         rejectedAt: now,
-        cancelReason: motivo,
+        closedReason: motivo,
       },
     });
 
@@ -597,8 +597,6 @@ async function getDashboardSignals() {
     latestPedido: latestPedido || null,
   };
 }
-
-
 
 module.exports = {
   listPedidos,

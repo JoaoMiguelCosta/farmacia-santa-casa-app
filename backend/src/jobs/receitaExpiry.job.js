@@ -143,7 +143,7 @@ async function cancelPedidosFullyExpired(tx, pedidoIds) {
         },
         data: {
           status: "CANCELADO",
-          cancelReason: "Cancelado automaticamente por expiração da receita.",
+          closedReason: "Cancelado automaticamente por expiração da receita.",
         },
       });
 

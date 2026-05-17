@@ -46,22 +46,22 @@ Responsável por:
 
 ### Utente
 
-| Campo | Significado |
-|---|---|
-| `isValid: true` | Utente ativo |
-| `isValid: false` | Utente inválido/removido |
-| `deletedAt: null` | Utente não removido |
-| `deletedAt: Date` | Utente removido logicamente |
-| `invalidReason` | Motivo da invalidação/remoção |
+| Campo             | Significado                   |
+| ----------------- | ----------------------------- |
+| `isValid: true`   | Utente ativo                  |
+| `isValid: false`  | Utente inválido/removido      |
+| `deletedAt: null` | Utente não removido           |
+| `deletedAt: Date` | Utente removido logicamente   |
+| `invalidReason`   | Motivo da invalidação/remoção |
 
 ---
 
 ### ReceitaLinha
 
-| Estado | Significado |
-|---|---|
-| `ATIVA` | Linha de receita válida |
-| `EXPIRADA` | Linha vencida |
+| Estado     | Significado                |
+| ---------- | -------------------------- |
+| `ATIVA`    | Linha de receita válida    |
+| `EXPIRADA` | Linha vencida              |
 | `ESGOTADA` | Linha sem saldo disponível |
 
 > Nota: atualmente a listagem filtra linhas com saldo disponível. Mesmo que uma linha continue `ATIVA`, pode não aparecer se `quantidadeRestante` for `0`.
@@ -70,43 +70,43 @@ Responsável por:
 
 ### Pedido
 
-| Estado | Significado |
-|---|---|
-| `PENDENTE` | Pedido criado e à espera da Farmácia |
-| `VALIDADO` | Pedido aceite pela Farmácia |
-| `REJEITADO` | Pedido recusado pela Farmácia |
+| Estado      | Significado                                          |
+| ----------- | ---------------------------------------------------- |
+| `PENDENTE`  | Pedido criado e à espera da Farmácia                 |
+| `VALIDADO`  | Pedido aceite pela Farmácia                          |
+| `REJEITADO` | Pedido recusado pela Farmácia                        |
 | `CANCELADO` | Pedido cancelado automaticamente ou por regra futura |
 
 ---
 
 ### PedidoItem
 
-| Estado | Significado |
-|---|---|
-| `PENDENTE` | Item ainda não tratado |
-| `VALIDADO` | Item aprovado |
-| `REJEITADO` | Item rejeitado |
+| Estado                    | Significado                        |
+| ------------------------- | ---------------------------------- |
+| `PENDENTE`                | Item ainda não tratado             |
+| `VALIDADO`                | Item aprovado                      |
+| `REJEITADO`               | Item rejeitado                     |
 | `CANCELADO_POR_EXPIRACAO` | Item cancelado por receita vencida |
 
 ---
 
 ### Extra
 
-| Estado | Significado |
-|---|---|
-| `PENDENTE` | Extra ainda por regularizar |
-| `PARCIALMENTE_REGULARIZADO` | Parte já foi regularizada |
-| `REGULARIZADO` | Extra totalmente regularizado |
+| Estado                      | Significado                   |
+| --------------------------- | ----------------------------- |
+| `PENDENTE`                  | Extra ainda por regularizar   |
+| `PARCIALMENTE_REGULARIZADO` | Parte já foi regularizada     |
+| `REGULARIZADO`              | Extra totalmente regularizado |
 
 ---
 
 ### RegularizacaoExtra
 
-| Estado | Significado |
-|---|---|
-| `PENDENTE` | Ainda falta regularizar tudo |
-| `PARCIALMENTE_REGULARIZADO` | Regularização parcial |
-| `REGULARIZADO` | Regularização concluída |
+| Estado                      | Significado                  |
+| --------------------------- | ---------------------------- |
+| `PENDENTE`                  | Ainda falta regularizar tudo |
+| `PARCIALMENTE_REGULARIZADO` | Regularização parcial        |
+| `REGULARIZADO`              | Regularização concluída      |
 
 ---
 
@@ -655,7 +655,7 @@ Efeitos:
 - pedido passa para `REJEITADO`;
 - itens pendentes passam para `REJEITADO`;
 - `rejectedAt` é preenchido;
-- `cancelReason` recebe o motivo.
+- `closedReason` recebe o motivo.
 
 A rejeição não altera:
 
@@ -696,11 +696,11 @@ Campos principais:
 
 ### 9.2 Estados da regularização
 
-| Estado | Regra |
-|---|---|
-| `PENDENTE` | Nada foi regularizado |
+| Estado                      | Regra                                |
+| --------------------------- | ------------------------------------ |
+| `PENDENTE`                  | Nada foi regularizado                |
 | `PARCIALMENTE_REGULARIZADO` | Parte da quantidade foi regularizada |
-| `REGULARIZADO` | Toda a quantidade foi regularizada |
+| `REGULARIZADO`              | Toda a quantidade foi regularizada   |
 
 ---
 

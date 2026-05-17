@@ -109,7 +109,7 @@ CREATE TABLE "Pedido" (
     "validatedAt" TIMESTAMP(3),
     "validatedById" TEXT,
     "rejectedAt" TIMESTAMP(3),
-    "cancelReason" TEXT,
+    "closedReason" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 

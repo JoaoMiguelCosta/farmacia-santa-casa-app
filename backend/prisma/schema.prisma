@@ -184,8 +184,8 @@ model Pedido {
   validatedAt   DateTime?
   validatedById String?
 
-  rejectedAt   DateTime?
-  cancelReason String?
+  rejectedAt    DateTime?
+  closedReason  String?
 
   regularizacoesCriadas RegularizacaoExtra[]
 

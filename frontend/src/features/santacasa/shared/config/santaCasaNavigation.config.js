@@ -5,6 +5,10 @@ export const SANTACASA_NAV_ITEMS = Object.freeze([
     end: true,
   },
   {
+    label: "Dashboard",
+    to: "/santacasa/dashboard",
+  },
+  {
     label: "Utentes",
     to: "/santacasa/utentes",
   },
@@ -15,6 +19,10 @@ export const SANTACASA_NAV_ITEMS = Object.freeze([
   {
     label: "Pedidos",
     to: "/santacasa/pedidos",
+  },
+  {
+    label: "Regularizações",
+    to: "/santacasa/regularizacoes",
   },
   {
     label: "Histórico",

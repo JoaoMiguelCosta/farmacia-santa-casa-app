@@ -1,25 +1,31 @@
 import AreaLanding from "../../shared/layouts/AreaLanding/AreaLanding.jsx";
 
+const FARMACIA_DASHBOARD_PATH = "/farmacia/dashboard";
+const FARMACIA_PEDIDOS_PATH = "/farmacia/pedidos";
+const FARMACIA_HISTORICO_PATH = "/farmacia/historico";
+const FARMACIA_REGULARIZACOES_PATH = "/farmacia/regularizacoes";
+
 const ACTIONS = [
   {
     title: "Pedidos Pendentes",
-    description: "Consultar pedidos enviados pela Santa Casa.",
+    description:
+      "Consultar, validar ou rejeitar pedidos enviados pela Santa Casa.",
+    to: FARMACIA_PEDIDOS_PATH,
   },
   {
-    title: "Validação",
-    description: "Validar pedidos e aplicar os efeitos nas quantidades.",
-  },
-  {
-    title: "Rejeição",
-    description: "Rejeitar pedidos com motivo registado.",
+    title: "Histórico",
+    description: "Consultar pedidos validados ou rejeitados.",
+    to: FARMACIA_HISTORICO_PATH,
   },
   {
     title: "Regularizações",
     description: "Acompanhar Extras regularizados por receitas futuras.",
+    to: FARMACIA_REGULARIZACOES_PATH,
   },
   {
     title: "Dashboard",
     description: "Ver sinais operacionais e totais relevantes.",
+    to: FARMACIA_DASHBOARD_PATH,
   },
   {
     title: "Manutenção",
@@ -32,7 +38,7 @@ export default function FarmaciaHomePage() {
     <AreaLanding
       eyebrow="Área Farmácia"
       title="Controlo farmacêutico com rastreabilidade."
-      description="Pedidos pendentes, validações, rejeições, regularizações, histórico e sinais operacionais."
+      description="Dashboard, pedidos pendentes, histórico, regularizações, manutenção e sinais operacionais."
       tone="blue"
       actions={ACTIONS}
     />

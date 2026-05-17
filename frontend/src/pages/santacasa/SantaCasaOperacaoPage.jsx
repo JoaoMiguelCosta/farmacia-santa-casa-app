@@ -175,6 +175,79 @@ function buildResolvedExtrasMessage(extrasResolvidos = []) {
   return ` ${extrasResolvidos.length} Extras compatíveis foram ajustados/removidos porque passaram a ter receita ativa.`;
 }
 
+function getCreatedReceitaLinhas(receita) {
+  return Array.isArray(receita?.linhas) ? receita.linhas : [];
+}
+
+function getLinhaQuantidadeRegularizada(linha) {
+  return Number(linha?.quantidadeDispensada) || 0;
+}
+
+function getLinhaQuantidadeRestante(linha) {
+  const restante = Number(linha?.quantidadeRestante);
+
+  if (Number.isFinite(restante)) {
+    return Math.max(0, restante);
+  }
+
+  return Math.max(
+    0,
+    Number(linha?.quantidade || 0) - getLinhaQuantidadeRegularizada(linha),
+  );
+}
+
+function buildReceitaRegularizacaoMessage(receita) {
+  const linhasRegularizadas = getCreatedReceitaLinhas(receita)
+    .map((linha) => {
+      const quantidadeRegularizada = getLinhaQuantidadeRegularizada(linha);
+      const quantidadeRestante = getLinhaQuantidadeRestante(linha);
+
+      return {
+        medicamento: linha?.medicamento || linha?.nome || "Medicamento",
+        quantidadeRegularizada,
+        quantidadeRestante,
+      };
+    })
+    .filter((linha) => linha.quantidadeRegularizada > 0);
+
+  if (linhasRegularizadas.length === 0) {
+    return "";
+  }
+
+  const detalhes = linhasRegularizadas
+    .map((linha) => {
+      const usedVerb = formatVerbByQuantity(
+        linha.quantidadeRegularizada,
+        RECEITAS_PAGE.form.regularizationUsedSingular,
+        RECEITAS_PAGE.form.regularizationUsedPlural,
+      );
+
+      const remainingMessage =
+        linha.quantidadeRestante > 0
+          ? `${formatUnitsLabel(
+              linha.quantidadeRestante,
+            )} ${formatVerbByQuantity(
+              linha.quantidadeRestante,
+              RECEITAS_PAGE.form.regularizationRemainingSingular,
+              RECEITAS_PAGE.form.regularizationRemainingPlural,
+            )}`
+          : RECEITAS_PAGE.form.regularizationNoRemaining;
+
+      return `${linha.medicamento}: ${formatUnitsLabel(
+        linha.quantidadeRegularizada,
+      )} ${usedVerb}; ${remainingMessage}.`;
+    })
+    .join(" ");
+
+  return ` ${RECEITAS_PAGE.form.regularizationSuccessPrefix} ${detalhes}`;
+}
+
+function buildReceitaSuccessMessage(createdReceita, extrasResolvidos = []) {
+  return `${RECEITAS_PAGE.form.successMessage}${buildReceitaRegularizacaoMessage(
+    createdReceita,
+  )}${buildResolvedExtrasMessage(extrasResolvidos)}`;
+}
+
 function getReceitaFieldErrors(requestError) {
   if (requestError?.status === 409) {
     return {
@@ -503,9 +576,7 @@ export default function SantaCasaOperacaoPage() {
 
       setFeedback({
         type: "success",
-        message: `${RECEITAS_PAGE.form.successMessage}${buildResolvedExtrasMessage(
-          extrasResolvidos,
-        )}`,
+        message: buildReceitaSuccessMessage(createdReceita, extrasResolvidos),
       });
 
       return {

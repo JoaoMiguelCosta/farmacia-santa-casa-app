@@ -10,7 +10,7 @@ const pedidoSelect = {
   validatedById: true,
 
   rejectedAt: true,
-  cancelReason: true,
+  closedReason: true,
 
   createdAt: true,
   updatedAt: true,

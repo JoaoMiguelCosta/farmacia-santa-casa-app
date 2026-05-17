@@ -80,7 +80,7 @@ function toPedidoDTO(pedido) {
     validatedById: pedido.validatedById,
 
     rejectedAt: pedido.rejectedAt,
-    cancelReason: pedido.cancelReason,
+    closedReason: pedido.closedReason,
 
     itens: Array.isArray(pedido.itens) ? pedido.itens.map(toPedidoItemDTO) : [],
 

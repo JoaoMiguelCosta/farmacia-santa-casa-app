@@ -80,11 +80,11 @@ curl "http://localhost:3001/api/farmacia/health"
 
 ### Rotas
 
-| Método | Rota | Descrição |
-|---|---|---|
-| GET | `/santacasa/utentes` | Lista utentes ativos |
-| GET | `/santacasa/utentes/:utenteId` | Obtém um utente por ID |
-| POST | `/santacasa/utentes` | Cria um utente |
+| Método | Rota                           | Descrição                    |
+| ------ | ------------------------------ | ---------------------------- |
+| GET    | `/santacasa/utentes`           | Lista utentes ativos         |
+| GET    | `/santacasa/utentes/:utenteId` | Obtém um utente por ID       |
+| POST   | `/santacasa/utentes`           | Cria um utente               |
 | DELETE | `/santacasa/utentes/:utenteId` | Remove logicamente um utente |
 
 ---
@@ -251,11 +251,11 @@ Não permite remover utente com:
 
 ### Rotas
 
-| Método | Rota | Descrição |
-|---|---|---|
-| GET | `/santacasa/utentes/:utenteId/sem-receita` | Lista medicamentos sem receita disponíveis |
-| POST | `/santacasa/utentes/:utenteId/sem-receita` | Cria medicamento sem receita |
-| DELETE | `/santacasa/utentes/:utenteId/sem-receita/:semReceitaId` | Remove medicamento sem receita |
+| Método | Rota                                                     | Descrição                                  |
+| ------ | -------------------------------------------------------- | ------------------------------------------ |
+| GET    | `/santacasa/utentes/:utenteId/sem-receita`               | Lista medicamentos sem receita disponíveis |
+| POST   | `/santacasa/utentes/:utenteId/sem-receita`               | Cria medicamento sem receita               |
+| DELETE | `/santacasa/utentes/:utenteId/sem-receita/:semReceitaId` | Remove medicamento sem receita             |
 
 ---
 
@@ -374,11 +374,11 @@ Não permite remover se já estiver associado a qualquer pedido.
 
 ### Rotas
 
-| Método | Rota | Descrição |
-|---|---|---|
-| GET | `/santacasa/utentes/:utenteId/receitas` | Lista linhas de receita ativas com saldo |
-| POST | `/santacasa/utentes/:utenteId/receitas` | Cria receita com linhas |
-| DELETE | `/santacasa/utentes/:utenteId/receitas/linhas/:linhaId` | Remove linha de receita |
+| Método | Rota                                                    | Descrição                                |
+| ------ | ------------------------------------------------------- | ---------------------------------------- |
+| GET    | `/santacasa/utentes/:utenteId/receitas`                 | Lista linhas de receita ativas com saldo |
+| POST   | `/santacasa/utentes/:utenteId/receitas`                 | Cria receita com linhas                  |
+| DELETE | `/santacasa/utentes/:utenteId/receitas/linhas/:linhaId` | Remove linha de receita                  |
 
 ---
 
@@ -529,11 +529,11 @@ Não permite remover se:
 
 ### Rotas
 
-| Método | Rota | Descrição |
-|---|---|---|
-| GET | `/santacasa/utentes/:utenteId/extras` | Lista Extras em aberto |
-| POST | `/santacasa/utentes/:utenteId/extras` | Cria Extra |
-| DELETE | `/santacasa/utentes/:utenteId/extras/:extraId` | Remove Extra |
+| Método | Rota                                           | Descrição              |
+| ------ | ---------------------------------------------- | ---------------------- |
+| GET    | `/santacasa/utentes/:utenteId/extras`          | Lista Extras em aberto |
+| POST   | `/santacasa/utentes/:utenteId/extras`          | Cria Extra             |
+| DELETE | `/santacasa/utentes/:utenteId/extras/:extraId` | Remove Extra           |
 
 ---
 
@@ -657,11 +657,11 @@ Não permite remover se já estiver associado a pedidos.
 
 ### Rotas
 
-| Método | Rota | Descrição |
-|---|---|---|
-| POST | `/santacasa/pedidos` | Cria pedido pendente |
-| GET | `/santacasa/pedidos/:pedidoId` | Obtém pedido por ID |
-| GET | `/santacasa/pedidos/historico` | Lista histórico de pedidos fechados |
+| Método | Rota                           | Descrição                           |
+| ------ | ------------------------------ | ----------------------------------- |
+| POST   | `/santacasa/pedidos`           | Cria pedido pendente                |
+| GET    | `/santacasa/pedidos/:pedidoId` | Obtém pedido por ID                 |
+| GET    | `/santacasa/pedidos/historico` | Lista histórico de pedidos fechados |
 
 ---
 
@@ -740,7 +740,7 @@ curl -X POST "http://localhost:3001/api/santacasa/pedidos" \
     "validatedAt": null,
     "validatedById": null,
     "rejectedAt": null,
-    "cancelReason": null,
+    "closedReason": null,
     "itens": [
       {
         "id": "pedido_item_id",
@@ -781,14 +781,14 @@ Lista pedidos fechados.
 
 #### Query params
 
-| Param | Exemplo | Descrição |
-|---|---|---|
-| `status` | `VALIDADO` ou `REJEITADO` | Filtra por estado |
-| `from` | `2026-01-01` | Data inicial |
-| `to` | `2026-12-31` | Data final |
-| `search` | `João` | Pesquisa por utente, número ou medicamento |
-| `skip` | `0` | Paginação |
-| `take` | `50` | Limite |
+| Param    | Exemplo                   | Descrição                                  |
+| -------- | ------------------------- | ------------------------------------------ |
+| `status` | `VALIDADO` ou `REJEITADO` | Filtra por estado                          |
+| `from`   | `2026-01-01`              | Data inicial                               |
+| `to`     | `2026-12-31`              | Data final                                 |
+| `search` | `João`                    | Pesquisa por utente, número ou medicamento |
+| `skip`   | `0`                       | Paginação                                  |
+| `take`   | `50`                      | Limite                                     |
 
 #### Exemplo
 
@@ -817,11 +817,11 @@ curl "http://localhost:3001/api/santacasa/pedidos/historico?status=VALIDADO&sear
 
 ### Rotas
 
-| Método | Rota | Descrição |
-|---|---|---|
-| GET | `/farmacia/pedidos` | Lista pedidos para a farmácia |
-| POST | `/farmacia/pedidos/:pedidoId/validar` | Valida pedido |
-| POST | `/farmacia/pedidos/:pedidoId/rejeitar` | Rejeita pedido |
+| Método | Rota                                   | Descrição                     |
+| ------ | -------------------------------------- | ----------------------------- |
+| GET    | `/farmacia/pedidos`                    | Lista pedidos para a farmácia |
+| POST   | `/farmacia/pedidos/:pedidoId/validar`  | Valida pedido                 |
+| POST   | `/farmacia/pedidos/:pedidoId/rejeitar` | Rejeita pedido                |
 
 ---
 
@@ -831,11 +831,11 @@ Lista pedidos para a Farmácia.
 
 #### Query params
 
-| Param | Exemplo | Descrição |
-|---|---|---|
+| Param    | Exemplo                                          | Descrição          |
+| -------- | ------------------------------------------------ | ------------------ |
 | `status` | `PENDENTE`, `VALIDADO`, `REJEITADO`, `CANCELADO` | Estado dos pedidos |
-| `skip` | `0` | Paginação |
-| `take` | `50` | Limite |
+| `skip`   | `0`                                              | Paginação          |
+| `take`   | `50`                                             | Limite             |
 
 #### Default
 
@@ -921,7 +921,7 @@ curl -X POST "http://localhost:3001/api/farmacia/pedidos/PEDIDO_ID/rejeitar" \
 - Pedido passa para `REJEITADO`.
 - Itens pendentes passam para `REJEITADO`.
 - Preenche `rejectedAt`.
-- Guarda `cancelReason`.
+- Guarda `closedReason`.
 
 ---
 
@@ -929,11 +929,11 @@ curl -X POST "http://localhost:3001/api/farmacia/pedidos/PEDIDO_ID/rejeitar" \
 
 ### Rotas
 
-| Método | Rota | Descrição |
-|---|---|---|
-| GET | `/farmacia/regularizacoes/pendentes` | Lista regularizações pendentes |
-| GET | `/farmacia/regularizacoes/historico` | Lista regularizações concluídas |
-| GET | `/farmacia/regularizacoes/sinal` | Mostra resumo de eventos |
+| Método | Rota                                 | Descrição                       |
+| ------ | ------------------------------------ | ------------------------------- |
+| GET    | `/farmacia/regularizacoes/pendentes` | Lista regularizações pendentes  |
+| GET    | `/farmacia/regularizacoes/historico` | Lista regularizações concluídas |
+| GET    | `/farmacia/regularizacoes/sinal`     | Mostra resumo de eventos        |
 
 ---
 
@@ -943,12 +943,12 @@ Lista regularizações pendentes ou parcialmente regularizadas.
 
 #### Query params
 
-| Param | Exemplo | Descrição |
-|---|---|---|
-| `utenteId` | `UTENTE_ID` | Filtra por utente |
+| Param         | Exemplo     | Descrição              |
+| ------------- | ----------- | ---------------------- |
+| `utenteId`    | `UTENTE_ID` | Filtra por utente      |
 | `medicamento` | `Ben-u-ron` | Filtra por medicamento |
-| `skip` | `0` | Paginação |
-| `take` | `50` | Limite |
+| `skip`        | `0`         | Paginação              |
+| `take`        | `50`        | Limite                 |
 
 #### Exemplo
 
@@ -964,12 +964,12 @@ Lista regularizações concluídas.
 
 #### Query params
 
-| Param | Exemplo | Descrição |
-|---|---|---|
-| `utenteId` | `UTENTE_ID` | Filtra por utente |
+| Param         | Exemplo     | Descrição              |
+| ------------- | ----------- | ---------------------- |
+| `utenteId`    | `UTENTE_ID` | Filtra por utente      |
 | `medicamento` | `Ben-u-ron` | Filtra por medicamento |
-| `skip` | `0` | Paginação |
-| `take` | `50` | Limite |
+| `skip`        | `0`         | Paginação              |
+| `take`        | `50`        | Limite                 |
 
 #### Exemplo
 
@@ -1062,15 +1062,15 @@ Sem este header, devolve:
 
 ### Rotas
 
-| Método | Rota | Descrição |
-|---|---|---|
-| GET | `/farmacia/manutencao/jobs` | Lista jobs disponíveis |
-| GET | `/farmacia/manutencao/jobs/receita-expiry/preview` | Preview do job de receitas expiradas |
-| POST | `/farmacia/manutencao/jobs/receita-expiry/run` | Executa job de receitas expiradas |
-| GET | `/farmacia/manutencao/jobs/higiene/preview` | Preview do job de higiene |
-| POST | `/farmacia/manutencao/jobs/higiene/run` | Executa job de higiene |
-| GET | `/farmacia/manutencao/jobs/purge-history/preview` | Preview do purge de histórico |
-| POST | `/farmacia/manutencao/jobs/purge-history/run` | Executa purge de histórico |
+| Método | Rota                                               | Descrição                            |
+| ------ | -------------------------------------------------- | ------------------------------------ |
+| GET    | `/farmacia/manutencao/jobs`                        | Lista jobs disponíveis               |
+| GET    | `/farmacia/manutencao/jobs/receita-expiry/preview` | Preview do job de receitas expiradas |
+| POST   | `/farmacia/manutencao/jobs/receita-expiry/run`     | Executa job de receitas expiradas    |
+| GET    | `/farmacia/manutencao/jobs/higiene/preview`        | Preview do job de higiene            |
+| POST   | `/farmacia/manutencao/jobs/higiene/run`            | Executa job de higiene               |
+| GET    | `/farmacia/manutencao/jobs/purge-history/preview`  | Preview do purge de histórico        |
+| POST   | `/farmacia/manutencao/jobs/purge-history/run`      | Executa purge de histórico           |
 
 ---
 
@@ -1119,9 +1119,9 @@ Pré-visualiza utentes removidos antigos candidatos a higiene.
 
 #### Query params
 
-| Param | Exemplo |
-|---|---|
-| `offsetMonths` | `12` |
+| Param          | Exemplo |
+| -------------- | ------- |
+| `offsetMonths` | `12`    |
 
 #### Exemplo
 
@@ -1162,9 +1162,9 @@ Pré-visualiza histórico antigo candidato a purge.
 
 #### Query params
 
-| Param | Exemplo |
-|---|---|
-| `offsetMonths` | `6` |
+| Param          | Exemplo |
+| -------------- | ------- |
+| `offsetMonths` | `6`     |
 
 #### Exemplo
 
@@ -1202,22 +1202,22 @@ curl -X POST "http://localhost:3001/api/farmacia/manutencao/jobs/purge-history/r
 
 ### Sucesso
 
-| Status | Significado |
-|---|---|
-| `200` | OK |
-| `201` | Criado |
-| `204` | Sem conteúdo |
+| Status | Significado  |
+| ------ | ------------ |
+| `200`  | OK           |
+| `201`  | Criado       |
+| `204`  | Sem conteúdo |
 
 ### Erro
 
-| Status | Significado |
-|---|---|
-| `400` | Pedido inválido |
-| `401` | Não autorizado |
-| `403` | Proibido |
-| `404` | Não encontrado |
-| `409` | Conflito de regra de negócio |
-| `500` | Erro interno |
+| Status | Significado                  |
+| ------ | ---------------------------- |
+| `400`  | Pedido inválido              |
+| `401`  | Não autorizado               |
+| `403`  | Proibido                     |
+| `404`  | Não encontrado               |
+| `409`  | Conflito de regra de negócio |
+| `500`  | Erro interno                 |
 
 ---
 

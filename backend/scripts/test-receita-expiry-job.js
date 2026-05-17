@@ -182,7 +182,7 @@ async function main() {
       },
       select: {
         status: true,
-        cancelReason: true,
+        closedReason: true,
       },
     });
 
@@ -193,8 +193,8 @@ async function main() {
     );
 
     assert(
-      pedido.cancelReason,
-      "Pedido cancelado devia ter cancelReason",
+      pedido.closedReason,
+      "Pedido cancelado devia ter closedReason",
       pedido,
     );
 

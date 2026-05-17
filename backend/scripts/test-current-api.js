@@ -634,7 +634,7 @@ async function main() {
   );
 
   assert(
-    rejectedPedido.data.cancelReason === "Teste automático de rejeição",
+    rejectedPedido.data.closedReason === "Teste automático de rejeição",
     "Motivo de rejeição não foi guardado corretamente",
     rejectedPedido,
   );

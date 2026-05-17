@@ -1,49 +1,55 @@
 import AreaLanding from "../../shared/layouts/AreaLanding/AreaLanding.jsx";
 
-import SantaCasaSectionNav from "../../features/santacasa/shared/components/SantaCasaSectionNav/SantaCasaSectionNav.jsx";
-
-import styles from "./SantaCasaHomePage.module.css";
+const SANTACASA_DASHBOARD_PATH = "/santacasa/dashboard";
+const SANTACASA_UTENTES_PATH = "/santacasa/utentes";
+const SANTACASA_OPERACAO_PATH = "/santacasa/operacao";
+const SANTACASA_PEDIDOS_PATH = "/santacasa/pedidos";
+const SANTACASA_REGULARIZACOES_PATH = "/santacasa/regularizacoes";
+const SANTACASA_HISTORICO_PATH = "/santacasa/historico";
 
 const ACTIONS = [
   {
-    title: "Utentes",
-    description: "Criar, consultar e gerir utentes ativos.",
-    to: "/santacasa/utentes",
+    title: "Dashboard",
+    description: "Ver sinais operacionais e totais relevantes.",
+    to: SANTACASA_DASHBOARD_PATH,
   },
   {
-    title: "Operação diária",
+    title: "Utentes",
+    description: "Criar, consultar e gerir utentes ativos.",
+    to: SANTACASA_UTENTES_PATH,
+  },
+  {
+    title: "Operação",
     description:
-      "Gerir receitas, medicamentos sem receita e Extras por utente.",
-    to: "/santacasa/operacao",
+      "Gerir receitas, medicamentos sem receita, Extras e preparação de pedidos.",
+    to: SANTACASA_OPERACAO_PATH,
   },
   {
     title: "Pedidos",
+    description: "Criar pedidos para enviar à Farmácia.",
+    to: SANTACASA_PEDIDOS_PATH,
+  },
+  {
+    title: "Regularizações",
     description:
-      "Rever a lista geral multiutente e enviar um único pedido para a Farmácia.",
-    to: "/santacasa/pedidos",
+      "Acompanhar Extras que aguardam receita futura ou já foram regularizados.",
+    to: SANTACASA_REGULARIZACOES_PATH,
   },
   {
     title: "Histórico",
-    description: "Consultar pedidos fechados e movimentos anteriores.",
-    to: "/santacasa/historico",
+    description: "Consultar pedidos validados ou rejeitados pela Farmácia.",
+    to: SANTACASA_HISTORICO_PATH,
   },
 ];
 
 export default function SantaCasaHomePage() {
   return (
-    <section
-      className={styles.page}
-      aria-label="Área operacional da Santa Casa"
-    >
-      <SantaCasaSectionNav />
-
-      <AreaLanding
-        eyebrow="Área Santa Casa"
-        title="Operação diária da Santa Casa."
-        description="Gestão de utentes, medicamentos, receitas, Extras e criação de pedidos para a Farmácia."
-        tone="green"
-        actions={ACTIONS}
-      />
-    </section>
+    <AreaLanding
+      eyebrow="Área Santa Casa"
+      title="Gestão assistencial com controlo de pedidos."
+      description="Dashboard, utentes, operação diária, pedidos, regularizações e histórico num fluxo único e rastreável."
+      tone="green"
+      actions={ACTIONS}
+    />
   );
 }

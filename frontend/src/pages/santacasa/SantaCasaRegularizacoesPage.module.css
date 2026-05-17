@@ -1,0 +1,227 @@
+.page {
+    display: grid;
+    gap: clamp(1.25rem, 2.5vw, 2rem);
+    inline-size: min(100%, 1180px);
+    margin-inline: auto;
+}
+
+.warning {
+    display: grid;
+    gap: 0.25rem;
+    padding: 0.9rem 1rem;
+    border: 1px solid rgba(201, 149, 57, 0.24);
+    border-radius: 1rem;
+    background:
+        linear-gradient(135deg,
+            rgba(255, 250, 240, 0.96),
+            rgba(255, 253, 248, 0.9));
+    color: #77551d;
+    box-shadow: 0 14px 34px rgba(86, 66, 38, 0.08);
+}
+
+.warning strong {
+    font-size: 0.88rem;
+}
+
+.warning span {
+    font-size: 0.92rem;
+    line-height: 1.5;
+}
+
+.toolbar {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: end;
+    gap: 1rem;
+    padding: clamp(1rem, 2vw, 1.2rem);
+    border: 1px solid rgba(39, 92, 72, 0.14);
+    border-radius: 1.25rem;
+    background:
+        linear-gradient(135deg,
+            rgba(255, 255, 255, 0.94),
+            rgba(247, 251, 249, 0.9)),
+        radial-gradient(circle at top left,
+            rgba(93, 160, 126, 0.1),
+            transparent 42%);
+    box-shadow: 0 18px 46px rgba(24, 43, 35, 0.07);
+}
+
+.tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+}
+
+.tabButton,
+.filterButton,
+.clearButton {
+    min-height: 2.45rem;
+    padding: 0.65rem 0.95rem;
+    border-radius: 999px;
+    font: inherit;
+    font-size: 0.86rem;
+    font-weight: 850;
+    cursor: pointer;
+    transition:
+        transform 160ms ease,
+        border-color 160ms ease,
+        background 160ms ease,
+        color 160ms ease,
+        box-shadow 160ms ease,
+        opacity 160ms ease;
+}
+
+.tabButton {
+    border: 1px solid rgba(39, 92, 72, 0.16);
+    background: rgba(255, 255, 255, 0.82);
+    color: #275c48;
+}
+
+.tabButtonActive {
+    border-color: rgba(39, 92, 72, 0.32);
+    background: #275c48;
+    color: #ffffff;
+    box-shadow: 0 14px 32px rgba(39, 92, 72, 0.18);
+}
+
+.filters {
+    display: grid;
+    grid-template-columns: minmax(13rem, 1fr) minmax(13rem, 1fr) auto;
+    align-items: end;
+    gap: 0.75rem;
+    min-width: 0;
+}
+
+.filterField {
+    display: grid;
+    gap: 0.42rem;
+    min-width: 0;
+}
+
+.filterField span {
+    color: #52786a;
+    font-size: 0.76rem;
+    font-weight: 850;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.filterField input,
+.filterField select {
+    min-height: 2.55rem;
+    inline-size: 100%;
+    padding: 0.7rem 0.9rem;
+    border: 1px solid rgba(39, 92, 72, 0.16);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.86);
+    color: #16251f;
+    font: inherit;
+    font-size: 0.9rem;
+}
+
+.filterField input::placeholder {
+    color: rgba(96, 118, 109, 0.72);
+}
+
+.filterField input:focus,
+.filterField select:focus {
+    outline: none;
+    border-color: rgba(39, 92, 72, 0.36);
+    box-shadow: 0 0 0 3px rgba(72, 128, 102, 0.18);
+}
+
+.filterActions {
+    display: flex;
+    gap: 0.55rem;
+}
+
+.filterButton {
+    border: 1px solid rgba(39, 92, 72, 0.28);
+    background: #275c48;
+    color: #ffffff;
+    box-shadow: 0 14px 32px rgba(39, 92, 72, 0.18);
+}
+
+.clearButton {
+    border: 1px solid rgba(39, 92, 72, 0.16);
+    background: rgba(255, 255, 255, 0.82);
+    color: #275c48;
+}
+
+.tabButton:hover,
+.filterButton:hover,
+.clearButton:hover {
+    transform: translateY(-1px);
+    border-color: rgba(39, 92, 72, 0.32);
+    box-shadow: 0 12px 28px rgba(24, 43, 35, 0.08);
+}
+
+.tabButton:focus-visible,
+.filterButton:focus-visible,
+.clearButton:focus-visible {
+    outline: 3px solid rgba(72, 128, 102, 0.26);
+    outline-offset: 3px;
+}
+
+.tabButton:disabled,
+.filterButton:disabled,
+.clearButton:disabled,
+.filterField input:disabled,
+.filterField select:disabled {
+    cursor: not-allowed;
+    opacity: 0.58;
+    transform: none;
+    box-shadow: none;
+}
+
+.meta {
+    display: grid;
+    justify-items: end;
+    gap: 0.2rem;
+    min-width: 5rem;
+    padding: 0.65rem 0.85rem;
+    border: 1px solid rgba(39, 92, 72, 0.12);
+    border-radius: 1rem;
+    background: rgba(255, 255, 255, 0.72);
+}
+
+.meta span {
+    color: #6d8279;
+    font-size: 0.76rem;
+    font-weight: 750;
+}
+
+.meta strong {
+    color: #1d3028;
+    font-size: 1.15rem;
+    line-height: 1;
+}
+
+@media (max-width: 1100px) {
+    .toolbar {
+        grid-template-columns: 1fr;
+        align-items: stretch;
+    }
+
+    .meta {
+        justify-items: start;
+    }
+}
+
+@media (max-width: 760px) {
+    .filters {
+        grid-template-columns: 1fr;
+    }
+
+    .tabs,
+    .filterActions {
+        display: grid;
+        grid-template-columns: 1fr;
+    }
+
+    .tabButton,
+    .filterButton,
+    .clearButton {
+        width: 100%;
+    }
+}

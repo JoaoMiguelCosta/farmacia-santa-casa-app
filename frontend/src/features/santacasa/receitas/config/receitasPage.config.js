@@ -15,6 +15,13 @@ export const RECEITAS_PAGE = Object.freeze({
     addLineLabel: "Adicionar linha",
     removeLineLabel: "Remover linha",
     successMessage: "Receita criada com sucesso.",
+    regularizationSuccessPrefix: "Regularização automática:",
+    regularizationUsedSingular: "foi usada para regularização",
+    regularizationUsedPlural: "foram usadas para regularização",
+    regularizationRemainingSingular: "ficou disponível na linha de receita",
+    regularizationRemainingPlural: "ficaram disponíveis na linha de receita",
+    regularizationNoRemaining:
+      "não ficou quantidade disponível na linha de receita",
   },
 
   list: {
