@@ -159,6 +159,5 @@ export function getDashboardQuickLinks() {
     FARMACIA_DASHBOARD_PAGE.cards.pedidosPendentes,
     FARMACIA_DASHBOARD_PAGE.cards.historico,
     FARMACIA_DASHBOARD_PAGE.cards.regularizacoes,
-    FARMACIA_DASHBOARD_PAGE.cards.manutencao,
   ];
 }

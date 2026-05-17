@@ -7,6 +7,11 @@ const FARMACIA_REGULARIZACOES_PATH = "/farmacia/regularizacoes";
 
 const ACTIONS = [
   {
+    title: "Dashboard",
+    description: "Ver sinais operacionais e totais relevantes.",
+    to: FARMACIA_DASHBOARD_PATH,
+  },
+  {
     title: "Pedidos Pendentes",
     description:
       "Consultar, validar ou rejeitar pedidos enviados pela Santa Casa.",
@@ -22,15 +27,6 @@ const ACTIONS = [
     description: "Acompanhar Extras regularizados por receitas futuras.",
     to: FARMACIA_REGULARIZACOES_PATH,
   },
-  {
-    title: "Dashboard",
-    description: "Ver sinais operacionais e totais relevantes.",
-    to: FARMACIA_DASHBOARD_PATH,
-  },
-  {
-    title: "Manutenção",
-    description: "Aceder a previews e execução controlada de jobs.",
-  },
 ];
 
 export default function FarmaciaHomePage() {
@@ -38,7 +34,7 @@ export default function FarmaciaHomePage() {
     <AreaLanding
       eyebrow="Área Farmácia"
       title="Controlo farmacêutico com rastreabilidade."
-      description="Dashboard, pedidos pendentes, histórico, regularizações, manutenção e sinais operacionais."
+      description="Dashboard, pedidos pendentes, histórico, regularizações e sinais operacionais."
       tone="blue"
       actions={ACTIONS}
     />

@@ -3,19 +3,24 @@ import { Navigate, createBrowserRouter } from "react-router-dom";
 import AppShell from "../shared/layouts/AppShell/AppShell.jsx";
 
 import HomePage from "../pages/HomePage.jsx";
+import NotFoundPage from "../pages/NotFoundPage.jsx";
+
 import SantaCasaHomePage from "../pages/santacasa/SantaCasaHomePage.jsx";
+import SantaCasaDashboardPage from "../pages/santacasa/SantaCasaDashboardPage.jsx";
 import SantaCasaUtentesPage from "../pages/santacasa/SantaCasaUtentesPage.jsx";
 import SantaCasaOperacaoPage from "../pages/santacasa/SantaCasaOperacaoPage.jsx";
+import SantaCasaPedidosPage from "../pages/santacasa/SantaCasaPedidosPage.jsx";
+import SantaCasaRegularizacoesPage from "../pages/santacasa/SantaCasaRegularizacoesPage.jsx";
 import SantaCasaHistoricoPage from "../pages/santacasa/SantaCasaHistoricoPage.jsx";
+
 import FarmaciaHomePage from "../pages/farmacia/FarmaciaHomePage.jsx";
 import FarmaciaDashboardPage from "../pages/farmacia/FarmaciaDashboardPage.jsx";
-import NotFoundPage from "../pages/NotFoundPage.jsx";
-import SantaCasaPedidosPage from "../pages/santacasa/SantaCasaPedidosPage.jsx";
 import FarmaciaPedidosPage from "../pages/farmacia/FarmaciaPedidosPage.jsx";
 import FarmaciaHistoricoPage from "../pages/farmacia/FarmaciaHistoricoPage.jsx";
 import FarmaciaRegularizacoesPage from "../pages/farmacia/FarmaciaRegularizacoesPage.jsx";
-import SantaCasaRegularizacoesPage from "../pages/santacasa/SantaCasaRegularizacoesPage.jsx";
-import SantaCasaDashboardPage from "../pages/santacasa/SantaCasaDashboardPage.jsx";
+
+import SystemHomePage from "../pages/system/SystemHomePage.jsx";
+import SystemManutencaoPage from "../pages/system/SystemManutencaoPage.jsx";
 
 export const router = createBrowserRouter([
   {
@@ -26,6 +31,7 @@ export const router = createBrowserRouter([
         index: true,
         element: <HomePage />,
       },
+
       {
         path: "santacasa",
         element: <SantaCasaHomePage />,
@@ -42,7 +48,6 @@ export const router = createBrowserRouter([
         path: "santacasa/operacao",
         element: <SantaCasaOperacaoPage />,
       },
-
       {
         path: "santacasa/receitas",
         element: <Navigate to="/santacasa/operacao" replace />,
@@ -63,11 +68,11 @@ export const router = createBrowserRouter([
         path: "santacasa/regularizacoes",
         element: <SantaCasaRegularizacoesPage />,
       },
-
       {
         path: "santacasa/historico",
         element: <SantaCasaHistoricoPage />,
       },
+
       {
         path: "farmacia",
         element: <FarmaciaHomePage />,
@@ -88,6 +93,16 @@ export const router = createBrowserRouter([
         path: "farmacia/regularizacoes",
         element: <FarmaciaRegularizacoesPage />,
       },
+
+      {
+        path: "sistema",
+        element: <SystemHomePage />,
+      },
+      {
+        path: "sistema/manutencao",
+        element: <SystemManutencaoPage />,
+      },
+
       {
         path: "*",
         element: <NotFoundPage />,

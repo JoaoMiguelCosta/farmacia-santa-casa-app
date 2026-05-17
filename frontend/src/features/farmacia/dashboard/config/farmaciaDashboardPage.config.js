@@ -71,14 +71,6 @@ export const FARMACIA_DASHBOARD_PAGE = Object.freeze({
       actionLabel: "Ver regularizações",
     },
 
-    manutencao: {
-      title: "Manutenção",
-      description:
-        "Execução controlada de jobs, limpezas e processos automáticos.",
-      to: "/farmacia/manutencao",
-      actionLabel: "Abrir manutenção",
-      disabled: true,
-    },
   },
 
   feedback: {

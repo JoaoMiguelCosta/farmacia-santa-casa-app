@@ -1,3 +1,16 @@
+const SYSTEM_MANUTENCAO_ENDPOINTS = Object.freeze({
+  jobs: "/manutencao/jobs",
+
+  receitaExpiryPreview: "/manutencao/jobs/receita-expiry/preview",
+  receitaExpiryRun: "/manutencao/jobs/receita-expiry/run",
+
+  higienePreview: "/manutencao/jobs/higiene/preview",
+  higieneRun: "/manutencao/jobs/higiene/run",
+
+  purgeHistoryPreview: "/manutencao/jobs/purge-history/preview",
+  purgeHistoryRun: "/manutencao/jobs/purge-history/run",
+});
+
 export const API_ENDPOINTS = Object.freeze({
   health: "/health",
 
@@ -42,7 +55,11 @@ export const API_ENDPOINTS = Object.freeze({
     regularizacoesPendentes: "/farmacia/regularizacoes/pendentes",
     regularizacoesHistorico: "/farmacia/regularizacoes/historico",
     regularizacoesSinal: "/farmacia/regularizacoes/sinal",
-
-    manutencaoJobs: "/farmacia/manutencao/jobs",
   },
+
+  system: {
+    manutencao: SYSTEM_MANUTENCAO_ENDPOINTS,
+  },
+
+  manutencao: SYSTEM_MANUTENCAO_ENDPOINTS,
 });

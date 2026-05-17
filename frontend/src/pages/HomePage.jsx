@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom";
 
-import SystemHealthPanel from "../features/system/components/SystemHealthPanel/SystemHealthPanel";
 
 import styles from "./HomePage.module.css";
 
@@ -15,9 +14,16 @@ const AREAS = [
   {
     title: "Farmácia",
     description:
-      "Validação de pedidos, regularizações, histórico, dashboard e manutenção operacional.",
+      "Validação de pedidos, regularizações, histórico e dashboard operacional.",
     to: "/farmacia",
     label: "Entrar na Farmácia",
+  },
+  {
+    title: "Sistema/Admin",
+    description:
+      "Área técnica para manutenção, jobs protegidos e operações administrativas.",
+    to: "/sistema",
+    label: "Entrar no Sistema/Admin",
   },
 ];
 
@@ -59,7 +65,7 @@ export default function HomePage() {
         ))}
       </div>
 
-      <SystemHealthPanel />
+
     </section>
   );
 }
