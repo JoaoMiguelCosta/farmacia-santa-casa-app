@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { getCurrentUser, loginUser, logoutUser } from "../api/authApi";
-import { AUTH_ROLES } from "../config/auth.config";
+import { AUTH_MESSAGES, AUTH_ROLES } from "../config/auth.config";
 import { AuthContext } from "./AuthContext";
 
 function getErrorMessage(error, fallback) {
@@ -9,7 +9,11 @@ function getErrorMessage(error, fallback) {
 }
 
 function isUnauthorizedError(error) {
-  return error?.status === 401 || error?.status === 403;
+  return error?.isUnauthorized || error?.status === 401;
+}
+
+function isForbiddenError(error) {
+  return error?.isForbidden || error?.status === 403;
 }
 
 export default function AuthProvider({ children }) {
@@ -20,6 +24,31 @@ export default function AuthProvider({ children }) {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const [error, setError] = useState(null);
+
+  const clearSession = useCallback((message = null) => {
+    setUser(null);
+
+    if (message) {
+      setError(message);
+    }
+  }, []);
+
+  const handleAuthError = useCallback(
+    (authError) => {
+      if (isUnauthorizedError(authError)) {
+        clearSession(AUTH_MESSAGES.sessionExpired);
+        return true;
+      }
+
+      if (isForbiddenError(authError)) {
+        setError(AUTH_MESSAGES.forbidden);
+        return true;
+      }
+
+      return false;
+    },
+    [clearSession],
+  );
 
   const refreshUser = useCallback(async ({ showLoading = false } = {}) => {
     if (showLoading) {
@@ -68,10 +97,7 @@ export default function AuthProvider({ children }) {
     } catch (loginError) {
       setUser(null);
 
-      const message = getErrorMessage(
-        loginError,
-        "Não foi possível iniciar sessão.",
-      );
+      const message = getErrorMessage(loginError, AUTH_MESSAGES.loginError);
 
       setError(message);
 
@@ -88,9 +114,7 @@ export default function AuthProvider({ children }) {
     try {
       await logoutUser();
     } catch (logoutError) {
-      setError(
-        getErrorMessage(logoutError, "Não foi possível terminar sessão."),
-      );
+      setError(getErrorMessage(logoutError, AUTH_MESSAGES.logoutError));
     } finally {
       setUser(null);
       setIsLoggingOut(false);
@@ -161,6 +185,8 @@ export default function AuthProvider({ children }) {
       login,
       logout,
       refreshUser,
+      clearSession,
+      handleAuthError,
       clearAuthError,
     };
   }, [
@@ -172,6 +198,8 @@ export default function AuthProvider({ children }) {
     login,
     logout,
     refreshUser,
+    clearSession,
+    handleAuthError,
     clearAuthError,
   ]);
 

@@ -1,4 +1,6 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+
+import { useAuth } from "../../../auth/hooks/useAuth";
 
 import { getUtentes } from "../../utentes/api/utentesApi";
 import { sortUtentesByName } from "../../utentes/utils/sortUtentes";
@@ -17,6 +19,8 @@ function getErrorMessage(error, fallback) {
 }
 
 export function useSantaCasaOperacao() {
+  const { handleAuthError } = useAuth();
+
   const [utentes, setUtentes] = useState([]);
   const [selectedUtenteId, setSelectedUtenteId] = useState("");
 
@@ -36,57 +40,68 @@ export function useSantaCasaOperacao() {
     [utentes, selectedUtenteId],
   );
 
-  async function loadOperationData(utenteId, { showRefreshing = false } = {}) {
-    if (!utenteId) {
-      setReceitas([]);
-      setSemReceita([]);
-      setExtras([]);
-      return;
-    }
+  const loadOperationData = useCallback(
+    async (utenteId, { showRefreshing = false } = {}) => {
+      if (!utenteId) {
+        setReceitas([]);
+        setSemReceita([]);
+        setExtras([]);
+        return;
+      }
 
-    if (showRefreshing) {
-      setIsRefreshing(true);
-    } else {
-      setIsLoadingData(true);
-    }
+      if (showRefreshing) {
+        setIsRefreshing(true);
+      } else {
+        setIsLoadingData(true);
+      }
 
-    setDataError(null);
+      setDataError(null);
 
-    try {
-      const [receitasData, semReceitaData, extrasData] = await Promise.all([
-        getReceitasByUtente(utenteId),
-        getSemReceitaByUtente(utenteId),
-        getExtrasByUtente(utenteId),
-      ]);
+      try {
+        const [receitasData, semReceitaData, extrasData] = await Promise.all([
+          getReceitasByUtente(utenteId),
+          getSemReceitaByUtente(utenteId),
+          getExtrasByUtente(utenteId),
+        ]);
 
-      setReceitas(sortReceitasByMedicamento(receitasData));
-      setSemReceita(sortSemReceitaByMedicamento(semReceitaData));
-      setExtras(sortExtrasByMedicamento(extrasData));
-    } catch (error) {
-      setDataError(
-        getErrorMessage(error, "Erro ao carregar dados da operação."),
-      );
-    } finally {
-      setIsLoadingData(false);
-      setIsRefreshing(false);
-    }
-  }
+        setReceitas(sortReceitasByMedicamento(receitasData));
+        setSemReceita(sortSemReceitaByMedicamento(semReceitaData));
+        setExtras(sortExtrasByMedicamento(extrasData));
+      } catch (error) {
+        if (handleAuthError(error)) return;
 
-  function handleSelectUtente(utenteId) {
-    setSelectedUtenteId(utenteId);
-    setDataError(null);
+        setDataError(
+          getErrorMessage(error, "Erro ao carregar dados da operação."),
+        );
+      } finally {
+        setIsLoadingData(false);
+        setIsRefreshing(false);
+      }
+    },
+    [handleAuthError],
+  );
 
-    loadOperationData(utenteId);
-  }
+  const handleSelectUtente = useCallback(
+    (utenteId) => {
+      setSelectedUtenteId(utenteId);
+      setDataError(null);
 
-  async function refreshOperationData() {
+      loadOperationData(utenteId);
+    },
+    [loadOperationData],
+  );
+
+  const refreshOperationData = useCallback(async () => {
     await loadOperationData(selectedUtenteId, { showRefreshing: true });
-  }
+  }, [loadOperationData, selectedUtenteId]);
 
   useEffect(() => {
     let isMounted = true;
 
     async function loadInitialData() {
+      setIsLoadingUtentes(true);
+      setUtentesError(null);
+
       try {
         const utentesData = await getUtentes();
 
@@ -117,6 +132,7 @@ export function useSantaCasaOperacao() {
         setDataError(null);
       } catch (error) {
         if (!isMounted) return;
+        if (handleAuthError(error)) return;
 
         setUtentesError(getErrorMessage(error, "Erro ao carregar utentes."));
       } finally {
@@ -132,7 +148,7 @@ export function useSantaCasaOperacao() {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [handleAuthError]);
 
   return {
     utentes,

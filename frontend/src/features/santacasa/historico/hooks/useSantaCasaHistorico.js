@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 
+import { useAuth } from "../../../auth/hooks/useAuth";
+
 import { getSantaCasaHistorico } from "../api/santaCasaHistoricoApi";
 
 import { buildSantaCasaHistoricoQuery } from "../utils/santaCasaHistorico.utils";
@@ -18,6 +20,8 @@ function getErrorMessage(error, fallback) {
 }
 
 export function useSantaCasaHistorico() {
+  const { handleAuthError } = useAuth();
+
   const [pedidos, setPedidos] = useState([]);
   const [meta, setMeta] = useState({
     total: 0,
@@ -58,6 +62,8 @@ export function useSantaCasaHistorico() {
         setPedidos(result.data);
         setMeta(result.meta);
       } catch (loadError) {
+        if (handleAuthError(loadError)) return;
+
         setError(
           getErrorMessage(
             loadError,
@@ -69,7 +75,7 @@ export function useSantaCasaHistorico() {
         setIsRefreshing(false);
       }
     },
-    [currentQuery],
+    [currentQuery, handleAuthError],
   );
 
   const refreshHistorico = useCallback(async () => {
@@ -128,6 +134,7 @@ export function useSantaCasaHistorico() {
         setMeta(result.meta);
       } catch (loadError) {
         if (!isMounted) return;
+        if (handleAuthError(loadError)) return;
 
         setError(
           getErrorMessage(
@@ -147,7 +154,7 @@ export function useSantaCasaHistorico() {
     return () => {
       isMounted = false;
     };
-  }, [currentQuery]);
+  }, [currentQuery, handleAuthError]);
 
   return {
     pedidos,

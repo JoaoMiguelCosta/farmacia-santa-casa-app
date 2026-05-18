@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 
 import Button from "../../shared/ui/Button/Button";
 import ConfirmDialog from "../../shared/ui/ConfirmDialog/ConfirmDialog";
@@ -12,376 +12,30 @@ import UtenteSelector from "../../features/santacasa/shared/components/UtenteSel
 
 import ReceitaCreateForm from "../../features/santacasa/receitas/components/ReceitaCreateForm/ReceitaCreateForm";
 import ReceitasList from "../../features/santacasa/receitas/components/ReceitasList/ReceitasList";
-import {
-  createReceita,
-  deleteReceitaLinha,
-} from "../../features/santacasa/receitas/api/receitasApi";
-import { RECEITAS_PAGE } from "../../features/santacasa/receitas/config/receitasPage.config";
 
 import SemReceitaCreateForm from "../../features/santacasa/sem-receita/components/SemReceitaCreateForm/SemReceitaCreateForm";
 import SemReceitaList from "../../features/santacasa/sem-receita/components/SemReceitaList/SemReceitaList";
-import {
-  createSemReceita,
-  deleteSemReceita,
-} from "../../features/santacasa/sem-receita/api/semReceitaApi";
-import { SEM_RECEITA_PAGE } from "../../features/santacasa/sem-receita/config/semReceitaPage.config";
 
 import ExtraCreateForm from "../../features/santacasa/extras/components/ExtraCreateForm/ExtraCreateForm";
 import ExtrasList from "../../features/santacasa/extras/components/ExtrasList/ExtrasList";
-import {
-  createExtra,
-  deleteExtra,
-} from "../../features/santacasa/extras/api/extrasApi";
-import { EXTRAS_PAGE } from "../../features/santacasa/extras/config/extrasPage.config";
 
-import { clampQuantity } from "../../features/santacasa/pedidos/utils/pedidoItems";
 import { usePedidoDraft } from "../../features/santacasa/pedidos/state/usePedidoDraft";
 
 import OperationSection from "../../features/santacasa/operacao/components/OperationSection/OperationSection";
 import { useSantaCasaOperacao } from "../../features/santacasa/operacao/hooks/useSantaCasaOperacao";
+import { useSantaCasaOperacaoActions } from "../../features/santacasa/operacao/hooks/useSantaCasaOperacaoActions";
+
+import {
+  buildDraftQuantityMap,
+  getDeletingId,
+  getExtraPedidoKey,
+  getExtraQuantidadeRestante,
+  getQuantidadeDisponivelVisual,
+  getReceitaPedidoKey,
+  getSemReceitaPedidoKey,
+} from "../../features/santacasa/operacao/utils/santaCasaOperacao.utils";
 
 import styles from "./SantaCasaOperacaoPage.module.css";
-
-function buildDraftQuantityMap(items = []) {
-  const map = {};
-
-  items.forEach((item) => {
-    map[item.key] = Number(item.quantidade) || 0;
-  });
-
-  return map;
-}
-
-function buildReceitaDraftItems(items = [], utenteId) {
-  return items
-    .filter((item) => item.tipo === "COM_RECEITA")
-    .filter((item) => item.utenteId === utenteId)
-    .map((item) => ({
-      linhaId: item.id,
-      quantidade: Number(item.quantidade) || 0,
-    }))
-    .filter((item) => item.linhaId && item.quantidade > 0);
-}
-
-function normalizeMedicationName(value) {
-  return String(value || "")
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .trim()
-    .toLowerCase()
-    .replace(/\s+/g, " ");
-}
-
-function getItemMedicationName(item) {
-  return (
-    item?.medicamento ||
-    item?.nome ||
-    item?.title ||
-    item?.source?.medicamento ||
-    item?.source?.nome ||
-    ""
-  );
-}
-
-function isSameMedication(a, b) {
-  return (
-    normalizeMedicationName(getItemMedicationName(a)) ===
-    normalizeMedicationName(getItemMedicationName(b))
-  );
-}
-
-function formatUnitsLabel(quantity) {
-  const amount = Number(quantity) || 0;
-
-  return amount === 1 ? "1 unidade" : `${amount} unidades`;
-}
-
-function getOriginListLabel(tipo) {
-  if (tipo === "COM_RECEITA") return "Receitas";
-  if (tipo === "SEM_RECEITA") return "Sem Receita";
-  if (tipo === "EXTRA") return "Extras";
-
-  return "lista correspondente";
-}
-
-function formatVerbByQuantity(quantity, singular, plural) {
-  return Number(quantity) === 1 ? singular : plural;
-}
-
-function buildAddToPedidoMessage({
-  item,
-  addedQuantity,
-  remainingQuantity,
-  utenteNome,
-}) {
-  const medicamento = getItemMedicationName(item);
-  const originLabel = getOriginListLabel(item.tipo);
-  const addVerb = formatVerbByQuantity(
-    addedQuantity,
-    "adicionada",
-    "adicionadas",
-  );
-
-  const baseMessage = `${formatUnitsLabel(
-    addedQuantity,
-  )} de ${medicamento} ${addVerb} ao pedido geral de ${utenteNome}.`;
-
-  if (remainingQuantity <= 0) {
-    return `${baseMessage} Toda a quantidade disponível ficou no pedido geral. O item deixou de aparecer em ${originLabel} para este utente.`;
-  }
-
-  const remainVerb = formatVerbByQuantity(
-    remainingQuantity,
-    "continua",
-    "continuam",
-  );
-
-  const availableWord = formatVerbByQuantity(
-    remainingQuantity,
-    "disponível",
-    "disponíveis",
-  );
-
-  return `${baseMessage} ${formatUnitsLabel(
-    remainingQuantity,
-  )} ${remainVerb} ${availableWord} em ${originLabel}.`;
-}
-
-function getResolvedExtraKeys(extrasResolvidos = []) {
-  return extrasResolvidos
-    .map((extra) => extra?.id)
-    .filter(Boolean)
-    .map((extraId) => `EXTRA:${extraId}`);
-}
-
-function buildResolvedExtrasMessage(extrasResolvidos = []) {
-  if (!Array.isArray(extrasResolvidos) || extrasResolvidos.length === 0) {
-    return "";
-  }
-
-  if (extrasResolvidos.length === 1) {
-    const extra = extrasResolvidos[0];
-    const quantidade = Number(extra.quantidadeRemovida) || 0;
-
-    if (extra.action === "DELETED") {
-      return ` O Extra ${extra.medicamento} foi removido porque passou a existir receita ativa para o mesmo medicamento.`;
-    }
-
-    return ` No Extra ${extra.medicamento}, ${formatUnitsLabel(
-      quantidade,
-    )} que ainda não tinham sido enviadas à Farmácia foram removidas. A parte já enviada foi preservada.`;
-  }
-
-  return ` ${extrasResolvidos.length} Extras compatíveis foram ajustados/removidos porque passaram a ter receita ativa.`;
-}
-
-function getCreatedReceitaLinhas(receita) {
-  return Array.isArray(receita?.linhas) ? receita.linhas : [];
-}
-
-function getLinhaQuantidadeRegularizada(linha) {
-  return Number(linha?.quantidadeDispensada) || 0;
-}
-
-function getLinhaQuantidadeRestante(linha) {
-  const restante = Number(linha?.quantidadeRestante);
-
-  if (Number.isFinite(restante)) {
-    return Math.max(0, restante);
-  }
-
-  return Math.max(
-    0,
-    Number(linha?.quantidade || 0) - getLinhaQuantidadeRegularizada(linha),
-  );
-}
-
-function buildReceitaRegularizacaoMessage(receita) {
-  const linhasRegularizadas = getCreatedReceitaLinhas(receita)
-    .map((linha) => {
-      const quantidadeRegularizada = getLinhaQuantidadeRegularizada(linha);
-      const quantidadeRestante = getLinhaQuantidadeRestante(linha);
-
-      return {
-        medicamento: linha?.medicamento || linha?.nome || "Medicamento",
-        quantidadeRegularizada,
-        quantidadeRestante,
-      };
-    })
-    .filter((linha) => linha.quantidadeRegularizada > 0);
-
-  if (linhasRegularizadas.length === 0) {
-    return "";
-  }
-
-  const detalhes = linhasRegularizadas
-    .map((linha) => {
-      const usedVerb = formatVerbByQuantity(
-        linha.quantidadeRegularizada,
-        RECEITAS_PAGE.form.regularizationUsedSingular,
-        RECEITAS_PAGE.form.regularizationUsedPlural,
-      );
-
-      const remainingMessage =
-        linha.quantidadeRestante > 0
-          ? `${formatUnitsLabel(
-              linha.quantidadeRestante,
-            )} ${formatVerbByQuantity(
-              linha.quantidadeRestante,
-              RECEITAS_PAGE.form.regularizationRemainingSingular,
-              RECEITAS_PAGE.form.regularizationRemainingPlural,
-            )}`
-          : RECEITAS_PAGE.form.regularizationNoRemaining;
-
-      return `${linha.medicamento}: ${formatUnitsLabel(
-        linha.quantidadeRegularizada,
-      )} ${usedVerb}; ${remainingMessage}.`;
-    })
-    .join(" ");
-
-  return ` ${RECEITAS_PAGE.form.regularizationSuccessPrefix} ${detalhes}`;
-}
-
-function buildReceitaSuccessMessage(createdReceita, extrasResolvidos = []) {
-  return `${RECEITAS_PAGE.form.successMessage}${buildReceitaRegularizacaoMessage(
-    createdReceita,
-  )}${buildResolvedExtrasMessage(extrasResolvidos)}`;
-}
-
-function getReceitaFieldErrors(requestError) {
-  if (requestError?.status === 409) {
-    return {
-      numero19:
-        requestError.message || "Já existe uma receita com esse número.",
-    };
-  }
-
-  return {};
-}
-
-function getDeleteTargetKey(target) {
-  if (!target) return "";
-
-  if (target.kind === "receita") {
-    return `receita:${target.item.linhaId}`;
-  }
-
-  if (target.kind === "semReceita") {
-    return `semReceita:${target.item.id}`;
-  }
-
-  if (target.kind === "extra") {
-    return `extra:${target.item.id}`;
-  }
-
-  return "";
-}
-
-function getDeletingId(deletingKey, kind) {
-  if (!deletingKey?.startsWith(`${kind}:`)) return null;
-
-  return deletingKey.slice(kind.length + 1);
-}
-
-function getPedidoKeyFromDeleteTarget(target) {
-  if (!target) return "";
-
-  if (target.kind === "receita") {
-    return `COM_RECEITA:${target.item.linhaId}`;
-  }
-
-  if (target.kind === "semReceita") {
-    return `SEM_RECEITA:${target.item.id}`;
-  }
-
-  if (target.kind === "extra") {
-    return `EXTRA:${target.item.id}`;
-  }
-
-  return "";
-}
-
-function getDeleteDialogData(target) {
-  if (!target) {
-    return {
-      title: "Remover item?",
-      description: "Esta ação pode ser bloqueada se o item tiver histórico.",
-      confirmLabel: "Remover",
-      cancelLabel: "Cancelar",
-    };
-  }
-
-  if (target.kind === "receita") {
-    return {
-      ...RECEITAS_PAGE.deleteDialog,
-      description: `${RECEITAS_PAGE.deleteDialog.description} Medicamento: ${target.item.medicamento}.`,
-    };
-  }
-
-  if (target.kind === "semReceita") {
-    return {
-      ...SEM_RECEITA_PAGE.deleteDialog,
-      description: `${SEM_RECEITA_PAGE.deleteDialog.description} Medicamento: ${target.item.medicamento}.`,
-    };
-  }
-
-  return {
-    ...EXTRAS_PAGE.deleteDialog,
-    description: `${EXTRAS_PAGE.deleteDialog.description} Medicamento: ${target.item.medicamento}.`,
-  };
-}
-
-function getDeleteSuccessMessage(target) {
-  if (target?.kind === "receita") {
-    return RECEITAS_PAGE.list.deleteSuccessMessage;
-  }
-
-  if (target?.kind === "semReceita") {
-    return SEM_RECEITA_PAGE.list.deleteSuccessMessage;
-  }
-
-  return EXTRAS_PAGE.list.deleteSuccessMessage;
-}
-
-function getReceitaPedidoKey(linha) {
-  return `COM_RECEITA:${linha.linhaId}`;
-}
-
-function getSemReceitaPedidoKey(item) {
-  return `SEM_RECEITA:${item.id}`;
-}
-
-function getExtraPedidoKey(item) {
-  return `EXTRA:${item.id}`;
-}
-
-function getExtraQuantidadeRestante(item) {
-  const restante = Number(item.quantidadeRestante);
-
-  if (Number.isFinite(restante)) return Math.max(0, restante);
-
-  const total = Number(item.quantidadeSolicitada ?? item.quantidade ?? 0) || 0;
-  const regularizada =
-    Number(item.quantidadeRegularizada ?? item.quantidadeDispensada ?? 0) || 0;
-
-  return Math.max(0, total - regularizada);
-}
-
-function getQuantidadeDisponivelVisual(totalRestante, pedidoKey, pedidoMap) {
-  const quantidadeRestante = Number(totalRestante) || 0;
-  const quantidadeEmPedido = Number(pedidoMap[pedidoKey]) || 0;
-
-  return Math.max(0, quantidadeRestante - quantidadeEmPedido);
-}
-
-function buildGlobalDraftItem({ item, selectedUtente, selectedUtenteId }) {
-  return {
-    ...item,
-    utenteId: selectedUtenteId,
-    utenteNome: selectedUtente?.nome || "Utente selecionado",
-    utenteNumero9: selectedUtente?.numero9 || "",
-  };
-}
 
 export default function SantaCasaOperacaoPage() {
   const {
@@ -411,14 +65,44 @@ export default function SantaCasaOperacaoPage() {
     removeItemsByKeys,
   } = usePedidoDraft();
 
-  const [pedidoQuantities, setPedidoQuantities] = useState({});
-  const [deleteTarget, setDeleteTarget] = useState(null);
-  const [deletingTargetKey, setDeletingTargetKey] = useState(null);
+  const {
+    pedidoQuantities,
+    deleteTarget,
+    deleteDialogData,
+    deletingTargetKey,
 
-  const [isCreatingReceita, setIsCreatingReceita] = useState(false);
-  const [isCreatingSemReceita, setIsCreatingSemReceita] = useState(false);
-  const [isCreatingExtra, setIsCreatingExtra] = useState(false);
-  const [feedback, setFeedback] = useState(null);
+    isCreatingReceita,
+    isCreatingSemReceita,
+    isCreatingExtra,
+
+    feedback,
+    setFeedback,
+
+    handleSelectOperationUtente,
+    handlePedidoQuantityInputChange,
+
+    handleCreateReceita,
+    handleCreateSemReceita,
+    handleCreateExtra,
+
+    handleAddPedidoItem,
+    handleBlockedDelete,
+
+    handleRequestDelete,
+    handleCancelDelete,
+    handleConfirmDelete,
+
+    handleAfterReceitaQuantityBackToList,
+  } = useSantaCasaOperacaoActions({
+    selectedUtenteId,
+    selectedUtente,
+    extras,
+    pedidoDraftItems,
+    addPedidoDraftItem,
+    removeItemsByKeys,
+    refreshOperationData,
+    handleSelectUtente,
+  });
 
   const pedidoItemsQuantities = useMemo(
     () => buildDraftQuantityMap(pedidoDraftItems),
@@ -472,353 +156,6 @@ export default function SantaCasaOperacaoPage() {
       }),
     [extras, pedidoItemsQuantities],
   );
-
-  const deleteDialogData = getDeleteDialogData(deleteTarget);
-
-  async function deleteCompatibleExtrasFromBackend(receitaItem) {
-    if (!selectedUtenteId) {
-      return {
-        removedCount: 0,
-        removedLabel: "",
-      };
-    }
-
-    const matchingExtras = extras.filter((extra) =>
-      isSameMedication(extra, receitaItem),
-    );
-
-    if (matchingExtras.length === 0) {
-      return {
-        removedCount: 0,
-        removedLabel: "",
-      };
-    }
-
-    const matchingExtraKeys = matchingExtras.map(
-      (extra) => `EXTRA:${extra.id}`,
-    );
-
-    removeItemsByKeys(matchingExtraKeys);
-
-    const removedLabel =
-      matchingExtras.length === 1
-        ? matchingExtras[0].medicamento
-        : `${matchingExtras.length} Extras`;
-
-    try {
-      await Promise.all(
-        matchingExtras.map((extra) => deleteExtra(selectedUtenteId, extra.id)),
-      );
-
-      await refreshOperationData();
-
-      return {
-        removedCount: matchingExtras.length,
-        removedLabel,
-      };
-    } catch (requestError) {
-      setFeedback({
-        type: "error",
-        message:
-          requestError.message ||
-          "Erro ao remover Extra incompatível com a receita disponível.",
-      });
-
-      await refreshOperationData();
-
-      return {
-        removedCount: 0,
-        removedLabel: "",
-      };
-    }
-  }
-
-  function handleSelectOperationUtente(utenteId) {
-    setPedidoQuantities({});
-    setFeedback(null);
-    handleSelectUtente(utenteId);
-  }
-
-  function handlePedidoQuantityInputChange(itemKey, value, max) {
-    const nextQuantity = max > 0 ? clampQuantity(value, max) : 0;
-
-    setPedidoQuantities((currentQuantities) => ({
-      ...currentQuantities,
-      [itemKey]: nextQuantity,
-    }));
-  }
-
-  async function handleCreateReceita(payload) {
-    if (!selectedUtenteId) {
-      return {
-        ok: false,
-        fieldErrors: {},
-      };
-    }
-
-    setIsCreatingReceita(true);
-    setFeedback(null);
-
-    try {
-      const createdReceita = await createReceita(selectedUtenteId, payload);
-
-      const extrasResolvidos = Array.isArray(createdReceita?.extrasResolvidos)
-        ? createdReceita.extrasResolvidos
-        : [];
-
-      const extraKeysToRemove = getResolvedExtraKeys(extrasResolvidos);
-
-      if (extraKeysToRemove.length > 0) {
-        removeItemsByKeys(extraKeysToRemove);
-      }
-
-      await refreshOperationData();
-
-      setFeedback({
-        type: "success",
-        message: buildReceitaSuccessMessage(createdReceita, extrasResolvidos),
-      });
-
-      return {
-        ok: true,
-        fieldErrors: {},
-      };
-    } catch (requestError) {
-      const message = requestError.message || "Erro ao criar receita.";
-
-      setFeedback({
-        type: "error",
-        message,
-      });
-
-      return {
-        ok: false,
-        fieldErrors: getReceitaFieldErrors(requestError),
-      };
-    } finally {
-      setIsCreatingReceita(false);
-    }
-  }
-
-  async function handleCreateSemReceita(payload) {
-    if (!selectedUtenteId) {
-      return {
-        ok: false,
-        fieldErrors: {},
-      };
-    }
-
-    setIsCreatingSemReceita(true);
-    setFeedback(null);
-
-    try {
-      await createSemReceita(selectedUtenteId, payload);
-      await refreshOperationData();
-
-      setFeedback({
-        type: "success",
-        message: SEM_RECEITA_PAGE.form.successMessage,
-      });
-
-      return {
-        ok: true,
-        fieldErrors: {},
-      };
-    } catch (requestError) {
-      setFeedback({
-        type: "error",
-        message:
-          requestError.message || "Erro ao criar medicamento sem receita.",
-      });
-
-      return {
-        ok: false,
-        fieldErrors: {},
-      };
-    } finally {
-      setIsCreatingSemReceita(false);
-    }
-  }
-
-  async function handleCreateExtra(payload) {
-    if (!selectedUtenteId) {
-      return {
-        ok: false,
-        fieldErrors: {},
-      };
-    }
-
-    setIsCreatingExtra(true);
-    setFeedback(null);
-
-    try {
-      await createExtra(selectedUtenteId, {
-        ...payload,
-        receitaDraftItems: buildReceitaDraftItems(
-          pedidoDraftItems,
-          selectedUtenteId,
-        ),
-      });
-
-      await refreshOperationData();
-
-      setFeedback({
-        type: "success",
-        message: EXTRAS_PAGE.form.successMessage,
-      });
-
-      return {
-        ok: true,
-        fieldErrors: {},
-      };
-    } catch (requestError) {
-      setFeedback({
-        type: "error",
-        message: requestError.message || "Erro ao criar Extra.",
-      });
-
-      return {
-        ok: false,
-        fieldErrors: {},
-      };
-    } finally {
-      setIsCreatingExtra(false);
-    }
-  }
-
-  function handleAddPedidoItem(item) {
-    if (!selectedUtenteId) return;
-
-    const maxAvailable = Number(item.quantidadeRestante) || 0;
-
-    const existingItem = pedidoDraftItems.find(
-      (currentItem) => currentItem.key === item.key,
-    );
-
-    const currentQuantityInPedido = Number(existingItem?.quantidade) || 0;
-    const availableToAdd = Math.max(0, maxAvailable - currentQuantityInPedido);
-
-    if (availableToAdd <= 0) {
-      setFeedback({
-        type: "info",
-        message: `${getItemMedicationName(
-          item,
-        )} já está totalmente no pedido geral.`,
-      });
-
-      return;
-    }
-
-    const quantityToAdd = clampQuantity(item.quantidade, availableToAdd);
-    const nextQuantityInPedido = Math.min(
-      currentQuantityInPedido + quantityToAdd,
-      maxAvailable,
-    );
-    const remainingQuantity = Math.max(0, maxAvailable - nextQuantityInPedido);
-
-    addPedidoDraftItem(
-      buildGlobalDraftItem({
-        item: {
-          ...item,
-          quantidade: quantityToAdd,
-        },
-        selectedUtente,
-        selectedUtenteId,
-      }),
-    );
-
-    setPedidoQuantities((currentQuantities) => ({
-      ...currentQuantities,
-      [item.key]: 1,
-    }));
-
-    setFeedback({
-      type: "success",
-      message: buildAddToPedidoMessage({
-        item,
-        addedQuantity: quantityToAdd,
-        remainingQuantity,
-        utenteNome: selectedUtente?.nome || "utente selecionado",
-      }),
-    });
-  }
-
-  function handleBlockedDelete(item, quantidadeEmPedido) {
-    const medicamento = getItemMedicationName(item);
-    const quantityLabel = formatUnitsLabel(quantidadeEmPedido);
-
-    setFeedback({
-      type: "info",
-      message: `Não é possível remover ${medicamento} porque ainda existem ${quantityLabel} no pedido geral. Retira primeiro essa quantidade na página Pedidos.`,
-    });
-  }
-
-  function handleRequestDelete(kind, item) {
-    setDeleteTarget({
-      kind,
-      item,
-    });
-    setFeedback(null);
-  }
-
-  function handleCancelDelete() {
-    if (deletingTargetKey) return;
-
-    setDeleteTarget(null);
-  }
-
-  async function handleConfirmDelete() {
-    if (!selectedUtenteId || !deleteTarget) return;
-
-    const targetKey = getDeleteTargetKey(deleteTarget);
-
-    setDeletingTargetKey(targetKey);
-    setFeedback(null);
-
-    try {
-      if (deleteTarget.kind === "receita") {
-        await deleteReceitaLinha(selectedUtenteId, deleteTarget.item.linhaId);
-      }
-
-      if (deleteTarget.kind === "semReceita") {
-        await deleteSemReceita(selectedUtenteId, deleteTarget.item.id);
-      }
-
-      if (deleteTarget.kind === "extra") {
-        await deleteExtra(selectedUtenteId, deleteTarget.item.id);
-      }
-
-      const pedidoKey = getPedidoKeyFromDeleteTarget(deleteTarget);
-      removeItemsByKeys([pedidoKey]);
-
-      await refreshOperationData();
-
-      setFeedback({
-        type: "success",
-        message: getDeleteSuccessMessage(deleteTarget),
-      });
-
-      setDeleteTarget(null);
-    } catch (requestError) {
-      setFeedback({
-        type: "error",
-        message: requestError.message || "Erro ao remover item.",
-      });
-    } finally {
-      setDeletingTargetKey(null);
-    }
-  }
-
-  async function handleAfterReceitaQuantityBackToList(receitaItem) {
-    const extraInfo = await deleteCompatibleExtrasFromBackend(receitaItem);
-
-    if (extraInfo.removedCount > 0) {
-      setFeedback({
-        type: "info",
-        message: `${extraInfo.removedLabel} removido dos Extras em aberto e do pedido geral, porque voltou a existir quantidade disponível com receita para o mesmo medicamento.`,
-      });
-    }
-  }
 
   return (
     <section className={styles.page} aria-labelledby="operacao-title">

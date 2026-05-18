@@ -20,6 +20,13 @@ export const API_ENDPOINTS = Object.freeze({
     me: "/auth/me",
   },
 
+  admin: {
+    users: "/admin/users",
+    userById: (userId) => `/admin/users/${userId}`,
+    userPassword: (userId) => `/admin/users/${userId}/password`,
+    userStatus: (userId) => `/admin/users/${userId}/status`,
+  },
+
   santacasa: {
     health: "/santacasa/health",
 

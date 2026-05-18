@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 
+import { useAuth } from "../../../auth/hooks/useAuth";
+
 import { getFarmaciaDashboard } from "../api/farmaciaDashboardApi";
 
 function getErrorMessage(error, fallback) {
@@ -7,6 +9,8 @@ function getErrorMessage(error, fallback) {
 }
 
 export function useFarmaciaDashboard() {
+  const { handleAuthError } = useAuth();
+
   const [dashboard, setDashboard] = useState(null);
 
   const [isLoading, setIsLoading] = useState(true);
@@ -14,31 +18,36 @@ export function useFarmaciaDashboard() {
 
   const [error, setError] = useState(null);
 
-  const loadDashboard = useCallback(async ({ showRefreshing = false } = {}) => {
-    if (showRefreshing) {
-      setIsRefreshing(true);
-    } else {
-      setIsLoading(true);
-    }
+  const loadDashboard = useCallback(
+    async ({ showRefreshing = false } = {}) => {
+      if (showRefreshing) {
+        setIsRefreshing(true);
+      } else {
+        setIsLoading(true);
+      }
 
-    setError(null);
+      setError(null);
 
-    try {
-      const data = await getFarmaciaDashboard();
+      try {
+        const data = await getFarmaciaDashboard();
 
-      setDashboard(data);
-    } catch (loadError) {
-      setError(
-        getErrorMessage(
-          loadError,
-          "Não foi possível carregar o dashboard da Farmácia.",
-        ),
-      );
-    } finally {
-      setIsLoading(false);
-      setIsRefreshing(false);
-    }
-  }, []);
+        setDashboard(data);
+      } catch (loadError) {
+        if (handleAuthError(loadError)) return;
+
+        setError(
+          getErrorMessage(
+            loadError,
+            "Não foi possível carregar o dashboard da Farmácia.",
+          ),
+        );
+      } finally {
+        setIsLoading(false);
+        setIsRefreshing(false);
+      }
+    },
+    [handleAuthError],
+  );
 
   const refreshDashboard = useCallback(async () => {
     await loadDashboard({ showRefreshing: true });
@@ -59,6 +68,7 @@ export function useFarmaciaDashboard() {
         setDashboard(data);
       } catch (loadError) {
         if (!isMounted) return;
+        if (handleAuthError(loadError)) return;
 
         setError(
           getErrorMessage(
@@ -78,7 +88,7 @@ export function useFarmaciaDashboard() {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [handleAuthError]);
 
   return {
     dashboard,

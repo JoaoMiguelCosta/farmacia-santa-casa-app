@@ -24,9 +24,16 @@ const SYSTEM_PAGE = Object.freeze({
 
   cards: [
     {
+      title: "Utilizadores",
+      description:
+        "Criar, editar, ativar ou desativar contas da Santa Casa, Farmácia e Administração.",
+      to: "/sistema/utilizadores",
+      actionLabel: "Gerir utilizadores",
+    },
+    {
       title: "Manutenção",
       description:
-        "Executar jobs técnicos com chave, pré-visualização obrigatória e confirmação.",
+        "Executar jobs técnicos com pré-visualização obrigatória e confirmação.",
       to: "/sistema/manutencao",
       actionLabel: "Abrir manutenção",
     },

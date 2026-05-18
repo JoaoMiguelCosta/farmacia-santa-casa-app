@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 
+import { useAuth } from "../../../auth/hooks/useAuth";
+
 import {
   getFarmaciaPedidos,
   rejeitarFarmaciaPedido,
@@ -19,6 +21,8 @@ function getErrorMessage(error, fallback) {
 }
 
 export function useFarmaciaPedidos(initialQuery = DEFAULT_QUERY) {
+  const { handleAuthError } = useAuth();
+
   const [pedidos, setPedidos] = useState([]);
   const [meta, setMeta] = useState({
     total: 0,
@@ -62,6 +66,8 @@ export function useFarmaciaPedidos(initialQuery = DEFAULT_QUERY) {
         setPedidos(result.data);
         setMeta(result.meta);
       } catch (loadError) {
+        if (handleAuthError(loadError)) return;
+
         setError(
           getErrorMessage(loadError, "Não foi possível carregar os pedidos."),
         );
@@ -70,7 +76,7 @@ export function useFarmaciaPedidos(initialQuery = DEFAULT_QUERY) {
         setIsRefreshing(false);
       }
     },
-    [query],
+    [handleAuthError, query],
   );
 
   const refreshPedidos = useCallback(async () => {
@@ -98,6 +104,8 @@ export function useFarmaciaPedidos(initialQuery = DEFAULT_QUERY) {
 
         return updatedPedido;
       } catch (validateError) {
+        if (handleAuthError(validateError)) return null;
+
         setActionError(
           getErrorMessage(validateError, "Não foi possível validar o pedido."),
         );
@@ -107,7 +115,7 @@ export function useFarmaciaPedidos(initialQuery = DEFAULT_QUERY) {
         setValidatingPedidoId(null);
       }
     },
-    [loadPedidos],
+    [handleAuthError, loadPedidos],
   );
 
   const rejectPedido = useCallback(
@@ -125,6 +133,8 @@ export function useFarmaciaPedidos(initialQuery = DEFAULT_QUERY) {
 
         return updatedPedido;
       } catch (rejectError) {
+        if (handleAuthError(rejectError)) return null;
+
         setActionError(
           getErrorMessage(rejectError, "Não foi possível rejeitar o pedido."),
         );
@@ -134,7 +144,7 @@ export function useFarmaciaPedidos(initialQuery = DEFAULT_QUERY) {
         setRejectingPedidoId(null);
       }
     },
-    [loadPedidos],
+    [handleAuthError, loadPedidos],
   );
 
   const clearActionError = useCallback(() => {
@@ -157,6 +167,7 @@ export function useFarmaciaPedidos(initialQuery = DEFAULT_QUERY) {
         setMeta(result.meta);
       } catch (loadError) {
         if (!isMounted) return;
+        if (handleAuthError(loadError)) return;
 
         setError(
           getErrorMessage(loadError, "Não foi possível carregar os pedidos."),
@@ -173,7 +184,7 @@ export function useFarmaciaPedidos(initialQuery = DEFAULT_QUERY) {
     return () => {
       isMounted = false;
     };
-  }, [query]);
+  }, [handleAuthError, query]);
 
   return {
     pedidos,

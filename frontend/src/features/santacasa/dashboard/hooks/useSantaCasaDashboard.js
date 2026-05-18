@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 
+import { useAuth } from "../../../auth/hooks/useAuth";
+
 import { getSantaCasaDashboard } from "../api/santaCasaDashboardApi";
 
 function getErrorMessage(error, fallback) {
@@ -7,6 +9,8 @@ function getErrorMessage(error, fallback) {
 }
 
 export function useSantaCasaDashboard() {
+  const { handleAuthError } = useAuth();
+
   const [dashboard, setDashboard] = useState(null);
 
   const [isLoading, setIsLoading] = useState(true);
@@ -14,31 +18,36 @@ export function useSantaCasaDashboard() {
 
   const [error, setError] = useState(null);
 
-  const loadDashboard = useCallback(async ({ showRefreshing = false } = {}) => {
-    if (showRefreshing) {
-      setIsRefreshing(true);
-    } else {
-      setIsLoading(true);
-    }
+  const loadDashboard = useCallback(
+    async ({ showRefreshing = false } = {}) => {
+      if (showRefreshing) {
+        setIsRefreshing(true);
+      } else {
+        setIsLoading(true);
+      }
 
-    setError(null);
+      setError(null);
 
-    try {
-      const data = await getSantaCasaDashboard();
+      try {
+        const data = await getSantaCasaDashboard();
 
-      setDashboard(data);
-    } catch (loadError) {
-      setError(
-        getErrorMessage(
-          loadError,
-          "Não foi possível carregar o dashboard da Santa Casa.",
-        ),
-      );
-    } finally {
-      setIsLoading(false);
-      setIsRefreshing(false);
-    }
-  }, []);
+        setDashboard(data);
+      } catch (loadError) {
+        if (handleAuthError(loadError)) return;
+
+        setError(
+          getErrorMessage(
+            loadError,
+            "Não foi possível carregar o dashboard da Santa Casa.",
+          ),
+        );
+      } finally {
+        setIsLoading(false);
+        setIsRefreshing(false);
+      }
+    },
+    [handleAuthError],
+  );
 
   const refreshDashboard = useCallback(async () => {
     await loadDashboard({ showRefreshing: true });
@@ -59,6 +68,7 @@ export function useSantaCasaDashboard() {
         setDashboard(data);
       } catch (loadError) {
         if (!isMounted) return;
+        if (handleAuthError(loadError)) return;
 
         setError(
           getErrorMessage(
@@ -78,7 +88,7 @@ export function useSantaCasaDashboard() {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [handleAuthError]);
 
   return {
     dashboard,

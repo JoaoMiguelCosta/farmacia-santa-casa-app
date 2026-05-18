@@ -27,6 +27,7 @@ import FarmaciaRegularizacoesPage from "../pages/farmacia/FarmaciaRegularizacoes
 
 import SystemHomePage from "../pages/system/SystemHomePage.jsx";
 import SystemManutencaoPage from "../pages/system/SystemManutencaoPage.jsx";
+import SystemUsersPage from "../pages/system/SystemUsersPage.jsx";
 
 const SANTACASA_ROLES = [AUTH_ROLES.SANTACASA, AUTH_ROLES.ADMIN];
 const FARMACIA_ROLES = [AUTH_ROLES.FARMACIA, AUTH_ROLES.ADMIN];
@@ -125,6 +126,10 @@ export const router = createBrowserRouter([
       {
         path: "sistema",
         element: protectedElement(<SystemHomePage />, ADMIN_ROLES),
+      },
+      {
+        path: "sistema/utilizadores",
+        element: protectedElement(<SystemUsersPage />, ADMIN_ROLES),
       },
       {
         path: "sistema/manutencao",

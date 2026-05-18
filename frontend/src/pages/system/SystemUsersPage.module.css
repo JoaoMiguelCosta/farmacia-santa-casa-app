@@ -1,0 +1,223 @@
+.page {
+    display: grid;
+    gap: clamp(1.25rem, 2.5vw, 2rem);
+    inline-size: min(100%, 1180px);
+    margin-inline: auto;
+}
+
+.feedbackSuccess,
+.feedbackError {
+    margin: 0;
+    padding: 0.85rem 1rem;
+    border-radius: 1rem;
+    font-size: 0.92rem;
+    font-weight: 750;
+    line-height: 1.5;
+}
+
+.feedbackSuccess {
+    border: 1px solid rgba(43, 154, 120, 0.18);
+    background: rgba(232, 248, 241, 0.86);
+    color: #24735d;
+}
+
+.feedbackError {
+    border: 1px solid rgba(150, 61, 61, 0.18);
+    background: rgba(255, 247, 247, 0.92);
+    color: #8a2f2f;
+}
+
+.dialogBackdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 80;
+    display: grid;
+    place-items: center;
+    padding: clamp(1rem, 4vw, 2rem);
+    background: rgba(10, 24, 20, 0.42);
+    backdrop-filter: blur(10px);
+}
+
+.dialog {
+    display: grid;
+    gap: clamp(1rem, 2vw, 1.25rem);
+    inline-size: min(100%, 34rem);
+    padding: clamp(1.15rem, 3vw, 1.5rem);
+    border: 1px solid rgba(39, 92, 72, 0.18);
+    border-top-color: rgba(39, 92, 72, 0.42);
+    border-radius: 1.35rem;
+    background:
+        linear-gradient(135deg,
+            rgba(255, 255, 255, 0.98),
+            rgba(247, 251, 249, 0.94)),
+        radial-gradient(circle at top right,
+            rgba(191, 156, 76, 0.13),
+            transparent 44%);
+    box-shadow: 0 28px 90px rgba(10, 24, 20, 0.22);
+}
+
+.dialogContent {
+    display: grid;
+    gap: 0.65rem;
+}
+
+.dialogEyebrow {
+    width: fit-content;
+    margin: 0;
+    padding: 0.34rem 0.7rem;
+    border: 1px solid rgba(39, 92, 72, 0.14);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.76);
+    color: #275c48;
+    font-size: 0.7rem;
+    font-weight: 900;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.dialogTitle {
+    margin: 0;
+    color: #16251f;
+    font-size: clamp(1.35rem, 3vw, 1.85rem);
+    line-height: 1.08;
+    letter-spacing: -0.035em;
+}
+
+.dialogDescription {
+    margin: 0;
+    color: #60766d;
+    font-size: 0.96rem;
+    font-weight: 650;
+    line-height: 1.6;
+}
+
+.dialogUser {
+    display: grid;
+    gap: 0.55rem;
+    margin: 0.2rem 0 0;
+    padding: 0.85rem;
+    border: 1px solid rgba(39, 92, 72, 0.11);
+    border-radius: 1rem;
+    background: rgba(255, 255, 255, 0.68);
+}
+
+.dialogUser div {
+    display: grid;
+    gap: 0.16rem;
+    min-width: 0;
+}
+
+.dialogUser dt {
+    color: #52786a;
+    font-size: 0.68rem;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.dialogUser dd {
+    margin: 0;
+    overflow-wrap: anywhere;
+    color: #16251f;
+    font-size: 0.9rem;
+    font-weight: 760;
+    line-height: 1.35;
+}
+
+.dialogActions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 0.55rem;
+}
+
+.cancelButton,
+.confirmButton,
+.dangerButton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.5rem;
+    padding: 0.66rem 0.95rem;
+    border-radius: 999px;
+    font: inherit;
+    font-size: 0.84rem;
+    font-weight: 875;
+    line-height: 1;
+    cursor: pointer;
+    transition:
+        transform 160ms ease,
+        border-color 160ms ease,
+        background 160ms ease,
+        box-shadow 160ms ease,
+        opacity 160ms ease;
+}
+
+.cancelButton {
+    border: 1px solid rgba(39, 92, 72, 0.15);
+    background: rgba(255, 255, 255, 0.82);
+    color: #275c48;
+}
+
+.confirmButton {
+    border: 1px solid rgba(39, 92, 72, 0.28);
+    background: #275c48;
+    color: #ffffff;
+    box-shadow: 0 14px 30px rgba(39, 92, 72, 0.18);
+}
+
+.dangerButton {
+    border: 1px solid rgba(150, 61, 61, 0.2);
+    background: #8a2f2f;
+    color: #ffffff;
+    box-shadow: 0 14px 30px rgba(138, 47, 47, 0.18);
+}
+
+.cancelButton:hover,
+.confirmButton:hover,
+.dangerButton:hover {
+    transform: translateY(-1px);
+}
+
+.cancelButton:hover {
+    border-color: rgba(39, 92, 72, 0.28);
+    background: rgba(247, 251, 249, 0.96);
+}
+
+.confirmButton:hover {
+    background: #214f3e;
+    box-shadow: 0 16px 34px rgba(39, 92, 72, 0.22);
+}
+
+.dangerButton:hover {
+    background: #773030;
+    box-shadow: 0 16px 34px rgba(138, 47, 47, 0.22);
+}
+
+.cancelButton:focus-visible,
+.confirmButton:focus-visible,
+.dangerButton:focus-visible {
+    outline: 3px solid rgba(72, 128, 102, 0.24);
+    outline-offset: 3px;
+}
+
+.cancelButton:disabled,
+.confirmButton:disabled,
+.dangerButton:disabled {
+    cursor: not-allowed;
+    opacity: 0.58;
+    transform: none;
+    box-shadow: none;
+}
+
+@media (max-width: 520px) {
+    .dialogActions {
+        flex-direction: column-reverse;
+    }
+
+    .cancelButton,
+    .confirmButton,
+    .dangerButton {
+        width: 100%;
+    }
+}

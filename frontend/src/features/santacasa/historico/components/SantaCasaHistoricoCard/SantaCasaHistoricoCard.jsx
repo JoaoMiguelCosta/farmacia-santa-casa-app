@@ -25,6 +25,32 @@ import {
   shouldShowHistoricoPedidoReason,
 } from "../../utils/santaCasaHistorico.utils";
 
+const AUDIT_FALLBACK = "—";
+
+function getAuditUserLabel(user) {
+  return user?.name || user?.email || AUDIT_FALLBACK;
+}
+
+function getPedidoAuditInfo(pedido) {
+  const status = String(pedido?.status || "").toUpperCase();
+
+  if (status === "VALIDADO") {
+    return {
+      label: "Validado por",
+      value: getAuditUserLabel(pedido.validatedBy),
+    };
+  }
+
+  if (status === "REJEITADO") {
+    return {
+      label: "Rejeitado por",
+      value: getAuditUserLabel(pedido.rejectedBy),
+    };
+  }
+
+  return null;
+}
+
 function SantaCasaHistoricoItem({ item }) {
   return (
     <li className={styles.item}>
@@ -73,6 +99,7 @@ export default function SantaCasaHistoricoCard({ pedido }) {
   const items = getHistoricoPedidoItems(pedido);
   const message = getHistoricoPedidoMessage(pedido);
   const showReason = shouldShowHistoricoPedidoReason(pedido);
+  const auditInfo = getPedidoAuditInfo(pedido);
 
   function handleToggleDetails() {
     setIsDetailsOpen((currentValue) => !currentValue);
@@ -118,6 +145,13 @@ export default function SantaCasaHistoricoCard({ pedido }) {
           <dt>{SANTACASA_HISTORICO_PAGE.labels.totalQuantity}</dt>
           <dd>{getHistoricoPedidoTotalQuantity(pedido)}</dd>
         </div>
+
+        {auditInfo ? (
+          <div className={styles.summaryItem}>
+            <dt>{auditInfo.label}</dt>
+            <dd>{auditInfo.value}</dd>
+          </div>
+        ) : null}
       </dl>
 
       {showReason ? (

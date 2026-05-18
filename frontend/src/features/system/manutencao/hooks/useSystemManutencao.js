@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 
+import { useAuth } from "../../../auth/hooks/useAuth";
+
 import {
   getSystemManutencaoJobs,
   previewHigiene,
@@ -51,6 +53,8 @@ function getRunAction(jobKey) {
 }
 
 export function useSystemManutencao() {
+  const { handleAuthError } = useAuth();
+
   const [jobs, setJobs] = useState([]);
   const [jobOptions, setJobOptions] = useState(DEFAULT_OPTIONS);
 
@@ -84,26 +88,31 @@ export function useSystemManutencao() {
     setFeedback(null);
   }, []);
 
-  const loadJobs = useCallback(async ({ showRefreshing = false } = {}) => {
-    if (showRefreshing) {
-      setIsRefreshingJobs(true);
-    } else {
-      setIsLoadingJobs(true);
-    }
+  const loadJobs = useCallback(
+    async ({ showRefreshing = false } = {}) => {
+      if (showRefreshing) {
+        setIsRefreshingJobs(true);
+      } else {
+        setIsLoadingJobs(true);
+      }
 
-    setError(null);
+      setError(null);
 
-    try {
-      const response = await getSystemManutencaoJobs();
+      try {
+        const response = await getSystemManutencaoJobs();
 
-      setJobs(normalizeMaintenanceJobs(response));
-    } catch (loadError) {
-      setError(getMaintenanceErrorMessage(loadError));
-    } finally {
-      setIsLoadingJobs(false);
-      setIsRefreshingJobs(false);
-    }
-  }, []);
+        setJobs(normalizeMaintenanceJobs(response));
+      } catch (loadError) {
+        if (handleAuthError(loadError)) return;
+
+        setError(getMaintenanceErrorMessage(loadError));
+      } finally {
+        setIsLoadingJobs(false);
+        setIsRefreshingJobs(false);
+      }
+    },
+    [handleAuthError],
+  );
 
   const refreshJobs = useCallback(async () => {
     await loadJobs({ showRefreshing: true });
@@ -153,6 +162,8 @@ export function useSystemManutencao() {
           message: SYSTEM_MANUTENCAO_PAGE.feedback.previewSuccess,
         });
       } catch (previewError) {
+        if (handleAuthError(previewError)) return;
+
         setFeedback({
           type: "error",
           message: getMaintenanceErrorMessage(previewError),
@@ -161,7 +172,7 @@ export function useSystemManutencao() {
         setPreviewingJobKey(null);
       }
     },
-    [jobOptions],
+    [handleAuthError, jobOptions],
   );
 
   const runJob = useCallback(
@@ -209,6 +220,8 @@ export function useSystemManutencao() {
 
         await loadJobs({ showRefreshing: true });
       } catch (runError) {
+        if (handleAuthError(runError)) return;
+
         setFeedback({
           type: "error",
           message: getMaintenanceErrorMessage(runError),
@@ -217,7 +230,7 @@ export function useSystemManutencao() {
         setRunningJobKey(null);
       }
     },
-    [jobOptions, latestResult, loadJobs, runningJobKey],
+    [handleAuthError, jobOptions, latestResult, loadJobs, runningJobKey],
   );
 
   useEffect(() => {
@@ -235,6 +248,7 @@ export function useSystemManutencao() {
         setJobs(normalizeMaintenanceJobs(response));
       } catch (loadError) {
         if (!isMounted) return;
+        if (handleAuthError(loadError)) return;
 
         setError(getMaintenanceErrorMessage(loadError));
       } finally {
@@ -249,7 +263,7 @@ export function useSystemManutencao() {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [handleAuthError]);
 
   return {
     jobs,

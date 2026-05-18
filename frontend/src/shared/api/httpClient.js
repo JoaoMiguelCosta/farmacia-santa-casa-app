@@ -1,6 +1,11 @@
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL || "http://localhost:3001/api";
 
+const HTTP_STATUS = Object.freeze({
+  UNAUTHORIZED: 401,
+  FORBIDDEN: 403,
+});
+
 function buildUrl(path, query = {}) {
   const url = new URL(`${API_BASE_URL}${path}`);
 
@@ -25,6 +30,25 @@ async function parseResponse(response) {
   }
 }
 
+function buildHttpError(response, data) {
+  const message =
+    data?.message ||
+    data?.error ||
+    `Erro HTTP ${response.status} ao comunicar com a API.`;
+
+  const error = new Error(message);
+
+  error.status = response.status;
+  error.payload = data;
+  error.code = data?.error || data?.code || null;
+
+  error.isUnauthorized = response.status === HTTP_STATUS.UNAUTHORIZED;
+  error.isForbidden = response.status === HTTP_STATUS.FORBIDDEN;
+  error.isAuthError = error.isUnauthorized || error.isForbidden;
+
+  return error;
+}
+
 export async function apiRequest(path, options = {}) {
   const { method = "GET", body, query, headers = {} } = options;
 
@@ -41,16 +65,7 @@ export async function apiRequest(path, options = {}) {
   const data = await parseResponse(response);
 
   if (!response.ok) {
-    const message =
-      data?.message ||
-      data?.error ||
-      `Erro HTTP ${response.status} ao comunicar com a API.`;
-
-    const error = new Error(message);
-    error.status = response.status;
-    error.payload = data;
-
-    throw error;
+    throw buildHttpError(response, data);
   }
 
   return data;

@@ -5,6 +5,7 @@ const authRoutes = require("./auth.routes");
 const santacasaRoutes = require("./santacasa.routes");
 const farmaciaRoutes = require("./farmacia.routes");
 const manutencaoRoutes = require("./manutencao.routes");
+const adminRoutes = require("./admin.routes");
 
 const { requireAuth, requireRole } = require("../middlewares/authMiddleware");
 
@@ -40,5 +41,7 @@ router.use(
   requireRole(["ADMIN"]),
   manutencaoRoutes,
 );
+
+router.use("/admin", requireAuth, requireRole(["ADMIN"]), adminRoutes);
 
 module.exports = router;

@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 
+import { useAuth } from "../../../auth/hooks/useAuth";
+
 import {
   getSantaCasaRegularizacoesHistorico,
   getSantaCasaRegularizacoesPendentes,
@@ -36,6 +38,8 @@ function getLoaderByTab(activeTab) {
 }
 
 export function useSantaCasaRegularizacoes() {
+  const { handleAuthError } = useAuth();
+
   const [activeTab, setActiveTab] = useState(TABS.pending);
 
   const [regularizacoes, setRegularizacoes] = useState([]);
@@ -46,7 +50,6 @@ export function useSantaCasaRegularizacoes() {
   });
 
   const [signal, setSignal] = useState(null);
-
   const [utentes, setUtentes] = useState([]);
 
   const [query, setQuery] = useState(DEFAULT_QUERY);
@@ -81,13 +84,15 @@ export function useSantaCasaRegularizacoes() {
 
       setUtentes(sortUtentesByName(data));
     } catch (utentesLoadError) {
+      if (handleAuthError(utentesLoadError)) return;
+
       setUtentesError(
         getErrorMessage(utentesLoadError, "Não foi possível carregar utentes."),
       );
     } finally {
       setIsLoadingUtentes(false);
     }
-  }, []);
+  }, [handleAuthError]);
 
   const loadSignal = useCallback(async () => {
     setIsLoadingSignal(true);
@@ -98,13 +103,15 @@ export function useSantaCasaRegularizacoes() {
 
       setSignal(data);
     } catch (signalLoadError) {
+      if (handleAuthError(signalLoadError)) return;
+
       setSignalError(
         getErrorMessage(signalLoadError, "Não foi possível carregar o resumo."),
       );
     } finally {
       setIsLoadingSignal(false);
     }
-  }, []);
+  }, [handleAuthError]);
 
   const loadRegularizacoes = useCallback(
     async ({ showRefreshing = false } = {}) => {
@@ -124,6 +131,8 @@ export function useSantaCasaRegularizacoes() {
         setRegularizacoes(result.data);
         setMeta(result.meta);
       } catch (loadError) {
+        if (handleAuthError(loadError)) return;
+
         setError(
           getErrorMessage(
             loadError,
@@ -135,7 +144,7 @@ export function useSantaCasaRegularizacoes() {
         setIsRefreshing(false);
       }
     },
-    [activeTab, currentQuery],
+    [activeTab, currentQuery, handleAuthError],
   );
 
   const refreshRegularizacoes = useCallback(async () => {
@@ -200,6 +209,7 @@ export function useSantaCasaRegularizacoes() {
         setUtentes(sortUtentesByName(data));
       } catch (utentesLoadError) {
         if (!isMounted) return;
+        if (handleAuthError(utentesLoadError)) return;
 
         setUtentesError(
           getErrorMessage(
@@ -219,7 +229,7 @@ export function useSantaCasaRegularizacoes() {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [handleAuthError]);
 
   useEffect(() => {
     let isMounted = true;
@@ -236,6 +246,7 @@ export function useSantaCasaRegularizacoes() {
         setSignal(data);
       } catch (signalLoadError) {
         if (!isMounted) return;
+        if (handleAuthError(signalLoadError)) return;
 
         setSignalError(
           getErrorMessage(
@@ -255,7 +266,7 @@ export function useSantaCasaRegularizacoes() {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [handleAuthError]);
 
   useEffect(() => {
     let isMounted = true;
@@ -275,6 +286,7 @@ export function useSantaCasaRegularizacoes() {
         setMeta(result.meta);
       } catch (loadError) {
         if (!isMounted) return;
+        if (handleAuthError(loadError)) return;
 
         setError(
           getErrorMessage(
@@ -294,7 +306,7 @@ export function useSantaCasaRegularizacoes() {
     return () => {
       isMounted = false;
     };
-  }, [activeTab, currentQuery]);
+  }, [activeTab, currentQuery, handleAuthError]);
 
   return {
     tabs: TABS,

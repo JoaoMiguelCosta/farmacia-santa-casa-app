@@ -1,14 +1,11 @@
-import { useState } from "react";
-
 import styles from "./FarmaciaPedidoCard.module.css";
 
 import { FARMACIA_PEDIDO_UI } from "../../config/farmaciaPedidoUi.config";
+import { useFarmaciaPedidoCard } from "../../hooks/useFarmaciaPedidoCard";
 
 import {
-  getPedidoClosedAtLabel,
   getPedidoClosedReasonLabel,
   getPedidoClosedReasonTitle,
-  getPedidoCreatedAtLabel,
   getPedidoItemMedicamentoLabel,
   getPedidoItemMetaLabel,
   getPedidoItemQuantityLabel,
@@ -16,14 +13,12 @@ import {
   getPedidoItemStatusLabel,
   getPedidoItemTypeLabel,
   getPedidoItemUtenteLabel,
-  getPedidoItems,
   getPedidoItemsCount,
   getPedidoNumberLabel,
   getPedidoStatusLabel,
   getPedidoTotalQuantity,
   getPedidoUtentesLabel,
   hasPedidoClosedReason,
-  isPedidoPending,
 } from "../../utils/farmaciaPedido.utils";
 
 function FarmaciaPedidoItem({ item }) {
@@ -79,25 +74,24 @@ export default function FarmaciaPedidoCard({
   onValidate,
   onReject,
 }) {
-  const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+  const {
+    isDetailsOpen,
+
+    items,
+    canAct,
+    auditInfo,
+
+    dateLabel,
+    dateValue,
+
+    handleToggleDetails,
+  } = useFarmaciaPedidoCard({
+    pedido,
+    variant,
+    isActionDisabled,
+  });
 
   if (!pedido) return null;
-
-  const isHistory = variant === "history";
-  const items = getPedidoItems(pedido);
-  const canAct = isPedidoPending(pedido) && !isActionDisabled;
-
-  const dateLabel = isHistory
-    ? FARMACIA_PEDIDO_UI.labels.closedAt
-    : FARMACIA_PEDIDO_UI.labels.createdAt;
-
-  const dateValue = isHistory
-    ? getPedidoClosedAtLabel(pedido)
-    : getPedidoCreatedAtLabel(pedido);
-
-  function handleToggleDetails() {
-    setIsDetailsOpen((currentValue) => !currentValue);
-  }
 
   return (
     <article className={styles.card}>
@@ -135,6 +129,13 @@ export default function FarmaciaPedidoCard({
           <dt>{FARMACIA_PEDIDO_UI.labels.quantidade}</dt>
           <dd>{getPedidoTotalQuantity(pedido)}</dd>
         </div>
+
+        {auditInfo ? (
+          <div className={styles.summaryItem}>
+            <dt>{auditInfo.label}</dt>
+            <dd>{auditInfo.value}</dd>
+          </div>
+        ) : null}
       </dl>
 
       {hasPedidoClosedReason(pedido) ? (

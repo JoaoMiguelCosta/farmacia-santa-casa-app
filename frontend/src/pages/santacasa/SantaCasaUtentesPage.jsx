@@ -1,154 +1,39 @@
-import { useEffect, useState } from "react";
-
 import Button from "../../shared/ui/Button/Button";
 import ConfirmDialog from "../../shared/ui/ConfirmDialog/ConfirmDialog";
 import FeedbackDialog from "../../shared/ui/FeedbackDialog/FeedbackDialog";
 import PageHeader from "../../shared/ui/PageHeader/PageHeader";
 
 import SantaCasaSectionNav from "../../features/santacasa/shared/components/SantaCasaSectionNav/SantaCasaSectionNav";
-import { UTENTES_PAGE } from "../../features/santacasa/utentes/config/utentesPage.config";
-import {
-  createUtente,
-  deleteUtente,
-  getUtentes,
-} from "../../features/santacasa/utentes/api/utentesApi";
+
 import UtenteCreateForm from "../../features/santacasa/utentes/components/UtenteCreateForm/UtenteCreateForm";
 import UtentesList from "../../features/santacasa/utentes/components/UtentesList/UtentesList";
-import { sortUtentesByName } from "../../features/santacasa/utentes/utils/sortUtentes";
+import { UTENTES_PAGE } from "../../features/santacasa/utentes/config/utentesPage.config";
+import { useSantaCasaUtentes } from "../../features/santacasa/utentes/hooks/useSantaCasaUtentes";
 
 import styles from "./SantaCasaUtentesPage.module.css";
 
 export default function SantaCasaUtentesPage() {
-  const [utentes, setUtentes] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isRefreshing, setIsRefreshing] = useState(false);
-  const [isCreating, setIsCreating] = useState(false);
-  const [deletingUtenteId, setDeletingUtenteId] = useState(null);
-  const [utenteToDelete, setUtenteToDelete] = useState(null);
-  const [error, setError] = useState(null);
-  const [feedback, setFeedback] = useState(null);
+  const {
+    utentes,
 
-  async function handleRefreshUtentes() {
-    setIsRefreshing(true);
-    setError(null);
+    isLoading,
+    isRefreshing,
+    isCreating,
 
-    try {
-      const data = await getUtentes();
-      setUtentes(sortUtentesByName(data));
-    } catch (requestError) {
-      setError(requestError.message || "Erro ao carregar utentes.");
-    } finally {
-      setIsRefreshing(false);
-    }
-  }
+    deletingUtenteId,
+    utenteToDelete,
 
-  async function handleCreateUtente(payload) {
-    setIsCreating(true);
-    setFeedback(null);
+    error,
+    feedback,
+    setFeedback,
 
-    try {
-      const createdUtente = await createUtente(payload);
+    handleRefreshUtentes,
+    handleCreateUtente,
 
-      setUtentes((currentUtentes) =>
-        sortUtentesByName([createdUtente, ...currentUtentes]),
-      );
-
-      setError(null);
-
-      setFeedback({
-        type: "success",
-        message: UTENTES_PAGE.form.successMessage,
-      });
-
-      return {
-        ok: true,
-        fieldErrors: {},
-      };
-    } catch (requestError) {
-      setFeedback({
-        type: "error",
-        message: requestError.message || "Erro ao criar utente.",
-      });
-
-      return {
-        ok: false,
-        fieldErrors: {},
-      };
-    } finally {
-      setIsCreating(false);
-    }
-  }
-
-  function handleRequestDeleteUtente(utente) {
-    setUtenteToDelete(utente);
-    setFeedback(null);
-  }
-
-  function handleCancelDeleteUtente() {
-    if (deletingUtenteId) return;
-
-    setUtenteToDelete(null);
-  }
-
-  async function handleConfirmDeleteUtente() {
-    if (!utenteToDelete) return;
-
-    setDeletingUtenteId(utenteToDelete.id);
-    setFeedback(null);
-
-    try {
-      await deleteUtente(utenteToDelete.id);
-
-      setUtentes((currentUtentes) =>
-        currentUtentes.filter(
-          (currentUtente) => currentUtente.id !== utenteToDelete.id,
-        ),
-      );
-
-      setFeedback({
-        type: "success",
-        message: UTENTES_PAGE.list.deleteSuccessMessage,
-      });
-
-      setUtenteToDelete(null);
-    } catch (requestError) {
-      setFeedback({
-        type: "error",
-        message: requestError.message || "Erro ao remover utente.",
-      });
-    } finally {
-      setDeletingUtenteId(null);
-    }
-  }
-
-  useEffect(() => {
-    let isMounted = true;
-
-    async function loadInitialUtentes() {
-      try {
-        const data = await getUtentes();
-
-        if (!isMounted) return;
-
-        setUtentes(sortUtentesByName(data));
-        setError(null);
-      } catch (requestError) {
-        if (!isMounted) return;
-
-        setError(requestError.message || "Erro ao carregar utentes.");
-      } finally {
-        if (isMounted) {
-          setIsLoading(false);
-        }
-      }
-    }
-
-    loadInitialUtentes();
-
-    return () => {
-      isMounted = false;
-    };
-  }, []);
+    handleRequestDeleteUtente,
+    handleCancelDeleteUtente,
+    handleConfirmDeleteUtente,
+  } = useSantaCasaUtentes();
 
   return (
     <section className={styles.page} aria-labelledby="utentes-title">

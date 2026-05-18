@@ -1,0 +1,355 @@
+.section {
+    display: grid;
+    gap: clamp(1rem, 2vw, 1.35rem);
+}
+
+.header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.heading {
+    display: grid;
+    gap: 0.35rem;
+    min-width: 0;
+}
+
+.title {
+    margin: 0;
+    color: #16251f;
+    font-size: clamp(1.25rem, 2vw, 1.65rem);
+    line-height: 1.12;
+}
+
+.description {
+    max-width: 68ch;
+    margin: 0;
+    color: #60766d;
+    font-size: 0.94rem;
+    font-weight: 650;
+    line-height: 1.55;
+}
+
+.total {
+    flex: 0 0 auto;
+    padding: 0.45rem 0.75rem;
+    border: 1px solid rgba(39, 92, 72, 0.13);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.72);
+    color: #52786a;
+    font-size: 0.82rem;
+    font-weight: 750;
+}
+
+.total strong {
+    color: #16251f;
+}
+
+.grid {
+    display: grid;
+    gap: 0.9rem;
+}
+
+.card {
+    display: grid;
+    gap: 1rem;
+    padding: clamp(1rem, 2vw, 1.25rem);
+    border: 1px solid rgba(39, 92, 72, 0.13);
+    border-top-color: rgba(39, 92, 72, 0.32);
+    border-radius: 1.25rem;
+    background:
+        linear-gradient(135deg,
+            rgba(255, 255, 255, 0.94),
+            rgba(247, 251, 249, 0.9)),
+        radial-gradient(circle at top right,
+            rgba(191, 156, 76, 0.1),
+            transparent 42%);
+    box-shadow: 0 16px 42px rgba(24, 43, 35, 0.07);
+}
+
+.cardHeader {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.identity {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.72rem;
+    min-width: 0;
+}
+
+.statusDotActive,
+.statusDotInactive {
+    flex: 0 0 auto;
+    width: 0.7rem;
+    height: 0.7rem;
+    margin-top: 0.32rem;
+    border-radius: 999px;
+}
+
+.statusDotActive {
+    background: #2b9a78;
+    box-shadow: 0 0 0 0.38rem rgba(43, 154, 120, 0.12);
+}
+
+.statusDotInactive {
+    background: #a94343;
+    box-shadow: 0 0 0 0.38rem rgba(169, 67, 67, 0.11);
+}
+
+.userInfo {
+    display: grid;
+    gap: 0.18rem;
+    min-width: 0;
+}
+
+.name {
+    margin: 0;
+    overflow: hidden;
+    color: #16251f;
+    font-size: clamp(1rem, 1.6vw, 1.16rem);
+    line-height: 1.2;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.email {
+    margin: 0;
+    overflow: hidden;
+    color: #60766d;
+    font-size: 0.9rem;
+    font-weight: 650;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.statusActive,
+.statusInactive {
+    flex: 0 0 auto;
+    padding: 0.4rem 0.65rem;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.statusActive {
+    border: 1px solid rgba(43, 154, 120, 0.18);
+    background: rgba(232, 248, 241, 0.86);
+    color: #24735d;
+}
+
+.statusInactive {
+    border: 1px solid rgba(169, 67, 67, 0.18);
+    background: rgba(255, 247, 247, 0.9);
+    color: #8a2f2f;
+}
+
+.metaGrid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.75rem;
+    margin: 0;
+}
+
+.metaGrid div {
+    display: grid;
+    gap: 0.2rem;
+    min-width: 0;
+    padding: 0.72rem;
+    border: 1px solid rgba(39, 92, 72, 0.1);
+    border-radius: 1rem;
+    background: rgba(255, 255, 255, 0.62);
+}
+
+.metaGrid dt {
+    color: #52786a;
+    font-size: 0.7rem;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.metaGrid dd {
+    margin: 0;
+    overflow: hidden;
+    color: #16251f;
+    font-size: 0.86rem;
+    font-weight: 760;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 0.5rem;
+}
+
+.primaryButton,
+.secondaryButton,
+.dangerButton,
+.removeButton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.35rem;
+    padding: 0.58rem 0.82rem;
+    border-radius: 999px;
+    font: inherit;
+    font-size: 0.78rem;
+    font-weight: 850;
+    line-height: 1;
+    cursor: pointer;
+    transition:
+        transform 160ms ease,
+        border-color 160ms ease,
+        background 160ms ease,
+        box-shadow 160ms ease,
+        opacity 160ms ease;
+}
+
+.primaryButton {
+    border: 1px solid rgba(39, 92, 72, 0.28);
+    background: #275c48;
+    color: #ffffff;
+}
+
+.secondaryButton {
+    border: 1px solid rgba(39, 92, 72, 0.15);
+    background: rgba(255, 255, 255, 0.78);
+    color: #275c48;
+}
+
+.dangerButton {
+    border: 1px solid rgba(150, 61, 61, 0.18);
+    background: rgba(255, 247, 247, 0.88);
+    color: #8a2f2f;
+}
+
+.removeButton {
+    border: 1px solid rgba(122, 42, 42, 0.24);
+    background: #8a2f2f;
+    color: #ffffff;
+    box-shadow: 0 12px 26px rgba(138, 47, 47, 0.15);
+}
+
+.primaryButton:hover,
+.secondaryButton:hover,
+.dangerButton:hover,
+.removeButton:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 12px 28px rgba(24, 43, 35, 0.08);
+}
+
+.removeButton:hover {
+    background: #773030;
+    box-shadow: 0 14px 30px rgba(138, 47, 47, 0.22);
+}
+
+.primaryButton:focus-visible,
+.secondaryButton:focus-visible,
+.dangerButton:focus-visible,
+.removeButton:focus-visible {
+    outline: 3px solid rgba(72, 128, 102, 0.24);
+    outline-offset: 3px;
+}
+
+.primaryButton:disabled,
+.secondaryButton:disabled,
+.dangerButton:disabled,
+.removeButton:disabled {
+    cursor: not-allowed;
+    opacity: 0.58;
+    transform: none;
+    box-shadow: none;
+}
+
+.state {
+    display: grid;
+    justify-items: start;
+    gap: 0.55rem;
+    padding: clamp(1rem, 2vw, 1.25rem);
+    border: 1px solid rgba(39, 92, 72, 0.13);
+    border-radius: 1.25rem;
+    background: rgba(255, 255, 255, 0.72);
+}
+
+.stateTitle {
+    color: #16251f;
+    font-size: clamp(1rem, 1.8vw, 1.18rem);
+}
+
+.stateDescription {
+    max-width: 62ch;
+    margin: 0;
+    color: #60766d;
+    font-size: 0.94rem;
+    line-height: 1.55;
+}
+
+.stateAction {
+    min-height: 2.35rem;
+    padding: 0.58rem 0.82rem;
+    border: 1px solid rgba(39, 92, 72, 0.16);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.78);
+    color: #275c48;
+    font: inherit;
+    font-size: 0.82rem;
+    font-weight: 850;
+    cursor: pointer;
+}
+
+@media (max-width: 980px) {
+    .metaGrid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 680px) {
+
+    .header,
+    .cardHeader {
+        flex-direction: column;
+    }
+
+    .total {
+        width: fit-content;
+    }
+
+    .metaGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .actions {
+        justify-content: stretch;
+    }
+
+    .primaryButton,
+    .secondaryButton,
+    .dangerButton,
+    .removeButton {
+        flex: 1;
+    }
+}
+
+@media (max-width: 460px) {
+    .actions {
+        flex-direction: column;
+    }
+
+    .primaryButton,
+    .secondaryButton,
+    .dangerButton,
+    .removeButton {
+        width: 100%;
+    }
+}

@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 
+import { useAuth } from "../../../auth/hooks/useAuth";
+
 import { getSystemHealth } from "../api/systemHealthApi";
 import { SYSTEM_HEALTH_CONFIG } from "../config/systemHealth.config";
 
@@ -19,8 +21,15 @@ function mergeServicesWithResults(results = []) {
   });
 }
 
+function getHealthErrorMessage(error) {
+  return error?.message || "Não foi possível verificar o estado dos serviços.";
+}
+
 export function useSystemHealth() {
+  const { handleAuthError } = useAuth();
+
   const [services, setServices] = useState(() => mergeServicesWithResults([]));
+  const [error, setError] = useState(null);
 
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -37,16 +46,23 @@ export function useSystemHealth() {
         setIsLoading(true);
       }
 
+      setError(null);
+
       try {
         const results = await getSystemHealth(serviceKeys);
 
         setServices(mergeServicesWithResults(results));
+      } catch (healthError) {
+        if (handleAuthError(healthError)) return;
+
+        setError(getHealthErrorMessage(healthError));
+        setServices(mergeServicesWithResults([]));
       } finally {
         setIsLoading(false);
         setIsRefreshing(false);
       }
     },
-    [serviceKeys],
+    [handleAuthError, serviceKeys],
   );
 
   const refreshHealth = useCallback(async () => {
@@ -58,6 +74,7 @@ export function useSystemHealth() {
 
     async function loadInitialHealth() {
       setIsLoading(true);
+      setError(null);
 
       try {
         const results = await getSystemHealth(serviceKeys);
@@ -65,6 +82,12 @@ export function useSystemHealth() {
         if (!isMounted) return;
 
         setServices(mergeServicesWithResults(results));
+      } catch (healthError) {
+        if (!isMounted) return;
+        if (handleAuthError(healthError)) return;
+
+        setError(getHealthErrorMessage(healthError));
+        setServices(mergeServicesWithResults([]));
       } finally {
         if (isMounted) {
           setIsLoading(false);
@@ -77,7 +100,7 @@ export function useSystemHealth() {
     return () => {
       isMounted = false;
     };
-  }, [serviceKeys]);
+  }, [handleAuthError, serviceKeys]);
 
   return {
     services,
@@ -85,6 +108,8 @@ export function useSystemHealth() {
 
     isLoading,
     isRefreshing,
+
+    error,
 
     loadHealth,
     refreshHealth,

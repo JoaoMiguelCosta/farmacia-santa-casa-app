@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 
+import { useAuth } from "../../../auth/hooks/useAuth";
+
 import { getFarmaciaHistorico } from "../api/farmaciaHistoricoApi";
 import { buildFarmaciaHistoricoQuery } from "../utils/farmaciaHistorico.utils";
 
@@ -17,6 +19,8 @@ function getErrorMessage(error, fallback) {
 }
 
 export function useFarmaciaHistorico(initialQuery = DEFAULT_HISTORICO_QUERY) {
+  const { handleAuthError } = useAuth();
+
   const [pedidos, setPedidos] = useState([]);
   const [meta, setMeta] = useState({
     total: 0,
@@ -72,6 +76,8 @@ export function useFarmaciaHistorico(initialQuery = DEFAULT_HISTORICO_QUERY) {
         setPedidos(result.data);
         setMeta(result.meta);
       } catch (loadError) {
+        if (handleAuthError(loadError)) return;
+
         setError(
           getErrorMessage(
             loadError,
@@ -83,7 +89,7 @@ export function useFarmaciaHistorico(initialQuery = DEFAULT_HISTORICO_QUERY) {
         setIsRefreshing(false);
       }
     },
-    [currentQuery],
+    [currentQuery, handleAuthError],
   );
 
   const refreshHistorico = useCallback(async () => {
@@ -148,6 +154,7 @@ export function useFarmaciaHistorico(initialQuery = DEFAULT_HISTORICO_QUERY) {
         setMeta(result.meta);
       } catch (loadError) {
         if (!isMounted) return;
+        if (handleAuthError(loadError)) return;
 
         setError(
           getErrorMessage(
@@ -167,7 +174,7 @@ export function useFarmaciaHistorico(initialQuery = DEFAULT_HISTORICO_QUERY) {
     return () => {
       isMounted = false;
     };
-  }, [currentQuery]);
+  }, [currentQuery, handleAuthError]);
 
   return {
     pedidos,
