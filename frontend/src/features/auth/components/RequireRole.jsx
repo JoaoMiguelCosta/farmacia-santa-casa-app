@@ -1,4 +1,4 @@
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 
 import { AUTH_MESSAGES, AUTH_REDIRECTS } from "../config/auth.config";
 import { useAuth } from "../hooks/useAuth";
@@ -27,7 +27,9 @@ function AuthGuardState({ title, description }) {
 }
 
 export default function RequireRole({ allowedRoles = [], children }) {
-  const { user, role, isLoadingSession } = useAuth();
+  const location = useLocation();
+
+  const { user, role, isLoadingSession, error } = useAuth();
 
   const roles = normalizeAllowedRoles(allowedRoles);
 
@@ -41,7 +43,16 @@ export default function RequireRole({ allowedRoles = [], children }) {
   }
 
   if (!user) {
-    return <Navigate to={AUTH_REDIRECTS.login} replace />;
+    return (
+      <Navigate
+        to={AUTH_REDIRECTS.login}
+        replace
+        state={{
+          from: location,
+          message: error || AUTH_MESSAGES.loginRequired,
+        }}
+      />
+    );
   }
 
   if (roles.length > 0 && !roles.includes(role)) {

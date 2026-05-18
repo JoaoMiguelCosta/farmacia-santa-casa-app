@@ -14,6 +14,20 @@ export const AUTH_REDIRECTS = Object.freeze({
   },
 });
 
+export const AUTH_SESSION_CONFIG = Object.freeze({
+  idleTimeoutMs: 1000 * 60 * 30,
+  warningBeforeMs: 1000 * 60,
+  lastActivityStorageKey: "farmacia-santacasa:last-activity-at",
+  activityEvents: [
+    "click",
+    "keydown",
+    "mousemove",
+    "scroll",
+    "touchstart",
+    "visibilitychange",
+  ],
+});
+
 export const AUTH_MESSAGES = Object.freeze({
   loadingSession: "A verificar sessão...",
   loginRequired: "Tens de iniciar sessão para continuar.",
@@ -21,4 +35,8 @@ export const AUTH_MESSAGES = Object.freeze({
   loginError: "Não foi possível iniciar sessão.",
   logoutError: "Não foi possível terminar sessão.",
   sessionExpired: "Sessão expirada. Inicia sessão novamente.",
+  sessionExpiredByInactivity:
+    "Sessão terminada por inatividade. Inicia sessão novamente.",
+  sessionExpiringSoon:
+    "A tua sessão vai terminar por inatividade dentro de instantes.",
 });

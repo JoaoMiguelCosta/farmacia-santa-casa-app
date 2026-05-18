@@ -19,7 +19,7 @@ function AuthGuardState({ title, description }) {
 export default function RequireAuth({ children }) {
   const location = useLocation();
 
-  const { isAuthenticated, isLoadingSession } = useAuth();
+  const { isAuthenticated, isLoadingSession, error } = useAuth();
 
   if (isLoadingSession) {
     return (
@@ -37,6 +37,7 @@ export default function RequireAuth({ children }) {
         replace
         state={{
           from: location,
+          message: error || AUTH_MESSAGES.loginRequired,
         }}
       />
     );

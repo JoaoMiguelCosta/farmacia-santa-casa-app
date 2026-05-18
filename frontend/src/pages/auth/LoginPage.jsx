@@ -1,7 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
 
-import { AUTH_REDIRECTS } from "../../features/auth/config/auth.config";
+import {
+  AUTH_MESSAGES,
+  AUTH_REDIRECTS,
+} from "../../features/auth/config/auth.config";
 import { useAuth } from "../../features/auth/hooks/useAuth";
 
 import styles from "./LoginPage.module.css";
@@ -35,10 +38,20 @@ const LOGIN_PAGE = Object.freeze({
 
 const LOGIN_AREAS = ["Santa Casa", "Farmácia", "Sistema/Admin"];
 
+const NOTICE_MESSAGES = new Set([
+  AUTH_MESSAGES.loginRequired,
+  AUTH_MESSAGES.sessionExpired,
+  AUTH_MESSAGES.forbidden,
+]);
+
 function getRedirectPathForUser(user, fallbackPath = null) {
   if (fallbackPath) return fallbackPath;
 
   return AUTH_REDIRECTS.byRole[user?.role] || "/";
+}
+
+function isNoticeMessage(message) {
+  return NOTICE_MESSAGES.has(message);
 }
 
 export default function LoginPage() {
@@ -59,6 +72,18 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
 
   const [localError, setLocalError] = useState(null);
+  const [dismissedRouteMessageKey, setDismissedRouteMessageKey] =
+    useState(null);
+
+  const routeMessage = location.state?.message || null;
+  const routeMessageKey = routeMessage
+    ? `${location.key}:${routeMessage}`
+    : null;
+
+  const visibleRouteMessage =
+    routeMessageKey && dismissedRouteMessageKey !== routeMessageKey
+      ? routeMessage
+      : null;
 
   const redirectFrom = useMemo(() => {
     const fromPath = location.state?.from?.pathname;
@@ -70,6 +95,10 @@ export default function LoginPage() {
     return fromPath;
   }, [location.state]);
 
+  const authFeedback = error || visibleRouteMessage;
+  const hasAuthFeedback = Boolean(authFeedback);
+  const authFeedbackIsNotice = isNoticeMessage(authFeedback);
+
   useEffect(() => {
     if (!isAuthenticated || !user) return;
 
@@ -77,6 +106,26 @@ export default function LoginPage() {
       replace: true,
     });
   }, [isAuthenticated, navigate, redirectFrom, user]);
+
+  function clearFeedbackMessages() {
+    setLocalError(null);
+
+    if (routeMessageKey) {
+      setDismissedRouteMessageKey(routeMessageKey);
+    }
+
+    clearAuthError();
+  }
+
+  function handleEmailChange(event) {
+    setEmail(event.target.value);
+    clearFeedbackMessages();
+  }
+
+  function handlePasswordChange(event) {
+    setPassword(event.target.value);
+    clearFeedbackMessages();
+  }
 
   if (isLoadingSession) {
     return (
@@ -95,8 +144,7 @@ export default function LoginPage() {
   async function handleSubmit(event) {
     event.preventDefault();
 
-    clearAuthError();
-    setLocalError(null);
+    clearFeedbackMessages();
 
     const trimmedEmail = email.trim();
 
@@ -150,7 +198,7 @@ export default function LoginPage() {
               placeholder={LOGIN_PAGE.fields.email.placeholder}
               autoComplete="email"
               disabled={isLoggingIn}
-              onChange={(event) => setEmail(event.target.value)}
+              onChange={handleEmailChange}
             />
           </label>
 
@@ -163,13 +211,22 @@ export default function LoginPage() {
               placeholder={LOGIN_PAGE.fields.password.placeholder}
               autoComplete="current-password"
               disabled={isLoggingIn}
-              onChange={(event) => setPassword(event.target.value)}
+              onChange={handlePasswordChange}
             />
           </label>
 
-          {localError || error ? (
+          {hasAuthFeedback ? (
+            <p
+              className={authFeedbackIsNotice ? styles.notice : styles.error}
+              role={authFeedbackIsNotice ? "status" : "alert"}
+            >
+              {authFeedback}
+            </p>
+          ) : null}
+
+          {localError ? (
             <p className={styles.error} role="alert">
-              {localError || error}
+              {localError}
             </p>
           ) : null}
 

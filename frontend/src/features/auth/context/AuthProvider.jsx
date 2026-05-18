@@ -2,6 +2,11 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { getCurrentUser, loginUser, logoutUser } from "../api/authApi";
 import { AUTH_MESSAGES, AUTH_ROLES } from "../config/auth.config";
+import { useIdleLogout } from "../hooks/useIdleLogout";
+import {
+  clearLastActivityAt,
+  writeLastActivityAt,
+} from "../state/authActivity.storage";
 import { AuthContext } from "./AuthContext";
 
 function getErrorMessage(error, fallback) {
@@ -27,6 +32,7 @@ export default function AuthProvider({ children }) {
 
   const clearSession = useCallback((message = null) => {
     setUser(null);
+    clearLastActivityAt();
 
     if (message) {
       setError(message);
@@ -67,7 +73,9 @@ export default function AuthProvider({ children }) {
     } catch (refreshError) {
       setUser(null);
 
-      if (!isUnauthorizedError(refreshError)) {
+      if (isUnauthorizedError(refreshError)) {
+        clearLastActivityAt();
+      } else {
         setError(
           getErrorMessage(refreshError, "Não foi possível verificar a sessão."),
         );
@@ -91,11 +99,13 @@ export default function AuthProvider({ children }) {
 
       const loggedUser = response?.user ?? null;
 
+      writeLastActivityAt();
       setUser(loggedUser);
 
       return loggedUser;
     } catch (loginError) {
       setUser(null);
+      clearLastActivityAt();
 
       const message = getErrorMessage(loginError, AUTH_MESSAGES.loginError);
 
@@ -117,6 +127,22 @@ export default function AuthProvider({ children }) {
       setError(getErrorMessage(logoutError, AUTH_MESSAGES.logoutError));
     } finally {
       setUser(null);
+      clearLastActivityAt();
+      setIsLoggingOut(false);
+    }
+  }, []);
+
+  const logoutByInactivity = useCallback(async () => {
+    setIsLoggingOut(true);
+
+    try {
+      await logoutUser();
+    } catch {
+      // Mesmo que o backend falhe, o frontend deve limpar a sessão local.
+    } finally {
+      setUser(null);
+      clearLastActivityAt();
+      setError(AUTH_MESSAGES.sessionExpiredByInactivity);
       setIsLoggingOut(false);
     }
   }, []);
@@ -124,6 +150,21 @@ export default function AuthProvider({ children }) {
   const clearAuthError = useCallback(() => {
     setError(null);
   }, []);
+
+  const {
+    isWarningVisible: isIdleWarningVisible,
+    warningBeforeMs: idleWarningBeforeMs,
+    resetIdleTimer,
+    dismissIdleWarning: dismissIdleWarningBase,
+  } = useIdleLogout({
+    enabled: Boolean(user) && !isLoadingSession && !isLoggingOut,
+    onTimeout: logoutByInactivity,
+  });
+
+  const dismissIdleWarning = useCallback(() => {
+    clearAuthError();
+    dismissIdleWarningBase();
+  }, [clearAuthError, dismissIdleWarningBase]);
 
   useEffect(() => {
     let isMounted = true;
@@ -141,7 +182,9 @@ export default function AuthProvider({ children }) {
 
         setUser(null);
 
-        if (!isUnauthorizedError(refreshError)) {
+        if (isUnauthorizedError(refreshError)) {
+          clearLastActivityAt();
+        } else {
           setError(
             getErrorMessage(
               refreshError,
@@ -182,12 +225,18 @@ export default function AuthProvider({ children }) {
 
       error,
 
+      isIdleWarningVisible,
+      idleWarningBeforeMs,
+
       login,
       logout,
       refreshUser,
       clearSession,
       handleAuthError,
       clearAuthError,
+
+      resetIdleTimer,
+      dismissIdleWarning,
     };
   }, [
     user,
@@ -195,12 +244,16 @@ export default function AuthProvider({ children }) {
     isLoggingIn,
     isLoggingOut,
     error,
+    isIdleWarningVisible,
+    idleWarningBeforeMs,
     login,
     logout,
     refreshUser,
     clearSession,
     handleAuthError,
     clearAuthError,
+    resetIdleTimer,
+    dismissIdleWarning,
   ]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

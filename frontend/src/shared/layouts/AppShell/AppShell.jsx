@@ -2,6 +2,7 @@ import { NavLink, Outlet } from "react-router-dom";
 
 import { AUTH_ROLES } from "../../../features/auth/config/auth.config";
 import AuthSessionBar from "../../../features/auth/components/AuthSessionBar/AuthSessionBar";
+import IdleSessionWarning from "../../../features/auth/components/IdleSessionWarning/IdleSessionWarning";
 import { useAuth } from "../../../features/auth/hooks/useAuth";
 
 import BrandMark from "../../components/BrandMark/BrandMark.jsx";
@@ -103,6 +104,8 @@ export default function AppShell() {
       <main id="main-content" className={styles.main}>
         <Outlet />
       </main>
+
+      <IdleSessionWarning />
     </div>
   );
 }
