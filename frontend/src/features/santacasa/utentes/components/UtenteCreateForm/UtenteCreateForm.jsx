@@ -1,3 +1,4 @@
+// src/features/santacasa/utentes/components/UtenteCreateForm/UtenteCreateForm.jsx
 import Button from "../../../../../shared/ui/Button/Button";
 import FormField from "../../../../../shared/ui/FormField/FormField";
 import SurfaceCard from "../../../../../shared/ui/SurfaceCard/SurfaceCard";
@@ -8,9 +9,10 @@ import { useUtenteCreateForm } from "../../hooks/useUtenteCreateForm";
 import styles from "./UtenteCreateForm.module.css";
 
 export default function UtenteCreateForm({ onCreate, isSubmitting = false }) {
-  const { values, errors, updateField, handleSubmit } = useUtenteCreateForm({
-    onCreate,
-  });
+  const { values, errors, submitError, updateField, handleSubmit } =
+    useUtenteCreateForm({
+      onCreate,
+    });
 
   return (
     <SurfaceCard
@@ -61,6 +63,12 @@ export default function UtenteCreateForm({ onCreate, isSubmitting = false }) {
             />
           </FormField>
         </div>
+
+        {submitError ? (
+          <p className={styles.submitError} role="alert">
+            {submitError}
+          </p>
+        ) : null}
 
         <div className={styles.actions}>
           <Button

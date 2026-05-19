@@ -5,28 +5,25 @@ const utentesRepository = require("../utentes/utentes.repository");
 const { toSemReceitaDTO } = require("./semReceita.mappers");
 const { validateCreateSemReceitaPayload } = require("./semReceita.validators");
 
+const { assertUtenteOperational } = require("../utentes/utentes.guards");
+
 const {
   conflict,
   forbidden,
   notFound,
 } = require("../../shared/errors/AppError");
 
-async function ensureUtenteActive(utenteId) {
+async function ensureUtenteOperational(utenteId, actionLabel) {
   const utente = await utentesRepository.findById(utenteId);
 
-  if (!utente) {
-    throw notFound("Utente não encontrado.");
-  }
-
-  if (utente.deletedAt) {
-    throw conflict("Utente removido. Operação não permitida.");
-  }
-
-  return utente;
+  return assertUtenteOperational(utente, actionLabel);
 }
 
 async function listByUtente(utenteId) {
-  await ensureUtenteActive(utenteId);
+  await ensureUtenteOperational(
+    utenteId,
+    "consultar medicamentos sem receita deste utente",
+  );
 
   const rows = await semReceitaRepository.findByUtente(utenteId);
 
@@ -36,7 +33,10 @@ async function listByUtente(utenteId) {
 }
 
 async function createForUtente(utenteId, payload) {
-  await ensureUtenteActive(utenteId);
+  await ensureUtenteOperational(
+    utenteId,
+    "criar medicamento sem receita para este utente",
+  );
 
   const data = validateCreateSemReceitaPayload(payload);
 
@@ -60,7 +60,10 @@ async function createForUtente(utenteId, payload) {
 }
 
 async function removeForUtente(utenteId, semReceitaId) {
-  await ensureUtenteActive(utenteId);
+  await ensureUtenteOperational(
+    utenteId,
+    "remover medicamento sem receita deste utente",
+  );
 
   const row = await semReceitaRepository.findById(semReceitaId);
 

@@ -1,16 +1,31 @@
+// src/features/santacasa/utentes/components/UtentesList/UtentesList.jsx
 import Button from "../../../../../shared/ui/Button/Button";
 import DataState from "../../../../../shared/ui/DataState/DataState";
 import SurfaceCard from "../../../../../shared/ui/SurfaceCard/SurfaceCard";
-import { formatDateTime } from "../../../../../shared/utils/formatDate";
 
 import { UTENTES_PAGE } from "../../config/utentesPage.config";
 
+import {
+  getUtenteArchiveDetails,
+  getUtenteDateLabel,
+  getUtenteStatusLabel,
+  getUtenteStatusVariant,
+  isUtenteArchived,
+} from "../../utils/utentesList.utils";
+
 import styles from "./UtentesList.module.css";
 
-function getStatusClassName(isValid) {
-  return isValid
-    ? `${styles.status} ${styles.active}`
-    : `${styles.status} ${styles.invalid}`;
+const STATUS_CLASS_BY_VARIANT = Object.freeze({
+  active: "active",
+  archived: "archived",
+  invalid: "invalid",
+});
+
+function getStatusClassName(utente) {
+  const variant = getUtenteStatusVariant(utente);
+  const variantClass = STATUS_CLASS_BY_VARIANT[variant] || "invalid";
+
+  return `${styles.status} ${styles[variantClass]}`;
 }
 
 export default function UtentesList({
@@ -18,9 +33,17 @@ export default function UtentesList({
   isLoading = false,
   error = null,
   deletingUtenteId = null,
+  archivingUtenteId = null,
+  reactivatingUtenteId = null,
   onRetry,
   onDelete,
+  onArchive,
+  onReactivate,
 }) {
+  const isAnyActionRunning = Boolean(
+    deletingUtenteId || archivingUtenteId || reactivatingUtenteId,
+  );
+
   if (isLoading) {
     return (
       <DataState
@@ -70,7 +93,7 @@ export default function UtentesList({
               <th scope="col">Utente</th>
               <th scope="col">Número</th>
               <th scope="col">Estado</th>
-              <th scope="col">Criado em</th>
+              <th scope="col">Data / Motivo</th>
               <th scope="col">Ações</th>
             </tr>
           </thead>
@@ -78,7 +101,11 @@ export default function UtentesList({
           <tbody>
             {utentes.map((utente) => {
               const isDeleting = deletingUtenteId === utente.id;
-              const isValid = Boolean(utente.isValid);
+              const isArchiving = archivingUtenteId === utente.id;
+              const isReactivating = reactivatingUtenteId === utente.id;
+
+              const isArchived = isUtenteArchived(utente);
+              const archiveDetails = getUtenteArchiveDetails(utente);
 
               return (
                 <tr key={utente.id}>
@@ -92,31 +119,87 @@ export default function UtentesList({
                   </td>
 
                   <td>
-                    <span className={getStatusClassName(isValid)}>
-                      {isValid ? "Ativo" : "Inválido"}
+                    <span className={getStatusClassName(utente)}>
+                      {getUtenteStatusLabel(utente)}
                     </span>
                   </td>
 
                   <td>
                     <span className={styles.dateValue}>
-                      {formatDateTime(utente.createdAt)}
+                      {getUtenteDateLabel(utente)}
                     </span>
+
+                    {archiveDetails ? (
+                      <span className={styles.reasonValue}>
+                        {archiveDetails}
+                      </span>
+                    ) : null}
                   </td>
 
                   <td className={styles.actionCell}>
-                    <Button
-                      type="button"
-                      variant="danger"
-                      size="sm"
-                      isLoading={isDeleting}
-                      disabled={Boolean(deletingUtenteId)}
-                      aria-label={`Remover utente ${utente.nome}`}
-                      onClick={() => onDelete?.(utente)}
-                    >
-                      {isDeleting
-                        ? UTENTES_PAGE.list.deletingLabel
-                        : UTENTES_PAGE.list.deleteLabel}
-                    </Button>
+                    <div className={styles.actions}>
+                      {isArchived ? (
+                        <>
+                          <Button
+                            type="button"
+                            variant="secondary"
+                            size="sm"
+                            isLoading={isReactivating}
+                            disabled={isAnyActionRunning}
+                            aria-label={`Reativar utente ${utente.nome}`}
+                            onClick={() => onReactivate?.(utente)}
+                          >
+                            {isReactivating
+                              ? UTENTES_PAGE.list.reactivatingLabel
+                              : UTENTES_PAGE.list.reactivateLabel}
+                          </Button>
+
+                          <Button
+                            type="button"
+                            variant="danger"
+                            size="sm"
+                            isLoading={isDeleting}
+                            disabled={isAnyActionRunning}
+                            aria-label={`Remover registo do utente ${utente.nome}`}
+                            onClick={() => onDelete?.(utente)}
+                          >
+                            {isDeleting
+                              ? UTENTES_PAGE.list.deletingLabel
+                              : UTENTES_PAGE.list.deleteLabel}
+                          </Button>
+                        </>
+                      ) : (
+                        <>
+                          <Button
+                            type="button"
+                            variant="secondary"
+                            size="sm"
+                            isLoading={isArchiving}
+                            disabled={isAnyActionRunning}
+                            aria-label={`Arquivar utente ${utente.nome}`}
+                            onClick={() => onArchive?.(utente)}
+                          >
+                            {isArchiving
+                              ? UTENTES_PAGE.list.archivingLabel
+                              : UTENTES_PAGE.list.archiveLabel}
+                          </Button>
+
+                          <Button
+                            type="button"
+                            variant="danger"
+                            size="sm"
+                            isLoading={isDeleting}
+                            disabled={isAnyActionRunning}
+                            aria-label={`Remover registo do utente ${utente.nome}`}
+                            onClick={() => onDelete?.(utente)}
+                          >
+                            {isDeleting
+                              ? UTENTES_PAGE.list.deletingLabel
+                              : UTENTES_PAGE.list.deleteLabel}
+                          </Button>
+                        </>
+                      )}
+                    </div>
                   </td>
                 </tr>
               );

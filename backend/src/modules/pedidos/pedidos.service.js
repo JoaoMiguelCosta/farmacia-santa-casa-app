@@ -8,6 +8,8 @@ const {
 
 const { toPedidoDTO } = require("./pedidos.mappers");
 
+const { assertUtenteOperational } = require("../utentes/utentes.guards");
+
 const {
   conflict,
   forbidden,
@@ -20,18 +22,10 @@ function sumPendingQuantity(items = []) {
   }, 0);
 }
 
-async function ensureUtenteActive(utenteId) {
+async function ensureUtenteOperational(utenteId, actionLabel) {
   const utente = await repository.findUtenteById(utenteId);
 
-  if (!utente) {
-    throw notFound("Utente não encontrado.");
-  }
-
-  if (utente.deletedAt) {
-    throw conflict("Utente removido. Operação não permitida.");
-  }
-
-  return utente;
+  return assertUtenteOperational(utente, actionLabel);
 }
 
 function assertOwnership(actualUtenteId, expectedUtenteId, message) {
@@ -109,7 +103,10 @@ function validateExtraAvailability(row, quantidade) {
 }
 
 async function buildPedidoItem(rawItem) {
-  await ensureUtenteActive(rawItem.utenteId);
+  await ensureUtenteOperational(
+    rawItem.utenteId,
+    "criar pedido para este utente",
+  );
 
   if (rawItem.tipo === "COM_RECEITA") {
     const linha = await repository.findReceitaLinhaById(rawItem.id);

@@ -50,6 +50,11 @@ enum MedicamentoTipo {
   SEM_RECEITA
 }
 
+enum UtenteStatus {
+  ATIVO
+  ARQUIVADO
+}
+
 enum UserRole {
   SANTACASA
   FARMACIA
@@ -70,6 +75,8 @@ model User {
   rejectedPedidos     Pedido[]     @relation("PedidoRejectedBy")
   rejectedPedidoItems PedidoItem[] @relation("PedidoItemRejectedBy")
 
+  archivedUtentes Utente[] @relation("UtenteArchivedBy")
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -79,11 +86,17 @@ model User {
 
 model Utente {
   id            String    @id @default(cuid())
-  numero9       String    @db.Char(9)
+  numero9       String    @unique @db.Char(9)
   nome          String
   isValid       Boolean   @default(true)
   invalidReason String?
   deletedAt     DateTime?
+
+  status         UtenteStatus @default(ATIVO)
+  archivedAt     DateTime?
+  archivedReason String?
+  archivedById   String?
+  archivedBy     User?        @relation("UtenteArchivedBy", fields: [archivedById], references: [id], onDelete: SetNull)
 
   receitas       Receita[]
   semReceita     SemReceita[]
@@ -94,9 +107,11 @@ model Utente {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@index([numero9])
   @@index([nome])
   @@index([deletedAt])
+  @@index([status])
+  @@index([archivedAt])
+  @@index([archivedById])
 }
 
 model Medicamento {

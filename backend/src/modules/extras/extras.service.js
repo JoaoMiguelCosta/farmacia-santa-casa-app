@@ -8,24 +8,18 @@ const { toExtraDTO, getReceitaLinhaRestanteDTO } = require("./extras.mappers");
 
 const { validateCreateExtraPayload } = require("./extras.validators");
 
+const { assertUtenteOperational } = require("../utentes/utentes.guards");
+
 const {
   conflict,
   forbidden,
   notFound,
 } = require("../../shared/errors/AppError");
 
-async function ensureUtenteActive(utenteId) {
+async function ensureUtenteOperational(utenteId, actionLabel) {
   const utente = await utentesRepository.findById(utenteId);
 
-  if (!utente) {
-    throw notFound("Utente não encontrado.");
-  }
-
-  if (utente.deletedAt) {
-    throw conflict("Utente removido. Operação não permitida.");
-  }
-
-  return utente;
+  return assertUtenteOperational(utente, actionLabel);
 }
 
 function getLinhaMedicamentoNorm(linha) {
@@ -53,7 +47,7 @@ function getReceitaLinhaRestanteVisual(linha, draftQuantityMap) {
 }
 
 async function listByUtente(utenteId) {
-  await ensureUtenteActive(utenteId);
+  await ensureUtenteOperational(utenteId, "consultar Extras deste utente");
 
   const rows = await extrasRepository.findByUtente(utenteId);
 
@@ -61,7 +55,7 @@ async function listByUtente(utenteId) {
 }
 
 async function createForUtente(utenteId, payload) {
-  await ensureUtenteActive(utenteId);
+  await ensureUtenteOperational(utenteId, "criar Extra para este utente");
 
   const data = validateCreateExtraPayload(payload);
 
@@ -104,7 +98,7 @@ async function createForUtente(utenteId, payload) {
 }
 
 async function removeForUtente(utenteId, extraId) {
-  await ensureUtenteActive(utenteId);
+  await ensureUtenteOperational(utenteId, "remover Extra deste utente");
 
   const extra = await extrasRepository.findById(extraId);
 

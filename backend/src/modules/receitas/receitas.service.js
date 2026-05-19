@@ -9,28 +9,22 @@ const {
 
 const { validateCreateReceitaPayload } = require("./receitas.validators");
 
+const { assertUtenteOperational } = require("../utentes/utentes.guards");
+
 const {
   conflict,
   forbidden,
   notFound,
 } = require("../../shared/errors/AppError");
 
-async function ensureUtenteActive(utenteId) {
+async function ensureUtenteOperational(utenteId, actionLabel) {
   const utente = await utentesRepository.findById(utenteId);
 
-  if (!utente) {
-    throw notFound("Utente não encontrado.");
-  }
-
-  if (utente.deletedAt) {
-    throw conflict("Utente removido. Operação não permitida.");
-  }
-
-  return utente;
+  return assertUtenteOperational(utente, actionLabel);
 }
 
 async function listByUtente(utenteId) {
-  await ensureUtenteActive(utenteId);
+  await ensureUtenteOperational(utenteId, "consultar receitas deste utente");
 
   const rows = await receitasRepository.findLinhasByUtente(utenteId);
 
@@ -40,7 +34,7 @@ async function listByUtente(utenteId) {
 }
 
 async function createForUtente(utenteId, payload) {
-  await ensureUtenteActive(utenteId);
+  await ensureUtenteOperational(utenteId, "criar receita para este utente");
 
   const data = validateCreateReceitaPayload(payload);
 
@@ -65,7 +59,10 @@ async function createForUtente(utenteId, payload) {
 }
 
 async function removeLinhaForUtente(utenteId, linhaId) {
-  await ensureUtenteActive(utenteId);
+  await ensureUtenteOperational(
+    utenteId,
+    "remover linha de receita deste utente",
+  );
 
   const linha = await receitasRepository.findLinhaById(linhaId);
 

@@ -129,9 +129,11 @@ function findUtenteById(utenteId) {
     },
     select: {
       id: true,
-      deletedAt: true,
-      nome: true,
       numero9: true,
+      nome: true,
+      status: true,
+      archivedAt: true,
+      deletedAt: true,
     },
   });
 }

@@ -1,6 +1,5 @@
+// src/features/santacasa/utentes/hooks/useUtenteCreateForm.js
 import { useState } from "react";
-
-import { useAuth } from "../../../auth/hooks/useAuth";
 
 const INITIAL_FORM = Object.freeze({
   numero9: "",
@@ -32,17 +31,10 @@ function normalizePayload(values) {
   };
 }
 
-function getErrorMessage(error, fallback) {
-  return error?.message || fallback;
-}
-
 export function useUtenteCreateForm({ onCreate }) {
-  const { handleAuthError } = useAuth();
-
   const [values, setValues] = useState(INITIAL_FORM);
   const [errors, setErrors] = useState({});
   const [submitError, setSubmitError] = useState(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   function updateField(name, value) {
     setValues((currentValues) => ({
@@ -68,30 +60,32 @@ export function useUtenteCreateForm({ onCreate }) {
       return;
     }
 
-    setIsSubmitting(true);
     setSubmitError(null);
 
-    try {
-      await onCreate?.(normalizePayload(values));
+    const result = await onCreate?.(normalizePayload(values));
 
-      setValues(INITIAL_FORM);
-      setErrors({});
-    } catch (createError) {
-      if (handleAuthError(createError)) return;
+    if (!result?.ok) {
+      setErrors((currentErrors) => ({
+        ...currentErrors,
+        ...(result?.fieldErrors || {}),
+      }));
 
-      setSubmitError(
-        getErrorMessage(createError, "Não foi possível criar o utente."),
-      );
-    } finally {
-      setIsSubmitting(false);
+      if (result?.message) {
+        setSubmitError(result.message);
+      }
+
+      return;
     }
+
+    setValues(INITIAL_FORM);
+    setErrors({});
+    setSubmitError(null);
   }
 
   return {
     values,
     errors,
     submitError,
-    isSubmitting,
 
     updateField,
     handleSubmit,
