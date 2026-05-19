@@ -34,10 +34,24 @@ function getList(name, fallback = []) {
     .filter(Boolean);
 }
 
+function getCookieSameSite(name, fallback = "lax") {
+  const value = String(process.env[name] ?? "")
+    .trim()
+    .toLowerCase();
+
+  if (["strict", "lax", "none"].includes(value)) {
+    return value;
+  }
+
+  return fallback;
+}
+
 if (!process.env.DATABASE_URL) {
   console.error("[env] DATABASE_URL em falta.");
   process.exit(1);
 }
+
+const isProduction = process.env.NODE_ENV === "production";
 
 const env = Object.freeze({
   NODE_ENV: process.env.NODE_ENV || "development",
@@ -55,7 +69,17 @@ const env = Object.freeze({
     "AUTH_COOKIE_MAX_AGE_MS",
     1000 * 60 * 60 * 8,
   ),
-  AUTH_COOKIE_SECURE: getBoolean("AUTH_COOKIE_SECURE", false),
+  AUTH_COOKIE_SECURE: getBoolean("AUTH_COOKIE_SECURE", isProduction),
+  AUTH_COOKIE_SAME_SITE: getCookieSameSite(
+    "AUTH_COOKIE_SAME_SITE",
+    isProduction ? "none" : "lax",
+  ),
+
+  AUTH_LOGIN_RATE_LIMIT_WINDOW_MS: getNumber(
+    "AUTH_LOGIN_RATE_LIMIT_WINDOW_MS",
+    1000 * 60 * 15,
+  ),
+  AUTH_LOGIN_RATE_LIMIT_MAX: getNumber("AUTH_LOGIN_RATE_LIMIT_MAX", 10),
 
   ALLOWED_ORIGINS: getList("ALLOWED_ORIGINS", [
     "http://localhost:5173",
@@ -78,6 +102,30 @@ const env = Object.freeze({
 
 if (!env.AUTH_JWT_SECRET) {
   console.error("[env] AUTH_JWT_SECRET em falta.");
+  process.exit(1);
+}
+
+if (isProduction && env.AUTH_JWT_SECRET.length < 32) {
+  console.error(
+    "[env] AUTH_JWT_SECRET deve ter pelo menos 32 caracteres em produção.",
+  );
+  process.exit(1);
+}
+
+if (isProduction && !env.AUTH_COOKIE_SECURE) {
+  console.error("[env] AUTH_COOKIE_SECURE deve ser true em produção.");
+  process.exit(1);
+}
+
+if (env.AUTH_COOKIE_SAME_SITE === "none" && !env.AUTH_COOKIE_SECURE) {
+  console.error(
+    "[env] AUTH_COOKIE_SAME_SITE=none exige AUTH_COOKIE_SECURE=true.",
+  );
+  process.exit(1);
+}
+
+if (isProduction && env.ALLOWED_ORIGINS.includes("*")) {
+  console.error("[env] ALLOWED_ORIGINS não pode conter '*' em produção.");
   process.exit(1);
 }
 

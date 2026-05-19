@@ -2,12 +2,13 @@
 const { Router } = require("express");
 
 const controller = require("./auth.controller");
-const { asyncHandler } = require("../../shared/utils/asyncHandler");
+const { loginRateLimit } = require("../../middlewares/loginRateLimit");
 const { requireAuth } = require("../../middlewares/authMiddleware");
+const { asyncHandler } = require("../../shared/utils/asyncHandler");
 
 const router = Router();
 
-router.post("/login", asyncHandler(controller.login));
+router.post("/login", loginRateLimit, asyncHandler(controller.login));
 router.post("/logout", asyncHandler(controller.logout));
 router.get("/me", requireAuth, asyncHandler(controller.me));
 

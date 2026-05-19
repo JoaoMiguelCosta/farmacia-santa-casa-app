@@ -1,6 +1,12 @@
+// src/config/auth.config.js
 const { env } = require("./env");
 
-const AUTH_COOKIE_SAME_SITE = env.NODE_ENV === "production" ? "strict" : "lax";
+const cookieBaseOptions = Object.freeze({
+  httpOnly: true,
+  secure: env.AUTH_COOKIE_SECURE,
+  sameSite: env.AUTH_COOKIE_SAME_SITE,
+  path: "/",
+});
 
 const AUTH_CONFIG = Object.freeze({
   jwt: {
@@ -10,19 +16,15 @@ const AUTH_CONFIG = Object.freeze({
 
   cookie: {
     name: env.AUTH_COOKIE_NAME,
-    options: {
-      httpOnly: true,
-      secure: Boolean(env.AUTH_COOKIE_SECURE),
-      sameSite: AUTH_COOKIE_SAME_SITE,
-      maxAge: Number(env.AUTH_COOKIE_MAX_AGE_MS),
-      path: "/",
-    },
-  },
 
-  roles: {
-    SANTACASA: "SANTACASA",
-    FARMACIA: "FARMACIA",
-    ADMIN: "ADMIN",
+    options: Object.freeze({
+      ...cookieBaseOptions,
+      maxAge: env.AUTH_COOKIE_MAX_AGE_MS,
+    }),
+
+    clearOptions: Object.freeze({
+      ...cookieBaseOptions,
+    }),
   },
 });
 

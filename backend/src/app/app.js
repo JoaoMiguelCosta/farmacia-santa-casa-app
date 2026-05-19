@@ -4,6 +4,7 @@ const cookieParser = require("cookie-parser");
 
 const routes = require("../routes");
 const { env } = require("../config/env");
+const { originGuard } = require("../middlewares/originGuard");
 const { notFoundHandler } = require("../middlewares/notFoundHandler");
 const { errorHandler } = require("../middlewares/errorHandler");
 
@@ -39,6 +40,8 @@ function createApp() {
   app.disable("x-powered-by");
 
   app.use(corsMiddleware);
+  app.use(originGuard);
+
   app.use(cookieParser());
   app.use(express.json({ limit: env.JSON_LIMIT }));
 

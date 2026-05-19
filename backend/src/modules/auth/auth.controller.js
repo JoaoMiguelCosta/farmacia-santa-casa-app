@@ -1,33 +1,31 @@
 // src/modules/auth/auth.controller.js
 const service = require("./auth.service");
 const { AUTH_CONFIG } = require("../../config/auth.config");
-const { parseLoginPayload } = require("./auth.validators");
+const { ok } = require("../../shared/utils/http");
 
 async function login(req, res) {
-  const payload = parseLoginPayload(req.body);
-  const { token, user } = await service.login(payload);
+  const data = await service.login(req.body);
 
-  res.cookie(AUTH_CONFIG.cookie.name, token, AUTH_CONFIG.cookie.options);
+  res.cookie(AUTH_CONFIG.cookie.name, data.token, AUTH_CONFIG.cookie.options);
 
-  return res.status(200).json({
-    user,
+  return ok(res, {
+    user: data.user,
   });
 }
 
 async function logout(_req, res) {
-  res.clearCookie(AUTH_CONFIG.cookie.name, {
-    ...AUTH_CONFIG.cookie.options,
-    maxAge: undefined,
-  });
+  res.clearCookie(AUTH_CONFIG.cookie.name, AUTH_CONFIG.cookie.clearOptions);
 
-  return res.status(200).json({
-    ok: true,
+  return ok(res, {
+    message: "Sessão terminada com sucesso.",
   });
 }
 
 async function me(req, res) {
-  return res.status(200).json({
-    user: req.user,
+  const user = await service.getCurrentUserFromRequest(req);
+
+  return ok(res, {
+    user,
   });
 }
 
