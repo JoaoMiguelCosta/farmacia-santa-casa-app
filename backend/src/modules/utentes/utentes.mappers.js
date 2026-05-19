@@ -19,7 +19,7 @@ function toUtenteDTO(utente) {
     nome: utente.nome,
 
     status: utente.status,
-    isArchived: ["ARQUIVADO", "FALECIDO"].includes(utente.status),
+    isArchived: utente.status === "ARQUIVADO",
 
     archivedAt: utente.archivedAt,
     archivedReason: utente.archivedReason,
