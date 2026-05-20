@@ -71,6 +71,31 @@ function parsePedidoItem(raw = {}, index) {
   };
 }
 
+function getPedidoItemKey(item) {
+  return `${item.utenteId}:${item.tipo}:${item.id}`;
+}
+
+function mergeDuplicatePedidoItems(items = []) {
+  const itemMap = new Map();
+
+  items.forEach((item) => {
+    const key = getPedidoItemKey(item);
+    const existingItem = itemMap.get(key);
+
+    if (!existingItem) {
+      itemMap.set(key, { ...item });
+      return;
+    }
+
+    itemMap.set(key, {
+      ...existingItem,
+      quantidade: existingItem.quantidade + item.quantidade,
+    });
+  });
+
+  return Array.from(itemMap.values());
+}
+
 function validateCreatePedidoPayload(payload = {}) {
   const items = Array.isArray(payload.items) ? payload.items : [];
 
@@ -78,8 +103,10 @@ function validateCreatePedidoPayload(payload = {}) {
     throw badRequest("O pedido deve conter pelo menos um item.");
   }
 
+  const parsedItems = items.map(parsePedidoItem);
+
   return {
-    items: items.map(parsePedidoItem),
+    items: mergeDuplicatePedidoItems(parsedItems),
   };
 }
 
