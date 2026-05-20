@@ -7,6 +7,9 @@ import { RECEITAS_PAGE } from "../../config/receitasPage.config";
 
 import styles from "./ReceitasList.module.css";
 
+const FEFO_BLOCKED_MESSAGE =
+  "Usa primeiro a receita com validade mais próxima.";
+
 function formatDateOnly(value) {
   if (!value) return "—";
 
@@ -17,6 +20,62 @@ function formatDateOnly(value) {
   return new Intl.DateTimeFormat("pt-PT", {
     dateStyle: "short",
   }).format(date);
+}
+
+function normalizeMedicationName(value) {
+  return String(value || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, " ");
+}
+
+function getReceitaValidityTime(linha) {
+  const time = new Date(linha?.validade).getTime();
+
+  return Number.isNaN(time) ? Number.MAX_SAFE_INTEGER : time;
+}
+
+function getReceitaPedidoKey(linha) {
+  return `COM_RECEITA:${linha.linhaId}`;
+}
+
+function getReceitaAvailableQuantity(linha, pedidoItemsQuantities = {}) {
+  const pedidoKey = getReceitaPedidoKey(linha);
+  const quantidadeRestante = Number(linha?.quantidadeRestante) || 0;
+  const quantidadeEmPedido = Number(pedidoItemsQuantities[pedidoKey]) || 0;
+
+  return Math.max(0, quantidadeRestante - quantidadeEmPedido);
+}
+
+function isSameMedication(a, b) {
+  return (
+    normalizeMedicationName(a?.medicamento) ===
+    normalizeMedicationName(b?.medicamento)
+  );
+}
+
+function hasEarlierAvailableReceita({
+  linha,
+  receitas = [],
+  pedidoItemsQuantities = {},
+}) {
+  if (!linha?.linhaId || !linha?.medicamento) return false;
+
+  const currentValidityTime = getReceitaValidityTime(linha);
+
+  return receitas.some((candidate) => {
+    if (!candidate?.linhaId) return false;
+    if (candidate.linhaId === linha.linhaId) return false;
+    if (!isSameMedication(candidate, linha)) return false;
+
+    const candidateValidityTime = getReceitaValidityTime(candidate);
+
+    if (candidateValidityTime >= currentValidityTime) return false;
+
+    return getReceitaAvailableQuantity(candidate, pedidoItemsQuantities) > 0;
+  });
 }
 
 function getRecipeKey(linha) {
@@ -49,7 +108,7 @@ function groupReceitasByRecipe(receitas = []) {
 
 function buildPedidoItem(linha) {
   return {
-    key: `COM_RECEITA:${linha.linhaId}`,
+    key: getReceitaPedidoKey(linha),
     tipo: "COM_RECEITA",
     id: linha.linhaId,
     title: linha.medicamento,
@@ -172,9 +231,20 @@ export default function ReceitasList({
 
                 const isDeleting = deletingLinhaId === linha.linhaId;
                 const isFirstRecipeLine = index === 0;
+                const isBlockedByFefo = hasEarlierAvailableReceita({
+                  linha,
+                  receitas,
+                  pedidoItemsQuantities,
+                });
+
+                const isPedidoDisabled =
+                  quantidadeDisponivel <= 0 || isBlockedByFefo;
 
                 return (
-                  <tr key={linha.linhaId}>
+                  <tr
+                    key={linha.linhaId}
+                    className={isBlockedByFefo ? styles.fefoBlockedRow : ""}
+                  >
                     {isFirstRecipeLine ? (
                       <td
                         rowSpan={group.linhas.length}
@@ -204,6 +274,12 @@ export default function ReceitasList({
                     <td>
                       <strong>{linha.medicamento}</strong>
                       <span>{linha.linhaId}</span>
+
+                      {isBlockedByFefo ? (
+                        <span className={styles.fefoInlineNotice}>
+                          {FEFO_BLOCKED_MESSAGE}
+                        </span>
+                      ) : null}
                     </td>
 
                     <td>
@@ -236,7 +312,12 @@ export default function ReceitasList({
                             min="1"
                             max={quantidadeDisponivel}
                             value={quantity}
-                            disabled={quantidadeDisponivel <= 0}
+                            disabled={isPedidoDisabled}
+                            aria-describedby={
+                              isBlockedByFefo
+                                ? `fefo-notice-${linha.linhaId}`
+                                : undefined
+                            }
                             onChange={(event) =>
                               onPedidoQuantityChange?.(
                                 pedidoItem.key,
@@ -249,7 +330,12 @@ export default function ReceitasList({
                           <Button
                             type="button"
                             size="sm"
-                            disabled={quantidadeDisponivel <= 0}
+                            disabled={isPedidoDisabled}
+                            aria-describedby={
+                              isBlockedByFefo
+                                ? `fefo-notice-${linha.linhaId}`
+                                : undefined
+                            }
                             onClick={() =>
                               onAddToPedido({
                                 ...pedidoItem,
@@ -259,8 +345,19 @@ export default function ReceitasList({
                           >
                             {quantidadeDisponivel <= 0
                               ? "Sem saldo"
-                              : "Adicionar"}
+                              : isBlockedByFefo
+                                ? "Usar anterior"
+                                : "Adicionar"}
                           </Button>
+
+                          {isBlockedByFefo ? (
+                            <p
+                              id={`fefo-notice-${linha.linhaId}`}
+                              className={styles.fefoNotice}
+                            >
+                              {FEFO_BLOCKED_MESSAGE}
+                            </p>
+                          ) : null}
                         </div>
                       </td>
                     ) : null}
