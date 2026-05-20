@@ -1,8 +1,6 @@
 import { API_ENDPOINTS } from "../../../../shared/api/endpoints";
 import { httpClient } from "../../../../shared/api/httpClient";
 
-const HISTORICO_STATUS = Object.freeze(["VALIDADO", "REJEITADO"]);
-
 const DEFAULT_HISTORICO_QUERY = Object.freeze({
   status: "TODOS",
   search: "",
@@ -12,15 +10,7 @@ const DEFAULT_HISTORICO_QUERY = Object.freeze({
   take: 50,
 });
 
-const HISTORICO_FETCH_TAKE = 200;
-
-function normalizeSearchValue(value) {
-  return String(value || "")
-    .trim()
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/\p{Diacritic}/gu, "");
-}
+const MAX_TAKE = 200;
 
 function normalizeHistoricoQuery(query = {}) {
   return {
@@ -33,135 +23,26 @@ function normalizeHistoricoQuery(query = {}) {
     skip: Math.max(0, Number(query.skip ?? DEFAULT_HISTORICO_QUERY.skip)),
     take: Math.min(
       Math.max(1, Number(query.take ?? DEFAULT_HISTORICO_QUERY.take)),
-      HISTORICO_FETCH_TAKE,
+      MAX_TAKE,
     ),
   };
 }
 
-function getPedidoSortDate(pedido) {
-  return (
-    pedido?.validatedAt ||
-    pedido?.rejectedAt ||
-    pedido?.updatedAt ||
-    pedido?.createdAt ||
-    ""
-  );
-}
-
-function sortHistoricoPedidos(pedidos = []) {
-  return [...pedidos].sort((a, b) => {
-    const dateA = new Date(getPedidoSortDate(a)).getTime();
-    const dateB = new Date(getPedidoSortDate(b)).getTime();
-
-    if (dateA !== dateB) {
-      return dateB - dateA;
-    }
-
-    const numeroA = Number(a?.numero) || 0;
-    const numeroB = Number(b?.numero) || 0;
-
-    return numeroB - numeroA;
-  });
-}
-
-function getDateBoundary(value, mode = "start") {
-  if (!value) return null;
-
-  const parts = String(value).split("-").map(Number);
-
-  if (parts.length !== 3 || parts.some((part) => !Number.isFinite(part))) {
-    const fallbackDate = new Date(value);
-
-    return Number.isNaN(fallbackDate.getTime()) ? null : fallbackDate;
-  }
-
-  const [year, month, day] = parts;
-
-  if (mode === "end") {
-    return new Date(year, month - 1, day, 23, 59, 59, 999);
-  }
-
-  return new Date(year, month - 1, day, 0, 0, 0, 0);
-}
-
-function isPedidoWithinDateRange(pedido, query) {
-  const closedAt = getPedidoSortDate(pedido);
-
-  if (!closedAt) return false;
-
-  const pedidoDate = new Date(closedAt);
-
-  if (Number.isNaN(pedidoDate.getTime())) return false;
-
-  const fromDate = getDateBoundary(query.from, "start");
-  const toDate = getDateBoundary(query.to, "end");
-
-  if (fromDate && pedidoDate < fromDate) return false;
-  if (toDate && pedidoDate > toDate) return false;
-
-  return true;
-}
-
-function getPedidoSearchText(pedido) {
-  const itens = Array.isArray(pedido?.itens) ? pedido.itens : [];
-
-  const itemText = itens
-    .map((item) => {
-      const receita = item?.receitaLinha?.receita;
-
-      return [
-        item?.medicamento,
-        item?.tipo,
-        item?.status,
-        item?.utente?.nome,
-        item?.utente?.numero9,
-        receita?.numero19,
-        receita?.pinAcesso6,
-        receita?.pinOpcao4,
-      ]
-        .filter(Boolean)
-        .join(" ");
-    })
-    .join(" ");
-
-  return [
-    pedido?.numero ? `#${pedido.numero}` : "",
-    pedido?.numero,
-    pedido?.status,
-    pedido?.closedReason,
-    itemText,
-  ]
-    .filter(Boolean)
-    .join(" ");
-}
-
-function matchesPedidoSearch(pedido, query) {
-  const search = normalizeSearchValue(query.search);
-
-  if (!search) return true;
-
-  return normalizeSearchValue(getPedidoSearchText(pedido)).includes(search);
-}
-
-function filterHistoricoPedidos(pedidos = [], query) {
-  return pedidos.filter((pedido) => {
-    return (
-      matchesPedidoSearch(pedido, query) &&
-      isPedidoWithinDateRange(pedido, query)
-    );
-  });
-}
-
-function buildHistoricoResponse(pedidos = [], query) {
-  const filteredPedidos = filterHistoricoPedidos(pedidos, query);
-  const sortedPedidos = sortHistoricoPedidos(filteredPedidos);
+function normalizeHistoricoResponse(response, fallbackQuery) {
+  const data = Array.isArray(response?.data) ? response.data : [];
 
   return {
-    data: sortedPedidos.slice(query.skip, query.skip + query.take),
+    data,
     meta: {
-      total: filteredPedidos.length,
-      skip: query.skip,
-      take: query.take,
+      total: Number(response?.meta?.total) || 0,
+      skip: Number(response?.meta?.skip ?? fallbackQuery.skip) || 0,
+      take: Number(response?.meta?.take ?? fallbackQuery.take) || 50,
+    },
+    params: {
+      status: response?.params?.status ?? fallbackQuery.status,
+      search: response?.params?.search ?? fallbackQuery.search,
+      from: response?.params?.from ?? fallbackQuery.from,
+      to: response?.params?.to ?? fallbackQuery.to,
     },
   };
 }
@@ -172,36 +53,9 @@ export async function getFarmaciaHistorico(query = {}) {
     ...query,
   });
 
-  if (finalQuery.status && finalQuery.status !== "TODOS") {
-    const response = await httpClient.get(API_ENDPOINTS.farmacia.pedidos, {
-      query: {
-        status: finalQuery.status,
-        skip: 0,
-        take: HISTORICO_FETCH_TAKE,
-      },
-    });
+  const response = await httpClient.get(API_ENDPOINTS.farmacia.pedidos, {
+    query: finalQuery,
+  });
 
-    return buildHistoricoResponse(
-      Array.isArray(response?.data) ? response.data : [],
-      finalQuery,
-    );
-  }
-
-  const responses = await Promise.all(
-    HISTORICO_STATUS.map((status) =>
-      httpClient.get(API_ENDPOINTS.farmacia.pedidos, {
-        query: {
-          status,
-          skip: 0,
-          take: HISTORICO_FETCH_TAKE,
-        },
-      }),
-    ),
-  );
-
-  const pedidos = responses.flatMap((response) =>
-    Array.isArray(response?.data) ? response.data : [],
-  );
-
-  return buildHistoricoResponse(pedidos, finalQuery);
+  return normalizeHistoricoResponse(response, finalQuery);
 }

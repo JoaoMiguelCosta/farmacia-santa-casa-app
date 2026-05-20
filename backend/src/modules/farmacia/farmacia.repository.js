@@ -4,6 +4,8 @@ const { normalizeText } = require("../../shared/utils/normalize");
 
 const { conflict, notFound } = require("../../shared/errors/AppError");
 
+const HISTORICO_STATUSES = Object.freeze(["VALIDADO", "REJEITADO"]);
+
 const auditUserSelect = {
   id: true,
   name: true,
@@ -327,16 +329,207 @@ function validatePedidoItemsBeforeValidation(pedido) {
   }
 }
 
-async function listPedidos({ status, skip, take }) {
-  const where = status ? { status } : {};
+function buildDateFilter({ status, from, to }) {
+  if (!from && !to) return null;
+
+  const dateFilter = {};
+
+  if (from) dateFilter.gte = from;
+  if (to) dateFilter.lte = to;
+
+  if (status === "PENDENTE") {
+    return {
+      createdAt: dateFilter,
+    };
+  }
+
+  if (status === "VALIDADO") {
+    return {
+      validatedAt: dateFilter,
+    };
+  }
+
+  if (status === "REJEITADO") {
+    return {
+      rejectedAt: dateFilter,
+    };
+  }
+
+  if (status === "CANCELADO") {
+    return {
+      updatedAt: dateFilter,
+    };
+  }
+
+  return {
+    OR: [
+      {
+        validatedAt: dateFilter,
+      },
+      {
+        rejectedAt: dateFilter,
+      },
+    ],
+  };
+}
+
+function buildSearchFilter(search = "") {
+  const normalizedSearch = String(search || "").trim();
+
+  if (!normalizedSearch) return null;
+
+  const numericSearch = normalizedSearch.replace(/^#/, "").trim();
+
+  const conditions = [
+    {
+      closedReason: {
+        contains: normalizedSearch,
+        mode: "insensitive",
+      },
+    },
+    {
+      itens: {
+        some: {
+          medicamento: {
+            contains: normalizedSearch,
+            mode: "insensitive",
+          },
+        },
+      },
+    },
+    {
+      itens: {
+        some: {
+          utente: {
+            nome: {
+              contains: normalizedSearch,
+              mode: "insensitive",
+            },
+          },
+        },
+      },
+    },
+    {
+      itens: {
+        some: {
+          utente: {
+            numero9: {
+              contains: normalizedSearch,
+            },
+          },
+        },
+      },
+    },
+    {
+      itens: {
+        some: {
+          receitaLinha: {
+            receita: {
+              numero19: {
+                contains: normalizedSearch,
+              },
+            },
+          },
+        },
+      },
+    },
+    {
+      itens: {
+        some: {
+          receitaLinha: {
+            receita: {
+              pinAcesso6: {
+                contains: normalizedSearch,
+              },
+            },
+          },
+        },
+      },
+    },
+    {
+      itens: {
+        some: {
+          receitaLinha: {
+            receita: {
+              pinOpcao4: {
+                contains: normalizedSearch,
+              },
+            },
+          },
+        },
+      },
+    },
+  ];
+
+  if (/^\d+$/.test(numericSearch)) {
+    conditions.unshift({
+      numero: Number(numericSearch),
+    });
+  }
+
+  return {
+    OR: conditions,
+  };
+}
+
+function buildListPedidosWhere({ status, search, from, to }) {
+  const where = {};
+
+  if (status === "TODOS") {
+    where.status = {
+      in: HISTORICO_STATUSES,
+    };
+  } else if (status) {
+    where.status = status;
+  }
+
+  const and = [];
+
+  const searchFilter = buildSearchFilter(search);
+  const dateFilter = buildDateFilter({
+    status,
+    from,
+    to,
+  });
+
+  if (searchFilter) {
+    and.push(searchFilter);
+  }
+
+  if (dateFilter) {
+    and.push(dateFilter);
+  }
+
+  if (and.length > 0) {
+    where.AND = and;
+  }
+
+  return where;
+}
+
+async function listPedidos({ status, search, from, to, skip, take }) {
+  const where = buildListPedidosWhere({
+    status,
+    search,
+    from,
+    to,
+  });
 
   const [rows, total] = await Promise.all([
     prisma.pedido.findMany({
       where,
       select: pedidoSelect,
-      orderBy: {
-        createdAt: "desc",
-      },
+      orderBy: [
+        {
+          updatedAt: "desc",
+        },
+        {
+          createdAt: "desc",
+        },
+        {
+          numero: "desc",
+        },
+      ],
       skip,
       take,
     }),
@@ -351,6 +544,10 @@ async function listPedidos({ status, skip, take }) {
     total,
     skip,
     take,
+    status,
+    search,
+    from,
+    to,
   };
 }
 

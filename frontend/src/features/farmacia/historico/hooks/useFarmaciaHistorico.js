@@ -18,15 +18,19 @@ function getErrorMessage(error, fallback) {
   return error?.message || fallback;
 }
 
+function getInitialMeta(initialQuery = DEFAULT_HISTORICO_QUERY) {
+  return {
+    total: 0,
+    skip: initialQuery.skip ?? DEFAULT_HISTORICO_QUERY.skip,
+    take: initialQuery.take ?? DEFAULT_HISTORICO_QUERY.take,
+  };
+}
+
 export function useFarmaciaHistorico(initialQuery = DEFAULT_HISTORICO_QUERY) {
   const { handleAuthError } = useAuth();
 
   const [pedidos, setPedidos] = useState([]);
-  const [meta, setMeta] = useState({
-    total: 0,
-    skip: initialQuery.skip ?? DEFAULT_HISTORICO_QUERY.skip,
-    take: initialQuery.take ?? DEFAULT_HISTORICO_QUERY.take,
-  });
+  const [meta, setMeta] = useState(() => getInitialMeta(initialQuery));
 
   const [query, setQuery] = useState({
     ...DEFAULT_HISTORICO_QUERY,
@@ -59,6 +63,15 @@ export function useFarmaciaHistorico(initialQuery = DEFAULT_HISTORICO_QUERY) {
   const selectedStatus = useMemo(() => {
     return query.status || DEFAULT_HISTORICO_QUERY.status;
   }, [query.status]);
+
+  const totalPages = Math.max(1, Math.ceil(meta.total / meta.take));
+  const currentPage = Math.min(
+    totalPages,
+    Math.floor(meta.skip / meta.take) + 1,
+  );
+
+  const hasPreviousPage = meta.skip > 0;
+  const hasNextPage = meta.skip + meta.take < meta.total;
 
   const loadHistorico = useCallback(
     async ({ showRefreshing = false } = {}) => {
@@ -135,8 +148,40 @@ export function useFarmaciaHistorico(initialQuery = DEFAULT_HISTORICO_QUERY) {
     setFromInput(DEFAULT_HISTORICO_QUERY.from);
     setToInput(DEFAULT_HISTORICO_QUERY.to);
 
-    setQuery(DEFAULT_HISTORICO_QUERY);
+    setQuery({
+      ...DEFAULT_HISTORICO_QUERY,
+    });
   }, []);
+
+  const goToPreviousPage = useCallback(() => {
+    setQuery((currentQueryValue) => ({
+      ...currentQueryValue,
+      skip: Math.max(
+        0,
+        Number(currentQueryValue.skip || 0) -
+          Number(currentQueryValue.take || DEFAULT_HISTORICO_QUERY.take),
+      ),
+    }));
+  }, []);
+
+  const goToNextPage = useCallback(() => {
+    setQuery((currentQueryValue) => {
+      const currentSkip = Number(currentQueryValue.skip || 0);
+      const currentTake = Number(
+        currentQueryValue.take || DEFAULT_HISTORICO_QUERY.take,
+      );
+      const nextSkip = currentSkip + currentTake;
+
+      if (nextSkip >= meta.total) {
+        return currentQueryValue;
+      }
+
+      return {
+        ...currentQueryValue,
+        skip: nextSkip,
+      };
+    });
+  }, [meta.total]);
 
   useEffect(() => {
     let isMounted = true;
@@ -188,6 +233,11 @@ export function useFarmaciaHistorico(initialQuery = DEFAULT_HISTORICO_QUERY) {
     toInput,
 
     hasPedidos,
+    currentPage,
+    totalPages,
+    hasPreviousPage,
+    hasNextPage,
+
     isLoading,
     isRefreshing,
     error,
@@ -202,5 +252,7 @@ export function useFarmaciaHistorico(initialQuery = DEFAULT_HISTORICO_QUERY) {
 
     applyFilters,
     clearFilters,
+    goToPreviousPage,
+    goToNextPage,
   };
 }

@@ -7,6 +7,21 @@ import { useFarmaciaHistorico } from "../../features/farmacia/historico/hooks/us
 
 import styles from "./FarmaciaHistoricoPage.module.css";
 
+function getPaginationLabel({ meta, currentPage, totalPages }) {
+  const total = Number(meta?.total) || 0;
+  const skip = Number(meta?.skip) || 0;
+  const take = Number(meta?.take) || 0;
+
+  if (total === 0) {
+    return "Sem resultados.";
+  }
+
+  const start = skip + 1;
+  const end = Math.min(skip + take, total);
+
+  return `A mostrar ${start}-${end} de ${total} pedido(s). Página ${currentPage} de ${totalPages}.`;
+}
+
 export default function FarmaciaHistoricoPage() {
   const {
     pedidos,
@@ -16,6 +31,11 @@ export default function FarmaciaHistoricoPage() {
     searchInput,
     fromInput,
     toInput,
+
+    currentPage,
+    totalPages,
+    hasPreviousPage,
+    hasNextPage,
 
     isLoading,
     isRefreshing,
@@ -30,7 +50,15 @@ export default function FarmaciaHistoricoPage() {
 
     applyFilters,
     clearFilters,
+    goToPreviousPage,
+    goToNextPage,
   } = useFarmaciaHistorico();
+
+  const paginationLabel = getPaginationLabel({
+    meta,
+    currentPage,
+    totalPages,
+  });
 
   function handleSubmit(event) {
     event.preventDefault();
@@ -148,6 +176,33 @@ export default function FarmaciaHistoricoPage() {
         error={error}
         onRefresh={refreshHistorico}
       />
+
+      <section
+        className={styles.pagination}
+        aria-label="Paginação do histórico da Farmácia"
+      >
+        <p className={styles.paginationInfo}>{paginationLabel}</p>
+
+        <div className={styles.paginationActions}>
+          <button
+            type="button"
+            className={styles.clearButton}
+            disabled={!hasPreviousPage || isLoading || isRefreshing}
+            onClick={goToPreviousPage}
+          >
+            Anterior
+          </button>
+
+          <button
+            type="button"
+            className={styles.clearButton}
+            disabled={!hasNextPage || isLoading || isRefreshing}
+            onClick={goToNextPage}
+          >
+            Seguinte
+          </button>
+        </div>
+      </section>
     </section>
   );
 }

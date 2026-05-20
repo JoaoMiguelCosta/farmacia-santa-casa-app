@@ -19,15 +19,19 @@ function getErrorMessage(error, fallback) {
   return error?.message || fallback;
 }
 
+function getInitialMeta() {
+  return {
+    total: 0,
+    skip: DEFAULT_QUERY.skip,
+    take: DEFAULT_QUERY.take,
+  };
+}
+
 export function useSantaCasaHistorico() {
   const { handleAuthError } = useAuth();
 
   const [pedidos, setPedidos] = useState([]);
-  const [meta, setMeta] = useState({
-    total: 0,
-    skip: DEFAULT_QUERY.skip,
-    take: DEFAULT_QUERY.take,
-  });
+  const [meta, setMeta] = useState(getInitialMeta);
 
   const [query, setQuery] = useState(DEFAULT_QUERY);
 
@@ -45,6 +49,15 @@ export function useSantaCasaHistorico() {
   const currentQuery = useMemo(() => {
     return buildSantaCasaHistoricoQuery(query);
   }, [query]);
+
+  const totalPages = Math.max(1, Math.ceil(meta.total / meta.take));
+  const currentPage = Math.min(
+    totalPages,
+    Math.floor(meta.skip / meta.take) + 1,
+  );
+
+  const hasPreviousPage = meta.skip > 0;
+  const hasNextPage = meta.skip + meta.take < meta.total;
 
   const loadHistorico = useCallback(
     async ({ showRefreshing = false } = {}) => {
@@ -115,8 +128,38 @@ export function useSantaCasaHistorico() {
     setFromInput(DEFAULT_QUERY.from);
     setToInput(DEFAULT_QUERY.to);
 
-    setQuery(DEFAULT_QUERY);
+    setQuery({
+      ...DEFAULT_QUERY,
+    });
   }, []);
+
+  const goToPreviousPage = useCallback(() => {
+    setQuery((currentQueryValue) => ({
+      ...currentQueryValue,
+      skip: Math.max(
+        0,
+        Number(currentQueryValue.skip || 0) -
+          Number(currentQueryValue.take || DEFAULT_QUERY.take),
+      ),
+    }));
+  }, []);
+
+  const goToNextPage = useCallback(() => {
+    setQuery((currentQueryValue) => {
+      const currentSkip = Number(currentQueryValue.skip || 0);
+      const currentTake = Number(currentQueryValue.take || DEFAULT_QUERY.take);
+      const nextSkip = currentSkip + currentTake;
+
+      if (nextSkip >= meta.total) {
+        return currentQueryValue;
+      }
+
+      return {
+        ...currentQueryValue,
+        skip: nextSkip,
+      };
+    });
+  }, [meta.total]);
 
   useEffect(() => {
     let isMounted = true;
@@ -167,6 +210,11 @@ export function useSantaCasaHistorico() {
     toInput,
 
     hasPedidos,
+    currentPage,
+    totalPages,
+    hasPreviousPage,
+    hasNextPage,
+
     isLoading,
     isRefreshing,
     error,
@@ -181,5 +229,7 @@ export function useSantaCasaHistorico() {
 
     applyFilters,
     clearFilters,
+    goToPreviousPage,
+    goToNextPage,
   };
 }
