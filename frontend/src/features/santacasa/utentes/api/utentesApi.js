@@ -3,6 +3,9 @@ import { httpClient } from "../../../../shared/api/httpClient";
 
 const DEFAULT_LIST_PARAMS = Object.freeze({
   status: "ATIVO",
+  search: "",
+  skip: 0,
+  take: 50,
 });
 
 function normalizeListParams(params = {}) {
@@ -16,12 +19,46 @@ function unwrapData(response) {
   return response?.data ?? response;
 }
 
+function normalizePaginatedUtentes(data) {
+  if (Array.isArray(data)) {
+    return {
+      rows: data,
+      total: data.length,
+      params: {
+        ...DEFAULT_LIST_PARAMS,
+        take: data.length || DEFAULT_LIST_PARAMS.take,
+      },
+    };
+  }
+
+  return {
+    rows: Array.isArray(data?.rows) ? data.rows : [],
+    total: Number(data?.total) || 0,
+    params: {
+      ...DEFAULT_LIST_PARAMS,
+      ...(data?.params || {}),
+    },
+  };
+}
+
 export async function getUtentes(params = {}) {
   const response = await httpClient.get(API_ENDPOINTS.santacasa.utentes, {
     query: normalizeListParams(params),
   });
 
-  return unwrapData(response);
+  const data = unwrapData(response);
+
+  if (Array.isArray(data)) return data;
+
+  return Array.isArray(data?.rows) ? data.rows : [];
+}
+
+export async function getUtentesPaginated(params = {}) {
+  const response = await httpClient.get(API_ENDPOINTS.santacasa.utentes, {
+    query: normalizeListParams(params),
+  });
+
+  return normalizePaginatedUtentes(unwrapData(response));
 }
 
 export async function getUtenteById(utenteId) {

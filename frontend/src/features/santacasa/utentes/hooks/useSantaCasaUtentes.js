@@ -7,7 +7,7 @@ import {
   archiveUtente,
   createUtente,
   deleteUtente,
-  getUtentes,
+  getUtentesPaginated,
   reactivateUtente,
 } from "../api/utentesApi";
 
@@ -23,6 +23,7 @@ import {
 import { sortUtentesByName } from "../utils/sortUtentes";
 
 const DEFAULT_STATUS_FILTER = UTENTE_STATUS.ATIVO;
+const DEFAULT_PAGE_SIZE = 50;
 
 function getErrorMessage(error, fallback) {
   return error?.message || fallback;
@@ -36,20 +37,12 @@ function buildArchivePayload({
   };
 }
 
-function replaceUtenteInList(currentUtentes, updatedUtente) {
-  if (!updatedUtente?.id) return currentUtentes;
-
-  const existsInList = currentUtentes.some(
-    (utente) => utente.id === updatedUtente.id,
-  );
-
-  if (!existsInList) return currentUtentes;
-
-  return sortUtentesByName(
-    currentUtentes.map((utente) =>
-      utente.id === updatedUtente.id ? updatedUtente : utente,
-    ),
-  );
+function buildInitialPagination() {
+  return {
+    total: 0,
+    skip: 0,
+    take: DEFAULT_PAGE_SIZE,
+  };
 }
 
 function shouldKeepUtenteInCurrentFilter(utente, statusFilter) {
@@ -59,11 +52,30 @@ function shouldKeepUtenteInCurrentFilter(utente, statusFilter) {
   return utente.status === statusFilter;
 }
 
+function doesUtenteMatchSearch(utente, searchQuery) {
+  const search = String(searchQuery || "")
+    .trim()
+    .toLowerCase();
+
+  if (!search) return true;
+
+  return (
+    String(utente?.nome || "")
+      .toLowerCase()
+      .includes(search) || String(utente?.numero9 || "").includes(search)
+  );
+}
+
 export function useSantaCasaUtentes() {
   const { handleAuthError } = useAuth();
 
   const [utentes, setUtentes] = useState([]);
   const [statusFilter, setStatusFilter] = useState(DEFAULT_STATUS_FILTER);
+
+  const [searchInput, setSearchInput] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const [pagination, setPagination] = useState(buildInitialPagination);
 
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -80,6 +92,15 @@ export function useSantaCasaUtentes() {
 
   const hasUtentes = utentes.length > 0;
 
+  const totalPages = Math.max(1, Math.ceil(pagination.total / pagination.take));
+  const currentPage = Math.min(
+    totalPages,
+    Math.floor(pagination.skip / pagination.take) + 1,
+  );
+
+  const hasPreviousPage = pagination.skip > 0;
+  const hasNextPage = pagination.skip + pagination.take < pagination.total;
+
   const isActionRunning = useMemo(() => {
     return Boolean(
       deletingUtenteId || archivingUtenteId || reactivatingUtenteId,
@@ -87,7 +108,12 @@ export function useSantaCasaUtentes() {
   }, [archivingUtenteId, deletingUtenteId, reactivatingUtenteId]);
 
   const loadUtentes = useCallback(
-    async ({ showRefreshing = false } = {}) => {
+    async ({
+      showRefreshing = false,
+      nextSkip = pagination.skip,
+      nextSearch = searchQuery,
+      nextStatus = statusFilter,
+    } = {}) => {
       if (showRefreshing) {
         setIsRefreshing(true);
       } else {
@@ -97,11 +123,20 @@ export function useSantaCasaUtentes() {
       setError(null);
 
       try {
-        const data = await getUtentes({
-          status: statusFilter,
+        const result = await getUtentesPaginated({
+          status: nextStatus,
+          search: nextSearch,
+          skip: nextSkip,
+          take: pagination.take,
         });
 
-        setUtentes(sortUtentesByName(data));
+        setUtentes(sortUtentesByName(result.rows));
+
+        setPagination({
+          total: result.total,
+          skip: Number(result.params?.skip) || 0,
+          take: Number(result.params?.take) || DEFAULT_PAGE_SIZE,
+        });
       } catch (requestError) {
         if (handleAuthError(requestError)) return;
 
@@ -111,7 +146,13 @@ export function useSantaCasaUtentes() {
         setIsRefreshing(false);
       }
     },
-    [handleAuthError, statusFilter],
+    [
+      handleAuthError,
+      pagination.skip,
+      pagination.take,
+      searchQuery,
+      statusFilter,
+    ],
   );
 
   const handleRefreshUtentes = useCallback(async () => {
@@ -120,8 +161,66 @@ export function useSantaCasaUtentes() {
 
   const updateStatusFilter = useCallback((nextStatus) => {
     setStatusFilter(nextStatus || DEFAULT_STATUS_FILTER);
+    setPagination((currentPagination) => ({
+      ...currentPagination,
+      skip: 0,
+    }));
     setFeedback(null);
     setError(null);
+  }, []);
+
+  const updateSearchInput = useCallback((value) => {
+    setSearchInput(value);
+  }, []);
+
+  const handleSubmitSearch = useCallback(
+    (event) => {
+      event?.preventDefault?.();
+
+      const nextSearch = searchInput.trim();
+
+      setSearchQuery(nextSearch);
+      setPagination((currentPagination) => ({
+        ...currentPagination,
+        skip: 0,
+      }));
+      setFeedback(null);
+      setError(null);
+    },
+    [searchInput],
+  );
+
+  const handleClearSearch = useCallback(() => {
+    setSearchInput("");
+    setSearchQuery("");
+    setPagination((currentPagination) => ({
+      ...currentPagination,
+      skip: 0,
+    }));
+    setFeedback(null);
+    setError(null);
+  }, []);
+
+  const handlePreviousPage = useCallback(() => {
+    setPagination((currentPagination) => ({
+      ...currentPagination,
+      skip: Math.max(0, currentPagination.skip - currentPagination.take),
+    }));
+  }, []);
+
+  const handleNextPage = useCallback(() => {
+    setPagination((currentPagination) => {
+      const nextSkip = currentPagination.skip + currentPagination.take;
+
+      if (nextSkip >= currentPagination.total) {
+        return currentPagination;
+      }
+
+      return {
+        ...currentPagination,
+        skip: nextSkip,
+      };
+    });
   }, []);
 
   const handleCreateUtente = useCallback(
@@ -132,18 +231,22 @@ export function useSantaCasaUtentes() {
       try {
         const createdUtente = await createUtente(payload);
 
-        if (shouldKeepUtenteInCurrentFilter(createdUtente, statusFilter)) {
-          setUtentes((currentUtentes) =>
-            sortUtentesByName([createdUtente, ...currentUtentes]),
-          );
-        }
-
         setError(null);
 
         setFeedback({
           type: "success",
           message: UTENTES_PAGE.form.successMessage,
         });
+
+        if (
+          shouldKeepUtenteInCurrentFilter(createdUtente, statusFilter) &&
+          doesUtenteMatchSearch(createdUtente, searchQuery)
+        ) {
+          await loadUtentes({
+            showRefreshing: true,
+            nextSkip: 0,
+          });
+        }
 
         return {
           ok: true,
@@ -175,7 +278,7 @@ export function useSantaCasaUtentes() {
         setIsCreating(false);
       }
     },
-    [handleAuthError, statusFilter],
+    [handleAuthError, loadUtentes, searchQuery, statusFilter],
   );
 
   const handleArchiveUtente = useCallback(
@@ -197,15 +300,7 @@ export function useSantaCasaUtentes() {
       try {
         const updatedUtente = await archiveUtente(utente.id, payload);
 
-        setUtentes((currentUtentes) => {
-          if (!shouldKeepUtenteInCurrentFilter(updatedUtente, statusFilter)) {
-            return currentUtentes.filter(
-              (currentUtente) => currentUtente.id !== updatedUtente.id,
-            );
-          }
-
-          return replaceUtenteInList(currentUtentes, updatedUtente);
-        });
+        await loadUtentes({ showRefreshing: true });
 
         setFeedback({
           type: "success",
@@ -229,7 +324,7 @@ export function useSantaCasaUtentes() {
         setArchivingUtenteId(null);
       }
     },
-    [handleAuthError, statusFilter],
+    [handleAuthError, loadUtentes],
   );
 
   const handleReactivateUtente = useCallback(
@@ -249,15 +344,7 @@ export function useSantaCasaUtentes() {
       try {
         const updatedUtente = await reactivateUtente(utente.id);
 
-        setUtentes((currentUtentes) => {
-          if (!shouldKeepUtenteInCurrentFilter(updatedUtente, statusFilter)) {
-            return currentUtentes.filter(
-              (currentUtente) => currentUtente.id !== updatedUtente.id,
-            );
-          }
-
-          return replaceUtenteInList(currentUtentes, updatedUtente);
-        });
+        await loadUtentes({ showRefreshing: true });
 
         setFeedback({
           type: "success",
@@ -281,7 +368,7 @@ export function useSantaCasaUtentes() {
         setReactivatingUtenteId(null);
       }
     },
-    [handleAuthError, statusFilter],
+    [handleAuthError, loadUtentes],
   );
 
   const handleRequestDeleteUtente = useCallback((utente) => {
@@ -303,12 +390,7 @@ export function useSantaCasaUtentes() {
 
     try {
       await deleteUtente(utenteToDelete.id);
-
-      setUtentes((currentUtentes) =>
-        currentUtentes.filter(
-          (currentUtente) => currentUtente.id !== utenteToDelete.id,
-        ),
-      );
+      await loadUtentes({ showRefreshing: true });
 
       setFeedback({
         type: "success",
@@ -329,7 +411,7 @@ export function useSantaCasaUtentes() {
     } finally {
       setDeletingUtenteId(null);
     }
-  }, [handleAuthError, utenteToDelete]);
+  }, [handleAuthError, loadUtentes, utenteToDelete]);
 
   useEffect(() => {
     let isMounted = true;
@@ -339,13 +421,21 @@ export function useSantaCasaUtentes() {
       setError(null);
 
       try {
-        const data = await getUtentes({
+        const result = await getUtentesPaginated({
           status: statusFilter,
+          search: searchQuery,
+          skip: pagination.skip,
+          take: pagination.take,
         });
 
         if (!isMounted) return;
 
-        setUtentes(sortUtentesByName(data));
+        setUtentes(sortUtentesByName(result.rows));
+        setPagination({
+          total: result.total,
+          skip: Number(result.params?.skip) || 0,
+          take: Number(result.params?.take) || DEFAULT_PAGE_SIZE,
+        });
         setError(null);
       } catch (requestError) {
         if (!isMounted) return;
@@ -364,7 +454,13 @@ export function useSantaCasaUtentes() {
     return () => {
       isMounted = false;
     };
-  }, [handleAuthError, statusFilter]);
+  }, [
+    handleAuthError,
+    pagination.skip,
+    pagination.take,
+    searchQuery,
+    statusFilter,
+  ]);
 
   return {
     utentes,
@@ -372,6 +468,15 @@ export function useSantaCasaUtentes() {
 
     statusFilter,
     statusOptions: UTENTE_STATUS_FILTER_OPTIONS,
+
+    searchInput,
+    searchQuery,
+
+    pagination,
+    currentPage,
+    totalPages,
+    hasPreviousPage,
+    hasNextPage,
 
     isLoading,
     isRefreshing,
@@ -391,6 +496,11 @@ export function useSantaCasaUtentes() {
     loadUtentes,
     handleRefreshUtentes,
     updateStatusFilter,
+    updateSearchInput,
+    handleSubmitSearch,
+    handleClearSearch,
+    handlePreviousPage,
+    handleNextPage,
 
     handleCreateUtente,
     handleArchiveUtente,

@@ -39,9 +39,18 @@ function getDuplicateNomeMessage(utente) {
 
 async function listUtentes(query = {}) {
   const params = parseListUtentesQuery(query);
-  const rows = await repository.findAll(params);
+  const result = await repository.findPaginated(params);
 
-  return rows.map(toUtenteDTO);
+  return {
+    rows: result.rows.map(toUtenteDTO),
+    total: result.total,
+    params: {
+      status: params.status,
+      search: params.search,
+      skip: result.skip,
+      take: result.take,
+    },
+  };
 }
 
 async function getUtenteById(id) {

@@ -47,6 +47,21 @@ function buildActionDescription(actionState) {
   return `${config.description} Utente: ${utenteName}.`;
 }
 
+function getPaginationLabel({ pagination, currentPage, totalPages }) {
+  const total = Number(pagination?.total) || 0;
+  const skip = Number(pagination?.skip) || 0;
+  const take = Number(pagination?.take) || 0;
+
+  if (total === 0) {
+    return "Sem resultados.";
+  }
+
+  const start = skip + 1;
+  const end = Math.min(skip + take, total);
+
+  return `A mostrar ${start}-${end} de ${total} utente(s). Página ${currentPage} de ${totalPages}.`;
+}
+
 export default function SantaCasaUtentesPage() {
   const [pendingAction, setPendingAction] = useState(null);
 
@@ -55,6 +70,15 @@ export default function SantaCasaUtentesPage() {
 
     statusFilter,
     statusOptions,
+
+    searchInput,
+    searchQuery,
+
+    pagination,
+    currentPage,
+    totalPages,
+    hasPreviousPage,
+    hasNextPage,
 
     isLoading,
     isRefreshing,
@@ -73,6 +97,11 @@ export default function SantaCasaUtentesPage() {
 
     handleRefreshUtentes,
     updateStatusFilter,
+    updateSearchInput,
+    handleSubmitSearch,
+    handleClearSearch,
+    handlePreviousPage,
+    handleNextPage,
 
     handleCreateUtente,
     handleArchiveUtente,
@@ -84,6 +113,11 @@ export default function SantaCasaUtentesPage() {
   } = useSantaCasaUtentes();
 
   const actionDialog = getActionDialogConfig(pendingAction);
+  const paginationLabel = getPaginationLabel({
+    pagination,
+    currentPage,
+    totalPages,
+  });
 
   function handleRequestArchiveUtente(utente) {
     setPendingAction({
@@ -176,6 +210,44 @@ export default function SantaCasaUtentesPage() {
             })}
           </div>
         </div>
+
+        <form className={styles.searchGroup} onSubmit={handleSubmitSearch}>
+          <label className={styles.filterLabel} htmlFor="utentes-search">
+            Pesquisa
+          </label>
+
+          <div className={styles.searchControls}>
+            <input
+              id="utentes-search"
+              className={styles.searchInput}
+              type="search"
+              placeholder="Nome ou número de utente"
+              value={searchInput}
+              disabled={isLoading || isRefreshing}
+              onChange={(event) => updateSearchInput(event.target.value)}
+            />
+
+            <Button
+              type="submit"
+              size="sm"
+              disabled={isLoading || isRefreshing}
+            >
+              Pesquisar
+            </Button>
+
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              disabled={
+                isLoading || isRefreshing || (!searchInput && !searchQuery)
+              }
+              onClick={handleClearSearch}
+            >
+              Limpar
+            </Button>
+          </div>
+        </form>
       </section>
 
       <div className={styles.content}>
@@ -196,6 +268,35 @@ export default function SantaCasaUtentesPage() {
           onArchive={handleRequestArchiveUtente}
           onReactivate={handleRequestReactivateUtente}
         />
+
+        <section
+          className={styles.pagination}
+          aria-label="Paginação de utentes"
+        >
+          <p className={styles.paginationInfo}>{paginationLabel}</p>
+
+          <div className={styles.paginationActions}>
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              disabled={!hasPreviousPage || isLoading || isRefreshing}
+              onClick={handlePreviousPage}
+            >
+              Anterior
+            </Button>
+
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              disabled={!hasNextPage || isLoading || isRefreshing}
+              onClick={handleNextPage}
+            >
+              Seguinte
+            </Button>
+          </div>
+        </section>
       </div>
 
       <ConfirmDialog

@@ -26,13 +26,31 @@ const baseSelect = Object.freeze({
   updatedAt: true,
 });
 
-function buildListWhere({ status = "ATIVO" } = {}) {
+function buildListWhere({ status = "ATIVO", search = "" } = {}) {
   const where = {
     deletedAt: null,
   };
 
   if (status !== "TODOS") {
     where.status = status;
+  }
+
+  const normalizedSearch = String(search || "").trim();
+
+  if (normalizedSearch) {
+    where.OR = [
+      {
+        nome: {
+          contains: normalizedSearch,
+          mode: "insensitive",
+        },
+      },
+      {
+        numero9: {
+          contains: normalizedSearch,
+        },
+      },
+    ];
   }
 
   return where;
@@ -44,6 +62,34 @@ function findAll(params = {}) {
     select: baseSelect,
     orderBy: [{ nome: "asc" }, { numero9: "asc" }],
   });
+}
+
+async function findPaginated(params = {}) {
+  const where = buildListWhere(params);
+  const skip = Math.max(0, Number(params.skip) || 0);
+  const take = Math.max(1, Number(params.take) || 50);
+
+  const [rows, total] = await Promise.all([
+    prisma.utente.findMany({
+      where,
+      select: baseSelect,
+      orderBy: [{ nome: "asc" }, { numero9: "asc" }],
+      skip,
+      take,
+    }),
+
+    prisma.utente.count({
+      where,
+    }),
+  ]);
+
+  return {
+    rows,
+    total,
+    skip,
+    take,
+    search: params.search || "",
+  };
 }
 
 function findAllActive() {
@@ -321,6 +367,7 @@ async function countOpenOperationalDependencies(utenteId) {
 
 module.exports = {
   findAll,
+  findPaginated,
   findAllActive,
   findById,
   findByNumero9,
