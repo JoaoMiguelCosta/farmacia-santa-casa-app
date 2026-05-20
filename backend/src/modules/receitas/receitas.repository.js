@@ -44,6 +44,13 @@ const linhaSelect = Object.freeze({
   },
 });
 
+const linhaFefoOrderBy = Object.freeze([
+  { nome: "asc" },
+  { validade: "asc" },
+  { createdAt: "asc" },
+  { id: "asc" },
+]);
+
 const extraResolutionSelect = Object.freeze({
   id: true,
   utenteId: true,
@@ -83,7 +90,7 @@ function findLinhasByUtente(utenteId) {
       status: "ATIVA",
     },
     select: linhaSelect,
-    orderBy: [{ validade: "asc" }, { createdAt: "desc" }],
+    orderBy: linhaFefoOrderBy,
   });
 }
 
@@ -317,7 +324,7 @@ async function createReceitaWithLinhas(utenteId, payload) {
         },
       },
       select: linhaSelect,
-      orderBy: [{ validade: "asc" }, { createdAt: "desc" }],
+      orderBy: linhaFefoOrderBy,
     });
 
     const extrasResolvidos = await resolveOpenExtrasForCreatedLinhasTx(tx, {

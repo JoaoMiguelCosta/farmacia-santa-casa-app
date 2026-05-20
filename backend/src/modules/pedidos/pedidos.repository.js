@@ -113,6 +113,42 @@ const pedidoSelect = {
   },
 };
 
+const receitaLinhaPedidoSelect = {
+  id: true,
+  receitaId: true,
+  medicamentoId: true,
+  nome: true,
+  quantidade: true,
+  quantidadeDispensada: true,
+  validade: true,
+  status: true,
+  createdAt: true,
+
+  receita: {
+    select: {
+      id: true,
+      utenteId: true,
+    },
+  },
+
+  medicamentoRef: {
+    select: {
+      id: true,
+      nome: true,
+    },
+  },
+
+  pedidoItens: {
+    where: {
+      status: "PENDENTE",
+    },
+    select: {
+      id: true,
+      quantidade: true,
+    },
+  },
+};
+
 function findPedidoById(pedidoId) {
   return prisma.pedido.findUnique({
     where: {
@@ -143,40 +179,31 @@ function findReceitaLinhaById(linhaId) {
     where: {
       id: linhaId,
     },
-    select: {
-      id: true,
-      receitaId: true,
-      medicamentoId: true,
-      nome: true,
-      quantidade: true,
-      quantidadeDispensada: true,
-      validade: true,
-      status: true,
+    select: receitaLinhaPedidoSelect,
+  });
+}
 
+function findEarlierActiveReceitaLinhasByUtente({
+  utenteId,
+  beforeValidade,
+  excludeLinhaId,
+}) {
+  return prisma.receitaLinha.findMany({
+    where: {
+      id: {
+        not: excludeLinhaId,
+      },
       receita: {
-        select: {
-          id: true,
-          utenteId: true,
-        },
+        utenteId,
       },
-
-      medicamentoRef: {
-        select: {
-          id: true,
-          nome: true,
-        },
-      },
-
-      pedidoItens: {
-        where: {
-          status: "PENDENTE",
-        },
-        select: {
-          id: true,
-          quantidade: true,
-        },
+      status: "ATIVA",
+      validade: {
+        gt: new Date(),
+        lt: beforeValidade,
       },
     },
+    select: receitaLinhaPedidoSelect,
+    orderBy: [{ validade: "asc" }, { createdAt: "asc" }, { id: "asc" }],
   });
 }
 
@@ -404,6 +431,7 @@ module.exports = {
   findPedidoById,
   findUtenteById,
   findReceitaLinhaById,
+  findEarlierActiveReceitaLinhasByUtente,
   findSemReceitaById,
   findExtraById,
   createPedidoWithItems,

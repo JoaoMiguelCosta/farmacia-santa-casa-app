@@ -9,6 +9,7 @@ const {
 const { toPedidoDTO } = require("./pedidos.mappers");
 
 const { assertUtenteOperational } = require("../utentes/utentes.guards");
+const { normalizeText } = require("../../shared/utils/normalize");
 
 const {
   conflict,
@@ -18,6 +19,55 @@ const {
 
 function sumPendingQuantity(items = []) {
   return items.reduce((total, item) => {
+    return total + (Number(item.quantidade) || 0);
+  }, 0);
+}
+
+function getReceitaLinhaDisponivel(linha) {
+  const reservadoPendente = sumPendingQuantity(linha.pedidoItens);
+
+  return Math.max(
+    0,
+    Number(linha.quantidade || 0) -
+      Number(linha.quantidadeDispensada || 0) -
+      reservadoPendente,
+  );
+}
+
+function getReceitaLinhaMedicamentoName(linha) {
+  return linha?.medicamentoRef?.nome || linha?.nome || "";
+}
+
+function getReceitaLinhaMedicamentoNorm(linha) {
+  return normalizeText(getReceitaLinhaMedicamentoName(linha));
+}
+
+function hasSameReceitaMedicamento(a, b) {
+  if (a?.medicamentoId && b?.medicamentoId) {
+    return a.medicamentoId === b.medicamentoId;
+  }
+
+  const aNorm = getReceitaLinhaMedicamentoNorm(a);
+  const bNorm = getReceitaLinhaMedicamentoNorm(b);
+
+  return Boolean(aNorm) && aNorm === bNorm;
+}
+
+function getDateLabel(value) {
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return "validade anterior";
+  }
+
+  return date.toISOString().slice(0, 10);
+}
+
+function getRequestedQuantityForReceitaLinha(items = [], linhaId) {
+  return items.reduce((total, item) => {
+    if (item.tipo !== "COM_RECEITA") return total;
+    if (item.id !== linhaId) return total;
+
     return total + (Number(item.quantidade) || 0);
   }, 0);
 }
@@ -43,14 +93,7 @@ function validateReceitaLinhaAvailability(linha, quantidade) {
     throw conflict("Linha de receita expirada.");
   }
 
-  const reservadoPendente = sumPendingQuantity(linha.pedidoItens);
-
-  const disponivel = Math.max(
-    0,
-    Number(linha.quantidade || 0) -
-      Number(linha.quantidadeDispensada || 0) -
-      reservadoPendente,
-  );
+  const disponivel = getReceitaLinhaDisponivel(linha);
 
   if (quantidade > disponivel) {
     throw conflict(
@@ -59,6 +102,54 @@ function validateReceitaLinhaAvailability(linha, quantidade) {
   }
 
   return disponivel;
+}
+
+async function assertReceitaLinhaFefoPolicy(linha, currentPedidoItems = []) {
+  const utenteId = linha.receita?.utenteId;
+  const beforeValidade = new Date(linha.validade);
+
+  if (!utenteId || Number.isNaN(beforeValidade.getTime())) {
+    return;
+  }
+
+  const earlierLinhas = await repository.findEarlierActiveReceitaLinhasByUtente(
+    {
+      utenteId,
+      beforeValidade,
+      excludeLinhaId: linha.id,
+    },
+  );
+
+  const blockingLinha = earlierLinhas.find((candidate) => {
+    if (!hasSameReceitaMedicamento(candidate, linha)) {
+      return false;
+    }
+
+    const disponivel = getReceitaLinhaDisponivel(candidate);
+
+    if (disponivel <= 0) {
+      return false;
+    }
+
+    const quantidadeJaPedidaNestePedido = getRequestedQuantityForReceitaLinha(
+      currentPedidoItems,
+      candidate.id,
+    );
+
+    return Math.max(0, disponivel - quantidadeJaPedidaNestePedido) > 0;
+  });
+
+  if (!blockingLinha) {
+    return;
+  }
+
+  throw conflict(
+    `Existe uma receita de "${getReceitaLinhaMedicamentoName(
+      linha,
+    )}" com validade mais próxima (${getDateLabel(
+      blockingLinha.validade,
+    )}). Usa primeiro a receita que expira mais cedo.`,
+  );
 }
 
 function validateSemReceitaAvailability(row, quantidade) {
@@ -102,7 +193,7 @@ function validateExtraAvailability(row, quantidade) {
   return disponivel;
 }
 
-async function buildPedidoItem(rawItem) {
+async function buildPedidoItem(rawItem, currentPedidoItems = []) {
   await ensureUtenteOperational(
     rawItem.utenteId,
     "criar pedido para este utente",
@@ -122,6 +213,7 @@ async function buildPedidoItem(rawItem) {
     );
 
     validateReceitaLinhaAvailability(linha, rawItem.quantidade);
+    await assertReceitaLinhaFefoPolicy(linha, currentPedidoItems);
 
     return {
       utenteId: rawItem.utenteId,
@@ -189,7 +281,7 @@ async function createPedido(payload) {
   const builtItems = [];
 
   for (const item of parsed.items) {
-    builtItems.push(await buildPedidoItem(item));
+    builtItems.push(await buildPedidoItem(item, parsed.items));
   }
 
   const pedido = await repository.createPedidoWithItems(builtItems);

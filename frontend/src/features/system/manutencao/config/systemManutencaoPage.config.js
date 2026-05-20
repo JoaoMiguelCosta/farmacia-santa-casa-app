@@ -115,6 +115,7 @@ export const SYSTEM_MANUTENCAO_PAGE = Object.freeze({
 
     candidatos: "Utentes candidatos",
     atualizados: "Utentes atualizados",
+    anonymize: "Anonimizar utentes",
     anonymizeRequested: "Anonimização pedida",
     anonymizeApplied: "Anonimização aplicada",
 
