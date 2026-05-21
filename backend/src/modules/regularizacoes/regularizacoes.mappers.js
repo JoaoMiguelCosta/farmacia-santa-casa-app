@@ -79,13 +79,30 @@ function toRegularizacaoDTO(row) {
   };
 }
 
-function toRegularizacoesPageDTO({ rows, total, skip, take }) {
+function toRegularizacoesPageDTO({
+  rows,
+  total,
+  skip,
+  take,
+  utenteId,
+  medicamento,
+  search,
+  from,
+  to,
+}) {
   return {
     data: rows.map(toRegularizacaoDTO),
     meta: {
       total,
       skip,
       take,
+    },
+    params: {
+      utenteId: utenteId || null,
+      medicamento: medicamento || "",
+      search: search || "",
+      from: from || null,
+      to: to || null,
     },
   };
 }

@@ -127,13 +127,26 @@ export function getSignalLatestEventoAtLabel(signal) {
   return formatDateTime(signal?.latestEventoAt);
 }
 
-export function buildRegularizacoesQuery({ medicamento, skip = 0, take = 50 }) {
+export function buildRegularizacoesQuery({
+  search = "",
+  medicamento = "",
+  from = "",
+  to = "",
+  skip = 0,
+  take = 50,
+} = {}) {
+  const normalizedSearch = String(search || "").trim();
   const normalizedMedicamento = String(medicamento || "").trim();
+  const normalizedFrom = String(from || "").trim();
+  const normalizedTo = String(to || "").trim();
 
   return {
     skip,
     take,
+    ...(normalizedSearch ? { search: normalizedSearch } : {}),
     ...(normalizedMedicamento ? { medicamento: normalizedMedicamento } : {}),
+    ...(normalizedFrom ? { from: normalizedFrom } : {}),
+    ...(normalizedTo ? { to: normalizedTo } : {}),
   };
 }
 

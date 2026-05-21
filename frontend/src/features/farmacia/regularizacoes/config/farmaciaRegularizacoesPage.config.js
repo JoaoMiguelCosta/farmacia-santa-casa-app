@@ -90,8 +90,13 @@ export const FARMACIA_REGULARIZACOES_PAGE = Object.freeze({
   },
 
   filters: {
+    searchLabel: "Pesquisa geral",
+    searchPlaceholder: "Pesquisar por pedido, utente, receita ou PIN...",
     medicamentoLabel: "Medicamento",
     medicamentoPlaceholder: "Pesquisar medicamento...",
+    fromLabel: "Data inicial",
+    toLabel: "Data final",
+    submit: "Filtrar",
     clear: "Limpar",
   },
 

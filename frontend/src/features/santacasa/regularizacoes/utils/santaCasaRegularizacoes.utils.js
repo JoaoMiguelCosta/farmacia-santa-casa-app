@@ -146,19 +146,25 @@ export function getSignalLatestEventoAtLabel(signal) {
 }
 
 export function buildRegularizacoesQuery({
-  medicamento,
-  utenteId,
+  search = "",
+  utenteId = "",
+  from = "",
+  to = "",
   skip = 0,
   take = 50,
 } = {}) {
-  const normalizedMedicamento = String(medicamento || "").trim();
+  const normalizedSearch = String(search || "").trim();
   const normalizedUtenteId = String(utenteId || "").trim();
+  const normalizedFrom = String(from || "").trim();
+  const normalizedTo = String(to || "").trim();
 
   return {
     skip,
     take,
-    ...(normalizedMedicamento ? { medicamento: normalizedMedicamento } : {}),
+    ...(normalizedSearch ? { search: normalizedSearch } : {}),
     ...(normalizedUtenteId ? { utenteId: normalizedUtenteId } : {}),
+    ...(normalizedFrom ? { from: normalizedFrom } : {}),
+    ...(normalizedTo ? { to: normalizedTo } : {}),
   };
 }
 

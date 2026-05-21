@@ -16,7 +16,10 @@ const TABS = Object.freeze({
 });
 
 const DEFAULT_QUERY = Object.freeze({
+  search: "",
   medicamento: "",
+  from: "",
+  to: "",
   skip: 0,
   take: 50,
 });
@@ -33,22 +36,30 @@ function getLoaderByTab(activeTab) {
   return getFarmaciaRegularizacoesPendentes;
 }
 
+function getInitialMeta() {
+  return {
+    total: 0,
+    skip: DEFAULT_QUERY.skip,
+    take: DEFAULT_QUERY.take,
+  };
+}
+
 export function useFarmaciaRegularizacoes() {
   const { handleAuthError } = useAuth();
 
   const [activeTab, setActiveTab] = useState(TABS.pending);
 
   const [regularizacoes, setRegularizacoes] = useState([]);
-  const [meta, setMeta] = useState({
-    total: 0,
-    skip: DEFAULT_QUERY.skip,
-    take: DEFAULT_QUERY.take,
-  });
+  const [meta, setMeta] = useState(getInitialMeta);
 
   const [signal, setSignal] = useState(null);
 
   const [query, setQuery] = useState(DEFAULT_QUERY);
+
+  const [searchInput, setSearchInput] = useState("");
   const [medicamentoInput, setMedicamentoInput] = useState("");
+  const [fromInput, setFromInput] = useState("");
+  const [toInput, setToInput] = useState("");
 
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -62,6 +73,15 @@ export function useFarmaciaRegularizacoes() {
   const currentQuery = useMemo(() => {
     return buildRegularizacoesQuery(query);
   }, [query]);
+
+  const totalPages = Math.max(1, Math.ceil(meta.total / meta.take));
+  const currentPage = Math.min(
+    totalPages,
+    Math.floor(meta.skip / meta.take) + 1,
+  );
+
+  const hasPreviousPage = meta.skip > 0;
+  const hasNextPage = meta.skip + meta.take < meta.total;
 
   const loadSignal = useCallback(async () => {
     setIsLoadingSignal(true);
@@ -133,26 +153,76 @@ export function useFarmaciaRegularizacoes() {
     }));
   }, []);
 
+  const updateSearchInput = useCallback((value) => {
+    setSearchInput(value);
+  }, []);
+
   const updateMedicamentoInput = useCallback((value) => {
     setMedicamentoInput(value);
+  }, []);
+
+  const updateFromInput = useCallback((value) => {
+    setFromInput(value);
+  }, []);
+
+  const updateToInput = useCallback((value) => {
+    setToInput(value);
   }, []);
 
   const applyFilters = useCallback(() => {
     setQuery((currentQueryValue) => ({
       ...currentQueryValue,
+      search: searchInput,
       medicamento: medicamentoInput,
+      from: fromInput,
+      to: toInput,
       skip: 0,
     }));
-  }, [medicamentoInput]);
+  }, [fromInput, medicamentoInput, searchInput, toInput]);
 
   const clearFilters = useCallback(() => {
+    setSearchInput("");
     setMedicamentoInput("");
+    setFromInput("");
+    setToInput("");
+
     setQuery((currentQueryValue) => ({
       ...currentQueryValue,
+      search: "",
       medicamento: "",
+      from: "",
+      to: "",
       skip: 0,
     }));
   }, []);
+
+  const goToPreviousPage = useCallback(() => {
+    setQuery((currentQueryValue) => ({
+      ...currentQueryValue,
+      skip: Math.max(
+        0,
+        Number(currentQueryValue.skip || 0) -
+          Number(currentQueryValue.take || DEFAULT_QUERY.take),
+      ),
+    }));
+  }, []);
+
+  const goToNextPage = useCallback(() => {
+    setQuery((currentQueryValue) => {
+      const currentSkip = Number(currentQueryValue.skip || 0);
+      const currentTake = Number(currentQueryValue.take || DEFAULT_QUERY.take);
+      const nextSkip = currentSkip + currentTake;
+
+      if (nextSkip >= meta.total) {
+        return currentQueryValue;
+      }
+
+      return {
+        ...currentQueryValue,
+        skip: nextSkip,
+      };
+    });
+  }, [meta.total]);
 
   useEffect(() => {
     let isMounted = true;
@@ -239,9 +309,18 @@ export function useFarmaciaRegularizacoes() {
     meta,
     signal,
     query,
+
+    searchInput,
     medicamentoInput,
+    fromInput,
+    toInput,
 
     hasRegularizacoes,
+    currentPage,
+    totalPages,
+    hasPreviousPage,
+    hasNextPage,
+
     isLoading,
     isRefreshing,
     isLoadingSignal,
@@ -253,8 +332,15 @@ export function useFarmaciaRegularizacoes() {
     loadSignal,
     refreshRegularizacoes,
     updateTab,
+
+    updateSearchInput,
     updateMedicamentoInput,
+    updateFromInput,
+    updateToInput,
+
     applyFilters,
     clearFilters,
+    goToPreviousPage,
+    goToNextPage,
   };
 }

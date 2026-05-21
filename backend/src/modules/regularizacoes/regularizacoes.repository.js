@@ -74,7 +74,159 @@ const regularizacaoSelect = {
   },
 };
 
-function buildListWhere({ status, utenteId, medicamento }) {
+function buildDateFilter({ from, to, field = "createdAt" }) {
+  if (!from && !to) return null;
+
+  const dateFilter = {};
+
+  if (from) dateFilter.gte = from;
+  if (to) dateFilter.lte = to;
+
+  return {
+    [field]: dateFilter,
+  };
+}
+
+function buildMedicationFilter(medicamento) {
+  const normalizedMedicamento = String(medicamento || "").trim();
+
+  if (!normalizedMedicamento) return null;
+
+  return {
+    OR: [
+      {
+        medicamento: {
+          contains: normalizedMedicamento,
+          mode: "insensitive",
+        },
+      },
+      {
+        medicamentoRef: {
+          nome: {
+            contains: normalizedMedicamento,
+            mode: "insensitive",
+          },
+        },
+      },
+    ],
+  };
+}
+
+function buildSearchFilter(search) {
+  const normalizedSearch = String(search || "").trim();
+
+  if (!normalizedSearch) return null;
+
+  const numericSearch = normalizedSearch.replace(/^#/, "").trim();
+
+  const conditions = [
+    {
+      medicamento: {
+        contains: normalizedSearch,
+        mode: "insensitive",
+      },
+    },
+    {
+      medicamentoNorm: {
+        contains: normalizeText(normalizedSearch),
+      },
+    },
+    {
+      medicamentoRef: {
+        nome: {
+          contains: normalizedSearch,
+          mode: "insensitive",
+        },
+      },
+    },
+    {
+      utente: {
+        nome: {
+          contains: normalizedSearch,
+          mode: "insensitive",
+        },
+      },
+    },
+    {
+      utente: {
+        numero9: {
+          contains: normalizedSearch,
+        },
+      },
+    },
+    {
+      eventos: {
+        some: {
+          receitaLinha: {
+            nome: {
+              contains: normalizedSearch,
+              mode: "insensitive",
+            },
+          },
+        },
+      },
+    },
+    {
+      eventos: {
+        some: {
+          receitaLinha: {
+            receita: {
+              numero19: {
+                contains: normalizedSearch,
+              },
+            },
+          },
+        },
+      },
+    },
+    {
+      eventos: {
+        some: {
+          receitaLinha: {
+            receita: {
+              pinAcesso6: {
+                contains: normalizedSearch,
+              },
+            },
+          },
+        },
+      },
+    },
+    {
+      eventos: {
+        some: {
+          receitaLinha: {
+            receita: {
+              pinOpcao4: {
+                contains: normalizedSearch,
+              },
+            },
+          },
+        },
+      },
+    },
+  ];
+
+  if (/^\d+$/.test(numericSearch)) {
+    conditions.unshift({
+      pedidoNumero: Number(numericSearch),
+    });
+  }
+
+  return {
+    OR: conditions,
+  };
+}
+
+function buildListWhere({
+  status,
+  utenteId,
+  medicamento,
+  search,
+  from,
+  to,
+  dateField = "createdAt",
+}) {
   const where = {
     status,
   };
@@ -83,35 +235,54 @@ function buildListWhere({ status, utenteId, medicamento }) {
     where.utenteId = utenteId;
   }
 
-  if (medicamento) {
-    where.OR = [
-      {
-        medicamento: {
-          contains: medicamento,
-          mode: "insensitive",
-        },
-      },
-      {
-        medicamentoRef: {
-          nome: {
-            contains: medicamento,
-            mode: "insensitive",
-          },
-        },
-      },
-    ];
+  const and = [];
+
+  const medicationFilter = buildMedicationFilter(medicamento);
+  const searchFilter = buildSearchFilter(search);
+  const dateFilter = buildDateFilter({
+    from,
+    to,
+    field: dateField,
+  });
+
+  if (medicationFilter) {
+    and.push(medicationFilter);
+  }
+
+  if (searchFilter) {
+    and.push(searchFilter);
+  }
+
+  if (dateFilter) {
+    and.push(dateFilter);
+  }
+
+  if (and.length > 0) {
+    where.AND = and;
   }
 
   return where;
 }
 
-async function listPendentes({ skip = 0, take = 50, utenteId, medicamento }) {
+async function listPendentes({
+  skip = 0,
+  take = 50,
+  utenteId,
+  medicamento,
+  search,
+  from,
+  to,
+}) {
   const where = buildListWhere({
     status: {
       in: ["PENDENTE", "PARCIALMENTE_REGULARIZADO"],
     },
     utenteId,
     medicamento,
+    search,
+    from,
+    to,
+    dateField: "createdAt",
   });
 
   const [rows, total] = await Promise.all([
@@ -133,14 +304,31 @@ async function listPendentes({ skip = 0, take = 50, utenteId, medicamento }) {
     total,
     skip,
     take,
+    utenteId,
+    medicamento,
+    search,
+    from,
+    to,
   };
 }
 
-async function listHistorico({ skip = 0, take = 50, utenteId, medicamento }) {
+async function listHistorico({
+  skip = 0,
+  take = 50,
+  utenteId,
+  medicamento,
+  search,
+  from,
+  to,
+}) {
   const where = buildListWhere({
     status: "REGULARIZADO",
     utenteId,
     medicamento,
+    search,
+    from,
+    to,
+    dateField: "updatedAt",
   });
 
   const [rows, total] = await Promise.all([
@@ -162,6 +350,11 @@ async function listHistorico({ skip = 0, take = 50, utenteId, medicamento }) {
     total,
     skip,
     take,
+    utenteId,
+    medicamento,
+    search,
+    from,
+    to,
   };
 }
 

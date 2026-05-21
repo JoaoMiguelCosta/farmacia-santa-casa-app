@@ -19,8 +19,10 @@ const TABS = Object.freeze({
 });
 
 const DEFAULT_QUERY = Object.freeze({
-  medicamento: "",
+  search: "",
   utenteId: "",
+  from: "",
+  to: "",
   skip: 0,
   take: 50,
 });
@@ -37,24 +39,31 @@ function getLoaderByTab(activeTab) {
   return getSantaCasaRegularizacoesPendentes;
 }
 
+function getInitialMeta() {
+  return {
+    total: 0,
+    skip: DEFAULT_QUERY.skip,
+    take: DEFAULT_QUERY.take,
+  };
+}
+
 export function useSantaCasaRegularizacoes() {
   const { handleAuthError } = useAuth();
 
   const [activeTab, setActiveTab] = useState(TABS.pending);
 
   const [regularizacoes, setRegularizacoes] = useState([]);
-  const [meta, setMeta] = useState({
-    total: 0,
-    skip: DEFAULT_QUERY.skip,
-    take: DEFAULT_QUERY.take,
-  });
+  const [meta, setMeta] = useState(getInitialMeta);
 
   const [signal, setSignal] = useState(null);
   const [utentes, setUtentes] = useState([]);
 
   const [query, setQuery] = useState(DEFAULT_QUERY);
-  const [medicamentoInput, setMedicamentoInput] = useState("");
+
+  const [searchInput, setSearchInput] = useState("");
   const [selectedUtenteId, setSelectedUtenteId] = useState("");
+  const [fromInput, setFromInput] = useState("");
+  const [toInput, setToInput] = useState("");
 
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -75,12 +84,25 @@ export function useSantaCasaRegularizacoes() {
     return utentes.find((utente) => utente.id === selectedUtenteId) ?? null;
   }, [utentes, selectedUtenteId]);
 
+  const totalPages = Math.max(1, Math.ceil(meta.total / meta.take));
+  const currentPage = Math.min(
+    totalPages,
+    Math.floor(meta.skip / meta.take) + 1,
+  );
+
+  const hasPreviousPage = meta.skip > 0;
+  const hasNextPage = meta.skip + meta.take < meta.total;
+
   const loadUtentes = useCallback(async () => {
     setIsLoadingUtentes(true);
     setUtentesError(null);
 
     try {
-      const data = await getUtentes();
+      const data = await getUtentes({
+        status: "TODOS",
+        skip: 0,
+        take: 100,
+      });
 
       setUtentes(sortUtentesByName(data));
     } catch (utentesLoadError) {
@@ -165,34 +187,76 @@ export function useSantaCasaRegularizacoes() {
     }));
   }, []);
 
-  const updateMedicamentoInput = useCallback((value) => {
-    setMedicamentoInput(value);
+  const updateSearchInput = useCallback((value) => {
+    setSearchInput(value);
   }, []);
 
   const updateSelectedUtenteId = useCallback((utenteId) => {
     setSelectedUtenteId(utenteId);
   }, []);
 
+  const updateFromInput = useCallback((value) => {
+    setFromInput(value);
+  }, []);
+
+  const updateToInput = useCallback((value) => {
+    setToInput(value);
+  }, []);
+
   const applyFilters = useCallback(() => {
     setQuery((currentQueryValue) => ({
       ...currentQueryValue,
-      medicamento: medicamentoInput,
+      search: searchInput,
       utenteId: selectedUtenteId,
+      from: fromInput,
+      to: toInput,
       skip: 0,
     }));
-  }, [medicamentoInput, selectedUtenteId]);
+  }, [fromInput, searchInput, selectedUtenteId, toInput]);
 
   const clearFilters = useCallback(() => {
-    setMedicamentoInput("");
+    setSearchInput("");
     setSelectedUtenteId("");
+    setFromInput("");
+    setToInput("");
 
     setQuery((currentQueryValue) => ({
       ...currentQueryValue,
-      medicamento: "",
+      search: "",
       utenteId: "",
+      from: "",
+      to: "",
       skip: 0,
     }));
   }, []);
+
+  const goToPreviousPage = useCallback(() => {
+    setQuery((currentQueryValue) => ({
+      ...currentQueryValue,
+      skip: Math.max(
+        0,
+        Number(currentQueryValue.skip || 0) -
+          Number(currentQueryValue.take || DEFAULT_QUERY.take),
+      ),
+    }));
+  }, []);
+
+  const goToNextPage = useCallback(() => {
+    setQuery((currentQueryValue) => {
+      const currentSkip = Number(currentQueryValue.skip || 0);
+      const currentTake = Number(currentQueryValue.take || DEFAULT_QUERY.take);
+      const nextSkip = currentSkip + currentTake;
+
+      if (nextSkip >= meta.total) {
+        return currentQueryValue;
+      }
+
+      return {
+        ...currentQueryValue,
+        skip: nextSkip,
+      };
+    });
+  }, [meta.total]);
 
   useEffect(() => {
     let isMounted = true;
@@ -202,7 +266,11 @@ export function useSantaCasaRegularizacoes() {
       setUtentesError(null);
 
       try {
-        const data = await getUtentes();
+        const data = await getUtentes({
+          status: "TODOS",
+          skip: 0,
+          take: 100,
+        });
 
         if (!isMounted) return;
 
@@ -321,9 +389,16 @@ export function useSantaCasaRegularizacoes() {
     selectedUtenteId,
 
     query,
-    medicamentoInput,
+
+    searchInput,
+    fromInput,
+    toInput,
 
     hasRegularizacoes,
+    currentPage,
+    totalPages,
+    hasPreviousPage,
+    hasNextPage,
 
     isLoading,
     isRefreshing,
@@ -340,9 +415,14 @@ export function useSantaCasaRegularizacoes() {
     refreshRegularizacoes,
 
     updateTab,
-    updateMedicamentoInput,
+    updateSearchInput,
     updateSelectedUtenteId,
+    updateFromInput,
+    updateToInput,
+
     applyFilters,
     clearFilters,
+    goToPreviousPage,
+    goToNextPage,
   };
 }
