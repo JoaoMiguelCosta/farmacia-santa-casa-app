@@ -82,6 +82,7 @@ model User {
 
   @@index([role])
   @@index([isActive])
+  @@index([role, isActive])
 }
 
 model Utente {
@@ -112,6 +113,9 @@ model Utente {
   @@index([status])
   @@index([archivedAt])
   @@index([archivedById])
+  @@index([status, nome])
+  @@index([deletedAt, status, nome])
+  @@index([deletedAt, status, numero9])
 }
 
 model Medicamento {
@@ -125,6 +129,8 @@ model Medicamento {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([tipo])
 }
 
 model Receita {
@@ -142,6 +148,7 @@ model Receita {
   updatedAt DateTime @updatedAt
 
   @@index([utenteId])
+  @@index([utenteId, createdAt])
 }
 
 model ReceitaLinha {
@@ -169,6 +176,9 @@ model ReceitaLinha {
   @@index([medicamentoId])
   @@index([validade])
   @@index([status])
+  @@index([status, validade])
+  @@index([receitaId, status, validade])
+  @@index([medicamentoId, status, validade])
 }
 
 model SemReceita {
@@ -186,6 +196,7 @@ model SemReceita {
 
   @@index([utenteId])
   @@index([createdAt])
+  @@index([utenteId, createdAt])
 }
 
 model Extra {
@@ -214,6 +225,10 @@ model Extra {
   @@index([medicamentoId])
   @@index([medicamentoNorm])
   @@index([status])
+  @@index([utenteId, status])
+  @@index([status, createdAt])
+  @@index([medicamentoId, status])
+  @@index([medicamentoNorm, status])
 }
 
 model Pedido {
@@ -240,10 +255,15 @@ model Pedido {
 
   @@index([status])
   @@index([createdAt])
+  @@index([updatedAt])
   @@index([validatedAt])
   @@index([validatedById])
   @@index([rejectedAt])
   @@index([rejectedById])
+  @@index([status, createdAt])
+  @@index([status, updatedAt])
+  @@index([status, validatedAt])
+  @@index([status, rejectedAt])
 }
 
 model PedidoItem {
@@ -290,6 +310,13 @@ model PedidoItem {
   @@index([extraId])
   @@index([validatedById])
   @@index([rejectedById])
+  @@index([pedidoId, status])
+  @@index([utenteId, status])
+  @@index([status, receitaLinhaId])
+  @@index([status, semReceitaId])
+  @@index([status, extraId])
+  @@index([receitaLinhaId, status])
+  @@index([extraId, status])
 }
 
 model Dispensa {
@@ -307,6 +334,9 @@ model Dispensa {
 
   @@index([receitaLinhaId])
   @@index([pedidoItemId])
+  @@index([createdAt])
+  @@index([receitaLinhaId, createdAt])
+  @@index([pedidoItemId, createdAt])
 }
 
 model RegularizacaoExtra {
@@ -341,8 +371,17 @@ model RegularizacaoExtra {
   @@index([extraId])
   @@index([pedidoId])
   @@index([pedidoNumero])
+  @@index([medicamentoId])
   @@index([medicamentoNorm])
   @@index([status])
+  @@index([createdAt])
+  @@index([updatedAt])
+  @@index([status, createdAt])
+  @@index([status, updatedAt])
+  @@index([status, utenteId])
+  @@index([status, pedidoNumero])
+  @@index([status, medicamentoNorm])
+  @@index([utenteId, status, updatedAt])
 }
 
 model RegularizacaoEvento {
@@ -360,4 +399,7 @@ model RegularizacaoEvento {
 
   @@index([regularizacaoId])
   @@index([receitaLinhaId])
+  @@index([createdAt])
+  @@index([regularizacaoId, createdAt])
+  @@index([receitaLinhaId, createdAt])
 }
