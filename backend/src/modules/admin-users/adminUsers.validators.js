@@ -3,9 +3,12 @@ const { badRequest } = require("../../shared/errors/AppError");
 
 const USER_ROLES = Object.freeze(["SANTACASA", "FARMACIA", "ADMIN"]);
 
+const DEFAULT_SKIP = 0;
+const DEFAULT_TAKE = 50;
 const DEFAULT_PAGE = 1;
-const DEFAULT_PAGE_SIZE = 20;
-const MAX_PAGE_SIZE = 100;
+const DEFAULT_PAGE_SIZE = 50;
+const MAX_TAKE = 100;
+const MAX_SEARCH_LENGTH = 160;
 
 function normalizeText(value) {
   return String(value || "").trim();
@@ -15,11 +18,15 @@ function normalizeEmail(value) {
   return normalizeText(value).toLowerCase();
 }
 
-function parsePositiveInteger(value, fallback) {
-  const parsed = Number(value);
+function parseIntegerQueryParam(value, fieldName, defaultValue) {
+  if (value === undefined || value === null || value === "") {
+    return defaultValue;
+  }
 
-  if (!Number.isInteger(parsed) || parsed <= 0) {
-    return fallback;
+  const parsed = Math.floor(Number(value));
+
+  if (!Number.isFinite(parsed)) {
+    throw badRequest(`O parâmetro '${fieldName}' deve ser um número válido.`);
   }
 
   return parsed;
@@ -32,6 +39,10 @@ function parseBooleanFilter(value) {
 
   const normalized = String(value).trim().toLowerCase();
 
+  if (["todos", "all"].includes(normalized)) {
+    return undefined;
+  }
+
   if (["1", "true", "yes", "on", "ativo", "active"].includes(normalized)) {
     return true;
   }
@@ -41,6 +52,67 @@ function parseBooleanFilter(value) {
   }
 
   throw badRequest("O filtro 'isActive' deve ser booleano.");
+}
+
+function parseRoleFilter(value) {
+  const role = normalizeText(value).toUpperCase();
+
+  if (!role || role === "TODOS" || role === "ALL") {
+    return null;
+  }
+
+  assertValidRole(role);
+
+  return role;
+}
+
+function parseSearchFilter(value) {
+  const search = normalizeText(value);
+
+  if (search.length > MAX_SEARCH_LENGTH) {
+    throw badRequest(
+      `O parâmetro 'search' não pode exceder ${MAX_SEARCH_LENGTH} caracteres.`,
+    );
+  }
+
+  return search || null;
+}
+
+function getPaginationParams(query = {}) {
+  const hasSkipOrTake = query.skip !== undefined || query.take !== undefined;
+
+  if (hasSkipOrTake) {
+    const skip = Math.max(
+      0,
+      parseIntegerQueryParam(query.skip, "skip", DEFAULT_SKIP),
+    );
+
+    const rawTake = parseIntegerQueryParam(query.take, "take", DEFAULT_TAKE);
+    const take = Math.min(Math.max(1, rawTake), MAX_TAKE);
+
+    return {
+      skip,
+      take,
+    };
+  }
+
+  const page = Math.max(
+    1,
+    parseIntegerQueryParam(query.page, "page", DEFAULT_PAGE),
+  );
+
+  const rawPageSize = parseIntegerQueryParam(
+    query.pageSize,
+    "pageSize",
+    DEFAULT_PAGE_SIZE,
+  );
+
+  const pageSize = Math.min(Math.max(1, rawPageSize), MAX_TAKE);
+
+  return {
+    skip: (page - 1) * pageSize,
+    take: pageSize,
+  };
 }
 
 function assertValidEmail(email) {
@@ -70,28 +142,14 @@ function assertValidPassword(password) {
 }
 
 function parseListUsersQuery(query = {}) {
-  const page = parsePositiveInteger(query.page, DEFAULT_PAGE);
-  const requestedPageSize = parsePositiveInteger(
-    query.pageSize,
-    DEFAULT_PAGE_SIZE,
-  );
-
-  const pageSize = Math.min(requestedPageSize, MAX_PAGE_SIZE);
-
-  const search = normalizeText(query.search);
-  const role = normalizeText(query.role).toUpperCase();
-  const isActive = parseBooleanFilter(query.isActive);
-
-  if (role) {
-    assertValidRole(role);
-  }
+  const { skip, take } = getPaginationParams(query);
 
   return {
-    search: search || null,
-    role: role || null,
-    isActive,
-    skip: (page - 1) * pageSize,
-    take: pageSize,
+    search: parseSearchFilter(query.search),
+    role: parseRoleFilter(query.role),
+    isActive: parseBooleanFilter(query.isActive),
+    skip,
+    take,
   };
 }
 

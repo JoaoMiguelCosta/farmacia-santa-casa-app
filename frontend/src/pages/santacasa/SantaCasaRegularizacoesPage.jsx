@@ -32,9 +32,6 @@ export default function SantaCasaRegularizacoesPage() {
     meta,
     signal,
 
-    utentes,
-    selectedUtenteId,
-
     searchInput,
     fromInput,
     toInput,
@@ -47,17 +44,14 @@ export default function SantaCasaRegularizacoesPage() {
     isLoading,
     isRefreshing,
     isLoadingSignal,
-    isLoadingUtentes,
 
     error,
     signalError,
-    utentesError,
 
     refreshRegularizacoes,
     updateTab,
 
     updateSearchInput,
-    updateSelectedUtenteId,
     updateFromInput,
     updateToInput,
 
@@ -100,13 +94,6 @@ export default function SantaCasaRegularizacoesPage() {
         isRefreshing={isRefreshing}
         onRefresh={refreshRegularizacoes}
       />
-
-      {utentesError ? (
-        <div className={styles.warning} role="alert">
-          <strong>Erro ao carregar utentes</strong>
-          <span>{utentesError}</span>
-        </div>
-      ) : null}
 
       <section className={styles.toolbar} aria-label="Controlos da página">
         <div className={styles.topBar}>
@@ -153,28 +140,6 @@ export default function SantaCasaRegularizacoesPage() {
         </div>
 
         <form className={styles.filters} onSubmit={handleSubmit}>
-          <label className={styles.filterField}>
-            <span>{SANTACASA_REGULARIZACOES_PAGE.filters.utenteLabel}</span>
-
-            <select
-              value={selectedUtenteId}
-              disabled={isLoading || isRefreshing || isLoadingUtentes}
-              onChange={(event) => updateSelectedUtenteId(event.target.value)}
-            >
-              <option value="">
-                {isLoadingUtentes
-                  ? SANTACASA_REGULARIZACOES_PAGE.filters.loadingUtentes
-                  : SANTACASA_REGULARIZACOES_PAGE.filters.allUtentes}
-              </option>
-
-              {utentes.map((utente) => (
-                <option key={utente.id} value={utente.id}>
-                  {utente.nome} · {utente.numero9}
-                </option>
-              ))}
-            </select>
-          </label>
-
           <label className={styles.filterField}>
             <span>{SANTACASA_REGULARIZACOES_PAGE.filters.searchLabel}</span>
 

@@ -108,11 +108,13 @@ export const SYSTEM_USERS_PAGE = Object.freeze({
     remove: "Remover",
     removing: "A remover...",
 
+    previous: "Anterior",
+    next: "Seguinte",
+
     cancel: "Cancelar",
     clear: "Limpar",
     close: "Fechar",
   },
-
   feedback: {
     genericError: "Ocorreu um erro inesperado.",
     createSuccess: "Utilizador criado com sucesso.",

@@ -147,14 +147,12 @@ export function getSignalLatestEventoAtLabel(signal) {
 
 export function buildRegularizacoesQuery({
   search = "",
-  utenteId = "",
   from = "",
   to = "",
   skip = 0,
   take = 50,
 } = {}) {
   const normalizedSearch = String(search || "").trim();
-  const normalizedUtenteId = String(utenteId || "").trim();
   const normalizedFrom = String(from || "").trim();
   const normalizedTo = String(to || "").trim();
 
@@ -162,7 +160,6 @@ export function buildRegularizacoesQuery({
     skip,
     take,
     ...(normalizedSearch ? { search: normalizedSearch } : {}),
-    ...(normalizedUtenteId ? { utenteId: normalizedUtenteId } : {}),
     ...(normalizedFrom ? { from: normalizedFrom } : {}),
     ...(normalizedTo ? { to: normalizedTo } : {}),
   };

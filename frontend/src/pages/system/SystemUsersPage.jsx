@@ -35,6 +35,21 @@ function getDeleteConfirmDescription(user) {
   return "Esta ação só será permitida se a conta estiver desativada e não tiver histórico associado. Caso tenha histórico de validações ou rejeições, o sistema vai bloquear a remoção.";
 }
 
+function getPaginationLabel({ meta, currentPage, totalPages }) {
+  const total = Number(meta?.total) || 0;
+  const skip = Number(meta?.skip) || 0;
+  const take = Number(meta?.take) || 0;
+
+  if (total === 0) {
+    return "Sem resultados.";
+  }
+
+  const start = skip + 1;
+  const end = Math.min(skip + take, total);
+
+  return `A mostrar ${start}-${end} de ${total} utilizador(es). Página ${currentPage} de ${totalPages}.`;
+}
+
 export default function SystemUsersPage() {
   const [pendingStatusUser, setPendingStatusUser] = useState(null);
   const [pendingDeleteUser, setPendingDeleteUser] = useState(null);
@@ -44,6 +59,11 @@ export default function SystemUsersPage() {
     meta,
 
     filters,
+
+    currentPage,
+    totalPages,
+    hasPreviousPage,
+    hasNextPage,
 
     formState,
     isFormOpen,
@@ -67,6 +87,8 @@ export default function SystemUsersPage() {
 
     updateFilter,
     clearFilters,
+    goToPreviousPage,
+    goToNextPage,
 
     openCreateForm,
     openEditForm,
@@ -81,8 +103,13 @@ export default function SystemUsersPage() {
 
   const isStatusDialogOpen = Boolean(pendingStatusUser);
   const isDeleteDialogOpen = Boolean(pendingDeleteUser);
-
   const pendingStatusActionLabel = getStatusActionLabel(pendingStatusUser);
+
+  const paginationLabel = getPaginationLabel({
+    meta,
+    currentPage,
+    totalPages,
+  });
 
   function handleRequestToggleStatus(user) {
     setPendingDeleteUser(null);
@@ -176,6 +203,33 @@ export default function SystemUsersPage() {
         onToggleStatus={handleRequestToggleStatus}
         onDelete={handleRequestDelete}
       />
+
+      <section
+        className={styles.pagination}
+        aria-label="Paginação de utilizadores do sistema"
+      >
+        <p className={styles.paginationInfo}>{paginationLabel}</p>
+
+        <div className={styles.paginationActions}>
+          <button
+            type="button"
+            className={styles.cancelButton}
+            disabled={!hasPreviousPage || isLoading || isRefreshing || isBusy}
+            onClick={goToPreviousPage}
+          >
+            {SYSTEM_USERS_PAGE.actions.previous}
+          </button>
+
+          <button
+            type="button"
+            className={styles.cancelButton}
+            disabled={!hasNextPage || isLoading || isRefreshing || isBusy}
+            onClick={goToNextPage}
+          >
+            {SYSTEM_USERS_PAGE.actions.next}
+          </button>
+        </div>
+      </section>
 
       {isStatusDialogOpen ? (
         <div className={styles.dialogBackdrop} role="presentation">

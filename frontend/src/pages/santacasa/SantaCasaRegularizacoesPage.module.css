@@ -93,7 +93,7 @@
 .filters {
     display: grid;
     grid-template-columns:
-        minmax(13rem, 1fr) minmax(17rem, 1.5fr) minmax(9rem, 0.7fr) minmax(9rem, 0.7fr) auto;
+        minmax(18rem, 1fr) minmax(9rem, 0.7fr) minmax(9rem, 0.7fr) auto;
     align-items: end;
     gap: 0.75rem;
     min-width: 0;

@@ -46,15 +46,19 @@ function getInitialFormState() {
   };
 }
 
+function getInitialMeta() {
+  return {
+    total: 0,
+    skip: SYSTEM_USERS_DEFAULT_FILTERS.skip,
+    take: SYSTEM_USERS_DEFAULT_FILTERS.take,
+  };
+}
+
 export function useSystemUsers() {
   const { user: currentUser, handleAuthError } = useAuth();
 
   const [users, setUsers] = useState([]);
-  const [meta, setMeta] = useState({
-    total: 0,
-    skip: 0,
-    take: 0,
-  });
+  const [meta, setMeta] = useState(getInitialMeta);
 
   const [filters, setFilters] = useState({
     ...SYSTEM_USERS_DEFAULT_FILTERS,
@@ -82,6 +86,15 @@ export function useSystemUsers() {
   const isPasswordMode = formState.mode === FORM_MODES.PASSWORD;
 
   const query = useMemo(() => buildSystemUsersQuery(filters), [filters]);
+
+  const totalPages = Math.max(1, Math.ceil(meta.total / meta.take));
+  const currentPage = Math.min(
+    totalPages,
+    Math.floor(meta.skip / meta.take) + 1,
+  );
+
+  const hasPreviousPage = meta.skip > 0;
+  const hasNextPage = meta.skip + meta.take < meta.total;
 
   const loadUsers = useCallback(
     async ({ showRefreshing = false } = {}) => {
@@ -119,6 +132,7 @@ export function useSystemUsers() {
     setFilters((currentFilters) => ({
       ...currentFilters,
       [name]: value,
+      skip: 0,
     }));
   }, []);
 
@@ -127,6 +141,36 @@ export function useSystemUsers() {
       ...SYSTEM_USERS_DEFAULT_FILTERS,
     });
   }, []);
+
+  const goToPreviousPage = useCallback(() => {
+    setFilters((currentFilters) => ({
+      ...currentFilters,
+      skip: Math.max(
+        0,
+        Number(currentFilters.skip || 0) -
+          Number(currentFilters.take || SYSTEM_USERS_DEFAULT_FILTERS.take),
+      ),
+    }));
+  }, []);
+
+  const goToNextPage = useCallback(() => {
+    setFilters((currentFilters) => {
+      const currentSkip = Number(currentFilters.skip || 0);
+      const currentTake = Number(
+        currentFilters.take || SYSTEM_USERS_DEFAULT_FILTERS.take,
+      );
+      const nextSkip = currentSkip + currentTake;
+
+      if (nextSkip >= meta.total) {
+        return currentFilters;
+      }
+
+      return {
+        ...currentFilters,
+        skip: nextSkip,
+      };
+    });
+  }, [meta.total]);
 
   const clearFeedback = useCallback(() => {
     setFeedback(null);
@@ -204,7 +248,11 @@ export function useSystemUsers() {
       });
 
       closeForm();
-      await loadUsers({ showRefreshing: true });
+
+      setFilters((currentFilters) => ({
+        ...currentFilters,
+        skip: 0,
+      }));
     } catch (submitError) {
       if (handleAuthError(submitError)) return;
 
@@ -215,7 +263,7 @@ export function useSystemUsers() {
     } finally {
       setIsSubmitting(false);
     }
-  }, [closeForm, formState.values, handleAuthError, loadUsers]);
+  }, [closeForm, formState.values, handleAuthError]);
 
   const submitUpdateUser = useCallback(async () => {
     const selectedUserId = formState.selectedUser?.id;
@@ -488,6 +536,11 @@ export function useSystemUsers() {
     filters,
     query,
 
+    currentPage,
+    totalPages,
+    hasPreviousPage,
+    hasNextPage,
+
     formState,
     isFormOpen,
     isCreateMode,
@@ -511,6 +564,8 @@ export function useSystemUsers() {
 
     updateFilter,
     clearFilters,
+    goToPreviousPage,
+    goToNextPage,
 
     openCreateForm,
     openEditForm,

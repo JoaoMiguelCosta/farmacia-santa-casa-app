@@ -10,6 +10,8 @@ export const SYSTEM_USERS_DEFAULT_FILTERS = Object.freeze({
   search: "",
   role: "",
   isActive: "",
+  skip: 0,
+  take: 50,
 });
 
 export const SYSTEM_USERS_DEFAULT_FORM = Object.freeze({
@@ -51,6 +53,26 @@ export const SYSTEM_USERS_STATUS_OPTIONS = Object.freeze([
 
 function toText(value) {
   return String(value || "").trim();
+}
+
+function toNonNegativeInteger(value, fallback = 0) {
+  const parsed = Math.floor(Number(value));
+
+  if (!Number.isFinite(parsed) || parsed < 0) {
+    return fallback;
+  }
+
+  return parsed;
+}
+
+function toPositiveInteger(value, fallback = 50) {
+  const parsed = Math.floor(Number(value));
+
+  if (!Number.isFinite(parsed) || parsed <= 0) {
+    return fallback;
+  }
+
+  return parsed;
 }
 
 function normalizeEmail(value) {
@@ -95,7 +117,7 @@ export function normalizeSystemUsersResponse(response) {
     meta: {
       total: Number(response?.meta?.total || 0),
       skip: Number(response?.meta?.skip || 0),
-      take: Number(response?.meta?.take || rows.length || 0),
+      take: Number(response?.meta?.take || rows.length || 50),
     },
   };
 }
@@ -104,8 +126,18 @@ export function buildSystemUsersQuery(filters = {}) {
   const search = toText(filters.search);
   const role = toText(filters.role).toUpperCase();
   const isActive = toText(filters.isActive);
+  const skip = toNonNegativeInteger(
+    filters.skip,
+    SYSTEM_USERS_DEFAULT_FILTERS.skip,
+  );
+  const take = toPositiveInteger(
+    filters.take,
+    SYSTEM_USERS_DEFAULT_FILTERS.take,
+  );
 
   return {
+    skip,
+    take,
     ...(search ? { search } : {}),
     ...(role ? { role } : {}),
     ...(isActive ? { isActive } : {}),

@@ -27,6 +27,44 @@
     color: #8a2f2f;
 }
 
+.pagination {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+
+    padding: clamp(1rem, 2vw, 1.2rem);
+    border: 1px solid rgba(39, 92, 72, 0.14);
+    border-radius: 1.25rem;
+
+    background:
+        linear-gradient(135deg,
+            rgba(255, 255, 255, 0.94),
+            rgba(247, 251, 249, 0.9)),
+        radial-gradient(circle at top left,
+            rgba(93, 160, 126, 0.1),
+            transparent 42%);
+
+    box-shadow: 0 16px 42px rgba(24, 43, 35, 0.07);
+}
+
+.paginationInfo {
+    margin: 0;
+
+    color: #60766d;
+
+    font-size: 0.9rem;
+    font-weight: 750;
+    line-height: 1.45;
+}
+
+.paginationActions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 0.55rem;
+}
+
 .dialogBackdrop {
     position: fixed;
     inset: 0;
@@ -210,6 +248,21 @@
     box-shadow: none;
 }
 
+@media (max-width: 760px) {
+    .pagination {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .paginationActions {
+        justify-content: stretch;
+    }
+
+    .paginationActions>* {
+        flex: 1;
+    }
+}
+
 @media (max-width: 520px) {
     .dialogActions {
         flex-direction: column-reverse;
@@ -219,5 +272,10 @@
     .confirmButton,
     .dangerButton {
         width: 100%;
+    }
+
+    .paginationActions {
+        display: grid;
+        grid-template-columns: 1fr;
     }
 }

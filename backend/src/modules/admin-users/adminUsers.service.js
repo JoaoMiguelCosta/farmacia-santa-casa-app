@@ -80,6 +80,12 @@ async function listUsers(query = {}) {
       skip: result.skip,
       take: result.take,
     },
+    params: {
+      search: params.search || "",
+      role: params.role || "TODOS",
+      isActive:
+        typeof params.isActive === "boolean" ? params.isActive : "TODOS",
+    },
   };
 }
 

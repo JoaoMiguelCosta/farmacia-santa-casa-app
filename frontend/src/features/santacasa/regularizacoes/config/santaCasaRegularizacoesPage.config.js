@@ -104,9 +104,6 @@ export const SANTACASA_REGULARIZACOES_PAGE = Object.freeze({
     searchLabel: "Pesquisa geral",
     searchPlaceholder:
       "Pesquisar por pedido, utente, medicamento, receita ou PIN...",
-    utenteLabel: "Utente",
-    allUtentes: "Todos os utentes",
-    loadingUtentes: "A carregar utentes...",
     fromLabel: "Data inicial",
     toLabel: "Data final",
     clear: "Limpar",

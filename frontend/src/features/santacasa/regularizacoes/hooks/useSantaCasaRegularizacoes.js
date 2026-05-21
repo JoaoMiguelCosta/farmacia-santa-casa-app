@@ -8,9 +8,6 @@ import {
   getSantaCasaRegularizacoesSignal,
 } from "../api/santaCasaRegularizacoesApi";
 
-import { getUtentes } from "../../utentes/api/utentesApi";
-import { sortUtentesByName } from "../../utentes/utils/sortUtentes";
-
 import { buildRegularizacoesQuery } from "../utils/santaCasaRegularizacoes.utils";
 
 const TABS = Object.freeze({
@@ -20,7 +17,6 @@ const TABS = Object.freeze({
 
 const DEFAULT_QUERY = Object.freeze({
   search: "",
-  utenteId: "",
   from: "",
   to: "",
   skip: 0,
@@ -56,33 +52,24 @@ export function useSantaCasaRegularizacoes() {
   const [meta, setMeta] = useState(getInitialMeta);
 
   const [signal, setSignal] = useState(null);
-  const [utentes, setUtentes] = useState([]);
-
   const [query, setQuery] = useState(DEFAULT_QUERY);
 
   const [searchInput, setSearchInput] = useState("");
-  const [selectedUtenteId, setSelectedUtenteId] = useState("");
   const [fromInput, setFromInput] = useState("");
   const [toInput, setToInput] = useState("");
 
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isLoadingSignal, setIsLoadingSignal] = useState(true);
-  const [isLoadingUtentes, setIsLoadingUtentes] = useState(true);
 
   const [error, setError] = useState(null);
   const [signalError, setSignalError] = useState(null);
-  const [utentesError, setUtentesError] = useState(null);
 
   const hasRegularizacoes = regularizacoes.length > 0;
 
   const currentQuery = useMemo(() => {
     return buildRegularizacoesQuery(query);
   }, [query]);
-
-  const selectedUtente = useMemo(() => {
-    return utentes.find((utente) => utente.id === selectedUtenteId) ?? null;
-  }, [utentes, selectedUtenteId]);
 
   const totalPages = Math.max(1, Math.ceil(meta.total / meta.take));
   const currentPage = Math.min(
@@ -92,29 +79,6 @@ export function useSantaCasaRegularizacoes() {
 
   const hasPreviousPage = meta.skip > 0;
   const hasNextPage = meta.skip + meta.take < meta.total;
-
-  const loadUtentes = useCallback(async () => {
-    setIsLoadingUtentes(true);
-    setUtentesError(null);
-
-    try {
-      const data = await getUtentes({
-        status: "TODOS",
-        skip: 0,
-        take: 100,
-      });
-
-      setUtentes(sortUtentesByName(data));
-    } catch (utentesLoadError) {
-      if (handleAuthError(utentesLoadError)) return;
-
-      setUtentesError(
-        getErrorMessage(utentesLoadError, "Não foi possível carregar utentes."),
-      );
-    } finally {
-      setIsLoadingUtentes(false);
-    }
-  }, [handleAuthError]);
 
   const loadSignal = useCallback(async () => {
     setIsLoadingSignal(true);
@@ -173,9 +137,8 @@ export function useSantaCasaRegularizacoes() {
     await Promise.all([
       loadRegularizacoes({ showRefreshing: true }),
       loadSignal(),
-      loadUtentes(),
     ]);
-  }, [loadRegularizacoes, loadSignal, loadUtentes]);
+  }, [loadRegularizacoes, loadSignal]);
 
   const updateTab = useCallback((nextTab) => {
     if (!Object.values(TABS).includes(nextTab)) return;
@@ -191,10 +154,6 @@ export function useSantaCasaRegularizacoes() {
     setSearchInput(value);
   }, []);
 
-  const updateSelectedUtenteId = useCallback((utenteId) => {
-    setSelectedUtenteId(utenteId);
-  }, []);
-
   const updateFromInput = useCallback((value) => {
     setFromInput(value);
   }, []);
@@ -207,23 +166,20 @@ export function useSantaCasaRegularizacoes() {
     setQuery((currentQueryValue) => ({
       ...currentQueryValue,
       search: searchInput,
-      utenteId: selectedUtenteId,
       from: fromInput,
       to: toInput,
       skip: 0,
     }));
-  }, [fromInput, searchInput, selectedUtenteId, toInput]);
+  }, [fromInput, searchInput, toInput]);
 
   const clearFilters = useCallback(() => {
     setSearchInput("");
-    setSelectedUtenteId("");
     setFromInput("");
     setToInput("");
 
     setQuery((currentQueryValue) => ({
       ...currentQueryValue,
       search: "",
-      utenteId: "",
       from: "",
       to: "",
       skip: 0,
@@ -257,47 +213,6 @@ export function useSantaCasaRegularizacoes() {
       };
     });
   }, [meta.total]);
-
-  useEffect(() => {
-    let isMounted = true;
-
-    async function loadInitialUtentes() {
-      setIsLoadingUtentes(true);
-      setUtentesError(null);
-
-      try {
-        const data = await getUtentes({
-          status: "TODOS",
-          skip: 0,
-          take: 100,
-        });
-
-        if (!isMounted) return;
-
-        setUtentes(sortUtentesByName(data));
-      } catch (utentesLoadError) {
-        if (!isMounted) return;
-        if (handleAuthError(utentesLoadError)) return;
-
-        setUtentesError(
-          getErrorMessage(
-            utentesLoadError,
-            "Não foi possível carregar utentes.",
-          ),
-        );
-      } finally {
-        if (isMounted) {
-          setIsLoadingUtentes(false);
-        }
-      }
-    }
-
-    loadInitialUtentes();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [handleAuthError]);
 
   useEffect(() => {
     let isMounted = true;
@@ -383,11 +298,6 @@ export function useSantaCasaRegularizacoes() {
     regularizacoes,
     meta,
     signal,
-
-    utentes,
-    selectedUtente,
-    selectedUtenteId,
-
     query,
 
     searchInput,
@@ -403,20 +313,16 @@ export function useSantaCasaRegularizacoes() {
     isLoading,
     isRefreshing,
     isLoadingSignal,
-    isLoadingUtentes,
 
     error,
     signalError,
-    utentesError,
 
     loadRegularizacoes,
     loadSignal,
-    loadUtentes,
     refreshRegularizacoes,
 
     updateTab,
     updateSearchInput,
-    updateSelectedUtenteId,
     updateFromInput,
     updateToInput,
 
