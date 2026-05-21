@@ -45,6 +45,14 @@ export function getHistoricoPedidoClosedAtLabel(pedido) {
   return formatDateTime(closedAt);
 }
 
+export function isHistoricoPedidoCancelado(pedido) {
+  return pedido?.status === "CANCELADO";
+}
+
+export function isHistoricoPedidoItemCanceladoPorExpiracao(item) {
+  return item?.status === "CANCELADO_POR_EXPIRACAO";
+}
+
 export function getHistoricoPedidoMessage(pedido) {
   if (pedido?.status === "VALIDADO") {
     return SANTACASA_HISTORICO_PAGE.messages.validated;
@@ -61,6 +69,10 @@ export function getHistoricoPedidoMessage(pedido) {
   return "";
 }
 
+export function getHistoricoPedidoCancellationReleaseMessage() {
+  return SANTACASA_HISTORICO_PAGE.messages.cancelledRelease;
+}
+
 export function getHistoricoPedidoClosedReasonTitle(pedido) {
   if (pedido?.status === "REJEITADO") {
     return SANTACASA_HISTORICO_PAGE.labels.rejectionReason;
@@ -74,13 +86,17 @@ export function getHistoricoPedidoClosedReasonTitle(pedido) {
 }
 
 export function getHistoricoPedidoClosedReasonLabel(pedido) {
-  const reason = String(pedido?.closedReason || "").trim();
+  const reason = String(
+    pedido?.closedReason || pedido?.cancelReason || "",
+  ).trim();
 
   return reason || SANTACASA_HISTORICO_PAGE.messages.noReason;
 }
 
 export function hasHistoricoPedidoClosedReason(pedido) {
-  return Boolean(String(pedido?.closedReason || "").trim());
+  return Boolean(
+    String(pedido?.closedReason || pedido?.cancelReason || "").trim(),
+  );
 }
 
 export function shouldShowHistoricoPedidoReason(pedido) {

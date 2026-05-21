@@ -303,7 +303,7 @@ async function createPedidoWithItems(items = []) {
 function buildHistoricoWhere({ status, from, to, search }) {
   const where = {
     status: status || {
-      in: ["VALIDADO", "REJEITADO"],
+      in: ["VALIDADO", "REJEITADO", "CANCELADO"],
     },
   };
 
@@ -322,6 +322,9 @@ function buildHistoricoWhere({ status, from, to, search }) {
         },
         {
           rejectedAt: dateFilter,
+        },
+        {
+          updatedAt: dateFilter,
         },
       ],
     });
@@ -347,11 +350,30 @@ function buildHistoricoWhere({ status, from, to, search }) {
               },
             },
           },
+          {
+            itens: {
+              some: {
+                receitaLinha: {
+                  receita: {
+                    numero19: {
+                      contains: search,
+                    },
+                  },
+                },
+              },
+            },
+          },
         ],
       });
     } else {
       and.push({
         OR: [
+          {
+            closedReason: {
+              contains: search,
+              mode: "insensitive",
+            },
+          },
           {
             itens: {
               some: {
@@ -366,6 +388,18 @@ function buildHistoricoWhere({ status, from, to, search }) {
             itens: {
               some: {
                 utente: {
+                  nome: {
+                    contains: search,
+                    mode: "insensitive",
+                  },
+                },
+              },
+            },
+          },
+          {
+            itens: {
+              some: {
+                receitaLinha: {
                   nome: {
                     contains: search,
                     mode: "insensitive",

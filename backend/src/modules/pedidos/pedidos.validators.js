@@ -9,7 +9,12 @@ const KIND_MAP = Object.freeze({
   EXTRA: "EXTRA",
 });
 
-const HISTORICO_STATUS = new Set(["VALIDADO", "REJEITADO"]);
+const HISTORICO_STATUS = new Set([
+  "TODOS",
+  "VALIDADO",
+  "REJEITADO",
+  "CANCELADO",
+]);
 
 function normalizeTipo(value) {
   const tipo = String(value || "")
@@ -110,10 +115,36 @@ function validateCreatePedidoPayload(payload = {}) {
   };
 }
 
-function parseDateParam(value, fieldName) {
-  if (!value) return null;
+function parseIntegerQueryParam(value, fieldName, defaultValue) {
+  if (value === undefined || value === null || value === "") {
+    return defaultValue;
+  }
 
-  const parsed = new Date(value);
+  const parsed = Math.floor(Number(value));
+
+  if (!Number.isFinite(parsed)) {
+    throw badRequest(`O parâmetro '${fieldName}' deve ser um número válido.`);
+  }
+
+  return parsed;
+}
+
+function parseDateParam(value, fieldName, mode = "start") {
+  const rawValue = String(value || "").trim();
+
+  if (!rawValue) return null;
+
+  const dateOnlyMatch = /^(\d{4})-(\d{2})-(\d{2})$/.exec(rawValue);
+
+  if (dateOnlyMatch) {
+    const [, year, month, day] = dateOnlyMatch.map(Number);
+
+    return mode === "end"
+      ? new Date(year, month - 1, day, 23, 59, 59, 999)
+      : new Date(year, month - 1, day, 0, 0, 0, 0);
+  }
+
+  const parsed = new Date(rawValue);
 
   if (Number.isNaN(parsed.getTime())) {
     throw badRequest(`O parâmetro '${fieldName}' deve ser uma data válida.`);
@@ -122,18 +153,34 @@ function parseDateParam(value, fieldName) {
   return parsed;
 }
 
-function parseHistoricoQuery(query = {}) {
-  const status = String(query.status || "")
+function parseHistoricoStatus(value) {
+  const status = String(value || "")
     .trim()
     .toUpperCase();
 
-  const skip = Math.max(0, Number(query.skip || 0));
-  const take = Math.min(Math.max(1, Number(query.take || 50)), 200);
+  if (!status || status === "TODOS" || status === "ALL") {
+    return null;
+  }
+
+  if (!HISTORICO_STATUS.has(status)) {
+    throw badRequest(
+      "O filtro 'status' deve ser TODOS, VALIDADO, REJEITADO ou CANCELADO.",
+    );
+  }
+
+  return status;
+}
+
+function parseHistoricoQuery(query = {}) {
+  const skip = Math.max(0, parseIntegerQueryParam(query.skip, "skip", 0));
+
+  const rawTake = parseIntegerQueryParam(query.take, "take", 50);
+  const take = Math.min(Math.max(1, rawTake), 200);
 
   return {
-    status: HISTORICO_STATUS.has(status) ? status : null,
-    from: parseDateParam(query.from, "from"),
-    to: parseDateParam(query.to, "to"),
+    status: parseHistoricoStatus(query.status),
+    from: parseDateParam(query.from, "from", "start"),
+    to: parseDateParam(query.to, "to", "end"),
     search: query.search ? String(query.search).trim() : "",
     skip,
     take,

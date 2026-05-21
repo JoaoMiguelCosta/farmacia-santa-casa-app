@@ -4,8 +4,10 @@ const cron = require("node-cron");
 const { prisma } = require("../db/prisma");
 const { env } = require("../config/env");
 
-async function getExpiredActiveLineIds(tx, now) {
-  const rows = await tx.receitaLinha.findMany({
+const CANCEL_REASON = "Cancelado automaticamente por expiração da receita.";
+
+async function getExpiredActiveLineIds(client, now) {
+  const rows = await client.receitaLinha.findMany({
     where: {
       status: "ATIVA",
       validade: {
@@ -20,138 +22,176 @@ async function getExpiredActiveLineIds(tx, now) {
   return rows.map((row) => row.id);
 }
 
-async function preview() {
-  const now = new Date();
-
-  const expiredLines = await prisma.receitaLinha.count({
-    where: {
-      status: "ATIVA",
-      validade: {
-        lte: now,
-      },
-    },
-  });
-
-  const pendingItems = await prisma.pedidoItem.count({
-    where: {
-      status: "PENDENTE",
-      receitaLinha: {
-        status: "ATIVA",
-        validade: {
-          lte: now,
-        },
-      },
-    },
-  });
-
-  return {
-    checkedAt: now,
-    expiredLines,
-    pendingItemsFromExpiredLines: pendingItems,
-  };
-}
-
-async function cancelPendingItemsFromExpiredLines(tx, receitaLinhaIds) {
+async function getAffectedPendingPedidoIdsFromExpiredLines(
+  client,
+  receitaLinhaIds,
+) {
   if (!Array.isArray(receitaLinhaIds) || receitaLinhaIds.length === 0) {
-    return {
-      count: 0,
-      affectedPedidoIds: [],
-    };
+    return [];
   }
 
-  const affectedItems = await tx.pedidoItem.findMany({
+  const affectedItems = await client.pedidoItem.findMany({
     where: {
       receitaLinhaId: {
         in: receitaLinhaIds,
       },
       status: "PENDENTE",
+      pedido: {
+        status: "PENDENTE",
+      },
     },
     select: {
-      id: true,
       pedidoId: true,
     },
   });
 
-  const affectedItemIds = affectedItems.map((item) => item.id);
-  const affectedPedidoIds = Array.from(
-    new Set(affectedItems.map((item) => item.pedidoId)),
-  );
-
-  if (affectedItemIds.length === 0) {
-    return {
-      count: 0,
-      affectedPedidoIds,
-    };
-  }
-
-  const result = await tx.pedidoItem.updateMany({
-    where: {
-      id: {
-        in: affectedItemIds,
-      },
-    },
-    data: {
-      status: "CANCELADO_POR_EXPIRACAO",
-    },
-  });
-
-  return {
-    count: result.count,
-    affectedPedidoIds,
-  };
+  return Array.from(new Set(affectedItems.map((item) => item.pedidoId)));
 }
 
-async function cancelPedidosFullyExpired(tx, pedidoIds) {
+async function countPendingItemsFromExpiredLines(client, receitaLinhaIds) {
+  if (!Array.isArray(receitaLinhaIds) || receitaLinhaIds.length === 0) {
+    return 0;
+  }
+
+  return client.pedidoItem.count({
+    where: {
+      receitaLinhaId: {
+        in: receitaLinhaIds,
+      },
+      status: "PENDENTE",
+      pedido: {
+        status: "PENDENTE",
+      },
+    },
+  });
+}
+
+async function countPendingItemsFromPedidos(client, pedidoIds) {
   if (!Array.isArray(pedidoIds) || pedidoIds.length === 0) {
     return 0;
   }
 
-  let totalCanceled = 0;
-
-  for (const pedidoId of pedidoIds) {
-    const pedido = await tx.pedido.findUnique({
-      where: {
-        id: pedidoId,
+  return client.pedidoItem.count({
+    where: {
+      pedidoId: {
+        in: pedidoIds,
       },
-      select: {
-        id: true,
-        status: true,
-        itens: {
-          select: {
-            status: true,
-          },
-        },
+      status: "PENDENTE",
+      pedido: {
+        status: "PENDENTE",
       },
-    });
+    },
+  });
+}
 
-    if (!pedido || pedido.status !== "PENDENTE") {
-      continue;
-    }
+async function preview() {
+  const now = new Date();
 
-    const hasPendingItems = pedido.itens.some(
-      (item) => item.status === "PENDENTE",
-    );
+  const expiredLineIds = await getExpiredActiveLineIds(prisma, now);
+  const affectedPedidoIds = await getAffectedPendingPedidoIdsFromExpiredLines(
+    prisma,
+    expiredLineIds,
+  );
 
-    const allItemsCanceledByExpiry =
-      pedido.itens.length > 0 &&
-      pedido.itens.every((item) => item.status === "CANCELADO_POR_EXPIRACAO");
+  const pendingItemsFromExpiredLines = await countPendingItemsFromExpiredLines(
+    prisma,
+    expiredLineIds,
+  );
 
-    if (!hasPendingItems && allItemsCanceledByExpiry) {
-      await tx.pedido.update({
-        where: {
-          id: pedido.id,
-        },
-        data: {
-          status: "CANCELADO",
-          closedReason: "Cancelado automaticamente por expiração da receita.",
-        },
-      });
+  const pendingItemsFromAffectedPedidos = await countPendingItemsFromPedidos(
+    prisma,
+    affectedPedidoIds,
+  );
 
-      totalCanceled += 1;
-    }
+  return {
+    checkedAt: now,
+    expiredLines: expiredLineIds.length,
+    pendingItemsFromExpiredLines,
+    affectedPedidos: affectedPedidoIds.length,
+    pendingItemsFromAffectedPedidos,
+  };
+}
+
+async function cancelAffectedPedidosByExpiredLines(tx, receitaLinhaIds) {
+  if (!Array.isArray(receitaLinhaIds) || receitaLinhaIds.length === 0) {
+    return {
+      affectedPedidoIds: [],
+      pendingItemsFromExpiredLines: 0,
+      canceledPedidoItems: 0,
+      canceledPedidos: 0,
+    };
   }
 
-  return totalCanceled;
+  const affectedPedidoIds = await getAffectedPendingPedidoIdsFromExpiredLines(
+    tx,
+    receitaLinhaIds,
+  );
+
+  const pendingItemsFromExpiredLines = await countPendingItemsFromExpiredLines(
+    tx,
+    receitaLinhaIds,
+  );
+
+  if (affectedPedidoIds.length === 0) {
+    return {
+      affectedPedidoIds,
+      pendingItemsFromExpiredLines,
+      canceledPedidoItems: 0,
+      canceledPedidos: 0,
+    };
+  }
+
+  const pendingItems = await tx.pedidoItem.findMany({
+    where: {
+      pedidoId: {
+        in: affectedPedidoIds,
+      },
+      status: "PENDENTE",
+      pedido: {
+        status: "PENDENTE",
+      },
+    },
+    select: {
+      id: true,
+    },
+  });
+
+  const pendingItemIds = pendingItems.map((item) => item.id);
+
+  const canceledItems =
+    pendingItemIds.length > 0
+      ? await tx.pedidoItem.updateMany({
+          where: {
+            id: {
+              in: pendingItemIds,
+            },
+            status: "PENDENTE",
+          },
+          data: {
+            status: "CANCELADO_POR_EXPIRACAO",
+          },
+        })
+      : { count: 0 };
+
+  const canceledPedidos = await tx.pedido.updateMany({
+    where: {
+      id: {
+        in: affectedPedidoIds,
+      },
+      status: "PENDENTE",
+    },
+    data: {
+      status: "CANCELADO",
+      closedReason: CANCEL_REASON,
+    },
+  });
+
+  return {
+    affectedPedidoIds,
+    pendingItemsFromExpiredLines,
+    canceledPedidoItems: canceledItems.count,
+    canceledPedidos: canceledPedidos.count,
+  };
 }
 
 async function runOnce() {
@@ -164,10 +204,23 @@ async function runOnce() {
       return {
         checkedAt: now,
         expiredLines: 0,
+        pendingItemsFromExpiredLines: 0,
+        affectedPedidos: 0,
+        pendingItemsFromAffectedPedidos: 0,
         canceledPedidoItems: 0,
         canceledPedidos: 0,
       };
     }
+
+    const affectedPedidoIds = await getAffectedPendingPedidoIdsFromExpiredLines(
+      tx,
+      expiredLineIds,
+    );
+
+    const pendingItemsFromAffectedPedidos = await countPendingItemsFromPedidos(
+      tx,
+      affectedPedidoIds,
+    );
 
     const expiredLines = await tx.receitaLinha.updateMany({
       where: {
@@ -180,21 +233,19 @@ async function runOnce() {
       },
     });
 
-    const canceledItems = await cancelPendingItemsFromExpiredLines(
+    const cancellation = await cancelAffectedPedidosByExpiredLines(
       tx,
       expiredLineIds,
-    );
-
-    const canceledPedidos = await cancelPedidosFullyExpired(
-      tx,
-      canceledItems.affectedPedidoIds,
     );
 
     return {
       checkedAt: now,
       expiredLines: expiredLines.count,
-      canceledPedidoItems: canceledItems.count,
-      canceledPedidos,
+      pendingItemsFromExpiredLines: cancellation.pendingItemsFromExpiredLines,
+      affectedPedidos: cancellation.affectedPedidoIds.length,
+      pendingItemsFromAffectedPedidos,
+      canceledPedidoItems: cancellation.canceledPedidoItems,
+      canceledPedidos: cancellation.canceledPedidos,
     };
   });
 }

@@ -3,17 +3,17 @@ export const SANTACASA_HISTORICO_PAGE = Object.freeze({
     eyebrow: "Santa Casa",
     title: "Histórico",
     description:
-      "Consulta o resultado dos pedidos enviados à Farmácia, incluindo validações, rejeições e respetivos motivos.",
+      "Consulta o resultado dos pedidos enviados à Farmácia, incluindo validações, rejeições e cancelamentos automáticos por expiração.",
   },
 
   sections: {
     list: {
       title: "Histórico de pedidos",
       description:
-        "Pedidos já tratados pela Farmácia, organizados por data de decisão.",
+        "Pedidos fechados, organizados por data de decisão ou cancelamento.",
       emptyTitle: "Sem pedidos no histórico.",
       emptyDescription:
-        "Quando a Farmácia validar ou rejeitar pedidos, eles aparecem aqui.",
+        "Quando existirem pedidos validados, rejeitados ou cancelados, aparecem aqui.",
       loadingTitle: "A carregar histórico...",
       errorTitle: "Não foi possível carregar o histórico.",
     },
@@ -22,7 +22,8 @@ export const SANTACASA_HISTORICO_PAGE = Object.freeze({
   filters: {
     statusLabel: "Estado",
     searchLabel: "Pesquisa",
-    searchPlaceholder: "Pesquisar por pedido, utente ou medicamento...",
+    searchPlaceholder:
+      "Pesquisar por pedido, utente, medicamento ou receita...",
     fromLabel: "Data inicial",
     toLabel: "Data final",
     submit: "Filtrar",
@@ -40,6 +41,10 @@ export const SANTACASA_HISTORICO_PAGE = Object.freeze({
       {
         value: "REJEITADO",
         label: "Rejeitados",
+      },
+      {
+        value: "CANCELADO",
+        label: "Cancelados",
       },
     ],
   },
@@ -78,7 +83,7 @@ export const SANTACASA_HISTORICO_PAGE = Object.freeze({
     createdAt: "Criado em",
     validatedAt: "Validado em",
     rejectedAt: "Rejeitado em",
-    closedAt: "Decidido em",
+    closedAt: "Fechado em",
 
     closedReason: "Motivo",
     rejectionReason: "Motivo da rejeição",
@@ -102,6 +107,8 @@ export const SANTACASA_HISTORICO_PAGE = Object.freeze({
     items: "Itens do pedido",
     totalItems: "Total de itens",
     totalQuantity: "Quantidade total",
+
+    cancellationNoticeTitle: "Cancelamento automático",
   },
 
   messages: {
@@ -109,7 +116,10 @@ export const SANTACASA_HISTORICO_PAGE = Object.freeze({
       "Este pedido foi validado pela Farmácia e os respetivos efeitos foram aplicados.",
     rejected:
       "Este pedido foi rejeitado pela Farmácia. Os itens deixaram de estar reservados.",
-    cancelled: "Este pedido foi cancelado e deixou de estar pendente.",
+    cancelled:
+      "Este pedido foi cancelado automaticamente porque uma receita associada expirou antes da validação pela Farmácia.",
+    cancelledRelease:
+      "Os medicamentos ainda pendentes deixaram de estar reservados e voltaram às respetivas listas disponíveis, desde que continuem válidos. A receita expirada não volta à lista de receitas disponíveis.",
     noReason: "Sem motivo registado.",
   },
 

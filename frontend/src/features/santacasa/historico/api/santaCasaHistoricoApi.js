@@ -10,7 +10,12 @@ const DEFAULT_HISTORICO_QUERY = Object.freeze({
   take: 50,
 });
 
-const VALID_HISTORICO_STATUS = new Set(["TODOS", "VALIDADO", "REJEITADO"]);
+const VALID_HISTORICO_STATUS = new Set([
+  "TODOS",
+  "VALIDADO",
+  "REJEITADO",
+  "CANCELADO",
+]);
 
 function normalizeStatus(status) {
   const normalizedStatus = String(status || "TODOS")
@@ -77,6 +82,8 @@ function normalizeHistoricoResponse(response, fallbackQuery) {
     params: {
       search: response?.params?.search ?? fallbackQuery.search,
       status: response?.params?.status ?? fallbackQuery.status,
+      from: response?.params?.from ?? fallbackQuery.from,
+      to: response?.params?.to ?? fallbackQuery.to,
     },
   };
 }

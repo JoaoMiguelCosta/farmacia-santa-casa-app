@@ -5,6 +5,7 @@ import styles from "./SantaCasaHistoricoCard.module.css";
 import { SANTACASA_HISTORICO_PAGE } from "../../config/santaCasaHistoricoPage.config";
 
 import {
+  getHistoricoPedidoCancellationReleaseMessage,
   getHistoricoPedidoClosedAtLabel,
   getHistoricoPedidoClosedReasonLabel,
   getHistoricoPedidoClosedReasonTitle,
@@ -22,6 +23,8 @@ import {
   getHistoricoPedidoStatusLabel,
   getHistoricoPedidoTotalQuantity,
   getHistoricoPedidoUtentesLabel,
+  isHistoricoPedidoCancelado,
+  isHistoricoPedidoItemCanceladoPorExpiracao,
   shouldShowHistoricoPedidoReason,
 } from "../../utils/santaCasaHistorico.utils";
 
@@ -51,16 +54,58 @@ function getPedidoAuditInfo(pedido) {
   return null;
 }
 
+function getCardClassName(pedido) {
+  return [
+    styles.card,
+    isHistoricoPedidoCancelado(pedido) ? styles.cardCancelled : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
+}
+
+function getStatusClassName(pedido) {
+  return [
+    styles.status,
+    pedido?.status === "VALIDADO" ? styles.statusValidated : "",
+    pedido?.status === "REJEITADO" ? styles.statusRejected : "",
+    pedido?.status === "CANCELADO" ? styles.statusCancelled : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
+}
+
+function getItemClassName(item) {
+  return [
+    styles.item,
+    isHistoricoPedidoItemCanceladoPorExpiracao(item)
+      ? styles.itemCancelled
+      : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
+}
+
+function getItemStatusClassName(item) {
+  return [
+    styles.itemStatus,
+    isHistoricoPedidoItemCanceladoPorExpiracao(item)
+      ? styles.itemStatusCancelled
+      : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
+}
+
 function SantaCasaHistoricoItem({ item }) {
   return (
-    <li className={styles.item}>
+    <li className={getItemClassName(item)}>
       <div className={styles.itemMain}>
         <div className={styles.itemHeader}>
           <span className={styles.itemType}>
             {getHistoricoPedidoItemTypeLabel(item.tipo)}
           </span>
 
-          <span className={styles.itemStatus}>
+          <span className={getItemStatusClassName(item)}>
             {getHistoricoPedidoItemStatusLabel(item.status)}
           </span>
         </div>
@@ -100,13 +145,14 @@ export default function SantaCasaHistoricoCard({ pedido }) {
   const message = getHistoricoPedidoMessage(pedido);
   const showReason = shouldShowHistoricoPedidoReason(pedido);
   const auditInfo = getPedidoAuditInfo(pedido);
+  const isCancelled = isHistoricoPedidoCancelado(pedido);
 
   function handleToggleDetails() {
     setIsDetailsOpen((currentValue) => !currentValue);
   }
 
   return (
-    <article className={styles.card}>
+    <article className={getCardClassName(pedido)}>
       <header className={styles.header}>
         <div className={styles.identity}>
           <span className={styles.eyebrow}>
@@ -118,12 +164,20 @@ export default function SantaCasaHistoricoCard({ pedido }) {
           </h3>
         </div>
 
-        <span className={styles.status}>
+        <span className={getStatusClassName(pedido)}>
           {getHistoricoPedidoStatusLabel(pedido.status)}
         </span>
       </header>
 
       {message ? <p className={styles.message}>{message}</p> : null}
+
+      {isCancelled ? (
+        <div className={styles.cancellationNotice} role="note">
+          <span>{SANTACASA_HISTORICO_PAGE.labels.cancellationNoticeTitle}</span>
+
+          <strong>{getHistoricoPedidoCancellationReleaseMessage()}</strong>
+        </div>
+      ) : null}
 
       <dl className={styles.summary}>
         <div className={styles.summaryItem}>

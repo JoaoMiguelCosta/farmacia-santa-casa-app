@@ -310,7 +310,9 @@ async function listHistorico(query = {}) {
       skip: result.skip,
       take: result.take,
       search: result.search,
-      status: params.status,
+      status: params.status || "TODOS",
+      from: params.from,
+      to: params.to,
     },
   };
 }

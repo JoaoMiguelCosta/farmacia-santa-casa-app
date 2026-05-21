@@ -1,0 +1,15 @@
+{
+  "utenteId": "cmpfu1en70000j7m0cqom9ovk",
+  "numero9": "524070880",
+  "receitaId": "cmpfu1ep40002j7m0t9x8f7ng",
+  "receitaLinhaId": "cmpfu1epk0004j7m04ouzkroa",
+  "semReceitaId": "cmpfu1ept0006j7m0kbq52ycr",
+  "extraId": "cmpfu1eq10008j7m0gmfsidv9",
+  "pedidoId": "cmpfu1eq90009j7m03bv3i5l9",
+  "pedidoNumero": 1,
+  "pedidoItemIds": [
+    "cmpfu1eq9000bj7m0aa5r1wgh",
+    "cmpfu1eq9000cj7m077nyh5ns",
+    "cmpfu1eq9000dj7m07xk39lpn"
+  ]
+}
