@@ -15,6 +15,20 @@ function assertDigits(value, length, fieldName) {
   return text;
 }
 
+function parseBoolean(value) {
+  if (value === undefined || value === null || value === "") {
+    return false;
+  }
+
+  if (typeof value === "boolean") {
+    return value;
+  }
+
+  const normalized = String(value).trim().toLowerCase();
+
+  return ["1", "true", "yes", "on", "sim"].includes(normalized);
+}
+
 function parseLinha(raw = {}, index) {
   const nome = String(raw.nome || raw.medicamento || "").trim();
   const quantidade = Math.floor(Number(raw.quantidade));
@@ -73,6 +87,7 @@ function validateCreateReceitaPayload(payload = {}) {
     numero19,
     pinAcesso6,
     pinOpcao4,
+    confirmRegularizacao: parseBoolean(payload.confirmRegularizacao),
     linhas: linhas.map(({ nome, quantidade, validade }) => ({
       nome,
       quantidade,

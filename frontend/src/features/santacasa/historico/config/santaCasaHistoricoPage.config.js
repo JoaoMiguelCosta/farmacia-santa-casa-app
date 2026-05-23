@@ -3,7 +3,7 @@ export const SANTACASA_HISTORICO_PAGE = Object.freeze({
     eyebrow: "Santa Casa",
     title: "Histórico",
     description:
-      "Consulta o resultado dos pedidos enviados à Farmácia, incluindo validações, rejeições e cancelamentos automáticos por expiração.",
+      "Consulta o resultado dos pedidos enviados à Farmácia, incluindo validações, rejeições e cancelamentos.",
   },
 
   sections: {
@@ -66,6 +66,7 @@ export const SANTACASA_HISTORICO_PAGE = Object.freeze({
     PENDENTE: "Pendente",
     VALIDADO: "Validado",
     REJEITADO: "Rejeitado",
+    CANCELADO: "Cancelado",
     CANCELADO_POR_EXPIRACAO: "Cancelado por expiração",
   },
 
@@ -108,7 +109,8 @@ export const SANTACASA_HISTORICO_PAGE = Object.freeze({
     totalItems: "Total de itens",
     totalQuantity: "Quantidade total",
 
-    cancellationNoticeTitle: "Cancelamento automático",
+    automaticCancellationNoticeTitle: "Cancelamento automático",
+    manualCancellationNoticeTitle: "Cancelamento pela Santa Casa",
   },
 
   messages: {
@@ -116,10 +118,14 @@ export const SANTACASA_HISTORICO_PAGE = Object.freeze({
       "Este pedido foi validado pela Farmácia e os respetivos efeitos foram aplicados.",
     rejected:
       "Este pedido foi rejeitado pela Farmácia. Os itens deixaram de estar reservados.",
-    cancelled:
+    cancelledByExpiry:
       "Este pedido foi cancelado automaticamente porque uma receita associada expirou antes da validação pela Farmácia.",
-    cancelledRelease:
+    cancelledManually:
+      "Este pedido foi cancelado pela Santa Casa antes da validação pela Farmácia.",
+    cancelledByExpiryRelease:
       "Os medicamentos ainda pendentes deixaram de estar reservados e voltaram às respetivas listas disponíveis, desde que continuem válidos. A receita expirada não volta à lista de receitas disponíveis.",
+    cancelledManuallyRelease:
+      "Os itens deixaram de estar reservados e voltaram às respetivas listas disponíveis, desde que continuem válidos.",
     noReason: "Sem motivo registado.",
   },
 

@@ -49,8 +49,39 @@ export function isHistoricoPedidoCancelado(pedido) {
   return pedido?.status === "CANCELADO";
 }
 
+export function getHistoricoPedidoItems(pedido) {
+  return Array.isArray(pedido?.itens) ? pedido.itens : [];
+}
+
+export function isHistoricoPedidoCanceladoPorExpiracao(pedido) {
+  if (!isHistoricoPedidoCancelado(pedido)) return false;
+
+  const reason = String(pedido?.closedReason || pedido?.cancelReason || "")
+    .trim()
+    .toLowerCase();
+
+  if (reason.includes("expiração") || reason.includes("expiracao")) {
+    return true;
+  }
+
+  return getHistoricoPedidoItems(pedido).some(
+    (item) => item?.status === "CANCELADO_POR_EXPIRACAO",
+  );
+}
+
+export function isHistoricoPedidoCanceladoManualmente(pedido) {
+  return (
+    isHistoricoPedidoCancelado(pedido) &&
+    !isHistoricoPedidoCanceladoPorExpiracao(pedido)
+  );
+}
+
 export function isHistoricoPedidoItemCanceladoPorExpiracao(item) {
   return item?.status === "CANCELADO_POR_EXPIRACAO";
+}
+
+export function isHistoricoPedidoItemCancelado(item) {
+  return item?.status === "CANCELADO";
 }
 
 export function getHistoricoPedidoMessage(pedido) {
@@ -62,15 +93,31 @@ export function getHistoricoPedidoMessage(pedido) {
     return SANTACASA_HISTORICO_PAGE.messages.rejected;
   }
 
-  if (pedido?.status === "CANCELADO") {
-    return SANTACASA_HISTORICO_PAGE.messages.cancelled;
+  if (isHistoricoPedidoCanceladoPorExpiracao(pedido)) {
+    return SANTACASA_HISTORICO_PAGE.messages.cancelledByExpiry;
+  }
+
+  if (isHistoricoPedidoCanceladoManualmente(pedido)) {
+    return SANTACASA_HISTORICO_PAGE.messages.cancelledManually;
   }
 
   return "";
 }
 
-export function getHistoricoPedidoCancellationReleaseMessage() {
-  return SANTACASA_HISTORICO_PAGE.messages.cancelledRelease;
+export function getHistoricoPedidoCancellationNoticeTitle(pedido) {
+  if (isHistoricoPedidoCanceladoPorExpiracao(pedido)) {
+    return SANTACASA_HISTORICO_PAGE.labels.automaticCancellationNoticeTitle;
+  }
+
+  return SANTACASA_HISTORICO_PAGE.labels.manualCancellationNoticeTitle;
+}
+
+export function getHistoricoPedidoCancellationReleaseMessage(pedido) {
+  if (isHistoricoPedidoCanceladoPorExpiracao(pedido)) {
+    return SANTACASA_HISTORICO_PAGE.messages.cancelledByExpiryRelease;
+  }
+
+  return SANTACASA_HISTORICO_PAGE.messages.cancelledManuallyRelease;
 }
 
 export function getHistoricoPedidoClosedReasonTitle(pedido) {
@@ -101,10 +148,6 @@ export function hasHistoricoPedidoClosedReason(pedido) {
 
 export function shouldShowHistoricoPedidoReason(pedido) {
   return ["REJEITADO", "CANCELADO"].includes(pedido?.status);
-}
-
-export function getHistoricoPedidoItems(pedido) {
-  return Array.isArray(pedido?.itens) ? pedido.itens : [];
 }
 
 export function getHistoricoPedidoItemsCount(pedido) {

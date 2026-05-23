@@ -81,6 +81,46 @@ const extraResolutionSelect = Object.freeze({
   },
 });
 
+const regularizacaoPreviewSelect = Object.freeze({
+  id: true,
+  utenteId: true,
+  extraId: true,
+  pedidoId: true,
+  pedidoNumero: true,
+
+  medicamentoId: true,
+  medicamento: true,
+  medicamentoNorm: true,
+
+  quantidadeSolicitada: true,
+  quantidadeRegularizada: true,
+  status: true,
+
+  medicamentoRef: {
+    select: {
+      id: true,
+      nome: true,
+      tipo: true,
+    },
+  },
+
+  utente: {
+    select: {
+      id: true,
+      numero9: true,
+      nome: true,
+    },
+  },
+
+  pedido: {
+    select: {
+      id: true,
+      numero: true,
+      status: true,
+    },
+  },
+});
+
 function findLinhasByUtente(utenteId) {
   return prisma.receitaLinha.findMany({
     where: {
@@ -152,6 +192,10 @@ function getLinhaMedicamentoNorm(linha) {
   return normalizeText(linha.medicamentoRef?.nome || linha.nome);
 }
 
+function getPayloadLinhaMedicamentoNorm(linha) {
+  return normalizeText(linha.nome);
+}
+
 function getExtraMedicamentoNorm(extra) {
   return normalizeText(extra.medicamentoRef?.nome || extra.medicamento);
 }
@@ -197,6 +241,186 @@ function toResolvedExtraResult(extra, action, quantidadeRemovida) {
     quantidadeSolicitada: extra.quantidadeSolicitada,
     quantidadeRegularizada: extra.quantidadeRegularizada,
     quantidadeCancelada: extra.quantidadeCancelada,
+  };
+}
+
+function normalizePreviewLinhas(linhas = []) {
+  return [...linhas]
+    .map((linha, index) => ({
+      index,
+      nome: linha.nome,
+      medicamentoNorm: getPayloadLinhaMedicamentoNorm(linha),
+      quantidade: Number(linha.quantidade) || 0,
+      validade: linha.validade,
+    }))
+    .filter((linha) => linha.medicamentoNorm && linha.quantidade > 0)
+    .sort((a, b) => {
+      const validadeCompare =
+        new Date(a.validade).getTime() - new Date(b.validade).getTime();
+
+      if (validadeCompare !== 0) return validadeCompare;
+
+      return a.index - b.index;
+    });
+}
+
+function groupRegularizacoesByMedicamentoNorm(rows = []) {
+  const map = new Map();
+
+  rows.forEach((row) => {
+    const medicamentoNorm = normalizeText(
+      row.medicamentoRef?.nome || row.medicamento || row.medicamentoNorm,
+    );
+
+    if (!medicamentoNorm) return;
+
+    const currentRows = map.get(medicamentoNorm) || [];
+
+    currentRows.push({
+      ...row,
+      medicamentoNorm,
+      quantidadeRegularizadaPreview: Number(row.quantidadeRegularizada || 0),
+    });
+
+    map.set(medicamentoNorm, currentRows);
+  });
+
+  return map;
+}
+
+function toRegularizacaoPreviewDTO({ regularizacao, linha, quantidade }) {
+  const quantidadeSolicitada = Number(regularizacao.quantidadeSolicitada || 0);
+  const quantidadeRegularizada = Number(
+    regularizacao.quantidadeRegularizada || 0,
+  );
+
+  return {
+    regularizacaoId: regularizacao.id,
+    extraId: regularizacao.extraId,
+    pedidoId: regularizacao.pedidoId,
+    pedidoNumero:
+      regularizacao.pedidoNumero || regularizacao.pedido?.numero || null,
+
+    medicamento:
+      regularizacao.medicamentoRef?.nome ||
+      regularizacao.medicamento ||
+      linha.nome,
+
+    quantidadeSolicitada,
+    quantidadeRegularizada,
+    quantidadeRestante: Math.max(
+      0,
+      quantidadeSolicitada - quantidadeRegularizada,
+    ),
+    quantidadeARegularizar: quantidade,
+
+    linha: {
+      nome: linha.nome,
+      quantidade: linha.quantidade,
+      validade: linha.validade,
+    },
+
+    utente: regularizacao.utente
+      ? {
+          id: regularizacao.utente.id,
+          nome: regularizacao.utente.nome,
+          numero9: regularizacao.utente.numero9,
+        }
+      : null,
+  };
+}
+
+async function previewRegularizacoesForLinhas(utenteId, linhas = []) {
+  const previewLinhas = normalizePreviewLinhas(linhas);
+  const medicamentoNorms = Array.from(
+    new Set(previewLinhas.map((linha) => linha.medicamentoNorm)),
+  );
+
+  if (!utenteId || medicamentoNorms.length === 0) {
+    return {
+      hasRegularizacoes: false,
+      totalEventos: 0,
+      totalRegularizado: 0,
+      regularizacoes: [],
+    };
+  }
+
+  const pendentes = await prisma.regularizacaoExtra.findMany({
+    where: {
+      utenteId,
+      status: {
+        in: ["PENDENTE", "PARCIALMENTE_REGULARIZADO"],
+      },
+      medicamentoNorm: {
+        in: medicamentoNorms,
+      },
+    },
+    select: regularizacaoPreviewSelect,
+    orderBy: [{ createdAt: "asc" }, { pedidoNumero: "asc" }],
+  });
+
+  if (pendentes.length === 0) {
+    return {
+      hasRegularizacoes: false,
+      totalEventos: 0,
+      totalRegularizado: 0,
+      regularizacoes: [],
+    };
+  }
+
+  const pendentesByMedicamentoNorm =
+    groupRegularizacoesByMedicamentoNorm(pendentes);
+
+  const regularizacoes = [];
+  let totalRegularizado = 0;
+
+  for (const linha of previewLinhas) {
+    let disponivelLinha = linha.quantidade;
+
+    const pendentesDoMedicamento =
+      pendentesByMedicamentoNorm.get(linha.medicamentoNorm) || [];
+
+    for (const regularizacao of pendentesDoMedicamento) {
+      if (disponivelLinha <= 0) break;
+
+      const quantidadeSolicitada = Number(
+        regularizacao.quantidadeSolicitada || 0,
+      );
+      const quantidadeRegularizadaAtual = Number(
+        regularizacao.quantidadeRegularizadaPreview || 0,
+      );
+
+      const faltaRegularizar = Math.max(
+        0,
+        quantidadeSolicitada - quantidadeRegularizadaAtual,
+      );
+
+      if (faltaRegularizar <= 0) continue;
+
+      const quantidadeARegularizar = Math.min(
+        faltaRegularizar,
+        disponivelLinha,
+      );
+
+      regularizacao.quantidadeRegularizadaPreview += quantidadeARegularizar;
+      disponivelLinha -= quantidadeARegularizar;
+      totalRegularizado += quantidadeARegularizar;
+
+      regularizacoes.push(
+        toRegularizacaoPreviewDTO({
+          regularizacao,
+          linha,
+          quantidade: quantidadeARegularizar,
+        }),
+      );
+    }
+  }
+
+  return {
+    hasRegularizacoes: regularizacoes.length > 0,
+    totalEventos: regularizacoes.length,
+    totalRegularizado,
+    regularizacoes,
   };
 }
 
@@ -374,6 +598,7 @@ module.exports = {
   countPedidoItemsByLinha,
   countRegularizacaoEventosByLinha,
   countLinhasByReceita,
+  previewRegularizacoesForLinhas,
   createReceitaWithLinhas,
   deleteLinhaAndMaybeReceita,
 };

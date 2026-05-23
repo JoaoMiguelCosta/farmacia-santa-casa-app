@@ -24,6 +24,16 @@ export const RECEITAS_PAGE = Object.freeze({
       "não ficou quantidade disponível na linha de receita",
   },
 
+  regularizationDialog: {
+    title: "Confirmar regularização automática?",
+    description:
+      "Esta receita vai regularizar Extras pendentes deste utente. Confirma apenas se os dados da receita estiverem corretos.",
+    confirmLabel: "Criar receita e regularizar",
+    cancelLabel: "Voltar atrás",
+    fallbackDetails:
+      "A receita tem impacto em regularizações pendentes. Confirma para continuar.",
+  },
+
   list: {
     title: "Linhas de receita disponíveis",
     description:

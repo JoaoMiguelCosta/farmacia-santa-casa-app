@@ -6,7 +6,11 @@ import PageHeader from "../../shared/ui/PageHeader/PageHeader";
 import SantaCasaSectionNav from "../../features/santacasa/shared/components/SantaCasaSectionNav/SantaCasaSectionNav";
 
 import PedidoGeralList from "../../features/santacasa/pedidos/components/PedidoGeralList/PedidoGeralList";
+import PedidoPendingList from "../../features/santacasa/pedidos/components/PedidoPendingList/PedidoPendingList";
+
+import { PEDIDOS_PAGE } from "../../features/santacasa/pedidos/config/pedidosPage.config";
 import { useSantaCasaPedidosActions } from "../../features/santacasa/pedidos/hooks/useSantaCasaPedidosActions";
+import { useSantaCasaPedidosPendentes } from "../../features/santacasa/pedidos/hooks/useSantaCasaPedidosPendentes";
 import { usePedidoDraft } from "../../features/santacasa/pedidos/state/usePedidoDraft";
 
 import styles from "./SantaCasaPedidosPage.module.css";
@@ -23,6 +27,40 @@ export default function SantaCasaPedidosPage() {
     removeItemsByKeys,
     clearDraft,
   } = usePedidoDraft();
+
+  const {
+    pedidos: pedidosPendentes,
+    meta: pendentesMeta,
+
+    searchInput: pendentesSearchInput,
+    pedidoToCancel,
+
+    currentPage: pendentesCurrentPage,
+    totalPages: pendentesTotalPages,
+    hasPreviousPage: pendentesHasPreviousPage,
+    hasNextPage: pendentesHasNextPage,
+
+    isLoading: isLoadingPendentes,
+    isRefreshing: isRefreshingPendentes,
+    isCanceling: isCancelingPedido,
+
+    error: pendentesError,
+    feedback: pendentesFeedback,
+
+    refreshPendentes,
+
+    updateSearchInput: updatePendentesSearchInput,
+    applyFilters: applyPendentesFilters,
+    clearFilters: clearPendentesFilters,
+    goToPreviousPage: goToPreviousPendentesPage,
+    goToNextPage: goToNextPendentesPage,
+
+    requestCancelPedido,
+    cancelCancelPedido,
+    confirmCancelPedido,
+
+    clearFeedback: clearPendentesFeedback,
+  } = useSantaCasaPedidosPendentes();
 
   const {
     returnQuantities,
@@ -51,16 +89,29 @@ export default function SantaCasaPedidosPage() {
     removeItem,
     removeItemsByKeys,
     clearDraft,
+
+    onPedidoCreated: refreshPendentes,
   });
 
   const utentesCount = new Set(items.map((item) => item.utenteId)).size;
+  const activeFeedback = feedback || pendentesFeedback;
+
+  function handleCloseFeedback() {
+    if (feedback) {
+      setFeedback(null);
+    }
+
+    if (pendentesFeedback) {
+      clearPendentesFeedback();
+    }
+  }
 
   return (
     <section className={styles.page} aria-labelledby="santacasa-pedidos-title">
       <PageHeader
         titleId="santacasa-pedidos-title"
-        eyebrow="Santa Casa"
-        title="Pedidos"
+        eyebrow={PEDIDOS_PAGE.header.eyebrow}
+        title={PEDIDOS_PAGE.header.title}
         description="Lista geral multiutente para enviar um único pedido consolidado para a Farmácia."
         actions={
           <Button
@@ -78,7 +129,7 @@ export default function SantaCasaPedidosPage() {
 
       <div
         className={styles.summary}
-        aria-label="Resumo do pedido geral"
+        aria-label="Resumo dos pedidos"
         role="list"
       >
         <article role="listitem">
@@ -90,7 +141,37 @@ export default function SantaCasaPedidosPage() {
           <strong>{utentesCount}</strong>
           <span>{utentesCount === 1 ? "utente" : "utentes"}</span>
         </article>
+
+        <article role="listitem">
+          <strong>{pendentesMeta.total}</strong>
+          <span>
+            {pendentesMeta.total === 1
+              ? "pedido pendente enviado"
+              : "pedidos pendentes enviados"}
+          </span>
+        </article>
       </div>
+
+      <PedidoPendingList
+        pedidos={pedidosPendentes}
+        meta={pendentesMeta}
+        searchInput={pendentesSearchInput}
+        currentPage={pendentesCurrentPage}
+        totalPages={pendentesTotalPages}
+        hasPreviousPage={pendentesHasPreviousPage}
+        hasNextPage={pendentesHasNextPage}
+        isLoading={isLoadingPendentes}
+        isRefreshing={isRefreshingPendentes}
+        isCanceling={isCancelingPedido}
+        error={pendentesError}
+        onSearchChange={updatePendentesSearchInput}
+        onApplyFilters={applyPendentesFilters}
+        onClearFilters={clearPendentesFilters}
+        onRefresh={refreshPendentes}
+        onPreviousPage={goToPreviousPendentesPage}
+        onNextPage={goToNextPendentesPage}
+        onCancelRequest={requestCancelPedido}
+      />
 
       <PedidoGeralList
         items={items}
@@ -114,11 +195,26 @@ export default function SantaCasaPedidosPage() {
         onCancel={handleCancelClearDraft}
       />
 
+      <ConfirmDialog
+        isOpen={Boolean(pedidoToCancel)}
+        title={PEDIDOS_PAGE.cancelDialog.title}
+        description={
+          pedidoToCancel?.numero
+            ? `Pedido #${pedidoToCancel.numero}. ${PEDIDOS_PAGE.cancelDialog.description}`
+            : PEDIDOS_PAGE.cancelDialog.description
+        }
+        confirmLabel={PEDIDOS_PAGE.cancelDialog.confirmLabel}
+        cancelLabel={PEDIDOS_PAGE.cancelDialog.cancelLabel}
+        isLoading={isCancelingPedido}
+        onConfirm={confirmCancelPedido}
+        onCancel={cancelCancelPedido}
+      />
+
       <FeedbackDialog
-        isOpen={Boolean(feedback)}
-        type={feedback?.type}
-        message={feedback?.message}
-        onClose={() => setFeedback(null)}
+        isOpen={Boolean(activeFeedback)}
+        type={activeFeedback?.type}
+        message={activeFeedback?.message}
+        onClose={handleCloseFeedback}
       />
     </section>
   );

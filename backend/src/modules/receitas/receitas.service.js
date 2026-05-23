@@ -12,15 +12,28 @@ const { validateCreateReceitaPayload } = require("./receitas.validators");
 const { assertUtenteOperational } = require("../utentes/utentes.guards");
 
 const {
+  AppError,
   conflict,
   forbidden,
   notFound,
 } = require("../../shared/errors/AppError");
 
+const REGULARIZACAO_CONFIRMATION_REQUIRED =
+  "REGULARIZACAO_CONFIRMATION_REQUIRED";
+
 async function ensureUtenteOperational(utenteId, actionLabel) {
   const utente = await utentesRepository.findById(utenteId);
 
   return assertUtenteOperational(utente, actionLabel);
+}
+
+function throwRegularizacaoConfirmationRequired(preview) {
+  throw new AppError(
+    "Esta receita vai regularizar Extras pendentes. Confirma antes de continuar.",
+    409,
+    REGULARIZACAO_CONFIRMATION_REQUIRED,
+    preview,
+  );
 }
 
 async function listByUtente(utenteId) {
@@ -44,6 +57,16 @@ async function createForUtente(utenteId, payload) {
 
   if (existingReceita) {
     throw conflict("Já existe uma receita com esse número.");
+  }
+
+  const regularizacaoPreview =
+    await receitasRepository.previewRegularizacoesForLinhas(
+      utenteId,
+      data.linhas,
+    );
+
+  if (regularizacaoPreview.hasRegularizacoes && !data.confirmRegularizacao) {
+    throwRegularizacaoConfirmationRequired(regularizacaoPreview);
   }
 
   const result = await receitasRepository.createReceitaWithLinhas(

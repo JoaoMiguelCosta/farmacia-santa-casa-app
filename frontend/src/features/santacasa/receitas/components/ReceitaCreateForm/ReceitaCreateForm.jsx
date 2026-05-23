@@ -11,6 +11,7 @@ export default function ReceitaCreateForm({
   selectedUtenteId,
   onCreate,
   isSubmitting = false,
+  resetKey = 0,
 }) {
   const {
     values,
@@ -28,6 +29,7 @@ export default function ReceitaCreateForm({
     selectedUtenteId,
     onCreate,
     isSubmitting,
+    resetKey,
   });
 
   return (

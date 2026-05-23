@@ -37,7 +37,7 @@
 
 .summary {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: clamp(0.75rem, 2vw, 1rem);
 
     width: 100%;
@@ -132,6 +132,12 @@
     text-overflow: ellipsis;
     text-transform: uppercase;
     white-space: nowrap;
+}
+
+@media (max-width: 860px) {
+    .summary {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
 }
 
 @media (max-width: 760px) {

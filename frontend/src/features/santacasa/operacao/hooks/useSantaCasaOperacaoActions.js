@@ -14,6 +14,7 @@ import {
 
 import { createExtra, deleteExtra } from "../../extras/api/extrasApi";
 
+import { RECEITAS_PAGE } from "../../receitas/config/receitasPage.config";
 import { SEM_RECEITA_PAGE } from "../../sem-receita/config/semReceitaPage.config";
 import { EXTRAS_PAGE } from "../../extras/config/extrasPage.config";
 
@@ -24,6 +25,7 @@ import {
   buildGlobalDraftItem,
   buildReceitaDraftItems,
   buildReceitaSuccessMessage,
+  buildRegularizacaoConfirmationDescription,
   formatUnitsLabel,
   getDeleteDialogData,
   getDeleteSuccessMessage,
@@ -31,7 +33,9 @@ import {
   getItemMedicationName,
   getPedidoKeyFromDeleteTarget,
   getReceitaFieldErrors,
+  getRegularizacaoConfirmationDetails,
   getResolvedExtraKeys,
+  isRegularizacaoConfirmationRequired,
   isSameMedication,
 } from "../utils/santaCasaOperacao.utils";
 
@@ -51,12 +55,35 @@ export function useSantaCasaOperacaoActions({
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [deletingTargetKey, setDeletingTargetKey] = useState(null);
 
+  const [regularizacaoConfirmation, setRegularizacaoConfirmation] =
+    useState(null);
+
+  const [receitaFormResetKey, setReceitaFormResetKey] = useState(0);
+
   const [isCreatingReceita, setIsCreatingReceita] = useState(false);
+  const [isConfirmingRegularizacao, setIsConfirmingRegularizacao] =
+    useState(false);
   const [isCreatingSemReceita, setIsCreatingSemReceita] = useState(false);
   const [isCreatingExtra, setIsCreatingExtra] = useState(false);
   const [feedback, setFeedback] = useState(null);
 
   const deleteDialogData = getDeleteDialogData(deleteTarget);
+
+  const regularizacaoDialogData = regularizacaoConfirmation
+    ? {
+        title: RECEITAS_PAGE.regularizationDialog.title,
+        description: buildRegularizacaoConfirmationDescription(
+          regularizacaoConfirmation.preview,
+        ),
+        confirmLabel: RECEITAS_PAGE.regularizationDialog.confirmLabel,
+        cancelLabel: RECEITAS_PAGE.regularizationDialog.cancelLabel,
+      }
+    : {
+        title: RECEITAS_PAGE.regularizationDialog.title,
+        description: RECEITAS_PAGE.regularizationDialog.description,
+        confirmLabel: RECEITAS_PAGE.regularizationDialog.confirmLabel,
+        cancelLabel: RECEITAS_PAGE.regularizationDialog.cancelLabel,
+      };
 
   async function deleteCompatibleExtrasFromBackend(receitaItem) {
     if (!selectedUtenteId) {
@@ -126,6 +153,7 @@ export function useSantaCasaOperacaoActions({
   function handleSelectOperationUtente(utenteId) {
     setPedidoQuantities({});
     setFeedback(null);
+    setRegularizacaoConfirmation(null);
     handleSelectUtente(utenteId);
   }
 
@@ -138,6 +166,25 @@ export function useSantaCasaOperacaoActions({
     }));
   }
 
+  async function handleCreatedReceitaSuccess(createdReceita) {
+    const extrasResolvidos = Array.isArray(createdReceita?.extrasResolvidos)
+      ? createdReceita.extrasResolvidos
+      : [];
+
+    const extraKeysToRemove = getResolvedExtraKeys(extrasResolvidos);
+
+    if (extraKeysToRemove.length > 0) {
+      removeItemsByKeys(extraKeysToRemove);
+    }
+
+    await refreshOperationData();
+
+    setFeedback({
+      type: "success",
+      message: buildReceitaSuccessMessage(createdReceita, extrasResolvidos),
+    });
+  }
+
   async function handleCreateReceita(payload) {
     if (!selectedUtenteId) {
       return {
@@ -148,26 +195,12 @@ export function useSantaCasaOperacaoActions({
 
     setIsCreatingReceita(true);
     setFeedback(null);
+    setRegularizacaoConfirmation(null);
 
     try {
       const createdReceita = await createReceita(selectedUtenteId, payload);
 
-      const extrasResolvidos = Array.isArray(createdReceita?.extrasResolvidos)
-        ? createdReceita.extrasResolvidos
-        : [];
-
-      const extraKeysToRemove = getResolvedExtraKeys(extrasResolvidos);
-
-      if (extraKeysToRemove.length > 0) {
-        removeItemsByKeys(extraKeysToRemove);
-      }
-
-      await refreshOperationData();
-
-      setFeedback({
-        type: "success",
-        message: buildReceitaSuccessMessage(createdReceita, extrasResolvidos),
-      });
+      await handleCreatedReceitaSuccess(createdReceita);
 
       return {
         ok: true,
@@ -175,6 +208,18 @@ export function useSantaCasaOperacaoActions({
       };
     } catch (requestError) {
       if (handleAuthError(requestError)) {
+        return {
+          ok: false,
+          fieldErrors: {},
+        };
+      }
+
+      if (isRegularizacaoConfirmationRequired(requestError)) {
+        setRegularizacaoConfirmation({
+          payload,
+          preview: getRegularizacaoConfirmationDetails(requestError),
+        });
+
         return {
           ok: false,
           fieldErrors: {},
@@ -194,6 +239,40 @@ export function useSantaCasaOperacaoActions({
       };
     } finally {
       setIsCreatingReceita(false);
+    }
+  }
+
+  function handleCancelRegularizacaoConfirmation() {
+    if (isConfirmingRegularizacao) return;
+
+    setRegularizacaoConfirmation(null);
+  }
+
+  async function handleConfirmRegularizacaoConfirmation() {
+    if (!selectedUtenteId || !regularizacaoConfirmation?.payload) return;
+
+    setIsConfirmingRegularizacao(true);
+    setFeedback(null);
+
+    try {
+      const createdReceita = await createReceita(selectedUtenteId, {
+        ...regularizacaoConfirmation.payload,
+        confirmRegularizacao: true,
+      });
+
+      await handleCreatedReceitaSuccess(createdReceita);
+
+      setRegularizacaoConfirmation(null);
+      setReceitaFormResetKey((currentValue) => currentValue + 1);
+    } catch (requestError) {
+      if (handleAuthError(requestError)) return;
+
+      setFeedback({
+        type: "error",
+        message: requestError.message || "Erro ao confirmar regularização.",
+      });
+    } finally {
+      setIsConfirmingRegularizacao(false);
     }
   }
 
@@ -439,7 +518,12 @@ export function useSantaCasaOperacaoActions({
     deleteDialogData,
     deletingTargetKey,
 
+    regularizacaoConfirmation,
+    regularizacaoDialogData,
+    receitaFormResetKey,
+
     isCreatingReceita,
+    isConfirmingRegularizacao,
     isCreatingSemReceita,
     isCreatingExtra,
 
@@ -452,6 +536,9 @@ export function useSantaCasaOperacaoActions({
     handleCreateReceita,
     handleCreateSemReceita,
     handleCreateExtra,
+
+    handleCancelRegularizacaoConfirmation,
+    handleConfirmRegularizacaoConfirmation,
 
     handleAddPedidoItem,
     handleBlockedDelete,

@@ -51,7 +51,9 @@ export const API_ENDPOINTS = Object.freeze({
 
     pedidos: "/santacasa/pedidos",
     pedidoById: (pedidoId) => `/santacasa/pedidos/${pedidoId}`,
+    pedidosPendentes: "/santacasa/pedidos/pendentes",
     pedidosHistorico: "/santacasa/pedidos/historico",
+    cancelarPedido: (pedidoId) => `/santacasa/pedidos/${pedidoId}/cancelar`,
 
     regularizacoesPendentes: "/santacasa/regularizacoes/pendentes",
     regularizacoesHistorico: "/santacasa/regularizacoes/historico",

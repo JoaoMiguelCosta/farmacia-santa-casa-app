@@ -71,7 +71,12 @@ export default function SantaCasaOperacaoPage() {
     deleteDialogData,
     deletingTargetKey,
 
+    regularizacaoConfirmation,
+    regularizacaoDialogData,
+    receitaFormResetKey,
+
     isCreatingReceita,
+    isConfirmingRegularizacao,
     isCreatingSemReceita,
     isCreatingExtra,
 
@@ -84,6 +89,9 @@ export default function SantaCasaOperacaoPage() {
     handleCreateReceita,
     handleCreateSemReceita,
     handleCreateExtra,
+
+    handleCancelRegularizacaoConfirmation,
+    handleConfirmRegularizacaoConfirmation,
 
     handleAddPedidoItem,
     handleBlockedDelete,
@@ -156,6 +164,8 @@ export default function SantaCasaOperacaoPage() {
       }),
     [extras, pedidoItemsQuantities],
   );
+
+  const isReceitaBusy = isCreatingReceita || isConfirmingRegularizacao;
 
   return (
     <section className={styles.page} aria-labelledby="operacao-title">
@@ -260,7 +270,8 @@ export default function SantaCasaOperacaoPage() {
           <ReceitaCreateForm
             selectedUtenteId={selectedUtenteId}
             onCreate={handleCreateReceita}
-            isSubmitting={isCreatingReceita}
+            isSubmitting={isReceitaBusy}
+            resetKey={receitaFormResetKey}
           />
 
           <ReceitasList
@@ -339,6 +350,17 @@ export default function SantaCasaOperacaoPage() {
           />
         </OperationSection>
       </div>
+
+      <ConfirmDialog
+        isOpen={Boolean(regularizacaoConfirmation)}
+        title={regularizacaoDialogData.title}
+        description={regularizacaoDialogData.description}
+        confirmLabel={regularizacaoDialogData.confirmLabel}
+        cancelLabel={regularizacaoDialogData.cancelLabel}
+        isLoading={isConfirmingRegularizacao}
+        onConfirm={handleConfirmRegularizacaoConfirmation}
+        onCancel={handleCancelRegularizacaoConfirmation}
+      />
 
       <ConfirmDialog
         isOpen={Boolean(deleteTarget)}

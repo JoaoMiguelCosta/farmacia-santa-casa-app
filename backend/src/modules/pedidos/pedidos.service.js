@@ -4,6 +4,8 @@ const repository = require("./pedidos.repository");
 const {
   validateCreatePedidoPayload,
   parseHistoricoQuery,
+  parseCancelPedidoPayload,
+  parsePendentesQuery,
 } = require("./pedidos.validators");
 
 const { toPedidoDTO } = require("./pedidos.mappers");
@@ -299,6 +301,41 @@ async function getPedidoById(pedidoId) {
   return toPedidoDTO(pedido);
 }
 
+async function cancelPedido(pedidoId, payload = {}) {
+  const params = parseCancelPedidoPayload(payload);
+
+  const result = await repository.cancelPendingPedidoById(
+    pedidoId,
+    params.reason,
+  );
+
+  if (!result.pedido) {
+    throw notFound("Pedido não encontrado.");
+  }
+
+  if (!result.wasCanceled) {
+    throw conflict("Só é possível cancelar pedidos pendentes.");
+  }
+
+  return toPedidoDTO(result.pedido);
+}
+
+async function listPendentes(query = {}) {
+  const params = parsePendentesQuery(query);
+  const result = await repository.listPendentes(params);
+
+  return {
+    rows: result.rows.map(toPedidoDTO),
+    total: result.total,
+    params: {
+      skip: result.skip,
+      take: result.take,
+      search: result.search,
+      status: "PENDENTE",
+    },
+  };
+}
+
 async function listHistorico(query = {}) {
   const params = parseHistoricoQuery(query);
   const result = await repository.listHistorico(params);
@@ -320,5 +357,7 @@ async function listHistorico(query = {}) {
 module.exports = {
   createPedido,
   getPedidoById,
+  cancelPedido,
   listHistorico,
+  listPendentes,
 };

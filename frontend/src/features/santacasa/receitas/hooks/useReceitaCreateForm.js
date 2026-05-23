@@ -98,13 +98,36 @@ function normalizePayload(values) {
   };
 }
 
+function getActiveFormState(formState, resetKey, resetValues) {
+  if (formState.resetKey === resetKey) {
+    return formState;
+  }
+
+  return {
+    resetKey,
+    values: resetValues,
+    errors: {},
+  };
+}
+
 export function useReceitaCreateForm({
   selectedUtenteId,
   onCreate,
   isSubmitting = false,
+  resetKey = 0,
 }) {
-  const [values, setValues] = useState(() => createInitialForm());
-  const [errors, setErrors] = useState({});
+  const resetValues = useMemo(() => createInitialForm(), [resetKey]);
+
+  const [formState, setFormState] = useState(() => ({
+    resetKey,
+    values: createInitialForm(),
+    errors: {},
+  }));
+
+  const activeFormState = getActiveFormState(formState, resetKey, resetValues);
+
+  const values = activeFormState.values;
+  const errors = activeFormState.errors;
 
   const todayInputValue = useMemo(() => getTodayInputValue(), []);
   const isDisabled = !selectedUtenteId || isSubmitting;
@@ -119,55 +142,97 @@ export function useReceitaCreateForm({
             ? onlyDigits(value, 4)
             : value;
 
-    setValues((currentValues) => ({
-      ...currentValues,
-      [name]: nextValue,
-    }));
+    setFormState((currentState) => {
+      const currentFormState = getActiveFormState(
+        currentState,
+        resetKey,
+        resetValues,
+      );
 
-    setErrors((currentErrors) => ({
-      ...currentErrors,
-      [name]: "",
-    }));
+      return {
+        resetKey,
+        values: {
+          ...currentFormState.values,
+          [name]: nextValue,
+        },
+        errors: {
+          ...currentFormState.errors,
+          [name]: "",
+        },
+      };
+    });
   }
 
   function updateLine(index, name, value) {
-    setValues((currentValues) => ({
-      ...currentValues,
-      linhas: currentValues.linhas.map((linha, linhaIndex) =>
-        linhaIndex === index
-          ? {
-              ...linha,
-              [name]: name === "quantidade" ? onlyDigits(value, 3) : value,
-            }
-          : linha,
-      ),
-    }));
+    setFormState((currentState) => {
+      const currentFormState = getActiveFormState(
+        currentState,
+        resetKey,
+        resetValues,
+      );
 
-    setErrors((currentErrors) => ({
-      ...currentErrors,
-      [`linhas.${index}.${name}`]: "",
-    }));
+      return {
+        resetKey,
+        values: {
+          ...currentFormState.values,
+          linhas: currentFormState.values.linhas.map((linha, linhaIndex) =>
+            linhaIndex === index
+              ? {
+                  ...linha,
+                  [name]: name === "quantidade" ? onlyDigits(value, 3) : value,
+                }
+              : linha,
+          ),
+        },
+        errors: {
+          ...currentFormState.errors,
+          [`linhas.${index}.${name}`]: "",
+        },
+      };
+    });
   }
 
   function addLine() {
-    setValues((currentValues) => ({
-      ...currentValues,
-      linhas: [...currentValues.linhas, createLine()],
-    }));
+    setFormState((currentState) => {
+      const currentFormState = getActiveFormState(
+        currentState,
+        resetKey,
+        resetValues,
+      );
+
+      return {
+        resetKey,
+        values: {
+          ...currentFormState.values,
+          linhas: [...currentFormState.values.linhas, createLine()],
+        },
+        errors: currentFormState.errors,
+      };
+    });
   }
 
   function removeLine(index) {
-    setValues((currentValues) => ({
-      ...currentValues,
-      linhas:
-        currentValues.linhas.length === 1
-          ? currentValues.linhas
-          : currentValues.linhas.filter(
-              (_, linhaIndex) => linhaIndex !== index,
-            ),
-    }));
+    setFormState((currentState) => {
+      const currentFormState = getActiveFormState(
+        currentState,
+        resetKey,
+        resetValues,
+      );
 
-    setErrors({});
+      return {
+        resetKey,
+        values: {
+          ...currentFormState.values,
+          linhas:
+            currentFormState.values.linhas.length === 1
+              ? currentFormState.values.linhas
+              : currentFormState.values.linhas.filter(
+                  (_, linhaIndex) => linhaIndex !== index,
+                ),
+        },
+        errors: {},
+      };
+    });
   }
 
   async function handleSubmit(event) {
@@ -176,23 +241,43 @@ export function useReceitaCreateForm({
     const nextErrors = validateForm(values, todayInputValue);
 
     if (Object.keys(nextErrors).length > 0) {
-      setErrors(nextErrors);
+      setFormState({
+        resetKey,
+        values,
+        errors: nextErrors,
+      });
+
       return;
     }
 
     const result = await onCreate(normalizePayload(values));
 
     if (!result?.ok) {
-      setErrors((currentErrors) => ({
-        ...currentErrors,
-        ...(result?.fieldErrors || {}),
-      }));
+      setFormState((currentState) => {
+        const currentFormState = getActiveFormState(
+          currentState,
+          resetKey,
+          resetValues,
+        );
+
+        return {
+          resetKey,
+          values: currentFormState.values,
+          errors: {
+            ...currentFormState.errors,
+            ...(result?.fieldErrors || {}),
+          },
+        };
+      });
 
       return;
     }
 
-    setValues(createInitialForm());
-    setErrors({});
+    setFormState({
+      resetKey,
+      values: createInitialForm(),
+      errors: {},
+    });
   }
 
   return {

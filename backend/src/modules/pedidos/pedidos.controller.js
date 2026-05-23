@@ -14,8 +14,20 @@ async function getById(req, res) {
   return ok(res, { data });
 }
 
+async function cancel(req, res) {
+  const data = await service.cancelPedido(req.params.pedidoId, req.body);
+
+  return ok(res, { data });
+}
+
 async function listHistorico(req, res) {
   const data = await service.listHistorico(req.query);
+
+  return ok(res, data);
+}
+
+async function listPendentes(req, res) {
+  const data = await service.listPendentes(req.query);
 
   return ok(res, data);
 }
@@ -23,5 +35,7 @@ async function listHistorico(req, res) {
 module.exports = {
   create,
   getById,
+  cancel,
   listHistorico,
+  listPendentes,
 };

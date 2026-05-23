@@ -16,6 +16,11 @@ const HISTORICO_STATUS = new Set([
   "CANCELADO",
 ]);
 
+const DEFAULT_CANCEL_REASON =
+  "Cancelado pela Santa Casa antes da validação pela Farmácia.";
+
+const MAX_CANCEL_REASON_LENGTH = 240;
+
 function normalizeTipo(value) {
   const tipo = String(value || "")
     .trim()
@@ -187,7 +192,36 @@ function parseHistoricoQuery(query = {}) {
   };
 }
 
+function parseCancelPedidoPayload(body = {}) {
+  const reason = String(body.reason || body.motivo || "").trim();
+
+  if (reason.length > MAX_CANCEL_REASON_LENGTH) {
+    throw badRequest(
+      `O motivo do cancelamento não pode exceder ${MAX_CANCEL_REASON_LENGTH} caracteres.`,
+    );
+  }
+
+  return {
+    reason: reason || DEFAULT_CANCEL_REASON,
+  };
+}
+
+function parsePendentesQuery(query = {}) {
+  const skip = Math.max(0, parseIntegerQueryParam(query.skip, "skip", 0));
+
+  const rawTake = parseIntegerQueryParam(query.take, "take", 50);
+  const take = Math.min(Math.max(1, rawTake), 200);
+
+  return {
+    search: query.search ? String(query.search).trim() : "",
+    skip,
+    take,
+  };
+}
+
 module.exports = {
   validateCreatePedidoPayload,
   parseHistoricoQuery,
+  parseCancelPedidoPayload,
+  parsePendentesQuery,
 };

@@ -300,6 +300,73 @@ async function createPedidoWithItems(items = []) {
   });
 }
 
+async function cancelPendingPedidoById(pedidoId, reason) {
+  return prisma.$transaction(async (tx) => {
+    const existingPedido = await tx.pedido.findUnique({
+      where: {
+        id: pedidoId,
+      },
+      select: {
+        id: true,
+        status: true,
+      },
+    });
+
+    if (!existingPedido) {
+      return {
+        pedido: null,
+        wasCanceled: false,
+        previousStatus: null,
+        canceledPedidoItems: 0,
+      };
+    }
+
+    if (existingPedido.status !== "PENDENTE") {
+      const pedido = await tx.pedido.findUnique({
+        where: {
+          id: pedidoId,
+        },
+        select: pedidoSelect,
+      });
+
+      return {
+        pedido,
+        wasCanceled: false,
+        previousStatus: existingPedido.status,
+        canceledPedidoItems: 0,
+      };
+    }
+
+    const canceledItems = await tx.pedidoItem.updateMany({
+      where: {
+        pedidoId,
+        status: "PENDENTE",
+      },
+      data: {
+        status: "CANCELADO",
+      },
+    });
+
+    const pedido = await tx.pedido.update({
+      where: {
+        id: pedidoId,
+      },
+      data: {
+        status: "CANCELADO",
+        closedReason: reason,
+      },
+      select: pedidoSelect,
+    });
+
+    return {
+      pedido,
+      wasCanceled: true,
+      previousStatus: existingPedido.status,
+      canceledPedidoItems: canceledItems.count,
+    };
+  });
+}
+
 function buildHistoricoWhere({ status, from, to, search }) {
   const where = {
     status: status || {
@@ -461,6 +528,130 @@ async function listHistorico({ status, from, to, search, skip, take }) {
   };
 }
 
+function buildPendentesWhere({ search }) {
+  const where = {
+    status: "PENDENTE",
+  };
+
+  const and = [];
+
+  if (search) {
+    const numericSearch = /^\d+$/.test(search);
+
+    if (numericSearch) {
+      and.push({
+        OR: [
+          {
+            numero: Number(search),
+          },
+          {
+            itens: {
+              some: {
+                utente: {
+                  numero9: {
+                    contains: search,
+                  },
+                },
+              },
+            },
+          },
+          {
+            itens: {
+              some: {
+                receitaLinha: {
+                  receita: {
+                    numero19: {
+                      contains: search,
+                    },
+                  },
+                },
+              },
+            },
+          },
+        ],
+      });
+    } else {
+      and.push({
+        OR: [
+          {
+            itens: {
+              some: {
+                medicamento: {
+                  contains: search,
+                  mode: "insensitive",
+                },
+              },
+            },
+          },
+          {
+            itens: {
+              some: {
+                utente: {
+                  nome: {
+                    contains: search,
+                    mode: "insensitive",
+                  },
+                },
+              },
+            },
+          },
+          {
+            itens: {
+              some: {
+                receitaLinha: {
+                  nome: {
+                    contains: search,
+                    mode: "insensitive",
+                  },
+                },
+              },
+            },
+          },
+        ],
+      });
+    }
+  }
+
+  if (and.length > 0) {
+    where.AND = and;
+  }
+
+  return where;
+}
+
+async function listPendentes({ search, skip, take }) {
+  const where = buildPendentesWhere({ search });
+
+  const [rows, total] = await Promise.all([
+    prisma.pedido.findMany({
+      where,
+      select: pedidoSelect,
+      orderBy: [
+        {
+          createdAt: "desc",
+        },
+        {
+          numero: "desc",
+        },
+      ],
+      skip,
+      take,
+    }),
+
+    prisma.pedido.count({
+      where,
+    }),
+  ]);
+
+  return {
+    rows,
+    total,
+    skip,
+    take,
+    search,
+  };
+}
+
 module.exports = {
   findPedidoById,
   findUtenteById,
@@ -469,5 +660,7 @@ module.exports = {
   findSemReceitaById,
   findExtraById,
   createPedidoWithItems,
+  cancelPendingPedidoById,
   listHistorico,
+  listPendentes,
 };

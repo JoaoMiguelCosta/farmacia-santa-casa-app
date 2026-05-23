@@ -8,8 +8,10 @@ const router = Router();
 
 router.post("/", asyncHandler(controller.create));
 
-// IMPORTANTE: histórico antes de "/:pedidoId"
 router.get("/historico", asyncHandler(controller.listHistorico));
+router.get("/pendentes", asyncHandler(controller.listPendentes));
+
+router.post("/:pedidoId/cancelar", asyncHandler(controller.cancel));
 
 router.get("/:pedidoId", asyncHandler(controller.getById));
 

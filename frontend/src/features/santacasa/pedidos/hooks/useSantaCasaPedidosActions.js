@@ -23,6 +23,8 @@ export function useSantaCasaPedidosActions({
   removeItem,
   removeItemsByKeys,
   clearDraft,
+
+  onPedidoCreated,
 }) {
   const { handleAuthError } = useAuth();
 
@@ -253,6 +255,8 @@ export function useSantaCasaPedidosActions({
         message:
           "Pedido geral enviado para a Farmácia com sucesso. A Farmácia pode agora validar ou rejeitar o pedido.",
       });
+
+      await onPedidoCreated?.();
     } catch (requestError) {
       if (handleAuthError(requestError)) return;
 
