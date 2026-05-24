@@ -27,7 +27,7 @@ export const RECEITAS_PAGE = Object.freeze({
   regularizationDialog: {
     title: "Confirmar regularização automática?",
     description:
-      "Esta receita vai regularizar Extras pendentes deste utente. Confirma apenas se os dados da receita estiverem corretos.",
+      "Esta receita vai regularizar vendas suspensas pendentes deste utente. Confirma apenas se os dados da receita estiverem corretos.",
     confirmLabel: "Criar receita e regularizar",
     cancelLabel: "Voltar atrás",
     fallbackDetails:

@@ -3,7 +3,7 @@ export const SANTACASA_DASHBOARD_PAGE = Object.freeze({
     eyebrow: "Santa Casa",
     title: "Dashboard",
     description:
-      "Visão rápida da operação da Santa Casa: utentes, receitas, Extras, pedidos e regularizações.",
+      "Visão rápida da operação da Santa Casa: utentes, receitas, vendas suspensas, pedidos e regularizações.",
   },
 
   sections: {
@@ -29,12 +29,13 @@ export const SANTACASA_DASHBOARD_PAGE = Object.freeze({
     receitasAtivas: "Linhas de receita ativas",
     receitasExpiradas: "Linhas de receita expiradas",
 
-    totalSemReceita: "Medicamentos sem receita",
+    totalSemReceita: "Medicamentos não sujeitos a receita médica",
 
-    extrasPendentes: "Extras pendentes",
-    extrasParcialmenteRegularizados: "Extras parcialmente regularizados",
-    extrasRegularizados: "Extras regularizados",
-    extrasExpirados: "Extras expirados",
+    extrasPendentes: "Vendas suspensas pendentes",
+    extrasParcialmenteRegularizados:
+      "Vendas suspensas parcialmente regularizadas",
+    extrasRegularizados: "Vendas suspensas regularizadas",
+    extrasExpirados: "Vendas suspensas expiradas",
 
     pedidosPendentes: "Pedidos pendentes",
     pedidosValidados: "Pedidos validados",
@@ -76,7 +77,7 @@ export const SANTACASA_DASHBOARD_PAGE = Object.freeze({
     operacao: {
       title: "Operação",
       description:
-        "Gerir receitas, medicamentos sem receita, Extras e preparação de pedidos.",
+        "Gerir receitas, medicamentos não sujeitos a receita médica, vendas suspensas e preparação de pedidos.",
       to: "/santacasa/operacao",
       actionLabel: "Abrir operação",
     },
@@ -91,7 +92,7 @@ export const SANTACASA_DASHBOARD_PAGE = Object.freeze({
     regularizacoes: {
       title: "Regularizações",
       description:
-        "Acompanhar Extras que aguardam receita futura ou já foram regularizados.",
+        "Acompanhar vendas suspensas que aguardam receita futura ou já foram regularizadas.",
       to: "/santacasa/regularizacoes",
       actionLabel: "Ver regularizações",
     },

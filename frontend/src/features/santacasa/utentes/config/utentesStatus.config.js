@@ -43,7 +43,7 @@ export const UTENTE_ACTION_DIALOGS = Object.freeze({
     title: "Arquivar utente",
     confirmLabel: "Arquivar utente",
     description:
-      "O utente deixará de aparecer nas operações diárias. Só é possível arquivar se não existirem receitas ativas disponíveis, medicamentos sem receita disponíveis, Extras, pedidos ou regularizações pendentes. O histórico será mantido.",
+      "O utente deixará de aparecer nas operações diárias. Só é possível arquivar se não existirem receitas ativas disponíveis, medicamentos não sujeitos a receita médica disponíveis, vendas suspensas, pedidos ou regularizações pendentes. O histórico será mantido.",
   },
 
   reactivate: {
@@ -57,6 +57,6 @@ export const UTENTE_ACTION_DIALOGS = Object.freeze({
     title: "Remover registo",
     confirmLabel: "Remover registo",
     description:
-      "Só é possível remover utentes sem qualquer dado associado. Se existir histórico, receitas, medicamentos, pedidos, Extras, regularizações ou dispensas, a ação será bloqueada.",
+      "Só é possível remover utentes sem qualquer dado associado. Se existir histórico, receitas, medicamentos, pedidos, vendas suspensas, regularizações ou dispensas, a ação será bloqueada.",
   },
 });

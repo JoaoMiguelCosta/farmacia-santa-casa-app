@@ -34,7 +34,7 @@ export default function ExtraCreateForm({
       <form className={styles.form} onSubmit={handleSubmit} noValidate>
         {!selectedUtenteId ? (
           <p className={styles.notice} role="status">
-            Seleciona um utente antes de criar Extra.
+            Seleciona um utente antes de criar uma Venda Suspensa.
           </p>
         ) : null}
 

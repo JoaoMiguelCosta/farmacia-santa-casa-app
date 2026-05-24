@@ -24,7 +24,8 @@ const ACTIONS = [
   },
   {
     title: "Regularizações",
-    description: "Acompanhar Extras regularizados por receitas futuras.",
+    description:
+      "Acompanhar vendas suspensas regularizadas por receitas futuras.",
     to: FARMACIA_REGULARIZACOES_PATH,
   },
 ];

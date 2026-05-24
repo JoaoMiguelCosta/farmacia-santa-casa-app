@@ -21,7 +21,7 @@ const ACTIONS = [
   {
     title: "Operação",
     description:
-      "Gerir receitas, medicamentos sem receita, Extras e preparação de pedidos.",
+      "Gerir receitas, medicamentos não sujeitos a receita médica, vendas suspensas e preparação de pedidos.",
     to: SANTACASA_OPERACAO_PATH,
   },
   {
@@ -32,7 +32,7 @@ const ACTIONS = [
   {
     title: "Regularizações",
     description:
-      "Acompanhar Extras que aguardam receita futura ou já foram regularizados.",
+      "Acompanhar vendas suspensas que aguardam receita futura ou já foram regularizadas.",
     to: SANTACASA_REGULARIZACOES_PATH,
   },
   {

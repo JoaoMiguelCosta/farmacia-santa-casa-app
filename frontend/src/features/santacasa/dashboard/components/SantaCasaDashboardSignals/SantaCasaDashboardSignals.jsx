@@ -202,7 +202,7 @@ export default function SantaCasaDashboardSignals({
           metrics={receitasMetrics}
         />
         <MetricsGroup title="Pedidos" metrics={pedidosMetrics} />
-        <MetricsGroup title="Extras" metrics={extrasMetrics} />
+        <MetricsGroup title="Vendas Suspensas" metrics={extrasMetrics} />
         <MetricsGroup title="Regularizações" metrics={regularizacoesMetrics} />
       </div>
     </section>

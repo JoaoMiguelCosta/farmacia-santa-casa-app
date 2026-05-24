@@ -47,7 +47,10 @@ function getReceitaLinhaRestanteVisual(linha, draftQuantityMap) {
 }
 
 async function listByUtente(utenteId) {
-  await ensureUtenteOperational(utenteId, "consultar Extras deste utente");
+  await ensureUtenteOperational(
+    utenteId,
+    "consultar vendas suspensas deste utente",
+  );
 
   const rows = await extrasRepository.findByUtente(utenteId);
 
@@ -55,7 +58,10 @@ async function listByUtente(utenteId) {
 }
 
 async function createForUtente(utenteId, payload) {
-  await ensureUtenteOperational(utenteId, "criar Extra para este utente");
+  await ensureUtenteOperational(
+    utenteId,
+    "criar Venda Suspensa para este utente",
+  );
 
   const data = validateCreateExtraPayload(payload);
 
@@ -89,7 +95,9 @@ async function createForUtente(utenteId, payload) {
   });
 
   if (duplicatedExtra) {
-    throw conflict("Já existe um Extra em aberto para este medicamento.");
+    throw conflict(
+      "Já existe uma Venda Suspensa em aberto para este medicamento.",
+    );
   }
 
   const created = await extrasRepository.create(utenteId, data);
@@ -98,16 +106,19 @@ async function createForUtente(utenteId, payload) {
 }
 
 async function removeForUtente(utenteId, extraId) {
-  await ensureUtenteOperational(utenteId, "remover Extra deste utente");
+  await ensureUtenteOperational(
+    utenteId,
+    "remover Venda Suspensa deste utente",
+  );
 
   const extra = await extrasRepository.findById(extraId);
 
   if (!extra) {
-    throw notFound("Extra não encontrado.");
+    throw notFound("Venda Suspensa não encontrada.");
   }
 
   if (extra.utenteId !== utenteId) {
-    throw forbidden("Extra não pertence a este utente.");
+    throw forbidden("Venda Suspensa não pertence a este utente.");
   }
 
   const linkedPedidoItems =
@@ -115,7 +126,7 @@ async function removeForUtente(utenteId, extraId) {
 
   if (linkedPedidoItems > 0) {
     throw conflict(
-      "Não é possível remover: o Extra já está associado a pedidos.",
+      "Não é possível remover: a Venda Suspensa já está associada a pedidos.",
     );
   }
 

@@ -22,7 +22,7 @@ async function ensureUtenteOperational(utenteId, actionLabel) {
 async function listByUtente(utenteId) {
   await ensureUtenteOperational(
     utenteId,
-    "consultar medicamentos sem receita deste utente",
+    "consultar medicamentos não sujeitos a receita médica deste utente",
   );
 
   const rows = await semReceitaRepository.findByUtente(utenteId);
@@ -35,7 +35,7 @@ async function listByUtente(utenteId) {
 async function createForUtente(utenteId, payload) {
   await ensureUtenteOperational(
     utenteId,
-    "criar medicamento sem receita para este utente",
+    "criar medicamento não sujeito a receita médica para este utente",
   );
 
   const data = validateCreateSemReceitaPayload(payload);
@@ -62,17 +62,21 @@ async function createForUtente(utenteId, payload) {
 async function removeForUtente(utenteId, semReceitaId) {
   await ensureUtenteOperational(
     utenteId,
-    "remover medicamento sem receita deste utente",
+    "remover medicamento não sujeito a receita médica deste utente",
   );
 
   const row = await semReceitaRepository.findById(semReceitaId);
 
   if (!row) {
-    throw notFound("Registo sem receita não encontrado.");
+    throw notFound(
+      "Registo de medicamento não sujeito a receita médica não encontrado.",
+    );
   }
 
   if (row.utenteId !== utenteId) {
-    throw forbidden("Registo sem receita não pertence a este utente.");
+    throw forbidden(
+      "Registo de medicamento não sujeito a receita médica não pertence a este utente.",
+    );
   }
 
   const linkedPedidoItems =

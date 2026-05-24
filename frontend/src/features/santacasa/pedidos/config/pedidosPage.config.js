@@ -3,7 +3,7 @@ export const PEDIDOS_PAGE = Object.freeze({
     eyebrow: "Santa Casa",
     title: "Pedidos",
     description:
-      "Cria pedidos para a Farmácia juntando linhas de receita, medicamentos sem receita e Extras num único envio.",
+      "Cria pedidos para a Farmácia juntando linhas de receita, medicamentos não sujeitos a receita médica e vendas suspensas num único envio.",
   },
 
   sections: {
@@ -13,7 +13,7 @@ export const PEDIDOS_PAGE = Object.freeze({
         "Seleciona os medicamentos disponíveis para incluir no pedido.",
       emptyTitle: "Sem itens disponíveis.",
       emptyDescription:
-        "Este utente não tem receitas, medicamentos sem receita ou Extras com quantidade restante.",
+        "Este utente não tem receitas, medicamentos não sujeitos a receita médica ou vendas suspensas com quantidade restante.",
       loadingTitle: "A carregar itens disponíveis...",
       errorTitle: "Não foi possível carregar os itens disponíveis.",
     },
@@ -76,8 +76,8 @@ export const PEDIDOS_PAGE = Object.freeze({
 
   labels: {
     receita: "Com receita",
-    semReceita: "Sem receita",
-    extra: "Extra",
+    semReceita: "Medicamentos não sujeitos a receita médica",
+    extra: "Venda Suspensa",
     add: "Adicionar",
     remove: "Remover",
     quantity: "Quantidade",

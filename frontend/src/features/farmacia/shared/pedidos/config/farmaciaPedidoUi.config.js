@@ -25,8 +25,8 @@ export const FARMACIA_PEDIDO_UI = Object.freeze({
 
   itemTypes: {
     COM_RECEITA: "Com receita",
-    SEM_RECEITA: "Sem receita",
-    EXTRA: "Extra",
+    SEM_RECEITA: "Medicamentos não sujeitos a receita médica",
+    EXTRA: "Venda Suspensa",
   },
 
   labels: {
@@ -48,8 +48,8 @@ export const FARMACIA_PEDIDO_UI = Object.freeze({
     receita: "Receita",
     receitaNumber: "N.º receita",
     receitaPins: "PINs",
-    semReceita: "Sem receita",
-    extra: "Extra",
+    semReceita: "Medicamentos não sujeitos a receita médica",
+    extra: "Venda Suspensa",
     items: "Itens",
     totalItems: "Total de itens",
   },

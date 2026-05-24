@@ -29,7 +29,7 @@ async function ensureUtenteOperational(utenteId, actionLabel) {
 
 function throwRegularizacaoConfirmationRequired(preview) {
   throw new AppError(
-    "Esta receita vai regularizar Extras pendentes. Confirma antes de continuar.",
+    "Esta receita vai regularizar vendas suspensas pendentes. Confirma antes de continuar.",
     409,
     REGULARIZACAO_CONFIRMATION_REQUIRED,
     preview,

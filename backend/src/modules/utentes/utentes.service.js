@@ -143,11 +143,13 @@ function buildDeleteBlockingDependenciesMessage(dependencies) {
   }
 
   if (dependencies.semReceita > 0) {
-    parts.push(`${dependencies.semReceita} medicamento(s) sem receita`);
+    parts.push(
+      `${dependencies.semReceita} medicamento(s) não sujeito(s) a receita médica`,
+    );
   }
 
   if (dependencies.extras > 0) {
-    parts.push(`${dependencies.extras} extra(s)`);
+    parts.push(`${dependencies.extras} venda(s) suspensa(s)`);
   }
 
   if (dependencies.pedidoItens > 0) {

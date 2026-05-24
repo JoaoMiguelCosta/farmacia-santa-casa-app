@@ -259,7 +259,7 @@ function validateSemReceitaItem(item) {
 
   if (!semReceita) {
     throw conflict(
-      `Item "${item.medicamento}" não tem registo sem receita associado.`,
+      `Item "${item.medicamento}" não tem registo de medicamento não sujeito a receita médica associado.`,
     );
   }
 
@@ -281,11 +281,13 @@ function validateExtraItem(item) {
   const extra = item.extra;
 
   if (!extra) {
-    throw conflict(`Item "${item.medicamento}" não tem Extra associado.`);
+    throw conflict(
+      `Item "${item.medicamento}" não tem Venda Suspensa associada.`,
+    );
   }
 
   if (!["PENDENTE", "PARCIALMENTE_REGULARIZADO"].includes(extra.status)) {
-    throw conflict(`Extra "${extra.medicamento}" não está em aberto.`);
+    throw conflict(`Venda Suspensa "${extra.medicamento}" não está em aberto.`);
   }
 
   const reservadoPorOutros = sumPendingExcept(extra.pedidoItens, item.id);

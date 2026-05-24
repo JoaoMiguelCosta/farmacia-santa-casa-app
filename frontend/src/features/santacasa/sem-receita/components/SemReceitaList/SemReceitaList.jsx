@@ -13,7 +13,7 @@ function buildPedidoItem(item) {
     tipo: "SEM_RECEITA",
     id: item.id,
     title: item.medicamento,
-    description: "Medicamento sem receita",
+    description: "Medicamento não sujeito a receita médica",
     meta: `Total ${item.quantidade} · Reservada ${item.quantidadeReservadaPendente}`,
     quantidadeRestante: Number(item.quantidadeRestante) || 0,
     source: item,
@@ -53,7 +53,7 @@ export default function SemReceitaList({
       <DataState
         type="empty"
         title="Seleciona um utente."
-        description="Depois de selecionares um utente, os medicamentos sem receita aparecem aqui."
+        description="Depois de selecionares um utente, os medicamentos não sujeitos a receita médica aparecem aqui."
       />
     );
   }
@@ -63,7 +63,7 @@ export default function SemReceitaList({
       <DataState
         type="loading"
         title={SEM_RECEITA_PAGE.list.loadingTitle}
-        description="Aguarda enquanto os medicamentos são carregados."
+        description="Aguarda enquanto os medicamentos não sujeitos a receita médica são carregados."
       />
     );
   }
@@ -99,7 +99,8 @@ export default function SemReceitaList({
       <div className={styles.tableWrap}>
         <table className={styles.table}>
           <caption className={styles.srOnly}>
-            Lista de medicamentos sem receita do utente selecionado
+            Lista de medicamentos não sujeitos a receita médica do utente
+            selecionado
           </caption>
 
           <thead>

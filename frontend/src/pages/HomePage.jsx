@@ -1,13 +1,12 @@
 import { Link } from "react-router-dom";
 
-
 import styles from "./HomePage.module.css";
 
 const AREAS = [
   {
     title: "Santa Casa",
     description:
-      "Gestão de utentes, receitas, medicamentos sem receita, Extras e criação de pedidos.",
+      "Gestão de utentes, receitas, medicamentos não sujeitos a receita médica, vendas suspensas e criação de pedidos.",
     to: "/santacasa",
     label: "Entrar na Santa Casa",
   },
@@ -64,8 +63,6 @@ export default function HomePage() {
           </article>
         ))}
       </div>
-
-
     </section>
   );
 }

@@ -3,7 +3,7 @@ export const FARMACIA_REGULARIZACOES_PAGE = Object.freeze({
     eyebrow: "Farmácia",
     title: "Regularizações",
     description:
-      "Acompanha Extras criados a partir de pedidos validados e regularizados por receitas futuras.",
+      "Acompanha vendas suspensas criadas a partir de pedidos validados e regularizadas por receitas futuras.",
   },
 
   sections: {
@@ -18,10 +18,10 @@ export const FARMACIA_REGULARIZACOES_PAGE = Object.freeze({
     pending: {
       title: "Regularizações pendentes",
       description:
-        "Extras que ainda aguardam regularização total ou parcial por receita.",
+        "Vendas suspensas que ainda aguardam regularização total ou parcial por receita.",
       emptyTitle: "Sem regularizações pendentes.",
       emptyDescription:
-        "Quando a Farmácia validar pedidos com Extras, eles aparecem aqui até serem regularizados.",
+        "Quando a Farmácia validar pedidos com vendas suspensas, elas aparecem aqui até serem regularizadas.",
       loadingTitle: "A carregar regularizações pendentes...",
       errorTitle: "Não foi possível carregar as regularizações pendentes.",
     },

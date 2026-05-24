@@ -51,12 +51,12 @@ function buildOpenDependenciesMessage(dependencies = {}) {
 
   if (dependencies.semReceitaDisponivel > 0) {
     parts.push(
-      `${dependencies.semReceitaDisponivel} medicamento(s) sem receita disponível`,
+      `${dependencies.semReceitaDisponivel} medicamento(s) não sujeito(s) a receita médica disponível(is)`,
     );
   }
 
   if (dependencies.extras > 0) {
-    parts.push(`${dependencies.extras} extra(s) em aberto`);
+    parts.push(`${dependencies.extras} venda(s) suspensa(s) em aberto`);
   }
 
   if (dependencies.regularizacoes > 0) {

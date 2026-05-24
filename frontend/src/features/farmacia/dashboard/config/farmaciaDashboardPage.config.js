@@ -66,11 +66,10 @@ export const FARMACIA_DASHBOARD_PAGE = Object.freeze({
     regularizacoes: {
       title: "Regularizações",
       description:
-        "Extras que aguardam regularização ou já foram compensados por receitas futuras.",
+        "Vendas suspensas que aguardam regularização ou já foram compensadas por receitas futuras.",
       to: "/farmacia/regularizacoes",
       actionLabel: "Ver regularizações",
     },
-
   },
 
   feedback: {

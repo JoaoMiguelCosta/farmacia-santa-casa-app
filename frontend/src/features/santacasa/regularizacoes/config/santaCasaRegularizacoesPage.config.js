@@ -3,14 +3,14 @@ export const SANTACASA_REGULARIZACOES_PAGE = Object.freeze({
     eyebrow: "Santa Casa",
     title: "Regularizações",
     description:
-      "Acompanha Extras enviados para a Farmácia que aguardam receita futura ou já foram regularizados.",
+      "Acompanha vendas suspensas enviadas para a Farmácia que aguardam receita futura ou já foram regularizadas.",
   },
 
   sections: {
     signal: {
       title: "Resumo das regularizações",
       description:
-        "Visão geral das regularizações associadas aos Extras enviados pela Santa Casa.",
+        "Visão geral das regularizações associadas às vendas suspensas enviadas pela Santa Casa.",
       loadingTitle: "A carregar resumo...",
       errorTitle: "Não foi possível carregar o resumo.",
     },
@@ -18,10 +18,10 @@ export const SANTACASA_REGULARIZACOES_PAGE = Object.freeze({
     pending: {
       title: "Regularizações pendentes",
       description:
-        "Extras que ainda precisam de receita futura para ficarem totalmente regularizados.",
+        "Vendas suspensas que ainda precisam de receita futura para ficarem totalmente regularizadas.",
       emptyTitle: "Sem regularizações pendentes.",
       emptyDescription:
-        "Quando existirem Extras ainda por regularizar, aparecem aqui.",
+        "Quando existirem vendas suspensas ainda por regularizar, aparecem aqui.",
       loadingTitle: "A carregar regularizações pendentes...",
       errorTitle: "Não foi possível carregar as regularizações pendentes.",
     },
@@ -29,7 +29,7 @@ export const SANTACASA_REGULARIZACOES_PAGE = Object.freeze({
     history: {
       title: "Histórico de regularizações",
       description:
-        "Regularizações concluídas com as receitas que foram usadas para compensar Extras anteriores.",
+        "Regularizações concluídas com as receitas que foram usadas para compensar vendas suspensas anteriores.",
       emptyTitle: "Sem histórico de regularizações.",
       emptyDescription:
         "Quando uma regularização ficar concluída, aparece neste histórico.",
@@ -66,7 +66,7 @@ export const SANTACASA_REGULARIZACOES_PAGE = Object.freeze({
     utenteNumber: "N.º utente",
 
     medicamento: "Medicamento",
-    quantidadeSolicitada: "Quantidade enviada como Extra",
+    quantidadeSolicitada: "Quantidade enviada como venda suspensa",
     quantidadeRegularizada: "Quantidade regularizada",
     quantidadeRestante: "Quantidade ainda em falta",
 
@@ -91,13 +91,13 @@ export const SANTACASA_REGULARIZACOES_PAGE = Object.freeze({
   waitingRecipe: {
     title: "A aguardar receita",
     description:
-      "Este Extra ainda precisa de uma receita futura com o mesmo medicamento para ser regularizado.",
+      "Esta Venda Suspensa ainda precisa de uma receita futura com o mesmo medicamento para ser regularizada.",
   },
 
   completedRecipe: {
     title: "Regularização concluída",
     description:
-      "Este Extra já foi compensado por uma ou mais receitas futuras.",
+      "Esta Venda Suspensa já foi compensada por uma ou mais receitas futuras.",
   },
 
   filters: {

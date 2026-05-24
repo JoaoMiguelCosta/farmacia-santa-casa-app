@@ -173,7 +173,7 @@ function validateSemReceitaAvailability(row, quantidade) {
 
 function validateExtraAvailability(row, quantidade) {
   if (!["PENDENTE", "PARCIALMENTE_REGULARIZADO"].includes(row.status)) {
-    throw conflict("Extra não está em aberto.");
+    throw conflict("Venda Suspensa não está em aberto.");
   }
 
   const reservadoPendente = sumPendingQuantity(row.pedidoItens);
@@ -230,13 +230,15 @@ async function buildPedidoItem(rawItem, currentPedidoItems = []) {
     const semReceita = await repository.findSemReceitaById(rawItem.id);
 
     if (!semReceita) {
-      throw notFound("Registo sem receita não encontrado.");
+      throw notFound(
+        "Registo de medicamento não sujeito a receita médica não encontrado.",
+      );
     }
 
     assertOwnership(
       semReceita.utenteId,
       rawItem.utenteId,
-      "Registo sem receita não pertence a este utente.",
+      "Registo de medicamento não sujeito a receita médica não pertence a este utente.",
     );
 
     validateSemReceitaAvailability(semReceita, rawItem.quantidade);
@@ -254,13 +256,13 @@ async function buildPedidoItem(rawItem, currentPedidoItems = []) {
     const extra = await repository.findExtraById(rawItem.id);
 
     if (!extra) {
-      throw notFound("Extra não encontrado.");
+      throw notFound("Venda Suspensa não encontrada.");
     }
 
     assertOwnership(
       extra.utenteId,
       rawItem.utenteId,
-      "Extra não pertence a este utente.",
+      "Venda Suspensa não pertence a este utente.",
     );
 
     validateExtraAvailability(extra, rawItem.quantidade);

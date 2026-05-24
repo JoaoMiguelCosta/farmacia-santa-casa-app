@@ -72,8 +72,8 @@ export const SANTACASA_HISTORICO_PAGE = Object.freeze({
 
   itemTypes: {
     COM_RECEITA: "Com receita",
-    SEM_RECEITA: "Sem receita",
-    EXTRA: "Extra",
+    SEM_RECEITA: "Medicamentos não sujeitos a receita médica",
+    EXTRA: "Venda Suspensa",
   },
 
   labels: {
@@ -102,8 +102,8 @@ export const SANTACASA_HISTORICO_PAGE = Object.freeze({
     pinAcesso: "PIN de acesso",
     pinOpcao: "PIN de opção",
 
-    semReceita: "Medicamento sem receita",
-    extra: "Extra",
+    semReceita: "Medicamento não sujeito a receita médica",
+    extra: "Venda Suspensa",
 
     items: "Itens do pedido",
     totalItems: "Total de itens",

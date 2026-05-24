@@ -1,36 +1,39 @@
 export const SEM_RECEITA_PAGE = Object.freeze({
   header: {
     eyebrow: "Santa Casa",
-    title: "Sem Receita",
+    title: "Medicamentos não sujeitos a receita médica",
     description:
-      "Regista e consulta medicamentos sem receita associados a cada utente.",
+      "Regista e consulta medicamentos não sujeitos a receita médica associados a cada utente.",
   },
 
   form: {
-    title: "Adicionar medicamento sem receita",
+    title: "Adicionar medicamento não sujeito a receita médica",
     description:
       "Regista um medicamento disponível para o utente selecionado, sem ligação a receita oficial.",
     submitLabel: "Adicionar medicamento",
     submittingLabel: "A adicionar...",
-    successMessage: "Medicamento sem receita criado com sucesso.",
+    successMessage:
+      "Medicamento não sujeito a receita médica criado com sucesso.",
   },
 
   list: {
-    title: "Medicamentos sem receita disponíveis",
+    title: "Medicamentos não sujeitos a receita médica disponíveis",
     description:
-      "Lista de medicamentos sem receita com quantidade restante para o utente selecionado.",
-    emptyTitle: "Sem medicamentos sem receita disponíveis.",
+      "Lista de medicamentos não sujeitos a receita médica com quantidade restante para o utente selecionado.",
+    emptyTitle: "Sem medicamentos não sujeitos a receita médica disponíveis.",
     emptyDescription:
-      "Adiciona um medicamento sem receita ou seleciona outro utente.",
-    loadingTitle: "A carregar medicamentos sem receita...",
-    errorTitle: "Não foi possível carregar os medicamentos sem receita.",
+      "Adiciona um medicamento não sujeito a receita médica ou seleciona outro utente.",
+    loadingTitle: "A carregar medicamentos não sujeitos a receita médica...",
+    errorTitle:
+      "Não foi possível carregar os medicamentos não sujeitos a receita médica.",
     deleteLabel: "Remover",
     deletingLabel: "A remover...",
-    deleteSuccessMessage: "Medicamento sem receita removido com sucesso.",
+    deleteSuccessMessage:
+      "Medicamento não sujeito a receita médica removido com sucesso.",
   },
 
   deleteDialog: {
-    title: "Remover medicamento sem receita?",
+    title: "Remover medicamento não sujeito a receita médica?",
     description:
       "Esta ação pode ser bloqueada se o medicamento já estiver associado a pedidos.",
     confirmLabel: "Remover medicamento",

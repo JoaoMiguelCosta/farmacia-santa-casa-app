@@ -58,9 +58,7 @@ function parsePedidoItem(raw = {}, index) {
   }
 
   if (!tipo) {
-    throw badRequest(
-      `Item ${index + 1}: o campo 'tipo' deve ser COM_RECEITA, SEM_RECEITA ou EXTRA.`,
-    );
+    throw badRequest(`Item ${index + 1}: tipo de item inválido.`);
   }
 
   if (!id) {

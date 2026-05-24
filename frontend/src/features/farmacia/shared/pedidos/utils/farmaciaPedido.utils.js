@@ -140,11 +140,11 @@ export function getPedidoItemReferenceLabel(item) {
   }
 
   if (item.tipo === "SEM_RECEITA") {
-    return "Medicamento sem receita";
+    return "Medicamento não sujeito a receita médica";
   }
 
   if (item.tipo === "EXTRA") {
-    return "Extra por regularizar";
+    return "Venda suspensa por regularizar";
   }
 
   return UNKNOWN_LABEL;

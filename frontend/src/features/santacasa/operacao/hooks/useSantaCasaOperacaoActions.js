@@ -113,7 +113,7 @@ export function useSantaCasaOperacaoActions({
     const removedLabel =
       matchingExtras.length === 1
         ? matchingExtras[0].medicamento
-        : `${matchingExtras.length} Extras`;
+        : `${matchingExtras.length} vendas suspensas`;
 
     try {
       await Promise.all(
@@ -138,7 +138,7 @@ export function useSantaCasaOperacaoActions({
         type: "error",
         message:
           requestError.message ||
-          "Erro ao remover Extra incompatível com a receita disponível.",
+          "Erro ao remover Venda Suspensa incompatível com a receita disponível.",
       });
 
       await refreshOperationData();
@@ -311,7 +311,8 @@ export function useSantaCasaOperacaoActions({
       setFeedback({
         type: "error",
         message:
-          requestError.message || "Erro ao criar medicamento sem receita.",
+          requestError.message ||
+          "Erro ao criar medicamento não sujeito a receita médica.",
       });
 
       return {
@@ -364,7 +365,7 @@ export function useSantaCasaOperacaoActions({
 
       setFeedback({
         type: "error",
-        message: requestError.message || "Erro ao criar Extra.",
+        message: requestError.message || "Erro ao criar Venda Suspensa.",
       });
 
       return {
@@ -505,9 +506,17 @@ export function useSantaCasaOperacaoActions({
     const extraInfo = await deleteCompatibleExtrasFromBackend(receitaItem);
 
     if (extraInfo.removedCount > 0) {
+      const removedVerb =
+        extraInfo.removedCount === 1 ? "removido" : "removidas";
+
+      const sameMedicationLabel =
+        extraInfo.removedCount === 1
+          ? "o mesmo medicamento"
+          : "os mesmos medicamentos";
+
       setFeedback({
         type: "info",
-        message: `${extraInfo.removedLabel} removido dos Extras em aberto e do pedido geral, porque voltou a existir quantidade disponível com receita para o mesmo medicamento.`,
+        message: `${extraInfo.removedLabel} ${removedVerb} das vendas suspensas em aberto e do pedido geral, porque voltou a existir quantidade disponível com receita para ${sameMedicationLabel}.`,
       });
     }
   }

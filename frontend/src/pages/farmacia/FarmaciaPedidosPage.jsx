@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import Button from "../../shared/ui/Button/Button";
 import ConfirmDialog from "../../shared/ui/ConfirmDialog/ConfirmDialog";
@@ -12,6 +12,67 @@ import { getPedidoNumberLabel } from "../../features/farmacia/shared/pedidos/uti
 
 import styles from "./FarmaciaPedidosPage.module.css";
 
+const PAGE_FALLBACKS = Object.freeze({
+  labels: {
+    pedido: "Pedido",
+  },
+
+  validateDialog: {
+    title: "Validar pedido?",
+    description:
+      "Ao validar, o backend vai dispensar quantidades, atualizar saldos e criar regularizações quando existirem vendas suspensas.",
+    confirmLabel: "Validar pedido",
+    cancelLabel: "Cancelar",
+    successMessage: "Pedido validado com sucesso.",
+  },
+
+  rejectDialog: {
+    title: "Rejeitar pedido?",
+    description:
+      "Ao rejeitar, todos os itens pendentes deste pedido passam para estado rejeitado e o motivo fica guardado no histórico.",
+    confirmLabel: "Rejeitar pedido",
+    cancelLabel: "Cancelar",
+    successMessage: "Pedido rejeitado com sucesso.",
+    reasonLabel: "Motivo da rejeição",
+    reasonPlaceholder: "Ex: medicamento indisponível, dados inválidos...",
+    reasonHint: "Opcional. Máximo recomendado: 500 caracteres.",
+  },
+
+  feedback: {
+    genericError: "Ocorreu um erro inesperado.",
+    validateError: "Não foi possível validar o pedido.",
+    rejectError: "Não foi possível rejeitar o pedido.",
+  },
+});
+
+function getPageLabels() {
+  return {
+    ...PAGE_FALLBACKS.labels,
+    ...(FARMACIA_PEDIDOS_PAGE.labels || {}),
+  };
+}
+
+function getValidateDialogConfig() {
+  return {
+    ...PAGE_FALLBACKS.validateDialog,
+    ...(FARMACIA_PEDIDOS_PAGE.validateDialog || {}),
+  };
+}
+
+function getRejectDialogConfig() {
+  return {
+    ...PAGE_FALLBACKS.rejectDialog,
+    ...(FARMACIA_PEDIDOS_PAGE.rejectDialog || {}),
+  };
+}
+
+function getFeedbackConfig() {
+  return {
+    ...PAGE_FALLBACKS.feedback,
+    ...(FARMACIA_PEDIDOS_PAGE.feedback || {}),
+  };
+}
+
 function RejectPedidoDialog({
   pedido,
   reason,
@@ -20,6 +81,9 @@ function RejectPedidoDialog({
   onConfirm,
   onCancel,
 }) {
+  const labels = useMemo(() => getPageLabels(), []);
+  const rejectDialog = useMemo(() => getRejectDialogConfig(), []);
+
   useEffect(() => {
     if (!pedido) return undefined;
 
@@ -55,31 +119,30 @@ function RejectPedidoDialog({
           <p className={styles.dialogEyebrow}>Confirmação necessária</p>
 
           <h2 id="reject-pedido-title" className={styles.dialogTitle}>
-            {FARMACIA_PEDIDOS_PAGE.rejectDialog.title}
+            {rejectDialog.title}
           </h2>
 
           <p id="reject-pedido-description" className={styles.dialogText}>
-            {FARMACIA_PEDIDOS_PAGE.rejectDialog.description}
+            {rejectDialog.description}
           </p>
 
           <p className={styles.dialogPedido}>
-            {FARMACIA_PEDIDOS_PAGE.labels.pedido}:{" "}
-            <strong>{getPedidoNumberLabel(pedido)}</strong>
+            {labels.pedido}: <strong>{getPedidoNumberLabel(pedido)}</strong>
           </p>
 
           <label className={styles.reasonField}>
-            <span>{FARMACIA_PEDIDOS_PAGE.rejectDialog.reasonLabel}</span>
+            <span>{rejectDialog.reasonLabel}</span>
 
             <textarea
               value={reason}
               maxLength={500}
               rows={4}
-              placeholder={FARMACIA_PEDIDOS_PAGE.rejectDialog.reasonPlaceholder}
+              placeholder={rejectDialog.reasonPlaceholder}
               disabled={isLoading}
               onChange={(event) => onReasonChange?.(event.target.value)}
             />
 
-            <small>{FARMACIA_PEDIDOS_PAGE.rejectDialog.reasonHint}</small>
+            <small>{rejectDialog.reasonHint}</small>
           </label>
         </div>
 
@@ -90,7 +153,7 @@ function RejectPedidoDialog({
             disabled={isLoading}
             onClick={onCancel}
           >
-            {FARMACIA_PEDIDOS_PAGE.rejectDialog.cancelLabel}
+            {rejectDialog.cancelLabel}
           </Button>
 
           <Button
@@ -99,7 +162,7 @@ function RejectPedidoDialog({
             isLoading={isLoading}
             onClick={onConfirm}
           >
-            {FARMACIA_PEDIDOS_PAGE.rejectDialog.confirmLabel}
+            {rejectDialog.confirmLabel}
           </Button>
         </footer>
       </section>
@@ -128,6 +191,11 @@ export default function FarmaciaPedidosPage() {
   const [rejectReason, setRejectReason] = useState("");
 
   const [feedback, setFeedback] = useState(null);
+
+  const labels = useMemo(() => getPageLabels(), []);
+  const validateDialog = useMemo(() => getValidateDialogConfig(), []);
+  const rejectDialog = useMemo(() => getRejectDialogConfig(), []);
+  const feedbackConfig = useMemo(() => getFeedbackConfig(), []);
 
   const isValidatingSelected =
     pedidoToValidate && validatingPedidoId === pedidoToValidate.id;
@@ -166,15 +234,16 @@ export default function FarmaciaPedidosPage() {
   async function handleConfirmValidate() {
     if (!pedidoToValidate?.id) return;
 
-    const result = await validatePedido(pedidoToValidate.id);
+    const currentPedido = pedidoToValidate;
+    const result = await validatePedido(currentPedido.id);
 
     setPedidoToValidate(null);
 
     if (result) {
       setFeedback({
         type: "success",
-        title: FARMACIA_PEDIDOS_PAGE.validateDialog.successMessage,
-        message: `${getPedidoNumberLabel(pedidoToValidate)} foi validado.`,
+        title: validateDialog.successMessage,
+        message: `${getPedidoNumberLabel(currentPedido)} foi validado.`,
       });
 
       return;
@@ -182,15 +251,16 @@ export default function FarmaciaPedidosPage() {
 
     setFeedback({
       type: "error",
-      title: FARMACIA_PEDIDOS_PAGE.feedback.validateError,
-      message: FARMACIA_PEDIDOS_PAGE.feedback.genericError,
+      title: feedbackConfig.validateError,
+      message: feedbackConfig.genericError,
     });
   }
 
   async function handleConfirmReject() {
     if (!pedidoToReject?.id) return;
 
-    const result = await rejectPedido(pedidoToReject.id, rejectReason);
+    const currentPedido = pedidoToReject;
+    const result = await rejectPedido(currentPedido.id, rejectReason);
 
     setPedidoToReject(null);
     setRejectReason("");
@@ -198,8 +268,8 @@ export default function FarmaciaPedidosPage() {
     if (result) {
       setFeedback({
         type: "success",
-        title: FARMACIA_PEDIDOS_PAGE.rejectDialog.successMessage,
-        message: `${getPedidoNumberLabel(pedidoToReject)} foi rejeitado.`,
+        title: rejectDialog.successMessage,
+        message: `${getPedidoNumberLabel(currentPedido)} foi rejeitado.`,
       });
 
       return;
@@ -207,8 +277,8 @@ export default function FarmaciaPedidosPage() {
 
     setFeedback({
       type: "error",
-      title: FARMACIA_PEDIDOS_PAGE.feedback.rejectError,
-      message: FARMACIA_PEDIDOS_PAGE.feedback.genericError,
+      title: feedbackConfig.rejectError,
+      message: feedbackConfig.genericError,
     });
   }
 
@@ -244,12 +314,12 @@ export default function FarmaciaPedidosPage() {
 
       <ConfirmDialog
         isOpen={Boolean(pedidoToValidate)}
-        title={FARMACIA_PEDIDOS_PAGE.validateDialog.title}
-        description={`${FARMACIA_PEDIDOS_PAGE.validateDialog.description} Pedido: ${getPedidoNumberLabel(
+        title={validateDialog.title}
+        description={`${validateDialog.description} ${labels.pedido}: ${getPedidoNumberLabel(
           pedidoToValidate,
         )}.`}
-        confirmLabel={FARMACIA_PEDIDOS_PAGE.validateDialog.confirmLabel}
-        cancelLabel={FARMACIA_PEDIDOS_PAGE.validateDialog.cancelLabel}
+        confirmLabel={validateDialog.confirmLabel}
+        cancelLabel={validateDialog.cancelLabel}
         isLoading={Boolean(isValidatingSelected)}
         onConfirm={handleConfirmValidate}
         onCancel={closeValidateDialog}

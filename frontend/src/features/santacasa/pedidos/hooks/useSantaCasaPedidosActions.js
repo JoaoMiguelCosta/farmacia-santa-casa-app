@@ -14,6 +14,19 @@ import {
   isSameMedication,
 } from "../utils/santaCasaPedidos.utils";
 
+function buildRemovedVendasSuspensasMessage(extraInfo) {
+  if (!extraInfo?.removedCount) return "";
+
+  const removedVerb = extraInfo.removedCount === 1 ? "removido" : "removidas";
+
+  const sameMedicationLabel =
+    extraInfo.removedCount === 1
+      ? "o mesmo medicamento"
+      : "os mesmos medicamentos";
+
+  return ` ${extraInfo.removedLabel} ${removedVerb} das vendas suspensas em aberto e do pedido geral, porque voltou a existir quantidade disponível com receita para ${sameMedicationLabel}.`;
+}
+
 export function useSantaCasaPedidosActions({
   items,
   hasItems,
@@ -76,7 +89,7 @@ export function useSantaCasaPedidosActions({
         removedLabel:
           matchingDraftExtras.length === 1
             ? matchingDraftExtras[0].title
-            : `${matchingDraftExtras.length} Extras`,
+            : `${matchingDraftExtras.length} vendas suspensas`,
       };
     }
 
@@ -92,7 +105,7 @@ export function useSantaCasaPedidosActions({
         removedLabel:
           matchingBackendExtras.length === 1
             ? matchingBackendExtras[0].medicamento
-            : `${matchingBackendExtras.length} Extras`,
+            : `${matchingBackendExtras.length} vendas suspensas`,
       };
     } catch (requestError) {
       if (handleAuthError(requestError)) {
@@ -106,7 +119,7 @@ export function useSantaCasaPedidosActions({
         type: "error",
         message:
           requestError.message ||
-          "Erro ao remover Extra incompatível com a receita disponível.",
+          "Erro ao remover Venda Suspensa incompatível com a receita disponível.",
       });
 
       return {
@@ -146,10 +159,7 @@ export function useSantaCasaPedidosActions({
       extraInfo = await deleteCompatibleExtrasFromBackend(item);
     }
 
-    const extraMessage =
-      extraInfo?.removedCount > 0
-        ? ` ${extraInfo.removedLabel} removido dos Extras em aberto e do pedido geral, porque voltou a existir quantidade disponível com receita para o mesmo medicamento.`
-        : "";
+    const extraMessage = buildRemovedVendasSuspensasMessage(extraInfo);
 
     setFeedback({
       type: "success",
@@ -173,7 +183,7 @@ export function useSantaCasaPedidosActions({
       if (extraInfo.removedCount > 0) {
         setFeedback({
           type: "info",
-          message: `${extraInfo.removedLabel} removido dos Extras em aberto e do pedido geral, porque voltou a existir quantidade disponível com receita para o mesmo medicamento.`,
+          message: buildRemovedVendasSuspensasMessage(extraInfo).trim(),
         });
       }
     }
@@ -197,10 +207,7 @@ export function useSantaCasaPedidosActions({
       extraInfo = await deleteCompatibleExtrasFromBackend(item);
     }
 
-    const extraMessage =
-      extraInfo?.removedCount > 0
-        ? ` ${extraInfo.removedLabel} removido dos Extras em aberto e do pedido geral, porque voltou a existir quantidade disponível com receita para o mesmo medicamento.`
-        : "";
+    const extraMessage = buildRemovedVendasSuspensasMessage(extraInfo);
 
     setFeedback({
       type: "success",

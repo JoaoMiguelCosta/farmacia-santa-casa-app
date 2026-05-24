@@ -173,7 +173,7 @@ export default function SantaCasaOperacaoPage() {
         titleId="operacao-title"
         eyebrow="Santa Casa"
         title="Operação diária"
-        description="Gere receitas, medicamentos sem receita e Extras. A partir daqui podes adicionar itens ao pedido geral para a Farmácia."
+        description="Gere receitas, medicamentos não sujeitos a receita médica e vendas suspensas. A partir daqui podes adicionar itens ao pedido geral para a Farmácia."
         actions={
           <Button
             type="button"
@@ -195,7 +195,7 @@ export default function SantaCasaOperacaoPage() {
         description={
           selectedUtente
             ? `Número de utente: ${selectedUtente.numero9}`
-            : "Escolhe um utente para carregar receitas, medicamentos sem receita e Extras."
+            : "Escolhe um utente para carregar receitas, medicamentos não sujeitos a receita médica e vendas suspensas."
         }
         tone="green"
       >
@@ -226,12 +226,12 @@ export default function SantaCasaOperacaoPage() {
 
             <article role="listitem">
               <strong>{semReceita.length}</strong>
-              <span>Sem receita</span>
+              <span>Medicamentos não sujeitos a receita médica</span>
             </article>
 
             <article role="listitem">
               <strong>{extras.length}</strong>
-              <span>Extras</span>
+              <span>Vendas Suspensas</span>
             </article>
 
             <article role="listitem">
@@ -294,9 +294,9 @@ export default function SantaCasaOperacaoPage() {
 
         <OperationSection
           id="operacao-sem-receita"
-          eyebrow="Sem Receita"
-          title="Medicamentos sem receita"
-          description="Adiciona medicamentos sem receita, seleciona para o pedido geral ou remove registos ainda removíveis."
+          eyebrow="Medicamentos não sujeitos a receita médica"
+          title="Medicamentos não sujeitos a receita médica"
+          description="Adiciona medicamentos não sujeitos a receita médica, seleciona para o pedido geral ou remove registos ainda removíveis."
         >
           <SemReceitaCreateForm
             selectedUtenteId={selectedUtenteId}
@@ -323,9 +323,9 @@ export default function SantaCasaOperacaoPage() {
 
         <OperationSection
           id="operacao-extras"
-          eyebrow="Extras"
-          title="Extras em aberto"
-          description="Cria Extras, seleciona para o pedido geral ou remove Extras ainda removíveis."
+          eyebrow="Vendas Suspensas"
+          title="Vendas suspensas em aberto"
+          description="Cria vendas suspensas, seleciona para o pedido geral ou remove registos ainda removíveis."
         >
           <ExtraCreateForm
             selectedUtenteId={selectedUtenteId}

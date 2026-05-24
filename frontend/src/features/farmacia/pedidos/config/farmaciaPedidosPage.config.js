@@ -22,7 +22,7 @@ export const FARMACIA_PEDIDOS_PAGE = Object.freeze({
   validateDialog: {
     title: "Validar pedido?",
     description:
-      "Ao validar, o backend vai dispensar quantidades, atualizar saldos e criar regularizações quando existirem Extras.",
+      "Ao validar, o backend vai dispensar quantidades, atualizar saldos e criar regularizações quando existirem vendas suspensas.",
     confirmLabel: "Validar pedido",
     cancelLabel: "Cancelar",
     successMessage: "Pedido validado com sucesso.",
@@ -44,5 +44,9 @@ export const FARMACIA_PEDIDOS_PAGE = Object.freeze({
     genericError: "Ocorreu um erro inesperado.",
     validateError: "Não foi possível validar o pedido.",
     rejectError: "Não foi possível rejeitar o pedido.",
+  },
+
+  labels: {
+    pedido: "Pedido",
   },
 });

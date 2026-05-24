@@ -61,8 +61,10 @@ export function formatUnitsLabel(quantity) {
 
 export function getOriginListLabel(tipo) {
   if (tipo === "COM_RECEITA") return "Receitas";
-  if (tipo === "SEM_RECEITA") return "Sem Receita";
-  if (tipo === "EXTRA") return "Extras";
+  if (tipo === "SEM_RECEITA") {
+    return "Medicamentos não sujeitos a receita médica";
+  }
+  if (tipo === "EXTRA") return "Vendas Suspensas";
 
   return "lista correspondente";
 }
@@ -249,15 +251,15 @@ export function buildResolvedExtrasMessage(extrasResolvidos = []) {
     const quantidade = Number(extra.quantidadeRemovida) || 0;
 
     if (extra.action === "DELETED") {
-      return ` O Extra ${extra.medicamento} foi removido porque passou a existir receita ativa para o mesmo medicamento.`;
+      return ` A Venda Suspensa ${extra.medicamento} foi removida porque passou a existir receita ativa para o mesmo medicamento.`;
     }
 
-    return ` No Extra ${extra.medicamento}, ${formatUnitsLabel(
+    return ` Na Venda Suspensa ${extra.medicamento}, ${formatUnitsLabel(
       quantidade,
     )} que ainda não tinham sido enviadas à Farmácia foram removidas. A parte já enviada foi preservada.`;
   }
 
-  return ` ${extrasResolvidos.length} Extras compatíveis foram ajustados/removidos porque passaram a ter receita ativa.`;
+  return ` ${extrasResolvidos.length} Vendas suspensas compatíveis foram ajustadas/removidas porque passaram a ter receita ativa.`;
 }
 
 export function getCreatedReceitaLinhas(receita) {

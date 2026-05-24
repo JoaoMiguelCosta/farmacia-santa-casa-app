@@ -38,7 +38,7 @@ function buildPedidoItem(item) {
     tipo: "EXTRA",
     id: item.id,
     title: item.medicamento,
-    description: "Extra por regularizar",
+    description: "Venda suspensa por regularizar",
     meta: `Quantidade restante ${quantidadeRestante}`,
     quantidadeRestante,
     source: item,
@@ -91,7 +91,7 @@ export default function ExtrasList({
       <DataState
         type="empty"
         title="Seleciona um utente."
-        description="Depois de selecionares um utente, os Extras aparecem aqui."
+        description="Depois de selecionares um utente, as vendas suspensas aparecem aqui."
       />
     );
   }
@@ -101,7 +101,7 @@ export default function ExtrasList({
       <DataState
         type="loading"
         title={EXTRAS_PAGE.list.loadingTitle}
-        description="Aguarda enquanto os Extras são carregados."
+        description="Aguarda enquanto as vendas suspensas são carregadas."
       />
     );
   }
@@ -137,7 +137,7 @@ export default function ExtrasList({
       <div className={styles.tableWrap}>
         <table className={styles.table}>
           <caption className={styles.srOnly}>
-            Lista de Extras do utente selecionado
+            Lista de vendas suspensas do utente selecionado
           </caption>
 
           <thead>
