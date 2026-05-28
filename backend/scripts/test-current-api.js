@@ -1,4 +1,61 @@
-const BASE_URL = process.env.API_BASE || "http://localhost:3001/api";
+// backend/scripts/test-current-api.js
+//
+// Teste manual E2E da API atual.
+//
+// Uso:
+//   npm run test:api
+//
+// Variáveis opcionais:
+//   API_BASE=http://localhost:3001/api
+//   API_BASE_URL=http://localhost:3001/api
+//
+//   SEED_ADMIN_EMAIL=admin@sistema.local
+//   SEED_ADMIN_PASSWORD=Admin123!
+//   SEED_SANTACASA_EMAIL=santacasa@sistema.local
+//   SEED_SANTACASA_PASSWORD=SantaCasa123!
+//   SEED_FARMACIA_EMAIL=farmacia@sistema.local
+//   SEED_FARMACIA_PASSWORD=Farmacia123!
+//
+// Segurança:
+//   Este script cria dados reais na base usada pelo backend.
+//   Não correr contra produção.
+
+const BASE_URL =
+  process.env.API_BASE ||
+  process.env.API_BASE_URL ||
+  "http://localhost:3001/api";
+
+const ADMIN_USER = {
+  role: "ADMIN",
+  email: process.env.SEED_ADMIN_EMAIL || "admin@sistema.local",
+  password: process.env.SEED_ADMIN_PASSWORD || "Admin123!",
+};
+
+const SANTACASA_USER = {
+  role: "SANTACASA",
+  email: process.env.SEED_SANTACASA_EMAIL || "santacasa@sistema.local",
+  password: process.env.SEED_SANTACASA_PASSWORD || "SantaCasa123!",
+};
+
+const FARMACIA_USER = {
+  role: "FARMACIA",
+  email: process.env.SEED_FARMACIA_EMAIL || "farmacia@sistema.local",
+  password: process.env.SEED_FARMACIA_PASSWORD || "Farmacia123!",
+};
+
+function assertSafeRuntime() {
+  const isProduction = process.env.NODE_ENV === "production";
+  const allowProduction =
+    String(process.env.ALLOW_TEST_SCRIPTS_IN_PRODUCTION || "")
+      .trim()
+      .toLowerCase() === "true";
+
+  if (isProduction && !allowProduction) {
+    fail(
+      "Script bloqueado: NODE_ENV=production. Define ALLOW_TEST_SCRIPTS_IN_PRODUCTION=true se tiveres mesmo a certeza.",
+    );
+  }
+}
 
 function logStep(message) {
   console.log(`\n▶ ${message}`);
@@ -10,7 +67,11 @@ function logOk(message) {
 
 function fail(message, details) {
   console.error(`❌ ${message}`);
-  if (details) console.error(details);
+
+  if (details) {
+    console.error(details);
+  }
+
   process.exit(1);
 }
 
@@ -20,21 +81,56 @@ function assert(condition, message, details) {
   }
 }
 
+function getHeader(headers, name) {
+  if (!headers) return null;
+
+  if (typeof headers.get === "function") {
+    return headers.get(name);
+  }
+
+  return null;
+}
+
+function getSetCookies(headers) {
+  if (!headers) return [];
+
+  if (typeof headers.getSetCookie === "function") {
+    return headers.getSetCookie();
+  }
+
+  const setCookie = getHeader(headers, "set-cookie");
+
+  return setCookie ? [setCookie] : [];
+}
+
+function extractCookieHeader(headers) {
+  const setCookies = getSetCookies(headers);
+
+  return setCookies
+    .flatMap((value) => String(value).split(/,(?=\s*[^;,=\s]+=[^;,]+)/g))
+    .map((cookie) => cookie.split(";")[0].trim())
+    .filter(Boolean)
+    .join("; ");
+}
+
 async function request(method, path, options = {}) {
   const url = `${BASE_URL}${path}`;
+  const hasBody = options.body !== undefined;
 
   const response = await fetch(url, {
     method,
     headers: {
-      ...(options.body ? { "Content-Type": "application/json" } : {}),
+      ...(hasBody ? { "Content-Type": "application/json" } : {}),
+      ...(options.cookie ? { Cookie: options.cookie } : {}),
       ...(options.headers || {}),
     },
-    body: options.body ? JSON.stringify(options.body) : undefined,
+    body: hasBody ? JSON.stringify(options.body) : undefined,
   });
 
   const text = await response.text();
 
   let body = null;
+
   if (text) {
     try {
       body = JSON.parse(text);
@@ -47,6 +143,9 @@ async function request(method, path, options = {}) {
 
   return {
     status: response.status,
+    ok: response.ok,
+    headers: response.headers,
+    cookie: extractCookieHeader(response.headers),
     body,
   };
 }
@@ -57,10 +156,57 @@ async function expectStatus(method, path, expectedStatus, options = {}) {
   assert(
     result.status === expectedStatus,
     `Esperava HTTP ${expectedStatus}, recebeu HTTP ${result.status}`,
-    result.body,
+    {
+      path,
+      body: result.body,
+    },
   );
 
   return result.body;
+}
+
+async function login(user) {
+  const result = await request("POST", "/auth/login", {
+    body: {
+      email: user.email,
+      password: user.password,
+    },
+  });
+
+  assert(
+    result.status === 200,
+    `Login ${user.role} devia devolver 200`,
+    result.body,
+  );
+
+  assert(
+    result.cookie,
+    `Login ${user.role} não devolveu cookie de sessão`,
+    {
+      headersSetCookie: getSetCookies(result.headers),
+      body: result.body,
+    },
+  );
+
+  assert(
+    result.body?.user?.role === user.role,
+    `Login ${user.role} devolveu role inesperada`,
+    result.body,
+  );
+
+  logOk(`Login ${user.role}`);
+
+  return result.cookie;
+}
+
+async function logout(cookie, label) {
+  const result = await request("POST", "/auth/logout", {
+    cookie,
+  });
+
+  assert(result.status === 200, `Logout ${label} devia devolver 200`, result.body);
+
+  logOk(`Logout ${label}`);
 }
 
 function makeNumero19(seed) {
@@ -74,6 +220,14 @@ function findLinhaByMedicamento(receita, medicamento) {
 }
 
 async function main() {
+  assertSafeRuntime();
+
+  console.log("[test-current-api] Base URL:", BASE_URL);
+
+  const adminCookie = await login(ADMIN_USER);
+  const santacasaCookie = await login(SANTACASA_USER);
+  const farmaciaCookie = await login(FARMACIA_USER);
+
   const timestamp = Date.now();
 
   const numero9 = String(Math.floor(100000000 + Math.random() * 900000000));
@@ -90,31 +244,55 @@ async function main() {
   let pedidoId = null;
   let regularizacaoId = null;
 
-  logStep("Health checks");
+  logStep("Health checks autenticados");
 
-  const health = await expectStatus("GET", "/health", 200);
+  const health = await expectStatus("GET", "/health", 200, {
+    cookie: adminCookie,
+  });
+
   assert(health.status === "ok", "Health geral inválido", health);
-  logOk("GET /api/health");
+  logOk("GET /api/health com ADMIN");
 
-  const santacasaHealth = await expectStatus("GET", "/santacasa/health", 200);
+  const santacasaHealth = await expectStatus("GET", "/santacasa/health", 200, {
+    cookie: santacasaCookie,
+  });
+
   assert(
     santacasaHealth.status === "ok",
     "Health Santa Casa inválido",
     santacasaHealth,
   );
-  logOk("GET /api/santacasa/health");
 
-  const farmaciaHealth = await expectStatus("GET", "/farmacia/health", 200);
+  logOk("GET /api/santacasa/health com SANTACASA");
+
+  const farmaciaHealth = await expectStatus("GET", "/farmacia/health", 200, {
+    cookie: farmaciaCookie,
+  });
+
   assert(
     farmaciaHealth.status === "ok",
     "Health Farmácia inválido",
     farmaciaHealth,
   );
-  logOk("GET /api/farmacia/health");
+
+  logOk("GET /api/farmacia/health com FARMACIA");
+
+  logStep("Bloqueios de autorização");
+
+  await expectStatus("GET", "/farmacia/health", 403, {
+    cookie: santacasaCookie,
+  });
+
+  await expectStatus("GET", "/santacasa/health", 403, {
+    cookie: farmaciaCookie,
+  });
+
+  logOk("Roles erradas bloqueadas");
 
   logStep("Criar utente");
 
   const createdUtente = await expectStatus("POST", "/santacasa/utentes", 201, {
+    cookie: santacasaCookie,
     body: { numero9, nome },
   });
 
@@ -128,13 +306,14 @@ async function main() {
 
   logOk(`Utente criado: ${utenteId}`);
 
-  logStep("Criar medicamento sem receita");
+  logStep("Criar medicamento não sujeito a receita médica");
 
   const createdSemReceita = await expectStatus(
     "POST",
     `/santacasa/utentes/${utenteId}/sem-receita`,
     201,
     {
+      cookie: santacasaCookie,
       body: {
         medicamento: "Ben-u-ron",
         quantidade: 2,
@@ -144,8 +323,13 @@ async function main() {
 
   semReceitaId = createdSemReceita?.data?.id;
 
-  assert(semReceitaId, "Sem Receita não devolveu data.id", createdSemReceita);
-  logOk(`Sem Receita criado: ${semReceitaId}`);
+  assert(
+    semReceitaId,
+    "Medicamento não sujeito a receita médica não devolveu data.id",
+    createdSemReceita,
+  );
+
+  logOk(`Medicamento não sujeito a receita médica criado: ${semReceitaId}`);
 
   logStep("Criar receita com linhas");
 
@@ -154,6 +338,7 @@ async function main() {
     `/santacasa/utentes/${utenteId}/receitas`,
     201,
     {
+      cookie: santacasaCookie,
       body: {
         numero19,
         pinAcesso6: "123456",
@@ -201,13 +386,14 @@ async function main() {
 
   logOk(`Receita criada. Linha teste: ${linhaReceitaId}`);
 
-  logStep("Criar Extra");
+  logStep("Criar Venda Suspensa");
 
   const createdExtra = await expectStatus(
     "POST",
     `/santacasa/utentes/${utenteId}/extras`,
     201,
     {
+      cookie: santacasaCookie,
       body: {
         medicamento: "Medicamento Extra Teste",
         quantidadeSolicitada: 3,
@@ -217,12 +403,13 @@ async function main() {
 
   extraId = createdExtra?.data?.id;
 
-  assert(extraId, "Extra não devolveu data.id", createdExtra);
-  logOk(`Extra criado: ${extraId}`);
+  assert(extraId, "Venda Suspensa não devolveu data.id", createdExtra);
+  logOk(`Venda Suspensa criada: ${extraId}`);
 
-  logStep("Criar pedido com receita, sem receita e extra");
+  logStep("Criar pedido com receita, medicamento não sujeito a receita médica e venda suspensa");
 
   const createdPedido = await expectStatus("POST", "/santacasa/pedidos", 201, {
+    cookie: santacasaCookie,
     body: {
       items: [
         {
@@ -250,11 +437,13 @@ async function main() {
   pedidoId = createdPedido?.data?.id;
 
   assert(pedidoId, "Pedido não devolveu data.id", createdPedido);
+
   assert(
     createdPedido.data.status === "PENDENTE",
     "Pedido devia estar PENDENTE",
     createdPedido,
   );
+
   assert(
     createdPedido.data.itens.length === 3,
     "Pedido devia ter 3 itens",
@@ -265,7 +454,9 @@ async function main() {
 
   logStep("Listar pedidos pendentes na Farmácia");
 
-  const pedidosPendentes = await expectStatus("GET", "/farmacia/pedidos", 200);
+  const pedidosPendentes = await expectStatus("GET", "/farmacia/pedidos", 200, {
+    cookie: farmaciaCookie,
+  });
 
   assert(
     pedidosPendentes.data.some((pedido) => pedido.id === pedidoId),
@@ -281,6 +472,9 @@ async function main() {
     "POST",
     `/farmacia/pedidos/${pedidoId}/validar`,
     200,
+    {
+      cookie: farmaciaCookie,
+    },
   );
 
   assert(
@@ -297,12 +491,15 @@ async function main() {
 
   logOk("Pedido validado com sucesso");
 
-  logStep("Confirmar regularização pendente criada pelo Extra");
+  logStep("Confirmar regularização pendente criada pela Venda Suspensa");
 
   const pendentesAntes = await expectStatus(
     "GET",
     `/farmacia/regularizacoes/pendentes?utenteId=${utenteId}`,
     200,
+    {
+      cookie: farmaciaCookie,
+    },
   );
 
   const regPendente = pendentesAntes.data.find(
@@ -311,7 +508,7 @@ async function main() {
 
   assert(
     regPendente,
-    "Regularização pendente do Extra não apareceu",
+    "Regularização pendente da Venda Suspensa não apareceu",
     pendentesAntes,
   );
 
@@ -325,17 +522,19 @@ async function main() {
 
   logOk(`Regularização pendente criada: ${regularizacaoId}`);
 
-  logStep("Criar nova receita compatível para auto-regularizar Extra");
+  logStep("Criar nova receita compatível para auto-regularizar Venda Suspensa");
 
   const receitaRegularizacao = await expectStatus(
     "POST",
     `/santacasa/utentes/${utenteId}/receitas`,
     201,
     {
+      cookie: santacasaCookie,
       body: {
         numero19: numero19Regularizacao,
         pinAcesso6: "654321",
         pinOpcao4: "4321",
+        confirmRegularizacao: true,
         linhas: [
           {
             medicamento: "Medicamento Extra Teste",
@@ -367,7 +566,7 @@ async function main() {
     receitaRegularizacao,
   );
 
-  logOk("Nova receita regularizou automaticamente o Extra");
+  logOk("Nova receita regularizou automaticamente a Venda Suspensa");
 
   logStep("Confirmar que regularização saiu dos pendentes");
 
@@ -375,6 +574,9 @@ async function main() {
     "GET",
     `/farmacia/regularizacoes/pendentes?utenteId=${utenteId}`,
     200,
+    {
+      cookie: farmaciaCookie,
+    },
   );
 
   assert(
@@ -391,6 +593,9 @@ async function main() {
     "GET",
     `/farmacia/regularizacoes/historico?utenteId=${utenteId}`,
     200,
+    {
+      cookie: farmaciaCookie,
+    },
   );
 
   const regHistorico = historicoRegularizacoes.data.find(
@@ -429,6 +634,9 @@ async function main() {
     "GET",
     "/farmacia/regularizacoes/sinal",
     200,
+    {
+      cookie: farmaciaCookie,
+    },
   );
 
   assert(
@@ -451,6 +659,9 @@ async function main() {
     "GET",
     `/santacasa/utentes/${utenteId}/receitas`,
     200,
+    {
+      cookie: santacasaCookie,
+    },
   );
 
   const linhaAfterValidation = receitasAfterValidation.data.find(
@@ -477,12 +688,15 @@ async function main() {
 
   logOk("Receita original foi debitada corretamente");
 
-  logStep("Confirmar efeitos em Sem Receita");
+  logStep("Confirmar efeitos em medicamento não sujeito a receita médica");
 
   const semReceitaAfterValidation = await expectStatus(
     "GET",
     `/santacasa/utentes/${utenteId}/sem-receita`,
     200,
+    {
+      cookie: santacasaCookie,
+    },
   );
 
   const semReceitaAfter = semReceitaAfterValidation.data.find(
@@ -491,24 +705,27 @@ async function main() {
 
   assert(
     semReceitaAfter,
-    "Sem Receita devia continuar com saldo restante",
+    "Medicamento não sujeito a receita médica devia continuar com saldo restante",
     semReceitaAfterValidation,
   );
 
   assert(
     semReceitaAfter.quantidadeRestante === 1,
-    "Sem Receita devia ter quantidadeRestante 1",
+    "Medicamento não sujeito a receita médica devia ter quantidadeRestante 1",
     semReceitaAfter,
   );
 
-  logOk("Sem Receita foi debitado corretamente");
+  logOk("Medicamento não sujeito a receita médica foi debitado corretamente");
 
-  logStep("Confirmar efeitos em Extra");
+  logStep("Confirmar efeitos em Venda Suspensa");
 
   const extrasAfterValidation = await expectStatus(
     "GET",
     `/santacasa/utentes/${utenteId}/extras`,
     200,
+    {
+      cookie: santacasaCookie,
+    },
   );
 
   const extraAfter = extrasAfterValidation.data.find(
@@ -516,24 +733,21 @@ async function main() {
   );
 
   assert(
-    extraAfter,
-    "Extra devia continuar com saldo restante",
+    !extraAfter,
+    "Venda Suspensa regularizada/cancelada não devia continuar na listagem de vendas suspensas com saldo restante",
     extrasAfterValidation,
   );
 
-  assert(
-    extraAfter.quantidadeRestante === 2,
-    "Extra devia ter quantidadeRestante 2",
-    extraAfter,
-  );
-
-  logOk("Extra mantém saldo restante correto");
+  logOk("Venda Suspensa deixou de aparecer por não ter saldo restante");
 
   logStep("Bloquear remoção de linha já associada a pedido/dispensa");
 
   const deleteLinhaWithHistory = await request(
     "DELETE",
     `/santacasa/utentes/${utenteId}/receitas/linhas/${linhaReceitaId}`,
+    {
+      cookie: santacasaCookie,
+    },
   );
 
   assert(
@@ -544,46 +758,55 @@ async function main() {
 
   logOk("Remoção de linha com histórico bloqueada");
 
-  logStep("Bloquear remoção de sem-receita associado a pedido");
+  logStep("Bloquear remoção de medicamento não sujeito a receita médica associado a pedido");
 
   const deleteSemReceitaWithHistory = await request(
     "DELETE",
     `/santacasa/utentes/${utenteId}/sem-receita/${semReceitaId}`,
+    {
+      cookie: santacasaCookie,
+    },
   );
 
   assert(
     deleteSemReceitaWithHistory.status === 409,
-    "Remover sem-receita associado a pedido devia devolver 409",
+    "Remover medicamento não sujeito a receita médica associado a pedido devia devolver 409",
     deleteSemReceitaWithHistory.body,
   );
 
-  logOk("Remoção de sem-receita com histórico bloqueada");
+  logOk("Remoção de medicamento não sujeito a receita médica com histórico bloqueada");
 
-  logStep("Bloquear remoção de Extra associado a pedido");
+  logStep("Bloquear remoção de Venda Suspensa associada a pedido");
 
   const deleteExtraWithHistory = await request(
     "DELETE",
     `/santacasa/utentes/${utenteId}/extras/${extraId}`,
+    {
+      cookie: santacasaCookie,
+    },
   );
 
   assert(
     deleteExtraWithHistory.status === 409,
-    "Remover Extra associado a pedido devia devolver 409",
+    "Remover Venda Suspensa associada a pedido devia devolver 409",
     deleteExtraWithHistory.body,
   );
 
-  logOk("Remoção de Extra com histórico bloqueada");
+  logOk("Remoção de Venda Suspensa com histórico bloqueada");
 
-  logStep("Bloquear remoção de utente com Extra em aberto");
+  logStep("Bloquear remoção de utente com Venda Suspensa em aberto");
 
   const deleteUtenteWithOpenExtra = await request(
     "DELETE",
     `/santacasa/utentes/${utenteId}`,
+    {
+      cookie: santacasaCookie,
+    },
   );
 
   assert(
     deleteUtenteWithOpenExtra.status === 409,
-    "Remover utente com Extra em aberto devia devolver 409",
+    "Remover utente com Venda Suspensa em aberto devia devolver 409",
     deleteUtenteWithOpenExtra.body,
   );
 
@@ -592,6 +815,7 @@ async function main() {
   logStep("Criar pedido simples para rejeição");
 
   const pedidoRejeicao = await expectStatus("POST", "/santacasa/pedidos", 201, {
+    cookie: santacasaCookie,
     body: {
       items: [
         {
@@ -621,6 +845,7 @@ async function main() {
     `/farmacia/pedidos/${pedidoRejeicaoId}/rejeitar`,
     200,
     {
+      cookie: farmaciaCookie,
       body: {
         motivo: "Teste automático de rejeição",
       },
@@ -647,6 +872,9 @@ async function main() {
     "GET",
     `/santacasa/pedidos/historico?search=${encodeURIComponent(nome)}`,
     200,
+    {
+      cookie: santacasaCookie,
+    },
   );
 
   assert(
@@ -675,6 +903,9 @@ async function main() {
     "GET",
     `/santacasa/pedidos/historico?status=VALIDADO&search=${encodeURIComponent(nome)}`,
     200,
+    {
+      cookie: santacasaCookie,
+    },
   );
 
   assert(
@@ -697,6 +928,9 @@ async function main() {
     "GET",
     `/santacasa/pedidos/historico?status=REJEITADO&search=${encodeURIComponent(nome)}`,
     200,
+    {
+      cookie: santacasaCookie,
+    },
   );
 
   assert(
@@ -713,6 +947,9 @@ async function main() {
     "GET",
     "/farmacia/dashboard/sinais",
     200,
+    {
+      cookie: farmaciaCookie,
+    },
   );
 
   assert(
@@ -734,6 +971,10 @@ async function main() {
   );
 
   logOk("Dashboard da Farmácia devolve sinais corretos");
+
+  await logout(adminCookie, "ADMIN");
+  await logout(santacasaCookie, "SANTACASA");
+  await logout(farmaciaCookie, "FARMACIA");
 
   console.log("\n✅ TODOS OS TESTES PASSARAM");
   console.log("\nResumo:");

@@ -1,6 +1,30 @@
 // backend/scripts/test-higiene-job.js
+//
+// Teste manual do job de higiene.
+//
+// Uso:
+//   npm run test:higiene
+//
+// Segurança:
+//   Este script cria dados reais e executa o job real sobre a base definida em DATABASE_URL.
+//   Não correr contra produção.
+
 const { prisma, disconnectPrisma } = require("../src/db/prisma");
 const { runOnce, preview, HIGIENE_MARKER } = require("../src/jobs/higiene.job");
+
+function assertSafeRuntime() {
+  const isProduction = process.env.NODE_ENV === "production";
+  const allowProduction =
+    String(process.env.ALLOW_TEST_SCRIPTS_IN_PRODUCTION || "")
+      .trim()
+      .toLowerCase() === "true";
+
+  if (isProduction && !allowProduction) {
+    fail(
+      "Script bloqueado: NODE_ENV=production. Define ALLOW_TEST_SCRIPTS_IN_PRODUCTION=true se tiveres mesmo a certeza.",
+    );
+  }
+}
 
 function logStep(message) {
   console.log(`\n▶ ${message}`);
@@ -12,7 +36,11 @@ function logOk(message) {
 
 function fail(message, details) {
   console.error(`❌ ${message}`);
-  if (details) console.error(details);
+
+  if (details) {
+    console.error(details);
+  }
+
   process.exitCode = 1;
 }
 
@@ -50,6 +78,8 @@ async function createDeletedOldUtente() {
 }
 
 async function main() {
+  assertSafeRuntime();
+
   let utente = null;
 
   try {
@@ -125,7 +155,7 @@ async function main() {
 
     logOk("Utente marcado como arquivado por higiene");
 
-    logStep("Confirmar idempotência");
+    logStep("Confirmar idempotência para o utente criado");
 
     const secondRun = await runOnce({
       offsetMonths: 1,

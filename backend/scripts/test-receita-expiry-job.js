@@ -1,6 +1,30 @@
 // backend/scripts/test-receita-expiry-job.js
+//
+// Teste manual do job receitaExpiry.
+//
+// Uso:
+//   npm run test:receita-expiry
+//
+// Segurança:
+//   Este script cria dados reais e executa o job real sobre a base definida em DATABASE_URL.
+//   Não correr contra produção.
+
 const { prisma, disconnectPrisma } = require("../src/db/prisma");
-const { runOnce } = require("../src/jobs/receitaExpiry.job");
+const { runOnce, preview } = require("../src/jobs/receitaExpiry.job");
+
+function assertSafeRuntime() {
+  const isProduction = process.env.NODE_ENV === "production";
+  const allowProduction =
+    String(process.env.ALLOW_TEST_SCRIPTS_IN_PRODUCTION || "")
+      .trim()
+      .toLowerCase() === "true";
+
+  if (isProduction && !allowProduction) {
+    fail(
+      "Script bloqueado: NODE_ENV=production. Define ALLOW_TEST_SCRIPTS_IN_PRODUCTION=true se tiveres mesmo a certeza.",
+    );
+  }
+}
 
 function logStep(message) {
   console.log(`\n▶ ${message}`);
@@ -12,7 +36,11 @@ function logOk(message) {
 
 function fail(message, details) {
   console.error(`❌ ${message}`);
-  if (details) console.error(details);
+
+  if (details) {
+    console.error(details);
+  }
+
   process.exitCode = 1;
 }
 
@@ -103,6 +131,8 @@ async function createExpiredScenario() {
 }
 
 async function main() {
+  assertSafeRuntime();
+
   let scenario = null;
 
   try {
@@ -115,6 +145,18 @@ async function main() {
     assert(scenario.pedidoId, "Pedido de teste não foi criado", scenario);
 
     logOk("Cenário criado");
+
+    logStep("Preview do receitaExpiry job");
+
+    const before = await preview();
+
+    assert(
+      before.expiredLines >= 1,
+      "Preview devia encontrar pelo menos 1 linha expirada",
+      before,
+    );
+
+    logOk("Preview encontrou linha expirada");
 
     logStep("Executar receitaExpiry job");
 
@@ -134,7 +176,7 @@ async function main() {
 
     assert(
       result.canceledPedidos >= 1,
-      "Job devia cancelar pelo menos 1 pedido totalmente expirado",
+      "Job devia cancelar pelo menos 1 pedido afetado",
       result,
     );
 
@@ -204,6 +246,7 @@ async function main() {
     console.log("\nResumo:");
     console.log({
       ...scenario,
+      preview: before,
       result,
     });
   } catch (error) {

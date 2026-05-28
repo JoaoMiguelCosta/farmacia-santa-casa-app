@@ -1,6 +1,30 @@
 // backend/scripts/test-purge-history-job.js
+//
+// Teste manual do job purgeHistory.
+//
+// Uso:
+//   npm run test:purge-history
+//
+// Segurança:
+//   Este script cria dados reais e executa purge real.
+//   Não correr contra produção.
+
 const { prisma, disconnectPrisma } = require("../src/db/prisma");
 const { preview, runOnce } = require("../src/jobs/purgeHistory.job");
+
+function assertSafeRuntime() {
+  const isProduction = process.env.NODE_ENV === "production";
+  const allowProduction =
+    String(process.env.ALLOW_TEST_SCRIPTS_IN_PRODUCTION || "")
+      .trim()
+      .toLowerCase() === "true";
+
+  if (isProduction && !allowProduction) {
+    fail(
+      "Script bloqueado: NODE_ENV=production. Define ALLOW_TEST_SCRIPTS_IN_PRODUCTION=true se tiveres mesmo a certeza.",
+    );
+  }
+}
 
 function logStep(message) {
   console.log(`\n▶ ${message}`);
@@ -12,7 +36,11 @@ function logOk(message) {
 
 function fail(message, details) {
   console.error(`❌ ${message}`);
-  if (details) console.error(details);
+
+  if (details) {
+    console.error(details);
+  }
+
   process.exitCode = 1;
 }
 
@@ -201,6 +229,8 @@ async function createOldRegularizacaoScenario() {
 }
 
 async function main() {
+  assertSafeRuntime();
+
   let pedidoScenario = null;
   let regularizacaoScenario = null;
 
@@ -361,7 +391,7 @@ async function main() {
     });
 
     assert(
-      secondRun.pedidos >= 0,
+      Number(secondRun.pedidos) >= 0,
       "Segunda execução não deve falhar",
       secondRun,
     );
