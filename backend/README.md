@@ -1,6 +1,6 @@
 # Backend — Farmácia Santa Casa
 
-Backend da aplicação **Farmácia Santa Casa**, responsável pela gestão de utentes, receitas, medicamentos não sujeitos a receita médica, Vendas Suspensas, pedidos, validações da Farmácia, regularizações e jobs de manutenção.
+Backend da aplicação **Farmácia Santa Casa**, responsável pela gestão de utentes, receitas, medicamentos não sujeitos a receita médica, Vendas Suspensas, pedidos, validações da Farmácia, regularizações, autenticação, permissões e jobs de manutenção.
 
 Este backend foi construído com **Node.js**, **Express**, **Prisma** e **PostgreSQL**.
 
@@ -9,33 +9,62 @@ Este backend foi construído com **Node.js**, **Express**, **Prisma** e **Postgr
 ## 1. Índice
 
 - [1. Índice](#1-índice)
-- [2. Objetivo do backend](#2-objetivo-do-backend)
-- [3. Stack técnica](#3-stack-técnica)
-- [4. Estrutura principal](#4-estrutura-principal)
-- [5. Documentação complementar](#5-documentação-complementar)
-- [6. Instalação local](#6-instalação-local)
-- [7. Variáveis de ambiente](#7-variáveis-de-ambiente)
-- [8. Base de dados e Prisma](#8-base-de-dados-e-prisma)
-- [9. Seed inicial](#9-seed-inicial)
-- [10. Scripts NPM](#10-scripts-npm)
-- [11. Como arrancar o backend](#11-como-arrancar-o-backend)
-- [12. Autenticação e autorização](#12-autenticação-e-autorização)
-- [13. Contextos principais da API](#13-contextos-principais-da-api)
-- [14. Modelo funcional resumido](#14-modelo-funcional-resumido)
-- [15. Fluxo principal da aplicação](#15-fluxo-principal-da-aplicação)
-- [16. Jobs de manutenção](#16-jobs-de-manutenção)
-- [17. Testes manuais atuais](#17-testes-manuais-atuais)
-- [18. Testes automatizados futuros](#18-testes-automatizados-futuros)
-- [19. Segurança](#19-segurança)
-- [20. Convenções de desenvolvimento](#20-convenções-de-desenvolvimento)
-- [21. Troubleshooting](#21-troubleshooting)
-- [22. Checklist antes de commit](#22-checklist-antes-de-commit)
-- [23. Checklist antes de deploy](#23-checklist-antes-de-deploy)
-- [24. Próximos passos recomendados](#24-próximos-passos-recomendados)
+- [2. Estado atual](#2-estado-atual)
+- [3. Objetivo do backend](#3-objetivo-do-backend)
+- [4. Stack técnica](#4-stack-técnica)
+- [5. Estrutura principal](#5-estrutura-principal)
+- [6. Documentação complementar](#6-documentação-complementar)
+- [7. Instalação local](#7-instalação-local)
+- [8. Variáveis de ambiente](#8-variáveis-de-ambiente)
+- [9. Base de dados e Prisma](#9-base-de-dados-e-prisma)
+- [10. Seed inicial](#10-seed-inicial)
+- [11. Scripts NPM](#11-scripts-npm)
+- [12. Como arrancar o backend](#12-como-arrancar-o-backend)
+- [13. Autenticação e autorização](#13-autenticação-e-autorização)
+- [14. Contextos principais da API](#14-contextos-principais-da-api)
+- [15. Modelo funcional resumido](#15-modelo-funcional-resumido)
+- [16. Fluxo principal da aplicação](#16-fluxo-principal-da-aplicação)
+- [17. Jobs de manutenção](#17-jobs-de-manutenção)
+- [18. Testes](#18-testes)
+- [19. Scripts manuais](#19-scripts-manuais)
+- [20. Segurança](#20-segurança)
+- [21. Convenções de desenvolvimento](#21-convenções-de-desenvolvimento)
+- [22. Troubleshooting](#22-troubleshooting)
+- [23. Checklist antes de commit](#23-checklist-antes-de-commit)
+- [24. Checklist antes de deploy](#24-checklist-antes-de-deploy)
+- [25. Limites atuais](#25-limites-atuais)
+- [26. Próximos passos recomendados](#26-próximos-passos-recomendados)
 
 ---
 
-## 2. Objetivo do backend
+## 2. Estado atual
+
+Estado validado nesta fase:
+
+- documentação técnica e funcional criada;
+- `.env.example` criado;
+- scripts manuais mantidos;
+- Vitest e Supertest instalados;
+- testes unitários criados;
+- testes de integração criados;
+- testes E2E criados;
+- scripts manuais principais validados;
+- `npm audit` sem vulnerabilidades conhecidas no momento da validação.
+
+Comandos validados:
+
+```bash
+npm run test:unit -- --run
+npm run test:integration -- --run
+npm run test:e2e -- --run
+npm audit
+```
+
+Os testes atuais **não representam cobertura de 100%** do backend. Representam uma base sólida de validação inicial para continuar o projeto com mais segurança.
+
+---
+
+## 3. Objetivo do backend
 
 Este backend gere a comunicação entre dois contextos funcionais principais:
 
@@ -45,7 +74,8 @@ Este backend gere a comunicação entre dois contextos funcionais principais:
   - regista medicamentos não sujeitos a receita médica;
   - regista Vendas Suspensas;
   - cria pedidos para a Farmácia;
-  - consulta histórico e regularizações.
+  - consulta histórico e regularizações;
+  - acompanha sinais/dashboard operacional.
 
 - **Farmácia**
   - consulta pedidos pendentes;
@@ -63,7 +93,7 @@ Também existe um contexto **Admin**, responsável por:
 
 ---
 
-## 3. Stack técnica
+## 4. Stack técnica
 
 | Área | Tecnologia |
 |---|---|
@@ -76,10 +106,11 @@ Também existe um contexto **Admin**, responsável por:
 | Jobs | node-cron |
 | Configuração | dotenv |
 | Desenvolvimento | nodemon |
+| Testes | Vitest + Supertest |
 
 ---
 
-## 4. Estrutura principal
+## 5. Estrutura principal
 
 Estrutura simplificada do backend:
 
@@ -112,22 +143,32 @@ backend/
 │   ├── modules/
 │   ├── routes/
 │   └── shared/
+├── tests/
+│   ├── e2e/
+│   ├── fixtures/
+│   ├── helpers/
+│   ├── integration/
+│   └── unit/
+├── docs/
 ├── .env
 ├── .env.example
-└── package.json
+├── package.json
+├── package-lock.json
+├── vitest.config.mjs
+└── README.md
 ```
 
 ---
 
-## 5. Documentação complementar
+## 6. Documentação complementar
 
-A documentação técnica e funcional deve ficar em:
+A documentação técnica e funcional fica em:
 
 ```txt
 backend/docs/
 ```
 
-Ficheiros recomendados:
+Ficheiros principais:
 
 ```txt
 docs/
@@ -139,8 +180,6 @@ docs/
 └── TESTING.md
 ```
 
-### Função de cada documento
-
 | Documento | Objetivo |
 |---|---|
 | `BUSINESS_RULES.md` | Regras funcionais do domínio |
@@ -148,27 +187,27 @@ docs/
 | `API_ROUTES.md` | Endpoints, payloads e permissões |
 | `ENVIRONMENT.md` | Variáveis de ambiente e configuração |
 | `MAINTENANCE_JOBS.md` | Jobs automáticos e manuais |
-| `TESTING.md` | Estratégia de testes |
+| `TESTING.md` | Estratégia e estado atual dos testes |
 
-O `README.md` deve ser a porta de entrada. Os detalhes profundos devem ficar nos ficheiros acima.
+O `README.md` é a porta de entrada. Os detalhes profundos devem ficar nos ficheiros acima.
 
 ---
 
-## 6. Instalação local
+## 7. Instalação local
 
-### 6.1 Entrar na pasta do backend
+### 7.1 Entrar na pasta do backend
 
 ```bash
 cd backend
 ```
 
-### 6.2 Instalar dependências
+### 7.2 Instalar dependências
 
 ```bash
 npm install
 ```
 
-### 6.3 Criar `.env`
+### 7.3 Criar `.env`
 
 Copiar o exemplo:
 
@@ -184,25 +223,25 @@ Copy-Item .env.example .env
 
 Depois editar `.env` com os valores reais locais.
 
-### 6.4 Gerar Prisma Client
+### 7.4 Gerar Prisma Client
 
 ```bash
 npx prisma generate
 ```
 
-### 6.5 Aplicar migrations
+### 7.5 Aplicar migrations
 
 ```bash
 npx prisma migrate dev
 ```
 
-### 6.6 Criar utilizadores iniciais
+### 7.6 Criar utilizadores iniciais
 
 ```bash
 npx prisma db seed
 ```
 
-### 6.7 Arrancar servidor
+### 7.7 Arrancar servidor
 
 ```bash
 npm run dev
@@ -210,7 +249,7 @@ npm run dev
 
 ---
 
-## 7. Variáveis de ambiente
+## 8. Variáveis de ambiente
 
 O backend usa `dotenv` e carrega variáveis a partir de:
 
@@ -224,6 +263,8 @@ Existe um ficheiro seguro de referência:
 .env.example
 ```
 
+O `.env` real nunca deve ser versionado.
+
 ### Variáveis principais
 
 | Variável | Obrigatória | Descrição |
@@ -232,9 +273,12 @@ Existe um ficheiro seguro de referência:
 | `NODE_ENV` | Sim | Ambiente atual |
 | `PORT` | Sim | Porta do servidor |
 | `TZ` | Sim | Timezone dos jobs |
+| `JSON_LIMIT` | Sim | Limite de payload JSON |
 | `ALLOWED_ORIGINS` | Sim | Origins permitidas para CORS |
 | `AUTH_JWT_SECRET` | Sim | Segredo para assinar JWT |
 | `AUTH_COOKIE_NAME` | Sim | Nome do cookie de sessão |
+| `AUTH_TOKEN_EXPIRES_IN` | Sim | Duração do token |
+| `AUTH_COOKIE_MAX_AGE_MS` | Sim | Duração do cookie em milissegundos |
 | `AUTH_COOKIE_SECURE` | Sim | Define se o cookie exige HTTPS |
 | `AUTH_COOKIE_SAME_SITE` | Sim | Política SameSite do cookie |
 
@@ -261,7 +305,7 @@ Se `AUTH_COOKIE_SAME_SITE=none`, então `AUTH_COOKIE_SECURE` também tem de ser 
 
 ---
 
-## 8. Base de dados e Prisma
+## 9. Base de dados e Prisma
 
 O backend usa Prisma com PostgreSQL.
 
@@ -293,7 +337,7 @@ npx prisma db seed
 
 ---
 
-## 9. Seed inicial
+## 10. Seed inicial
 
 O seed cria/atualiza três utilizadores:
 
@@ -315,30 +359,63 @@ Em desenvolvimento podem ser simples. Fora de desenvolvimento, devem ser trocada
 
 ---
 
-## 10. Scripts NPM
+## 11. Scripts NPM
 
-Scripts definidos no `package.json`:
+### Desenvolvimento
 
-```json
-{
-  "dev": "nodemon --watch src --watch prisma --ext js,json,prisma --exec node src/app/server.js",
-  "start": "node src/app/server.js",
-  "prisma:generate": "npx prisma generate",
-  "prisma:studio": "npx prisma studio",
-  "prisma:migrate": "npx prisma migrate dev",
-  "test:api": "node scripts/test-current-api.js",
-  "test:receita-expiry": "node scripts/test-receita-expiry-job.js",
-  "test:higiene": "node scripts/test-higiene-job.js",
-  "test:purge-history": "node scripts/test-purge-history-job.js",
-  "job:receita-expiry": "node -e "require('./src/jobs/receitaExpiry.job').runOnce().then(console.log).catch((e)=>{console.error(e);process.exit(1)})"",
-  "job:higiene": "node -e "require('./src/jobs/higiene.job').runOnce().then(console.log).catch((e)=>{console.error(e);process.exit(1)})"",
-  "job:purge-history": "node -e "require('./src/jobs/purgeHistory.job').runOnce().then(console.log).catch((e)=>{console.error(e);process.exit(1)})""
-}
+```bash
+npm run dev
+npm start
+```
+
+### Prisma
+
+```bash
+npm run prisma:generate
+npm run prisma:migrate
+npm run prisma:studio
+```
+
+### Testes automatizados
+
+```bash
+npm test
+npm run test:watch
+npm run test:unit
+npm run test:integration
+npm run test:e2e
+```
+
+Validação recomendada sem watch:
+
+```bash
+npm run test:unit -- --run
+npm run test:integration -- --run
+npm run test:e2e -- --run
+npm audit
+```
+
+### Scripts manuais
+
+```bash
+npm run test:api
+npm run test:receita-expiry
+npm run test:higiene
+npm run test:purge-history
+npm run test:manual
+```
+
+### Jobs diretos
+
+```bash
+npm run job:receita-expiry
+npm run job:higiene
+npm run job:purge-history
 ```
 
 ---
 
-## 11. Como arrancar o backend
+## 12. Como arrancar o backend
 
 ### Desenvolvimento
 
@@ -366,7 +443,7 @@ npm start
 
 ---
 
-## 12. Autenticação e autorização
+## 13. Autenticação e autorização
 
 A autenticação usa:
 
@@ -406,7 +483,7 @@ A API está organizada por contexto:
 
 ---
 
-## 13. Contextos principais da API
+## 14. Contextos principais da API
 
 ### Auth
 
@@ -464,7 +541,7 @@ Responsável por preview e execução manual de jobs.
 
 ---
 
-## 14. Modelo funcional resumido
+## 15. Modelo funcional resumido
 
 ### Utente
 
@@ -538,7 +615,7 @@ REGULARIZADO
 
 ---
 
-## 15. Fluxo principal da aplicação
+## 16. Fluxo principal da aplicação
 
 Fluxo funcional típico:
 
@@ -560,7 +637,7 @@ Fluxo funcional típico:
 
 ---
 
-## 16. Jobs de manutenção
+## 17. Jobs de manutenção
 
 Existem três jobs principais:
 
@@ -592,100 +669,107 @@ GET  /api/manutencao/jobs/purge-history/preview
 POST /api/manutencao/jobs/purge-history/run
 ```
 
----
-
-## 17. Testes manuais atuais
-
-Existem scripts manuais em:
-
-```txt
-scripts/
-```
-
-### Testar fluxo principal da API
-
-```bash
-npm run test:api
-```
-
-Este script valida:
-
-- login por role;
-- cookies;
-- permissões;
-- criação de utente;
-- criação de medicamento não sujeito a receita médica;
-- criação de receita;
-- criação de Venda Suspensa;
-- criação de pedido;
-- validação pela Farmácia;
-- regularização automática;
-- rejeição;
-- histórico;
-- dashboard.
-
-### Testar job de expiração de receitas
-
-```bash
-npm run test:receita-expiry
-```
-
-### Testar job de higiene
-
-```bash
-npm run test:higiene
-```
-
-### Testar job de limpeza de histórico
-
-```bash
-npm run test:purge-history
-```
-
-### Atenção
-
-Estes scripts criam dados reais e executam alterações reais na base configurada em `DATABASE_URL`.
-
-Não correr contra produção.
+Os endpoints `run` alteram dados reais.
 
 ---
 
-## 18. Testes automatizados futuros
+## 18. Testes
 
-A fase seguinte recomendada é adicionar testes com:
+### 18.1 Estado atual
 
-```bash
-npm install -D vitest supertest
-```
-
-Estrutura futura:
+Existem testes automatizados organizados em:
 
 ```txt
 tests/
-├── helpers/
-├── fixtures/
 ├── unit/
 ├── integration/
 └── e2e/
 ```
 
-### Ordem recomendada
+### 18.2 Unit tests
+
+Cobrem:
+
+- validators;
+- mappers;
+- utils.
+
+Exemplos:
 
 ```txt
-1. tests/helpers
-2. tests/fixtures
-3. tests/unit/validators
-4. tests/e2e/auth
-5. tests/e2e/santacasa
-6. tests/e2e/farmacia
-7. tests/integration/jobs
+tests/unit/validators/
+tests/unit/mappers/
+tests/unit/utils/
 ```
 
-Não substituir imediatamente os scripts manuais. Eles continuam úteis para validação rápida.
+### 18.3 Integration tests
+
+Cobrem jobs com Prisma/base de dados:
+
+```txt
+tests/integration/jobs/
+├── receitaExpiry.job.test.js
+├── higiene.job.test.js
+└── purgeHistory.job.test.js
+```
+
+### 18.4 E2E tests
+
+Cobrem API Express com Supertest:
+
+```txt
+tests/e2e/
+├── auth.e2e.test.js
+├── santacasa.e2e.test.js
+├── farmacia.e2e.test.js
+└── manutencao.e2e.test.js
+```
+
+### 18.5 Comandos recomendados
+
+```bash
+npm run test:unit -- --run
+npm run test:integration -- --run
+npm run test:e2e -- --run
+npm audit
+```
+
+### 18.6 Limite da cobertura atual
+
+Os testes atuais não garantem 100% de cobertura.
+
+Ainda podem ser adicionados testes mais profundos para:
+
+- services;
+- repositories;
+- FEFO;
+- regularizações parciais;
+- fluxos negativos complexos;
+- Admin users E2E completo;
+- histórico com filtros avançados;
+- rollback/transações.
 
 ---
 
-## 19. Segurança
+## 19. Scripts manuais
+
+Os scripts em `scripts/` foram mantidos como smoke tests/manuais.
+
+Eles são úteis, mas não substituem os testes automatizados.
+
+```bash
+npm run test:manual
+```
+
+Atenção:
+
+- `test:api` precisa do servidor ligado com `npm run dev`;
+- os scripts dos jobs criam dados reais;
+- não devem ser executados contra produção.
+
+---
+
+## 20. Segurança
 
 ### Não versionar
 
@@ -737,7 +821,7 @@ AUTH_COOKIE_SAME_SITE=none
 
 ---
 
-## 20. Convenções de desenvolvimento
+## 21. Convenções de desenvolvimento
 
 ### Arquitetura por módulo
 
@@ -778,7 +862,7 @@ Controllers devem ser finos.
 
 ---
 
-## 21. Troubleshooting
+## 22. Troubleshooting
 
 ### Erro: `DATABASE_URL em falta`
 
@@ -840,9 +924,39 @@ Usar Node.js 18 ou superior:
 node -v
 ```
 
+### `npm test` fica em watch
+
+Usar:
+
+```bash
+npm test -- --run
+```
+
+Ou comandos específicos:
+
+```bash
+npm run test:unit -- --run
+```
+
+### `test:api` devolve `fetch failed`
+
+O backend provavelmente não está ligado.
+
+Ligar o servidor:
+
+```bash
+npm run dev
+```
+
+Noutro terminal:
+
+```bash
+npm run test:api
+```
+
 ---
 
-## 22. Checklist antes de commit
+## 23. Checklist antes de commit
 
 Antes de fazer commit:
 
@@ -855,23 +969,25 @@ Confirmar:
 - [ ] `.env` não aparece no Git.
 - [ ] `.env.example` aparece.
 - [ ] `docs/` atualizado.
-- [ ] `scripts/` atualizado.
+- [ ] `tests/` atualizado, se aplicável.
+- [ ] `scripts/` atualizado, se aplicável.
 - [ ] `package.json` coerente.
-- [ ] `npm run test:api` passou.
-- [ ] `npm run test:receita-expiry` passou.
-- [ ] `npm run test:higiene` passou.
-- [ ] `npm run test:purge-history` passou.
+- [ ] `package-lock.json` atualizado.
+- [ ] `npm run test:unit -- --run` passou.
+- [ ] `npm run test:integration -- --run` passou.
+- [ ] `npm run test:e2e -- --run` passou.
+- [ ] `npm audit` devolveu 0 vulnerabilidades.
 
-Commit recomendado:
+Commit recomendado para esta fase:
 
 ```bash
 git add .
-git commit -m "docs: add backend documentation and manual test setup"
+git commit -m "docs: update backend documentation after tests"
 ```
 
 ---
 
-## 23. Checklist antes de deploy
+## 24. Checklist antes de deploy
 
 Antes de deploy:
 
@@ -887,46 +1003,65 @@ Antes de deploy:
 - [ ] Correr seed apenas se fizer sentido.
 - [ ] Testar login.
 - [ ] Testar CORS/cookies com o frontend real.
+- [ ] Correr testes automatizados.
+- [ ] Confirmar `npm audit`.
 
 ---
 
-## 24. Próximos passos recomendados
+## 25. Limites atuais
 
-### Fase atual
+Os testes estão bons para esta fase, mas não cobrem tudo.
 
-- [x] Documentar regras de negócio.
-- [x] Documentar arquitetura.
-- [x] Documentar rotas.
-- [x] Documentar ambiente.
-- [x] Documentar jobs.
-- [x] Documentar testes.
-- [x] Criar `.env.example`.
-- [x] Validar scripts manuais principais.
+Ainda faltam testes mais profundos para:
 
-### Próxima fase
-
-- [ ] Instalar Vitest e Supertest.
-- [ ] Criar `tests/helpers`.
-- [ ] Criar `tests/fixtures`.
-- [ ] Criar primeiros testes unitários.
-- [ ] Criar primeiros testes E2E.
-- [ ] Criar testes de integração dos jobs.
+- services críticos;
+- repositories críticos;
+- FEFO;
+- regularizações parciais;
+- pedidos com múltiplas regras negativas;
+- Admin users E2E completo;
+- histórico com filtros avançados;
+- rollback/transações;
+- base de dados isolada para testes.
 
 ---
 
-## 25. Estado atual recomendado
+## 26. Próximos passos recomendados
 
-Antes de avançar para testes automatizados, o backend deve ter:
+### Curto prazo
 
-```txt
-backend/
-├── docs/
-├── scripts/
-├── src/
-├── prisma/
-├── .env.example
-├── package.json
-└── README.md
+- manter os testes atuais;
+- avançar para análise/documentação do frontend;
+- validar integração frontend/backend.
+
+### Médio prazo
+
+Adicionar testes quando houver alterações críticas em:
+
+- `services`;
+- regras de stock;
+- regularizações;
+- pedidos;
+- histórico;
+- permissões;
+- jobs.
+
+### Futuro
+
+Adicionar coverage:
+
+```bash
+npm install -D @vitest/coverage-v8
 ```
 
+Adicionar ao `package.json`:
 
+```json
+"test:coverage": "vitest --coverage"
+```
+
+Correr:
+
+```bash
+npm run test:coverage
+```

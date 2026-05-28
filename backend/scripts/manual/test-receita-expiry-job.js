@@ -9,8 +9,8 @@
 //   Este script cria dados reais e executa o job real sobre a base definida em DATABASE_URL.
 //   Não correr contra produção.
 
-const { prisma, disconnectPrisma } = require("../src/db/prisma");
-const { runOnce, preview } = require("../src/jobs/receitaExpiry.job");
+const { prisma, disconnectPrisma } = require("../../src/db/prisma");
+const { runOnce, preview } = require("../../src/jobs/receitaExpiry.job");
 
 function assertSafeRuntime() {
   const isProduction = process.env.NODE_ENV === "production";

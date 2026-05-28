@@ -9,8 +9,8 @@
 //   Este script cria dados reais e executa purge real.
 //   Não correr contra produção.
 
-const { prisma, disconnectPrisma } = require("../src/db/prisma");
-const { preview, runOnce } = require("../src/jobs/purgeHistory.job");
+const { prisma, disconnectPrisma } = require("../../src/db/prisma");
+const { preview, runOnce } = require("../../src/jobs/purgeHistory.job");
 
 function assertSafeRuntime() {
   const isProduction = process.env.NODE_ENV === "production";

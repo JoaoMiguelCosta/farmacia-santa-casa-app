@@ -6,27 +6,66 @@ Este ficheiro descreve os processos automáticos e manuais responsáveis por:
 
 - expirar linhas de receita vencidas;
 - cancelar pedidos pendentes afetados por receitas expiradas;
-- marcar utentes removidos antigos como inválidos/arquivados por higiene;
+- tratar utentes removidos antigos através da rotina de higiene;
 - limpar histórico antigo de pedidos e regularizações;
-- permitir execução manual controlada por utilizadores `ADMIN`.
+- permitir preview e execução manual controlada por utilizadores `ADMIN`.
 
 ---
 
-## 1. Objetivo dos jobs
+## 1. Estado atual
+
+Existem três jobs principais:
+
+| Job | Ficheiro | Frequência padrão | Teste automatizado |
+|---|---|---:|---|
+| Receita Expiry | `src/jobs/receitaExpiry.job.js` | diária | `tests/integration/jobs/receitaExpiry.job.test.js` |
+| Higiene | `src/jobs/higiene.job.js` | mensal | `tests/integration/jobs/higiene.job.test.js` |
+| Purge History | `src/jobs/purgeHistory.job.js` | mensal | `tests/integration/jobs/purgeHistory.job.test.js` |
+
+Também existem testes E2E para permissões e previews:
+
+```txt
+tests/e2e/manutencao.e2e.test.js
+```
+
+E scripts manuais/smoke tests:
+
+```txt
+scripts/
+├── test-receita-expiry-job.js
+├── test-higiene-job.js
+└── test-purge-history-job.js
+```
+
+Comandos de validação já testados nesta fase:
+
+```bash
+npm run test:integration -- --run
+npm run test:e2e -- --run
+npm run test:receita-expiry
+npm run test:higiene
+npm run test:purge-history
+```
+
+---
+
+## 2. Objetivo dos jobs
 
 Os jobs existem para manter a base de dados coerente ao longo do tempo, sem depender apenas de ações manuais dos utilizadores.
 
-No projeto atual existem três jobs principais:
+Aplicam regras de negócio importantes:
 
-| Job | Ficheiro | Frequência padrão | Objetivo |
-|---|---|---:|---|
-| Receita Expiry | `src/jobs/receitaExpiry.job.js` | diária | expirar linhas de receita vencidas e cancelar pedidos pendentes afetados |
-| Higiene | `src/jobs/higiene.job.js` | mensal | marcar utentes removidos antigos como inválidos/arquivados por rotina |
-| Purge History | `src/jobs/purgeHistory.job.js` | mensal | remover histórico antigo de pedidos fechados e regularizações concluídas |
+- receitas expiradas deixam de poder sustentar pedidos;
+- pedidos pendentes afetados por expiração são cancelados automaticamente;
+- utentes removidos antigos são marcados como tratados pela rotina de higiene;
+- histórico fechado antigo pode ser eliminado;
+- regularizações concluídas antigas podem ser purgadas.
+
+Qualquer alteração nestes jobs deve ser tratada como alteração sensível de domínio.
 
 ---
 
-## 2. Registo dos jobs no arranque
+## 3. Registo dos jobs no arranque
 
 O servidor arranca em:
 
@@ -34,7 +73,7 @@ O servidor arranca em:
 src/app/server.js
 ```
 
-Durante o `server.listen`, é chamada a função:
+Durante o arranque, é chamada a função:
 
 ```js
 registerJobs();
@@ -62,7 +101,7 @@ Se o backend não iniciar, os jobs também não correm.
 
 ---
 
-## 3. Variáveis de ambiente relacionadas
+## 4. Variáveis de ambiente relacionadas
 
 As variáveis são carregadas em:
 
@@ -70,7 +109,9 @@ As variáveis são carregadas em:
 src/config/env.js
 ```
 
-### Ativação/desativação dos jobs
+---
+
+## 4.1 Ativação/desativação dos jobs
 
 ```env
 ENABLE_HIGIENE=true
@@ -84,27 +125,43 @@ ENABLE_RECEITAS_EXPIRY=true
 | `ENABLE_PURGE_HISTORY` | `true` | ativa/desativa o job de limpeza de histórico |
 | `ENABLE_RECEITAS_EXPIRY` | `true` | ativa/desativa o job de expiração de receitas |
 
-### Timezone
+Em desenvolvimento, podes desligar os jobs automáticos se quiseres controlar tudo manualmente:
 
 ```env
-TZ=Europe/Lisbon
+ENABLE_HIGIENE=false
+ENABLE_PURGE_HISTORY=false
+ENABLE_RECEITAS_EXPIRY=false
 ```
 
-Todos os cron jobs usam esta timezone.
+Isto não impede a execução direta via scripts ou endpoints de manutenção, se essas rotas/comandos forem chamados manualmente.
 
-### Expressões cron
+---
+
+## 4.2 Timezone
 
 ```env
-CRON_MONTHLY_03H=0 3 1 * *
-CRON_DAILY_03H=0 3 * * *
+TZ="Europe/Lisbon"
 ```
 
-| Variável | Valor padrão | Interpretação |
-|---|---|---|
-| `CRON_DAILY_03H` | `0 3 * * *` | todos os dias às 03:00 |
-| `CRON_MONTHLY_03H` | `0 3 1 * *` | dia 1 de cada mês às 03:00 |
+A timezone é importante para cron e para consistência temporal dos jobs.
 
-### Offsets temporais
+---
+
+## 4.3 Cron
+
+```env
+CRON_MONTHLY_03H="0 3 1 * *"
+CRON_DAILY_03H="0 3 * * *"
+```
+
+| Variável | Interpretação |
+|---|---|
+| `CRON_DAILY_03H` | todos os dias às 03:00 |
+| `CRON_MONTHLY_03H` | dia 1 de cada mês às 03:00 |
+
+---
+
+## 4.4 Offsets
 
 ```env
 HIGIENE_OFFSET_MONTHS=12
@@ -116,23 +173,27 @@ PURGE_OFFSET_MONTHS=6
 | `HIGIENE_OFFSET_MONTHS` | `12` | considera utentes removidos há pelo menos 12 meses |
 | `PURGE_OFFSET_MONTHS` | `6` | remove histórico fechado há pelo menos 6 meses |
 
-### Anonimização
+---
+
+## 4.5 Anonimização da higiene
 
 ```env
 HIGIENE_ANONYMIZE=false
 ALLOW_HIGIENE_ANONYMIZE=false
 ```
 
-| Variável | Valor padrão | Função |
-|---|---:|---|
-| `HIGIENE_ANONYMIZE` | `false` | pede anonimização no job |
-| `ALLOW_HIGIENE_ANONYMIZE` | `false` | permite de facto aplicar anonimização |
+A anonimização só deve acontecer se ambas estiverem a `true`.
 
-A anonimização só acontece se **ambas** estiverem a `true`.
+Isto evita anonimização acidental.
+
+```env
+HIGIENE_ANONYMIZE=true
+ALLOW_HIGIENE_ANONYMIZE=true
+```
 
 ---
 
-## 4. Job: Receita Expiry
+## 5. Job: Receita Expiry
 
 ### Ficheiro
 
@@ -140,170 +201,115 @@ A anonimização só acontece se **ambas** estiverem a `true`.
 src/jobs/receitaExpiry.job.js
 ```
 
-### Função principal
-
-```js
-runOnce()
-```
-
-### Função de preview
+### Funções principais
 
 ```js
 preview()
+runOnce()
+registerReceitaExpiryJob()
 ```
 
 ### Frequência padrão
 
 ```env
-CRON_DAILY_03H=0 3 * * *
+CRON_DAILY_03H="0 3 * * *"
 ```
 
-Por defeito, corre todos os dias às 03:00.
+### Objetivo
 
----
+Expirar linhas de receita vencidas e cancelar pedidos pendentes afetados por essas linhas.
 
-## 4.1 O que este job faz
+### Regras funcionais
 
-O job procura linhas de receita que estejam:
+O job procura linhas de receita com:
 
 ```txt
 status = ATIVA
 validade <= agora
 ```
 
-Quando encontra linhas expiradas:
+Depois:
 
-1. marca essas linhas como `EXPIRADA`;
-2. procura pedidos pendentes com itens associados a essas linhas;
-3. cancela os itens pendentes desses pedidos;
-4. cancela os pedidos pendentes afetados;
-5. guarda uma razão de fecho automática.
+1. marca as linhas como `EXPIRADA`;
+2. encontra itens de pedido pendentes associados a essas linhas;
+3. cancela os itens afetados;
+4. cancela pedidos pendentes que dependiam desses itens;
+5. define uma razão automática de fecho.
 
-A razão usada é:
+Razão funcional:
 
 ```txt
 Cancelado automaticamente por expiração da receita.
 ```
 
----
+### Estados afetados
 
-## 4.2 Estados afetados
+| Entidade | Antes | Depois |
+|---|---|---|
+| `ReceitaLinha` | `ATIVA` | `EXPIRADA` |
+| `PedidoItem` | `PENDENTE` | `CANCELADO_POR_EXPIRACAO` |
+| `Pedido` | `PENDENTE` | `CANCELADO` |
 
-### ReceitaLinha
+### Preview
 
-Antes:
+O `preview()` deve devolver contadores sem alterar dados.
 
-```txt
-ATIVA
-```
-
-Depois:
-
-```txt
-EXPIRADA
-```
-
-### PedidoItem
-
-Antes:
+Campos esperados:
 
 ```txt
-PENDENTE
+checkedAt
+expiredLines
+pendingItemsFromExpiredLines
+affectedPedidos
+pendingItemsFromAffectedPedidos
 ```
 
-Depois:
+### Execução
+
+O `runOnce()` aplica alterações reais.
+
+Campos esperados:
 
 ```txt
-CANCELADO_POR_EXPIRACAO
+checkedAt
+expiredLines
+pendingItemsFromExpiredLines
+affectedPedidos
+pendingItemsFromAffectedPedidos
+canceledPedidoItems
+canceledPedidos
 ```
 
-### Pedido
-
-Antes:
+### Teste automatizado
 
 ```txt
-PENDENTE
+tests/integration/jobs/receitaExpiry.job.test.js
 ```
 
-Depois:
+Cobre:
 
-```txt
-CANCELADO
+- criação de cenário com receita expirada;
+- preview;
+- execução real;
+- linha passa para `EXPIRADA`;
+- item passa para `CANCELADO_POR_EXPIRACAO`;
+- pedido passa para `CANCELADO`.
+
+### Script manual
+
+```bash
+npm run test:receita-expiry
 ```
 
-Com:
-
-```txt
-closedReason = "Cancelado automaticamente por expiração da receita."
-```
-
----
-
-## 4.3 Preview
-
-O preview devolve informação sem alterar dados.
-
-Exemplo de resposta conceptual:
-
-```json
-{
-  "checkedAt": "2026-05-28T03:00:00.000Z",
-  "expiredLines": 3,
-  "pendingItemsFromExpiredLines": 2,
-  "affectedPedidos": 1,
-  "pendingItemsFromAffectedPedidos": 4
-}
-```
-
-### Quando usar preview
-
-Usa preview antes de executar manualmente o job em ambiente sensível.
-
----
-
-## 4.4 Execução manual por NPM
+### Execução direta
 
 ```bash
 npm run job:receita-expiry
 ```
 
-Este comando chama diretamente:
-
-```js
-require('./src/jobs/receitaExpiry.job').runOnce()
-```
-
 ---
 
-## 4.5 Execução manual por API
-
-Apenas `ADMIN`.
-
-```http
-GET /api/manutencao/jobs/receita-expiry/preview
-POST /api/manutencao/jobs/receita-expiry/run
-```
-
----
-
-## 4.6 Riscos e cuidados
-
-Este job altera dados reais.
-
-Antes de correr manualmente em produção:
-
-- confirma a timezone;
-- confirma a data atual do servidor;
-- faz preview;
-- valida se há pedidos pendentes importantes;
-- confirma que a regra de expiração é desejada;
-- não corras repetidamente sem necessidade.
-
-O job é seguro para repetir no sentido em que linhas já expiradas deixam de cumprir `status = ATIVA`, mas continua a ser uma operação com impacto real.
-
----
-
-# 5. Job: Higiene
+## 6. Job: Higiene
 
 ### Ficheiro
 
@@ -311,42 +317,36 @@ O job é seguro para repetir no sentido em que linhas já expiradas deixam de cu
 src/jobs/higiene.job.js
 ```
 
-### Função principal
-
-```js
-runOnce()
-```
-
-### Função de preview
+### Funções principais
 
 ```js
 preview()
+runOnce()
+registerHigieneJob()
 ```
 
 ### Frequência padrão
 
 ```env
-CRON_MONTHLY_03H=0 3 1 * *
+CRON_MONTHLY_03H="0 3 1 * *"
 ```
 
-Por defeito, corre no dia 1 de cada mês às 03:00.
+### Objetivo
 
----
+Tratar utentes removidos antigos para evitar que fiquem indefinidamente como registos ativos de trabalho.
 
-## 5.1 O que este job faz
+### Regras funcionais
 
-O job procura utentes com:
+O job considera candidatos com:
 
 ```txt
 deletedAt <= cutoffDate
 ```
 
-E que ainda não tenham sido tratados pela rotina de higiene.
-
 O cutoff é calculado com:
 
 ```txt
-data atual - HIGIENE_OFFSET_MONTHS
+data atual - offsetMonths
 ```
 
 Por defeito:
@@ -355,70 +355,84 @@ Por defeito:
 data atual - 12 meses
 ```
 
----
-
-## 5.2 Marcador interno
-
-O job usa o marcador:
+### Marcador interno
 
 ```txt
 [HIGIENE]
 ```
 
-Este marcador é colocado no campo `invalidReason`.
+Este marcador serve para evitar reprocessamento.
 
-Serve para impedir que o mesmo utente seja processado repetidamente pela rotina.
+### Sem anonimização
 
----
+Quando a anonimização não está ativa, o job marca o utente como tratado, mantendo dados principais.
 
-## 5.3 Comportamento sem anonimização
-
-Quando a anonimização não está ativa, o job atualiza:
+Campos afetados:
 
 ```txt
 isValid = false
-invalidReason = "[HIGIENE] Utente arquivado por rotina de higiene."
+invalidReason contém [HIGIENE]
 ```
 
-Não altera nome nem número do utente.
+### Com anonimização
 
----
-
-## 5.4 Comportamento com anonimização
-
-A anonimização só é aplicada se:
+A anonimização só deve ser aplicada se houver dupla confirmação no `.env`:
 
 ```env
 HIGIENE_ANONYMIZE=true
 ALLOW_HIGIENE_ANONYMIZE=true
 ```
 
-Quando aplicada, atualiza:
+Este comportamento é sensível e deve ser tratado com cuidado.
+
+### Preview
+
+O `preview()` deve devolver candidatos sem alterar dados.
+
+Campos esperados:
 
 ```txt
-nome = "Utente removido"
-numero9 = "000000000"
-isValid = false
-invalidReason = "[HIGIENE] Utente arquivado e anonimizado por rotina de higiene."
+cutoffDate
+offsetMonths
+candidatos
 ```
 
----
+### Execução
 
-## 5.5 Preview
+O `runOnce()` aplica alterações reais.
 
-Exemplo conceptual:
+Campos esperados:
 
-```json
-{
-  "cutoffDate": "2025-05-28T00:00:00.000Z",
-  "offsetMonths": 12,
-  "candidatos": 4
-}
+```txt
+checkedAt
+cutoffDate
+offsetMonths
+anonymizeRequested
+anonymizeApplied
+atualizados
 ```
 
----
+### Teste automatizado
 
-## 5.6 Execução manual por NPM
+```txt
+tests/integration/jobs/higiene.job.test.js
+```
+
+Cobre:
+
+- criação de utente removido antigo;
+- preview;
+- execução real;
+- aplicação do marcador `[HIGIENE]`;
+- idempotência.
+
+### Script manual
+
+```bash
+npm run test:higiene
+```
+
+### Execução direta
 
 ```bash
 npm run job:higiene
@@ -426,49 +440,7 @@ npm run job:higiene
 
 ---
 
-## 5.7 Execução manual por API
-
-Apenas `ADMIN`.
-
-```http
-GET /api/manutencao/jobs/higiene/preview
-POST /api/manutencao/jobs/higiene/run
-```
-
-### Query/body suportado
-
-```json
-{
-  "offsetMonths": 12,
-  "anonymize": false
-}
-```
-
----
-
-## 5.8 Riscos e cuidados
-
-Este job pode alterar dados sensíveis.
-
-Antes de ativar anonimização:
-
-- confirma requisitos legais;
-- confirma se o histórico ainda precisa de identificação nominal;
-- confirma se `numero9 = "000000000"` não viola restrições únicas;
-- confirma se os dados podem ser anonimizados sem quebrar auditoria.
-
-Má prática grave:
-
-```env
-HIGIENE_ANONYMIZE=true
-ALLOW_HIGIENE_ANONYMIZE=true
-```
-
-sem teres validado o impacto legal e funcional.
-
----
-
-# 6. Job: Purge History
+## 7. Job: Purge History
 
 ### Ficheiro
 
@@ -476,43 +448,39 @@ sem teres validado o impacto legal e funcional.
 src/jobs/purgeHistory.job.js
 ```
 
-### Função principal
-
-```js
-runOnce()
-```
-
-### Função de preview
+### Funções principais
 
 ```js
 preview()
+runOnce()
+registerPurgeHistoryJob()
 ```
 
 ### Frequência padrão
 
 ```env
-CRON_MONTHLY_03H=0 3 1 * *
+CRON_MONTHLY_03H="0 3 1 * *"
 ```
 
-Por defeito, corre no dia 1 de cada mês às 03:00.
+### Objetivo
 
----
+Remover histórico antigo fechado, reduzindo acumulação de dados operacionais antigos.
 
-## 6.1 O que este job faz
+Este job é destrutivo.
 
-Remove dados antigos de histórico, nomeadamente:
+### Dados afetados
+
+Pode remover:
 
 - pedidos fechados antigos;
-- itens dos pedidos removidos;
-- dispensas associadas aos itens removidos;
+- itens desses pedidos;
+- dispensas associadas;
 - regularizações concluídas antigas;
 - eventos das regularizações removidas.
 
----
+### Pedidos elegíveis
 
-## 6.2 Pedidos elegíveis para remoção
-
-Um pedido pode ser removido se estiver num destes estados:
+Estados elegíveis:
 
 ```txt
 VALIDADO
@@ -520,87 +488,95 @@ REJEITADO
 CANCELADO
 ```
 
-E se estiver fora do período de retenção definido por:
+Pedidos `PENDENTE` não devem ser removidos.
 
-```env
-PURGE_OFFSET_MONTHS=6
-```
+### Regularizações elegíveis
 
-### Campos usados para calcular antiguidade
-
-| Estado | Campo usado |
-|---|---|
-| `VALIDADO` | `validatedAt` |
-| `REJEITADO` | `rejectedAt` |
-| `CANCELADO` | `updatedAt`, quando não tem `validatedAt` nem `rejectedAt` |
-
----
-
-## 6.3 Regularizações elegíveis para remoção
-
-Uma regularização pode ser removida se:
+Regularizações elegíveis:
 
 ```txt
 status = REGULARIZADO
 updatedAt <= cutoffDate
 ```
 
----
+Regularizações pendentes ou parcialmente regularizadas não devem ser removidas.
 
-## 6.4 Ordem de limpeza
+### Ordem de limpeza
 
-A limpeza é feita dentro de uma transação.
+O job deve respeitar a integridade referencial.
 
-### Regularizações
+Ordem funcional:
 
 1. encontrar regularizações concluídas antigas;
 2. remover eventos associados;
-3. remover regularizações.
+3. remover regularizações;
+4. encontrar pedidos fechados antigos;
+5. encontrar itens desses pedidos;
+6. desvincular regularizações que apontem para esses pedidos, se necessário;
+7. remover dispensas associadas aos itens;
+8. remover itens dos pedidos;
+9. remover pedidos.
 
-### Pedidos
+### Preview
 
-1. encontrar pedidos fechados antigos;
-2. encontrar itens desses pedidos;
-3. desvincular regularizações que apontem para esses pedidos;
-4. remover dispensas associadas aos itens;
-5. remover itens dos pedidos;
-6. remover pedidos.
+O `preview()` deve devolver contadores sem apagar dados.
 
----
-
-## 6.5 Porque as regularizações são desvinculadas antes de remover pedidos
-
-Algumas regularizações podem manter referência ao pedido original.
-
-Antes de remover pedidos antigos, o job faz:
+Campos esperados:
 
 ```txt
-regularizacaoExtra.pedidoId = null
+cutoffDate
+offsetMonths
+regularizacoes
+eventos
+pedidos
+pedidoItens
+dispensas
 ```
 
-Isto evita violar integridade referencial e mantém a regularização quando ela ainda não é elegível para purge.
+### Execução
 
----
+O `runOnce()` aplica alterações reais.
 
-## 6.6 Preview
+Campos esperados:
 
-Exemplo conceptual:
-
-```json
-{
-  "cutoffDate": "2025-11-28T00:00:00.000Z",
-  "offsetMonths": 6,
-  "pedidos": 12,
-  "pedidoItens": 30,
-  "dispensas": 18,
-  "regularizacoes": 5,
-  "eventos": 7
-}
+```txt
+checkedAt
+cutoffDate
+offsetMonths
+regularizacoes
+eventos
+pedidos
+pedidoItens
+dispensas
+regularizacoesDesvinculadas
 ```
 
----
+### Teste automatizado
 
-## 6.7 Execução manual por NPM
+```txt
+tests/integration/jobs/purgeHistory.job.test.js
+```
+
+Cobre:
+
+- criação de pedido validado antigo;
+- criação de regularização concluída antiga;
+- preview;
+- execução real;
+- remoção de pedido;
+- remoção de item;
+- remoção de dispensa;
+- remoção de regularização;
+- remoção de evento;
+- idempotência.
+
+### Script manual
+
+```bash
+npm run test:purge-history
+```
+
+### Execução direta
 
 ```bash
 npm run job:purge-history
@@ -608,50 +584,7 @@ npm run job:purge-history
 
 ---
 
-## 6.8 Execução manual por API
-
-Apenas `ADMIN`.
-
-```http
-GET /api/manutencao/jobs/purge-history/preview
-POST /api/manutencao/jobs/purge-history/run
-```
-
-### Query/body suportado
-
-```json
-{
-  "offsetMonths": 6
-}
-```
-
----
-
-## 6.9 Riscos e cuidados
-
-Este job apaga dados.
-
-Antes de correr manualmente em produção:
-
-- confirma que existe backup;
-- executa preview;
-- valida a quantidade de registos a apagar;
-- confirma se o período de retenção está correto;
-- não uses `offsetMonths` demasiado baixo sem razão forte.
-
-Má prática grave:
-
-```json
-{
-  "offsetMonths": 0
-}
-```
-
-Isto pode remover histórico fechado muito recente.
-
----
-
-# 7. Endpoints de manutenção
+## 8. Endpoints de manutenção
 
 Todas as rotas de manutenção estão protegidas por:
 
@@ -660,91 +593,114 @@ requireAuth
 requireRole(["ADMIN"])
 ```
 
-Prefixo base:
+Prefixo:
 
 ```txt
 /api/manutencao
 ```
 
----
-
-## 7.1 Listar jobs disponíveis
+### Listar jobs
 
 ```http
 GET /api/manutencao/jobs
 ```
 
-Resposta conceptual:
-
-```json
-{
-  "data": [
-    {
-      "key": "receita-expiry",
-      "description": "Expira linhas de receita vencidas e cancela itens pendentes associados.",
-      "schedule": "daily",
-      "actions": ["preview", "run"]
-    },
-    {
-      "key": "higiene",
-      "description": "Marca utentes removidos antigos como arquivados por higiene.",
-      "schedule": "monthly",
-      "actions": ["preview", "run"]
-    },
-    {
-      "key": "purge-history",
-      "description": "Remove histórico antigo de pedidos fechados e regularizações concluídas.",
-      "schedule": "monthly",
-      "actions": ["preview", "run"]
-    }
-  ]
-}
-```
-
----
-
-## 7.2 Receita Expiry
+### Receita Expiry
 
 ```http
-GET /api/manutencao/jobs/receita-expiry/preview
+GET  /api/manutencao/jobs/receita-expiry/preview
 POST /api/manutencao/jobs/receita-expiry/run
 ```
 
----
-
-## 7.3 Higiene
+### Higiene
 
 ```http
-GET /api/manutencao/jobs/higiene/preview
+GET  /api/manutencao/jobs/higiene/preview
 POST /api/manutencao/jobs/higiene/run
 ```
 
----
-
-## 7.4 Purge History
+### Purge History
 
 ```http
-GET /api/manutencao/jobs/purge-history/preview
+GET  /api/manutencao/jobs/purge-history/preview
 POST /api/manutencao/jobs/purge-history/run
 ```
 
 ---
 
-# 8. Comandos NPM disponíveis
+## 9. Testes E2E de manutenção
 
-Definidos em:
+Ficheiro:
 
 ```txt
-package.json
+tests/e2e/manutencao.e2e.test.js
 ```
+
+Cobre:
+
+- bloqueio sem sessão;
+- bloqueio de `SANTACASA`;
+- bloqueio de `FARMACIA`;
+- acesso permitido a `ADMIN`;
+- listagem de jobs;
+- preview de `receita-expiry`;
+- preview de `higiene`;
+- preview de `purge-history`;
+- validação de parâmetros inválidos.
+
+### O que não cobre
+
+Não executa endpoints `run`.
+
+Motivo:
+
+- `run` altera dados reais;
+- `purge-history` é destrutivo;
+- os `run` estão cobertos nos testes de integração dos jobs.
+
+---
+
+## 10. Scripts manuais vs testes automatizados
+
+### Testes automatizados
+
+Local:
+
+```txt
+tests/integration/jobs/
+```
+
+Uso:
+
+- validação antes de commit;
+- validação antes de deploy;
+- proteção contra regressões;
+- execução repetível;
+- melhor isolamento do que scripts manuais.
+
+Comando:
 
 ```bash
-npm run job:receita-expiry
-npm run job:higiene
-npm run job:purge-history
+npm run test:integration -- --run
 ```
 
-Também existem scripts de teste manual referenciados:
+### Scripts manuais
+
+Local:
+
+```txt
+scripts/
+```
+
+Uso:
+
+- smoke test;
+- diagnóstico rápido;
+- validação manual de ambiente local;
+- execução fora do Vitest;
+- confirmação operacional.
+
+Comandos:
 
 ```bash
 npm run test:receita-expiry
@@ -752,124 +708,166 @@ npm run test:higiene
 npm run test:purge-history
 ```
 
-Atenção: estes scripts dependem da existência dos ficheiros em `scripts/`.
+### Recomendação
+
+Manter os scripts manuais por agora.
+
+Não os usar como substituto dos testes automatizados.
 
 ---
 
-# 9. Relação com as regras de negócio
+## 11. Cuidados operacionais
 
-Os jobs não são tarefas isoladas.
+### Nunca correr contra produção sem confirmação
 
-Eles afetam diretamente entidades centrais:
+Antes de executar scripts ou jobs diretos, confirmar:
 
-| Job | Entidades afetadas |
-|---|---|
-| Receita Expiry | `ReceitaLinha`, `Pedido`, `PedidoItem` |
-| Higiene | `Utente` |
-| Purge History | `Pedido`, `PedidoItem`, `Dispensa`, `RegularizacaoExtra`, `RegularizacaoEvento` |
+```bash
+echo $NODE_ENV
+```
 
-Antes de alterar um job, confirma sempre:
+ou no PowerShell:
 
-- regras de negócio;
-- modelo Prisma;
-- rotas de manutenção;
-- testes manuais;
-- impacto no frontend;
-- impacto em auditoria.
+```powershell
+$env:NODE_ENV
+```
+
+Confirmar também a base:
+
+```env
+DATABASE_URL="..."
+```
+
+### Atenção especial ao `purge-history`
+
+Este job remove dados.
+
+Antes de executar manualmente:
+
+1. correr preview;
+2. confirmar contadores;
+3. confirmar ambiente;
+4. garantir backup;
+5. só depois executar.
 
 ---
 
-# 10. Checklist antes de alterar jobs
+## 12. Checklist antes de alterar jobs
 
 Antes de alterar qualquer job:
 
 - [ ] Confirmar regra de negócio no `BUSINESS_RULES.md`.
 - [ ] Confirmar modelos no `schema.prisma`.
 - [ ] Confirmar impacto em rotas existentes.
-- [ ] Confirmar impacto em dashboards.
-- [ ] Confirmar impacto em histórico/auditoria.
-- [ ] Adicionar ou atualizar testes.
-- [ ] Executar preview quando existir.
-- [ ] Testar em base de dados local.
-- [ ] Validar edge cases.
+- [ ] Confirmar impacto no frontend.
+- [ ] Confirmar impacto no histórico.
+- [ ] Confirmar impacto em regularizações.
+- [ ] Atualizar testes de integração.
+- [ ] Atualizar E2E se mudar contrato HTTP.
+- [ ] Atualizar scripts manuais se necessário.
 - [ ] Atualizar documentação.
 
 ---
 
-# 11. Checklist antes de correr manualmente em produção
+## 13. Checklist antes de correr jobs manualmente em produção
 
-- [ ] Confirmar que estás no ambiente certo.
-- [ ] Confirmar `.env`.
+- [ ] Confirmar ambiente.
 - [ ] Confirmar `DATABASE_URL`.
+- [ ] Confirmar `NODE_ENV`.
 - [ ] Confirmar `TZ`.
 - [ ] Confirmar offsets.
 - [ ] Executar preview.
 - [ ] Guardar output do preview.
-- [ ] Confirmar que existe backup.
+- [ ] Confirmar backup.
+- [ ] Confirmar janela de manutenção.
 - [ ] Executar apenas se o resultado esperado estiver correto.
 - [ ] Guardar output do run.
 - [ ] Verificar dashboards depois da execução.
 
 ---
 
-# 12. Edge cases conhecidos
+## 14. Edge cases conhecidos
 
-## Receita Expiry
+### Receita Expiry
 
-- Uma receita pode expirar enquanto existe pedido pendente.
-- Um pedido pode ter vários itens; se um item de receita expirar, o pedido afetado é cancelado.
-- Linhas já expiradas não voltam a ser processadas.
+- Receita pode expirar enquanto existe pedido pendente.
+- Pedido afetado pode ter vários itens.
+- Linhas já expiradas não devem ser reprocessadas.
+- Pedidos já fechados não devem ser reabertos.
 
-## Higiene
+### Higiene
 
 - Utentes sem `deletedAt` não são processados.
 - Utentes já marcados com `[HIGIENE]` não são reprocessados.
-- A anonimização só ocorre com dupla confirmação por `.env`.
+- Anonimização exige dupla confirmação.
+- A rotina deve ser idempotente.
 
-## Purge History
+### Purge History
 
-- Só remove pedidos fechados.
 - Não remove pedidos pendentes.
-- Regularizações ainda pendentes não são removidas.
-- Regularizações ligadas a pedidos removidos são desvinculadas quando necessário.
+- Não remove regularizações pendentes.
+- Não remove regularizações parcialmente regularizadas.
+- Regularizações associadas a pedidos antigos podem ser desvinculadas se necessário.
+- Remove histórico antigo e fechado.
+- É destrutivo.
 
 ---
 
-# 13. Decisões arquiteturais atuais
+## 15. Convenções para novos jobs
 
-## Jobs têm `preview` e `runOnce`
+Ao criar um novo job, seguir este padrão:
 
-Boa prática.
+```txt
+src/jobs/nomeDoJob.job.js
+```
 
-Permite validar impacto antes da execução real.
+Deve exportar, quando aplicável:
 
-## Jobs usam transações quando apagam/alteram múltiplas entidades
+```js
+preview()
+runOnce()
+registerNomeDoJob()
+```
 
-Boa prática.
+E deve ser registado em:
 
-Evita base de dados parcialmente alterada em caso de falha.
+```txt
+src/jobs/index.js
+```
 
-## Jobs são registados uma só vez com flags globais
+Também deve ter:
 
-Boa prática para desenvolvimento com reload/hot restart.
-
-Evita múltiplas instâncias do mesmo cron no mesmo processo.
-
-## Jobs são controláveis por `.env`
-
-Boa prática.
-
-Permite desligar jobs por ambiente.
+- flag `ENABLE_*` no `.env`;
+- cron configurável no `.env`;
+- endpoint em `manutencao`, se fizer sentido;
+- documentação neste ficheiro;
+- teste de integração;
+- E2E de permissões/preview, se existir endpoint;
+- script manual apenas se for útil para diagnóstico.
 
 ---
 
-# 14. Melhorias futuras recomendadas
+## 16. Melhorias futuras recomendadas
 
-## 14.1 Criar tabela de logs de jobs
+### 16.1 Base de dados isolada para testes
 
-Atualmente os jobs usam `console.log`.
+Atualmente os testes usam `DATABASE_URL`.
 
-Recomendado criar uma tabela, por exemplo:
+Futuro recomendado:
+
+```txt
+.env.test
+```
+
+com base dedicada:
+
+```env
+DATABASE_URL="postgresql://postgres:postgres@localhost:5432/farmacia_santacasa_test?schema=public"
+```
+
+### 16.2 Tabela de logs de jobs
+
+Criar tabela futura:
 
 ```txt
 MaintenanceJobRun
@@ -890,26 +888,20 @@ triggeredById
 createdAt
 ```
 
-Isto permitiria auditoria real.
+### 16.3 Registar execuções manuais
 
----
+Guardar:
 
-## 14.2 Registar execuções manuais por utilizador
-
-Quando um `ADMIN` executa um job por API, o backend deveria guardar:
-
-- id do utilizador;
-- data;
+- utilizador que executou;
 - job executado;
 - parâmetros usados;
+- data;
 - resultado;
 - erro, se existir.
 
----
+### 16.4 Confirmação forte para jobs destrutivos
 
-## 14.3 Separar jobs destrutivos por confirmação forte
-
-Para `purge-history`, no futuro pode ser exigido payload como:
+Para `purge-history`, considerar payload obrigatório:
 
 ```json
 {
@@ -917,57 +909,45 @@ Para `purge-history`, no futuro pode ser exigido payload como:
 }
 ```
 
-Isto reduz o risco de execução acidental.
+---
+
+## 17. Comandos úteis
+
+### Validar testes dos jobs
+
+```bash
+npm run test:integration -- --run
+```
+
+### Validar E2E de manutenção
+
+```bash
+npm run test:e2e -- --run
+```
+
+### Validar scripts manuais dos jobs
+
+```bash
+npm run test:receita-expiry
+npm run test:higiene
+npm run test:purge-history
+```
+
+### Executar jobs diretamente
+
+```bash
+npm run job:receita-expiry
+npm run job:higiene
+npm run job:purge-history
+```
 
 ---
 
-## 14.4 Adicionar testes automatizados
-
-Prioridade recomendada:
-
-1. `receitaExpiry.job.test.js`
-2. `higiene.job.test.js`
-3. `purgeHistory.job.test.js`
-
----
-
-# 15. Convenções para novos jobs
-
-Ao criar um novo job, seguir este padrão:
-
-```txt
-src/jobs/nomeDoJob.job.js
-```
-
-Deve exportar:
-
-```js
-preview()
-runOnce()
-registerNomeDoJob()
-```
-
-E deve ser registado em:
-
-```txt
-src/jobs/index.js
-```
-
-Também deve ter:
-
-- flag `ENABLE_*` no `.env`;
-- cron configurável no `.env`;
-- endpoint em `manutencao`, se fizer sentido;
-- documentação neste ficheiro;
-- testes manuais/automatizados.
-
----
-
-# 16. Resumo final
+## 18. Resumo final
 
 Os jobs de manutenção são parte crítica do backend.
 
-Eles não servem apenas para limpeza técnica; aplicam regras de negócio importantes:
+Eles não servem apenas para limpeza técnica. Aplicam regras de negócio importantes:
 
 - receitas expiradas deixam de poder sustentar pedidos;
 - pedidos pendentes afetados por expiração são cancelados;
@@ -975,4 +955,14 @@ Eles não servem apenas para limpeza técnica; aplicam regras de negócio import
 - histórico fechado antigo pode ser eliminado;
 - regularizações concluídas antigas podem ser purgadas.
 
-Qualquer alteração nestes jobs deve ser tratada como alteração sensível de domínio.
+Estado atual:
+
+- jobs documentados;
+- scripts manuais mantidos;
+- testes de integração criados;
+- E2E de manutenção criado;
+- previews cobertos;
+- permissões cobertas;
+- endpoints `run` protegidos por `ADMIN`.
+
+O backend está num estado adequado para fechar esta fase dos jobs e avançar para o frontend.
