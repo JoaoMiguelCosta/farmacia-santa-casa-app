@@ -10,10 +10,16 @@
     "prisma:generate": "npx prisma generate",
     "prisma:studio": "npx prisma studio",
     "prisma:migrate": "npx prisma migrate dev",
+    "test": "vitest",
+    "test:watch": "vitest --watch",
+    "test:unit": "vitest tests/unit",
+    "test:integration": "vitest tests/integration",
+    "test:e2e": "vitest tests/e2e",
     "test:api": "node scripts/test-current-api.js",
     "test:receita-expiry": "node scripts/test-receita-expiry-job.js",
     "test:higiene": "node scripts/test-higiene-job.js",
     "test:purge-history": "node scripts/test-purge-history-job.js",
+    "test:manual": "npm run test:api && npm run test:receita-expiry && npm run test:higiene && npm run test:purge-history",
     "job:receita-expiry": "node -e \"require('./src/jobs/receitaExpiry.job').runOnce().then(console.log).catch((e)=>{console.error(e);process.exit(1)})\"",
     "job:higiene": "node -e \"require('./src/jobs/higiene.job').runOnce().then(console.log).catch((e)=>{console.error(e);process.exit(1)})\"",
     "job:purge-history": "node -e \"require('./src/jobs/purgeHistory.job').runOnce().then(console.log).catch((e)=>{console.error(e);process.exit(1)})\""
@@ -33,6 +39,8 @@
   },
   "devDependencies": {
     "nodemon": "^3.1.10",
-    "prisma": "^5.22.0"
+    "prisma": "^5.22.0",
+    "supertest": "^7.2.2",
+    "vitest": "^4.1.7"
   }
 }
