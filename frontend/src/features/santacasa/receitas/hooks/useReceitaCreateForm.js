@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 const INITIAL_LINE = Object.freeze({
   medicamento: "",
@@ -98,25 +98,13 @@ function normalizePayload(values) {
   };
 }
 
-function getActiveFormState(formState, resetKey, resetValues) {
-  if (formState.resetKey === resetKey) {
-    return formState;
-  }
-
-  return {
-    resetKey,
-    values: resetValues,
-    errors: {},
-  };
-}
-
 export function useReceitaCreateForm({
   selectedUtenteId,
   onCreate,
   isSubmitting = false,
   resetKey = 0,
 }) {
-  const resetValues = useMemo(() => createInitialForm(), [resetKey]);
+  const previousResetKeyRef = useRef(resetKey);
 
   const [formState, setFormState] = useState(() => ({
     resetKey,
@@ -124,13 +112,23 @@ export function useReceitaCreateForm({
     errors: {},
   }));
 
-  const activeFormState = getActiveFormState(formState, resetKey, resetValues);
-
-  const values = activeFormState.values;
-  const errors = activeFormState.errors;
+  const values = formState.values;
+  const errors = formState.errors;
 
   const todayInputValue = useMemo(() => getTodayInputValue(), []);
   const isDisabled = !selectedUtenteId || isSubmitting;
+
+  useEffect(() => {
+    if (previousResetKeyRef.current === resetKey) return;
+
+    previousResetKeyRef.current = resetKey;
+
+    setFormState({
+      resetKey,
+      values: createInitialForm(),
+      errors: {},
+    });
+  }, [resetKey]);
 
   function updateField(name, value) {
     const nextValue =
@@ -142,97 +140,65 @@ export function useReceitaCreateForm({
             ? onlyDigits(value, 4)
             : value;
 
-    setFormState((currentState) => {
-      const currentFormState = getActiveFormState(
-        currentState,
-        resetKey,
-        resetValues,
-      );
-
-      return {
-        resetKey,
-        values: {
-          ...currentFormState.values,
-          [name]: nextValue,
-        },
-        errors: {
-          ...currentFormState.errors,
-          [name]: "",
-        },
-      };
-    });
+    setFormState((currentState) => ({
+      resetKey,
+      values: {
+        ...currentState.values,
+        [name]: nextValue,
+      },
+      errors: {
+        ...currentState.errors,
+        [name]: "",
+      },
+    }));
   }
 
   function updateLine(index, name, value) {
-    setFormState((currentState) => {
-      const currentFormState = getActiveFormState(
-        currentState,
-        resetKey,
-        resetValues,
-      );
-
-      return {
-        resetKey,
-        values: {
-          ...currentFormState.values,
-          linhas: currentFormState.values.linhas.map((linha, linhaIndex) =>
-            linhaIndex === index
-              ? {
-                  ...linha,
-                  [name]: name === "quantidade" ? onlyDigits(value, 3) : value,
-                }
-              : linha,
-          ),
-        },
-        errors: {
-          ...currentFormState.errors,
-          [`linhas.${index}.${name}`]: "",
-        },
-      };
-    });
+    setFormState((currentState) => ({
+      resetKey,
+      values: {
+        ...currentState.values,
+        linhas: currentState.values.linhas.map((linha, linhaIndex) =>
+          linhaIndex === index
+            ? {
+                ...linha,
+                [name]: name === "quantidade" ? onlyDigits(value, 3) : value,
+              }
+            : linha,
+        ),
+      },
+      errors: {
+        ...currentState.errors,
+        [`linhas.${index}.${name}`]: "",
+      },
+    }));
   }
 
   function addLine() {
-    setFormState((currentState) => {
-      const currentFormState = getActiveFormState(
-        currentState,
-        resetKey,
-        resetValues,
-      );
-
-      return {
-        resetKey,
-        values: {
-          ...currentFormState.values,
-          linhas: [...currentFormState.values.linhas, createLine()],
-        },
-        errors: currentFormState.errors,
-      };
-    });
+    setFormState((currentState) => ({
+      resetKey,
+      values: {
+        ...currentState.values,
+        linhas: [...currentState.values.linhas, createLine()],
+      },
+      errors: currentState.errors,
+    }));
   }
 
   function removeLine(index) {
-    setFormState((currentState) => {
-      const currentFormState = getActiveFormState(
-        currentState,
-        resetKey,
-        resetValues,
-      );
-
-      return {
-        resetKey,
-        values: {
-          ...currentFormState.values,
-          linhas:
-            currentFormState.values.linhas.length === 1
-              ? currentFormState.values.linhas
-              : currentFormState.values.linhas.filter(
-                  (_, linhaIndex) => linhaIndex !== index,
-                ),
-        },
-        errors: {},
-      };
-    });
+    setFormState((currentState) => ({
+      resetKey,
+      values: {
+        ...currentState.values,
+        linhas:
+          currentState.values.linhas.length === 1
+            ? currentState.values.linhas
+            : currentState.values.linhas.filter(
+                (_, linhaIndex) => linhaIndex !== index,
+              ),
+      },
+      errors: {},
+    }));
   }
 
   async function handleSubmit(event) {
@@ -253,22 +219,14 @@ export function useReceitaCreateForm({
     const result = await onCreate(normalizePayload(values));
 
     if (!result?.ok) {
-      setFormState((currentState) => {
-        const currentFormState = getActiveFormState(
-          currentState,
-          resetKey,
-          resetValues,
-        );
-
-        return {
-          resetKey,
-          values: currentFormState.values,
-          errors: {
-            ...currentFormState.errors,
-            ...(result?.fieldErrors || {}),
-          },
-        };
-      });
+      setFormState((currentState) => ({
+        resetKey,
+        values: currentState.values,
+        errors: {
+          ...currentState.errors,
+          ...(result?.fieldErrors || {}),
+        },
+      }));
 
       return;
     }
