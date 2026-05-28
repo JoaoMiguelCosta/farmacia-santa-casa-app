@@ -7,7 +7,9 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "audit": "npm audit",
+    "validate": "npm run lint && npm run build && npm run audit"
   },
   "dependencies": {
     "react": "^19.2.6",

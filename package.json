@@ -2,12 +2,36 @@
   "name": "farmacia-santacasa-v2",
   "version": "1.0.0",
   "private": true,
+  "description": "Aplicação fullstack para gestão operacional entre Santa Casa e Farmácia.",
+  "license": "ISC",
   "scripts": {
+    "dev": "concurrently --kill-others-on-fail -n BACKEND,FRONTEND -c blue,green \"npm run dev:backend\" \"npm run dev:frontend\"",
     "dev:backend": "npm --prefix backend run dev",
-    "start:backend": "npm --prefix backend run start",
-    "prisma:studio": "npm --prefix backend run prisma:studio",
+    "dev:frontend": "npm --prefix frontend run dev",
+    "start:backend": "npm --prefix backend start",
+    "preview:frontend": "npm --prefix frontend run preview",
+    "install:backend": "npm install --prefix backend",
+    "install:frontend": "npm install --prefix frontend",
+    "install:all": "npm run install:backend && npm run install:frontend",
+    "build:frontend": "npm --prefix frontend run build",
+    "lint:frontend": "npm --prefix frontend run lint",
+    "test:backend": "npm --prefix backend run test -- --run",
+    "test:backend:unit": "npm --prefix backend run test:unit -- --run",
+    "test:backend:integration": "npm --prefix backend run test:integration -- --run",
+    "test:backend:e2e": "npm --prefix backend run test:e2e -- --run",
+    "test:backend:manual": "npm --prefix backend run test:manual",
+    "audit:backend": "npm --prefix backend audit",
+    "audit:frontend": "npm --prefix frontend audit",
+    "audit": "npm run audit:backend && npm run audit:frontend",
+    "validate:backend": "npm run test:backend:unit && npm run test:backend:integration && npm run test:backend:e2e && npm run audit:backend",
+    "validate:frontend": "npm run lint:frontend && npm run build:frontend && npm run audit:frontend",
+    "validate": "npm run validate:backend && npm run validate:frontend",
+    "prisma:generate": "npm --prefix backend run prisma:generate",
     "prisma:migrate": "npm --prefix backend run prisma:migrate",
-    "prisma:generate": "npm --prefix backend run prisma:generate"
+    "prisma:studio": "npm --prefix backend run prisma:studio",
+    "prisma:seed": "npm --prefix backend run prisma:seed"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "concurrently": "^9.0.0"
+  }
 }

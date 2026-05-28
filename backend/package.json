@@ -10,11 +10,13 @@
     "prisma:generate": "npx prisma generate",
     "prisma:studio": "npx prisma studio",
     "prisma:migrate": "npx prisma migrate dev",
+    "prisma:seed": "npx prisma db seed",
     "test": "vitest",
     "test:watch": "vitest --watch",
     "test:unit": "vitest tests/unit",
     "test:integration": "vitest tests/integration",
     "test:e2e": "vitest tests/e2e",
+    "test:all": "npm run test:unit -- --run && npm run test:integration -- --run && npm run test:e2e -- --run",
     "test:api": "node scripts/manual/test-current-api.js",
     "test:receita-expiry": "node scripts/manual/test-receita-expiry-job.js",
     "test:higiene": "node scripts/manual/test-higiene-job.js",
@@ -22,7 +24,9 @@
     "test:manual": "npm run test:api && npm run test:receita-expiry && npm run test:higiene && npm run test:purge-history",
     "job:receita-expiry": "node -e \"require('./src/jobs/receitaExpiry.job').runOnce().then(console.log).catch((e)=>{console.error(e);process.exit(1)})\"",
     "job:higiene": "node -e \"require('./src/jobs/higiene.job').runOnce().then(console.log).catch((e)=>{console.error(e);process.exit(1)})\"",
-    "job:purge-history": "node -e \"require('./src/jobs/purgeHistory.job').runOnce().then(console.log).catch((e)=>{console.error(e);process.exit(1)})\""
+    "job:purge-history": "node -e \"require('./src/jobs/purgeHistory.job').runOnce().then(console.log).catch((e)=>{console.error(e);process.exit(1)})\"",
+    "audit": "npm audit",
+    "validate": "npm run test:all && npm run audit"
   },
   "prisma": {
     "seed": "node prisma/seed.js"
