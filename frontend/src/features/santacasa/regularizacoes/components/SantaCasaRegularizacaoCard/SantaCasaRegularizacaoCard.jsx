@@ -1,5 +1,7 @@
 import { useState } from "react";
 
+import BarcodeValue from "../../../../../shared/ui/BarcodeValue/BarcodeValue";
+
 import styles from "./SantaCasaRegularizacaoCard.module.css";
 
 import { SANTACASA_REGULARIZACOES_PAGE } from "../../config/santaCasaRegularizacoesPage.config";
@@ -8,9 +10,6 @@ import {
   getEventoCreatedAtLabel,
   getEventoQuantidadeLabel,
   getEventoReceitaLinhaLabel,
-  getEventoReceitaNumeroLabel,
-  getEventoReceitaPinAcessoLabel,
-  getEventoReceitaPinOpcaoLabel,
   getEventoReceitaValidadeLabel,
   getRegularizacaoCreatedAtLabel,
   getRegularizacaoEventos,
@@ -29,7 +28,55 @@ import {
   hasRegularizacaoEventos,
 } from "../../utils/santaCasaRegularizacoes.utils";
 
+function getEventoReceita(evento) {
+  return evento?.receitaLinha?.receita ?? null;
+}
+
+function SantaCasaRegularizacaoReceitaBarcodes({ receita }) {
+  if (!receita) return null;
+
+  const codes = [
+    {
+      key: "numero19",
+      label: "N.º receita",
+      value: receita.numero19,
+      width: 0.72,
+    },
+    {
+      key: "pinAcesso6",
+      label: "PIN acesso",
+      value: receita.pinAcesso6,
+      width: 1.08,
+    },
+    {
+      key: "pinOpcao4",
+      label: "PIN opção",
+      value: receita.pinOpcao4,
+      width: 1.16,
+    },
+  ];
+
+  return (
+    <div className={styles.barcodePanel} aria-label="Códigos da receita">
+      {codes.map((code) => (
+        <BarcodeValue
+          key={code.key}
+          size="compact"
+          label={code.label}
+          value={code.value}
+          caption={code.value}
+          height={28}
+          width={code.width}
+          displayValue={false}
+        />
+      ))}
+    </div>
+  );
+}
+
 function SantaCasaRegularizacaoEvento({ evento }) {
+  const receita = getEventoReceita(evento);
+
   return (
     <li className={styles.event}>
       <div className={styles.eventMain}>
@@ -37,20 +84,7 @@ function SantaCasaRegularizacaoEvento({ evento }) {
           {getEventoReceitaLinhaLabel(evento)}
         </strong>
 
-        <span className={styles.eventMeta}>
-          {SANTACASA_REGULARIZACOES_PAGE.labels.receitaNumber}:{" "}
-          {getEventoReceitaNumeroLabel(evento)}
-        </span>
-
-        <span className={styles.eventMeta}>
-          {SANTACASA_REGULARIZACOES_PAGE.labels.pinAcesso}:{" "}
-          {getEventoReceitaPinAcessoLabel(evento)}
-        </span>
-
-        <span className={styles.eventMeta}>
-          {SANTACASA_REGULARIZACOES_PAGE.labels.pinOpcao}:{" "}
-          {getEventoReceitaPinOpcaoLabel(evento)}
-        </span>
+        <SantaCasaRegularizacaoReceitaBarcodes receita={receita} />
 
         <span className={styles.eventMeta}>
           {SANTACASA_REGULARIZACOES_PAGE.labels.validade}:{" "}

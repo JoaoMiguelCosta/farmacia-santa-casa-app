@@ -1,4 +1,5 @@
 import Button from "../../../../../shared/ui/Button/Button";
+import BarcodeValue from "../../../../../shared/ui/BarcodeValue/BarcodeValue";
 import DataState from "../../../../../shared/ui/DataState/DataState";
 import FormField from "../../../../../shared/ui/FormField/FormField";
 import SurfaceCard from "../../../../../shared/ui/SurfaceCard/SurfaceCard";
@@ -33,6 +34,96 @@ function getQuantityInfo(item) {
     quantidadeNoPedido,
     quantidadeNaOrigem,
   };
+}
+
+function extractReceitaNumber(description) {
+  const match = String(description || "").match(/receita\s+([0-9]+)/i);
+
+  return match?.[1] || "";
+}
+
+function extractPinAcesso(meta) {
+  const match = String(meta || "").match(/pin\s+([0-9]+)/i);
+
+  return match?.[1] || "";
+}
+
+function extractPinOpcao(meta) {
+  const match = String(meta || "").match(/opção\s+([0-9]+)/i);
+
+  return match?.[1] || "";
+}
+
+function getPedidoGeralReceita(item) {
+  if (item?.tipo !== "COM_RECEITA") return null;
+
+  const source = item?.source;
+
+  if (source?.receitaLinha?.receita) {
+    return source.receitaLinha.receita;
+  }
+
+  if (source?.receita) {
+    return source.receita;
+  }
+
+  if (source?.numero19 || source?.pinAcesso6 || source?.pinOpcao4) {
+    return source;
+  }
+
+  return {
+    numero19: extractReceitaNumber(item?.description),
+    pinAcesso6: extractPinAcesso(item?.meta),
+    pinOpcao4: extractPinOpcao(item?.meta),
+  };
+}
+
+function hasReceitaBarcodeData(receita) {
+  return Boolean(
+    receita?.numero19 || receita?.pinAcesso6 || receita?.pinOpcao4,
+  );
+}
+
+function PedidoGeralReceitaBarcodes({ receita }) {
+  if (!hasReceitaBarcodeData(receita)) return null;
+
+  const codes = [
+    {
+      key: "numero19",
+      label: "N.º receita",
+      value: receita.numero19,
+      width: 0.72,
+    },
+    {
+      key: "pinAcesso6",
+      label: "PIN acesso",
+      value: receita.pinAcesso6,
+      width: 1.08,
+    },
+    {
+      key: "pinOpcao4",
+      label: "PIN opção",
+      value: receita.pinOpcao4,
+      width: 1.16,
+    },
+  ];
+
+  return (
+    <div className={styles.barcodePanel} aria-label="Códigos da receita">
+      {codes.map((code) => (
+        <BarcodeValue
+          key={code.key}
+          size="compact"
+          label={code.label}
+          value={code.value}
+          caption={code.value}
+          height={28}
+          width={code.width}
+          displayValue={false}
+        />
+      ))}
+    </div>
+  );
 }
 
 function groupByUtente(items = []) {
@@ -135,6 +226,9 @@ export default function PedidoGeralList({
                       quantidadeNoPedido,
                     );
 
+                    const receita = getPedidoGeralReceita(item);
+                    const hasBarcodes = hasReceitaBarcodeData(receita);
+
                     return (
                       <article key={item.key} className={styles.item}>
                         <div className={styles.content}>
@@ -144,9 +238,17 @@ export default function PedidoGeralList({
 
                           <h4>{item.title}</h4>
 
-                          {item.description ? <p>{item.description}</p> : null}
+                          {hasBarcodes ? (
+                            <PedidoGeralReceitaBarcodes receita={receita} />
+                          ) : (
+                            <>
+                              {item.description ? (
+                                <p>{item.description}</p>
+                              ) : null}
 
-                          {item.meta ? <small>{item.meta}</small> : null}
+                              {item.meta ? <small>{item.meta}</small> : null}
+                            </>
+                          )}
 
                           <div className={styles.quantitySummary}>
                             <span>
@@ -175,6 +277,7 @@ export default function PedidoGeralList({
                               min="1"
                               max={maximoDisponivel}
                               value={item.quantidade}
+                              disabled={isSubmitting}
                               onChange={(event) =>
                                 onQuantityChange?.(item.key, event.target.value)
                               }
@@ -192,6 +295,9 @@ export default function PedidoGeralList({
                                 min="1"
                                 max={quantidadeNoPedido}
                                 value={returnQuantity}
+                                disabled={
+                                  isSubmitting || quantidadeNoPedido <= 0
+                                }
                                 onChange={(event) =>
                                   onReturnQuantityChange?.(
                                     item.key,
@@ -206,6 +312,7 @@ export default function PedidoGeralList({
                               type="button"
                               variant="secondary"
                               size="sm"
+                              disabled={isSubmitting || quantidadeNoPedido <= 0}
                               onClick={() =>
                                 onReturnQuantity?.(item.key, returnQuantity)
                               }
@@ -218,6 +325,7 @@ export default function PedidoGeralList({
                             type="button"
                             variant="ghost"
                             size="sm"
+                            disabled={isSubmitting}
                             onClick={() => onRemoveItem?.(item.key)}
                           >
                             Remover do pedido
@@ -232,11 +340,20 @@ export default function PedidoGeralList({
           </div>
 
           <footer className={styles.actions}>
-            <Button type="button" variant="secondary" onClick={onClearRequest}>
+            <Button
+              type="button"
+              variant="secondary"
+              disabled={isSubmitting}
+              onClick={onClearRequest}
+            >
               Limpar pedido geral
             </Button>
 
-            <Button type="submit" isLoading={isSubmitting}>
+            <Button
+              type="submit"
+              isLoading={isSubmitting}
+              disabled={isSubmitting}
+            >
               {isSubmitting ? "A enviar..." : "Enviar para Farmácia"}
             </Button>
           </footer>

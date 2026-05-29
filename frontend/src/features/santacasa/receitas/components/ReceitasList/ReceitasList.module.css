@@ -1,444 +1,222 @@
 .tableWrap {
-    position: relative;
-
     width: 100%;
-    min-width: 0;
     overflow-x: auto;
-    overflow-y: hidden;
-
-    border: 1px solid var(--clinic-border);
-    border-radius: var(--clinic-radius-lg);
-
-    background:
-        radial-gradient(circle at 100% 0%,
-            rgba(227, 207, 159, 0.1),
-            transparent 16rem),
-        rgba(255, 255, 255, 0.66);
-
-    box-shadow:
-        0 14px 34px rgba(16, 44, 54, 0.055),
-        inset 0 1px 0 rgba(255, 255, 255, 0.72);
-
-    scrollbar-width: thin;
-    scrollbar-color: rgba(31, 95, 81, 0.28) rgba(238, 245, 241, 0.8);
-}
-
-.tableWrap::-webkit-scrollbar {
-    height: 0.72rem;
-}
-
-.tableWrap::-webkit-scrollbar-track {
-    background: rgba(238, 245, 241, 0.8);
-}
-
-.tableWrap::-webkit-scrollbar-thumb {
-    border: 3px solid rgba(238, 245, 241, 0.8);
-    border-radius: 999px;
-
-    background: rgba(31, 95, 81, 0.28);
+    border: 1px solid rgb(18 72 54 / 0.12);
+    border-radius: var(--radius-lg);
+    background: var(--clinic-white);
+    box-shadow: 0 16px 36px rgb(24 73 56 / 0.08);
 }
 
 .table {
     width: 100%;
-    min-width: 1380px;
-
-    border-collapse: collapse;
-}
-
-.srOnly {
-    position: absolute;
-
-    width: 1px;
-    height: 1px;
-    margin: -1px;
-    padding: 0;
-
-    overflow: hidden;
-
-    border: 0;
-
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
+    min-width: 1280px;
+    border-collapse: separate;
+    border-spacing: 0;
 }
 
 .table th,
 .table td {
-    padding: 0.98rem 1rem;
-
-    border-bottom: 1px solid var(--clinic-border);
-
+    padding: 1rem 1.15rem;
     text-align: left;
     vertical-align: middle;
+    border-bottom: 1px solid rgb(18 72 54 / 0.1);
 }
 
 .table th {
-    position: sticky;
-    top: 0;
-    z-index: 2;
-
-    color: var(--clinic-muted-strong);
-
-    background:
-        linear-gradient(135deg,
-            rgba(255, 255, 255, 0.96),
-            rgba(238, 245, 241, 0.84));
-
-    box-shadow: inset 0 -1px 0 var(--clinic-border);
-
-    font-size: 0.74rem;
-    font-weight: 880;
-    letter-spacing: 0.11em;
-    line-height: 1.15;
+    color: var(--clinic-muted);
+    font-size: 0.76rem;
+    font-weight: 900;
+    letter-spacing: 0.12em;
+    line-height: 1.2;
     text-transform: uppercase;
-}
-
-.table td {
-    color: var(--clinic-ink-soft);
-
-    background: rgba(255, 255, 255, 0.28);
-
-    font-size: 0.94rem;
-    font-weight: 600;
-}
-
-.table th:last-child,
-.table td:last-child {
-    width: 1%;
-    text-align: right;
-    white-space: nowrap;
+    background:
+        linear-gradient(180deg, rgb(255 255 255 / 0.94), rgb(247 252 250 / 0.94)),
+        var(--clinic-surface);
 }
 
 .table tbody tr:last-child td {
     border-bottom: 0;
 }
 
-.table tbody tr {
-    transition:
-        background var(--clinic-transition),
-        box-shadow var(--clinic-transition);
+.table td {
+    color: var(--clinic-muted);
+    font-size: 0.9rem;
+    line-height: 1.45;
 }
 
-.table tbody tr:hover td {
-    background: rgba(220, 235, 228, 0.3);
-}
-
-.table strong {
+.table td strong {
     display: block;
-
     color: var(--clinic-ink);
-
     font-size: 0.96rem;
     font-weight: 850;
-    letter-spacing: -0.018em;
-    line-height: 1.18;
-}
-
-.table span {
-    display: block;
-
-    margin-top: 0.2rem;
-
-    color: var(--clinic-muted);
-
-    font-size: 0.76rem;
-    font-weight: 650;
     line-height: 1.35;
 }
 
+.table td span {
+    display: block;
+    margin-top: 0.18rem;
+    color: var(--clinic-muted);
+    font-size: 0.84rem;
+    font-weight: 650;
+}
+
+.table th:nth-child(1),
+.table td:nth-child(1) {
+    width: 19rem;
+    min-width: 19rem;
+}
+
+.table th:nth-child(2),
+.table td:nth-child(2) {
+    width: 36rem;
+    min-width: 36rem;
+}
+
+.table th:nth-child(3),
+.table td:nth-child(3) {
+    width: 17rem;
+    min-width: 17rem;
+}
+
+.table th:nth-child(4),
+.table td:nth-child(4) {
+    width: 10rem;
+    min-width: 10rem;
+}
+
+.table th:nth-child(5),
+.table td:nth-child(5) {
+    width: 8rem;
+    min-width: 8rem;
+}
+
+.table th:nth-child(6),
+.table td:nth-child(6) {
+    width: 8rem;
+    min-width: 8rem;
+}
+
+.table th:nth-child(7),
+.table td:nth-child(7) {
+    width: 11rem;
+    min-width: 11rem;
+}
+
 .groupCell {
-    min-width: 13.5rem;
-
+    vertical-align: middle;
     background:
-        radial-gradient(circle at 100% 0%,
-            rgba(227, 207, 159, 0.11),
-            transparent 12rem),
-        rgba(255, 255, 255, 0.5) !important;
-}
-
-.groupCell strong,
-.groupCell span {
-    max-width: 18rem;
-    overflow: hidden;
-
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.medicineCell {
-    min-width: 14rem;
-}
-
-.medicineCell span {
-    max-width: 19rem;
-    overflow: hidden;
-
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.dateValue {
-    color: var(--clinic-muted-strong) !important;
-
-    font-size: 0.84rem !important;
-    font-weight: 750 !important;
-    white-space: nowrap;
+        linear-gradient(180deg, rgb(255 255 255 / 0.52), rgb(247 252 250 / 0.42)),
+        transparent;
 }
 
 .status {
     display: inline-flex !important;
     align-items: center;
     justify-content: center;
-
     width: fit-content;
-    margin: 0 !important;
-    padding: 0.4rem 0.66rem;
-
-    border: 1px solid rgba(47, 125, 99, 0.2);
-    border-radius: 999px;
-
-    color: var(--clinic-success) !important;
-
-    background:
-        radial-gradient(circle at 30% 0%,
-            rgba(255, 255, 255, 0.66),
-            transparent 54%),
-        rgba(47, 125, 99, 0.1);
-
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.62);
-
-    font-size: 0.72rem !important;
-    font-weight: 880 !important;
-    letter-spacing: 0.07em;
-    line-height: 1;
+    min-height: 2rem;
+    padding: 0.35rem 0.72rem;
+    color: rgb(34 123 86) !important;
+    font-size: 0.76rem !important;
+    font-weight: 900 !important;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
+    border: 1px solid rgb(34 123 86 / 0.2);
+    border-radius: 999px;
+    background: rgb(232 247 240 / 0.85);
 }
 
-.pendente {
-    border: 1px solid rgba(184, 121, 45, 0.22);
-
-    color: var(--clinic-warning) !important;
-
+.barcodePanel {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(8.5rem, 1fr));
+    gap: 0.65rem;
+    width: min(100%, 32rem);
+    margin-top: 0.9rem;
+    padding: 0.7rem;
+    border: 1px solid rgb(18 72 54 / 0.1);
+    border-radius: var(--radius-lg);
     background:
-        radial-gradient(circle at 30% 0%,
-            rgba(255, 255, 255, 0.66),
-            transparent 54%),
-        rgba(184, 121, 45, 0.1);
-}
-
-.regularizado {
-    border: 1px solid rgba(47, 125, 99, 0.2);
-
-    color: var(--clinic-success) !important;
-
-    background:
-        radial-gradient(circle at 30% 0%,
-            rgba(255, 255, 255, 0.66),
-            transparent 54%),
-        rgba(47, 125, 99, 0.1);
-}
-
-.fefoBlockedRow td {
-    background:
-        radial-gradient(circle at 100% 0%,
-            rgba(198, 161, 91, 0.11),
-            transparent 15rem),
-        rgba(255, 250, 238, 0.5);
-}
-
-.fefoBlockedRow:hover td {
-    background:
-        radial-gradient(circle at 100% 0%,
-            rgba(198, 161, 91, 0.14),
-            transparent 15rem),
-        rgba(255, 250, 238, 0.62);
-}
-
-.fefoInlineNotice {
-    width: fit-content;
-    max-width: 21rem;
-    margin-top: 0.46rem !important;
-    padding: 0.38rem 0.54rem;
-
-    border: 1px solid rgba(198, 161, 91, 0.24);
-    border-radius: var(--clinic-radius-sm);
-
-    color: #73581e !important;
-    background: rgba(198, 161, 91, 0.1);
-
-    font-size: 0.72rem !important;
-    font-weight: 780 !important;
-    line-height: 1.3 !important;
-}
-
-.fefoNotice {
-    grid-column: 1 / -1;
-
-    max-width: 13.5rem;
-    margin: 0.16rem 0 0;
-    padding: 0.42rem 0.54rem;
-
-    border: 1px solid rgba(198, 161, 91, 0.24);
-    border-radius: var(--clinic-radius-sm);
-
-    color: #73581e;
-    background: rgba(198, 161, 91, 0.1);
-
-    font-size: 0.72rem;
-    font-weight: 780;
-    line-height: 1.32;
-    text-align: left;
-    white-space: normal;
-
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.68);
+        linear-gradient(180deg, rgb(255 255 255 / 0.9), rgb(247 252 250 / 0.94)),
+        var(--clinic-white);
+    box-shadow: 0 10px 26px rgb(24 73 56 / 0.07);
 }
 
 .actionCell {
     width: 1%;
-    min-width: 164px;
-
+    min-width: 9rem;
     white-space: nowrap;
 }
 
 .actionStack {
     display: grid;
-    grid-template-columns: 58px minmax(112px, auto);
-    gap: 0.46rem;
-    align-items: center;
-    justify-content: end;
+    gap: 0.55rem;
+    min-width: 8rem;
 }
 
 .actionStack label {
-    grid-column: 1 / -1;
-
     color: var(--clinic-muted);
-
-    font-size: 0.7rem;
-    font-weight: 880;
-    letter-spacing: 0.085em;
-    line-height: 1;
-    text-align: left;
+    font-size: 0.72rem;
+    font-weight: 850;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
 }
 
 .actionStack input {
-    width: 58px;
+    width: 5.5rem;
     min-height: 2.35rem;
-    padding: 0.45rem 0.56rem;
-
-    border: 1px solid var(--clinic-border);
-    border-radius: var(--clinic-radius-sm);
-
+    padding: 0.35rem 0.55rem;
     color: var(--clinic-ink);
-
-    background:
-        radial-gradient(circle at 100% 0%,
-            rgba(227, 207, 159, 0.08),
-            transparent 8rem),
-        rgba(255, 255, 255, 0.88);
-
-    box-shadow:
-        0 8px 20px rgba(16, 44, 54, 0.04),
-        inset 0 1px 0 rgba(255, 255, 255, 0.72);
-
     font: inherit;
-    font-size: 0.88rem;
-    font-weight: 850;
-    text-align: center;
-
-    transition:
-        border-color var(--clinic-transition),
-        box-shadow var(--clinic-transition),
-        background var(--clinic-transition);
-}
-
-.actionStack input:hover:not(:disabled) {
-    border-color: var(--clinic-border-strong);
-    background: rgba(255, 255, 255, 0.96);
+    font-weight: 750;
+    border: 1px solid rgb(18 72 54 / 0.16);
+    border-radius: var(--radius-sm);
+    background: rgb(255 255 255 / 0.94);
 }
 
 .actionStack input:focus {
-    outline: none;
-
-    border-color: rgba(47, 125, 99, 0.42);
-
-    box-shadow:
-        0 0 0 4px rgba(47, 125, 99, 0.12),
-        0 12px 28px rgba(16, 44, 54, 0.07);
+    outline: 3px solid rgb(76 175 134 / 0.18);
+    border-color: rgb(34 123 86 / 0.45);
 }
 
 .actionStack input:disabled {
     cursor: not-allowed;
-    opacity: 0.62;
-
-    background: rgba(238, 245, 241, 0.66);
+    opacity: 0.55;
 }
 
-.actionStack input::-webkit-outer-spin-button,
-.actionStack input::-webkit-inner-spin-button {
+.fefoBlockedRow {
+    background: rgb(255 248 232 / 0.55);
+}
+
+.fefoInlineNotice {
+    max-width: 26ch;
+    margin-top: 0.55rem !important;
+    color: rgb(143 92 21) !important;
+    font-size: 0.78rem !important;
+    font-weight: 800 !important;
+}
+
+.fefoNotice {
+    max-width: 16rem;
     margin: 0;
-
-    appearance: none;
-}
-
-.actionStack input[type="number"] {
-    appearance: textfield;
+    color: rgb(143 92 21);
+    font-size: 0.76rem;
+    font-weight: 750;
+    line-height: 1.35;
 }
 
 @media (max-width: 980px) {
     .table {
-        min-width: 1300px;
+        min-width: 1060px;
     }
 
-    .table th,
-    .table td {
-        padding: 0.9rem 0.86rem;
-    }
-}
-
-@media (max-width: 720px) {
-    .tableWrap {
-        border-radius: var(--clinic-radius-md);
+    .table th:nth-child(2),
+    .table td:nth-child(2) {
+        width: 20rem;
+        min-width: 20rem;
     }
 
-    .table {
-        min-width: 1200px;
-    }
-
-    .actionStack {
-        grid-template-columns: 54px minmax(104px, auto);
-    }
-
-    .actionStack input {
-        width: 54px;
-    }
-}
-
-@media (max-width: 420px) {
-    .table {
-        min-width: 1140px;
-    }
-
-    .table th,
-    .table td {
-        padding: 0.82rem 0.76rem;
-    }
-
-    .table strong {
-        font-size: 0.9rem;
-    }
-
-    .table span {
-        font-size: 0.72rem;
-    }
-
-    .status {
-        padding: 0.36rem 0.56rem;
-
-        font-size: 0.66rem !important;
-    }
-
-    .fefoNotice,
-    .fefoInlineNotice {
-        font-size: 0.68rem !important;
+    .barcodePanel {
+        grid-template-columns: 1fr;
+        width: min(100%, 16rem);
     }
 }

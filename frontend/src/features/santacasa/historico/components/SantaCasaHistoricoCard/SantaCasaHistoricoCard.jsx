@@ -1,5 +1,7 @@
 import { useState } from "react";
 
+import BarcodeValue from "../../../../../shared/ui/BarcodeValue/BarcodeValue";
+
 import styles from "./SantaCasaHistoricoCard.module.css";
 
 import { SANTACASA_HISTORICO_PAGE } from "../../config/santaCasaHistoricoPage.config";
@@ -100,7 +102,57 @@ function getItemStatusClassName(item) {
     .join(" ");
 }
 
+function getHistoricoItemReceita(item) {
+  if (item?.tipo !== "COM_RECEITA") return null;
+
+  return item?.receitaLinha?.receita ?? null;
+}
+
+function HistoricoReceitaBarcodes({ receita }) {
+  if (!receita) return null;
+
+  const codes = [
+    {
+      key: "numero19",
+      label: "N.º receita",
+      value: receita.numero19,
+      width: 0.72,
+    },
+    {
+      key: "pinAcesso6",
+      label: "PIN acesso",
+      value: receita.pinAcesso6,
+      width: 1.08,
+    },
+    {
+      key: "pinOpcao4",
+      label: "PIN opção",
+      value: receita.pinOpcao4,
+      width: 1.16,
+    },
+  ];
+
+  return (
+    <div className={styles.barcodePanel} aria-label="Códigos da receita">
+      {codes.map((code) => (
+        <BarcodeValue
+          key={code.key}
+          size="compact"
+          label={code.label}
+          value={code.value}
+          caption={code.value}
+          height={28}
+          width={code.width}
+          displayValue={false}
+        />
+      ))}
+    </div>
+  );
+}
+
 function SantaCasaHistoricoItem({ item }) {
+  const receita = getHistoricoItemReceita(item);
+
   return (
     <li className={getItemClassName(item)}>
       <div className={styles.itemMain}>
@@ -118,13 +170,19 @@ function SantaCasaHistoricoItem({ item }) {
           {getHistoricoPedidoItemMedicamentoLabel(item)}
         </strong>
 
-        <span className={styles.itemReference}>
-          {getHistoricoPedidoItemReferenceLabel(item)}
-        </span>
+        {receita ? (
+          <HistoricoReceitaBarcodes receita={receita} />
+        ) : (
+          <>
+            <span className={styles.itemReference}>
+              {getHistoricoPedidoItemReferenceLabel(item)}
+            </span>
 
-        <span className={styles.itemMeta}>
-          {getHistoricoPedidoItemMetaLabel(item)}
-        </span>
+            <span className={styles.itemMeta}>
+              {getHistoricoPedidoItemMetaLabel(item)}
+            </span>
+          </>
+        )}
       </div>
 
       <div className={styles.itemSide}>

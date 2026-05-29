@@ -1,4 +1,5 @@
 import Button from "../../../../../shared/ui/Button/Button";
+import BarcodeValue from "../../../../../shared/ui/BarcodeValue/BarcodeValue";
 import DataState from "../../../../../shared/ui/DataState/DataState";
 import SurfaceCard from "../../../../../shared/ui/SurfaceCard/SurfaceCard";
 
@@ -57,6 +58,72 @@ function getPedidoUtentesLabel(pedido) {
     .join(", ");
 }
 
+function getPedidoItemReceita(item) {
+  if (item?.tipo !== "COM_RECEITA") return null;
+
+  if (item?.receitaLinha?.receita) {
+    return item.receitaLinha.receita;
+  }
+
+  if (item?.receita) {
+    return item.receita;
+  }
+
+  if (item?.numero19 || item?.pinAcesso6 || item?.pinOpcao4) {
+    return item;
+  }
+
+  return null;
+}
+
+function hasReceitaBarcodeData(receita) {
+  return Boolean(
+    receita?.numero19 || receita?.pinAcesso6 || receita?.pinOpcao4,
+  );
+}
+
+function PedidoPendingReceitaBarcodes({ receita }) {
+  if (!hasReceitaBarcodeData(receita)) return null;
+
+  const codes = [
+    {
+      key: "numero19",
+      label: "N.º receita",
+      value: receita.numero19,
+      width: 0.72,
+    },
+    {
+      key: "pinAcesso6",
+      label: "PIN acesso",
+      value: receita.pinAcesso6,
+      width: 1.08,
+    },
+    {
+      key: "pinOpcao4",
+      label: "PIN opção",
+      value: receita.pinOpcao4,
+      width: 1.16,
+    },
+  ];
+
+  return (
+    <div className={styles.barcodePanel} aria-label="Códigos da receita">
+      {codes.map((code) => (
+        <BarcodeValue
+          key={code.key}
+          size="compact"
+          label={code.label}
+          value={code.value}
+          caption={code.value}
+          height={28}
+          width={code.width}
+          displayValue={false}
+        />
+      ))}
+    </div>
+  );
+}
+
 function getPaginationLabel({ meta, currentPage, totalPages }) {
   const total = Number(meta?.total) || 0;
   const skip = Number(meta?.skip) || 0;
@@ -70,6 +137,26 @@ function getPaginationLabel({ meta, currentPage, totalPages }) {
   const end = Math.min(skip + take, total);
 
   return `A mostrar ${start}-${end} de ${total} pedido(s). Página ${currentPage} de ${totalPages}.`;
+}
+
+function PedidoPendingItem({ item }) {
+  const receita = getPedidoItemReceita(item);
+
+  return (
+    <li className={styles.item}>
+      <div className={styles.itemMain}>
+        <span className={styles.itemType}>{getTypeLabel(item.tipo)}</span>
+
+        <strong>{item.medicamento || "Medicamento"}</strong>
+
+        <PedidoPendingReceitaBarcodes receita={receita} />
+      </div>
+
+      <span className={styles.itemQuantity}>
+        Qtd. {Number(item.quantidade) || 0}
+      </span>
+    </li>
+  );
 }
 
 function PedidoPendingCard({ pedido, isCanceling = false, onCancelRequest }) {
@@ -110,13 +197,7 @@ function PedidoPendingCard({ pedido, isCanceling = false, onCancelRequest }) {
 
       <ul className={styles.items} aria-label="Itens do pedido pendente">
         {items.map((item) => (
-          <li key={item.id} className={styles.item}>
-            <span className={styles.itemType}>{getTypeLabel(item.tipo)}</span>
-
-            <strong>{item.medicamento || "Medicamento"}</strong>
-
-            <span>Qtd. {Number(item.quantidade) || 0}</span>
-          </li>
+          <PedidoPendingItem key={item.id} item={item} />
         ))}
       </ul>
 

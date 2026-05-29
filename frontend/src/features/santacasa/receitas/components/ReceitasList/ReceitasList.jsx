@@ -1,4 +1,5 @@
 import Button from "../../../../../shared/ui/Button/Button";
+import BarcodeValue from "../../../../../shared/ui/BarcodeValue/BarcodeValue";
 import DataState from "../../../../../shared/ui/DataState/DataState";
 import SurfaceCard from "../../../../../shared/ui/SurfaceCard/SurfaceCard";
 import { formatDateTime } from "../../../../../shared/utils/formatDate";
@@ -129,6 +130,46 @@ function getInputQuantity(value, max) {
   return Math.min(quantity, max);
 }
 
+function ReceitaBarcodes({ receita }) {
+  const codes = [
+    {
+      key: "numero19",
+      label: "N.º receita",
+      value: receita.numero19,
+      width: 0.72,
+    },
+    {
+      key: "pinAcesso6",
+      label: "PIN acesso",
+      value: receita.pinAcesso6,
+      width: 1.08,
+    },
+    {
+      key: "pinOpcao4",
+      label: "PIN opção",
+      value: receita.pinOpcao4,
+      width: 1.16,
+    },
+  ];
+
+  return (
+    <div className={styles.barcodePanel} aria-label="Códigos da receita">
+      {codes.map((code) => (
+        <BarcodeValue
+          key={code.key}
+          size="compact"
+          label={code.label}
+          value={code.value}
+          caption={code.value}
+          height={28}
+          width={code.width}
+          displayValue={false}
+        />
+      ))}
+    </div>
+  );
+}
+
 export default function ReceitasList({
   receitas = [],
   selectedUtenteId = "",
@@ -219,11 +260,14 @@ export default function ReceitasList({
                 const pedidoItem = buildPedidoItem(linha);
                 const quantidadeEmPedido =
                   Number(pedidoItemsQuantities[pedidoItem.key]) || 0;
+
                 const isDeleteBlocked = quantidadeEmPedido > 0;
+
                 const quantidadeDisponivel = Math.max(
                   0,
                   pedidoItem.quantidadeRestante - quantidadeEmPedido,
                 );
+
                 const quantity = getInputQuantity(
                   pedidoQuantities[pedidoItem.key],
                   quantidadeDisponivel,
@@ -231,6 +275,7 @@ export default function ReceitasList({
 
                 const isDeleting = deletingLinhaId === linha.linhaId;
                 const isFirstRecipeLine = index === 0;
+
                 const isBlockedByFefo = hasEarlierAvailableReceita({
                   linha,
                   receitas,
@@ -264,10 +309,7 @@ export default function ReceitasList({
                         rowSpan={group.linhas.length}
                         className={styles.groupCell}
                       >
-                        <strong>{linha.numero19}</strong>
-                        <span>
-                          PIN {linha.pinAcesso6} · Opção {linha.pinOpcao4}
-                        </span>
+                        <ReceitaBarcodes receita={linha} />
                       </td>
                     ) : null}
 

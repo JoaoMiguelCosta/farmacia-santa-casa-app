@@ -1,3 +1,5 @@
+import BarcodeValue from "../../../../../../shared/ui/BarcodeValue/BarcodeValue";
+
 import styles from "./FarmaciaPedidoCard.module.css";
 
 import { FARMACIA_PEDIDO_UI } from "../../config/farmaciaPedidoUi.config";
@@ -21,7 +23,57 @@ import {
   hasPedidoClosedReason,
 } from "../../utils/farmaciaPedido.utils";
 
+function getPedidoItemReceita(item) {
+  if (item?.tipo !== "COM_RECEITA") return null;
+
+  return item?.receitaLinha?.receita ?? null;
+}
+
+function PedidoItemReceitaBarcodes({ receita }) {
+  if (!receita) return null;
+
+  const codes = [
+    {
+      key: "numero19",
+      label: "N.º receita",
+      value: receita.numero19,
+      width: 0.72,
+    },
+    {
+      key: "pinAcesso6",
+      label: "PIN acesso",
+      value: receita.pinAcesso6,
+      width: 1.08,
+    },
+    {
+      key: "pinOpcao4",
+      label: "PIN opção",
+      value: receita.pinOpcao4,
+      width: 1.16,
+    },
+  ];
+
+  return (
+    <div className={styles.barcodePanel} aria-label="Códigos da receita">
+      {codes.map((code) => (
+        <BarcodeValue
+          key={code.key}
+          size="compact"
+          label={code.label}
+          value={code.value}
+          caption={code.value}
+          height={28}
+          width={code.width}
+          displayValue={false}
+        />
+      ))}
+    </div>
+  );
+}
+
 function FarmaciaPedidoItem({ item }) {
+  const receita = getPedidoItemReceita(item);
+
   return (
     <li className={styles.item}>
       <div className={styles.itemMain}>
@@ -39,11 +91,19 @@ function FarmaciaPedidoItem({ item }) {
           {getPedidoItemMedicamentoLabel(item)}
         </strong>
 
-        <span className={styles.itemReference}>
-          {getPedidoItemReferenceLabel(item)}
-        </span>
+        {receita ? (
+          <PedidoItemReceitaBarcodes receita={receita} />
+        ) : (
+          <>
+            <span className={styles.itemReference}>
+              {getPedidoItemReferenceLabel(item)}
+            </span>
 
-        <span className={styles.itemMeta}>{getPedidoItemMetaLabel(item)}</span>
+            <span className={styles.itemMeta}>
+              {getPedidoItemMetaLabel(item)}
+            </span>
+          </>
+        )}
       </div>
 
       <div className={styles.itemSide}>
