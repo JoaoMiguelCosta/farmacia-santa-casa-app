@@ -2,6 +2,8 @@ import Button from "../../../../../shared/ui/Button/Button";
 import FormField from "../../../../../shared/ui/FormField/FormField";
 import SurfaceCard from "../../../../../shared/ui/SurfaceCard/SurfaceCard";
 
+import MedicamentoAutocomplete from "../../../medicacao-habitual/components/MedicamentoAutocomplete/MedicamentoAutocomplete";
+
 import { RECEITAS_PAGE } from "../../config/receitasPage.config";
 import { useReceitaCreateForm } from "../../hooks/useReceitaCreateForm";
 
@@ -12,6 +14,7 @@ export default function ReceitaCreateForm({
   onCreate,
   isSubmitting = false,
   resetKey = 0,
+  medicacaoHabitualOptions = [],
 }) {
   const {
     values,
@@ -135,24 +138,19 @@ export default function ReceitaCreateForm({
                 <legend>Linha {index + 1}</legend>
 
                 <div className={styles.lineGrid}>
-                  <FormField
+                  <MedicamentoAutocomplete
                     id={`${baseId}-medicamento`}
                     label={RECEITAS_PAGE.fields.medicamento.label}
+                    placeholder={RECEITAS_PAGE.fields.medicamento.placeholder}
+                    value={linha.medicamento}
+                    options={medicacaoHabitualOptions}
                     error={errors[`linhas.${index}.medicamento`]}
+                    disabled={isDisabled}
                     required
-                  >
-                    <input
-                      id={`${baseId}-medicamento`}
-                      type="text"
-                      placeholder={RECEITAS_PAGE.fields.medicamento.placeholder}
-                      value={linha.medicamento}
-                      onChange={(event) =>
-                        updateLine(index, "medicamento", event.target.value)
-                      }
-                      disabled={isDisabled}
-                      autoComplete="off"
-                    />
-                  </FormField>
+                    onChange={(value) =>
+                      updateLine(index, "medicamento", value)
+                    }
+                  />
 
                   <FormField
                     id={`${baseId}-quantidade`}

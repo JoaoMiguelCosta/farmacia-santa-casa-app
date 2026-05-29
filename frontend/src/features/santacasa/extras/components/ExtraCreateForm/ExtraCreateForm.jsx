@@ -2,6 +2,8 @@ import Button from "../../../../../shared/ui/Button/Button";
 import FormField from "../../../../../shared/ui/FormField/FormField";
 import SurfaceCard from "../../../../../shared/ui/SurfaceCard/SurfaceCard";
 
+import MedicamentoAutocomplete from "../../../medicacao-habitual/components/MedicamentoAutocomplete/MedicamentoAutocomplete";
+
 import { EXTRAS_PAGE } from "../../config/extrasPage.config";
 import { useExtraCreateForm } from "../../hooks/useExtraCreateForm";
 
@@ -11,6 +13,7 @@ export default function ExtraCreateForm({
   selectedUtenteId,
   onCreate,
   isSubmitting = false,
+  medicacaoHabitualOptions = [],
 }) {
   const {
     values,
@@ -39,25 +42,18 @@ export default function ExtraCreateForm({
         ) : null}
 
         <div className={styles.grid}>
-          <FormField
+          <MedicamentoAutocomplete
             id={EXTRAS_PAGE.fields.medicamento.id}
             label={EXTRAS_PAGE.fields.medicamento.label}
             hint={EXTRAS_PAGE.fields.medicamento.hint}
+            placeholder={EXTRAS_PAGE.fields.medicamento.placeholder}
+            value={values.medicamento}
+            options={medicacaoHabitualOptions}
             error={errors.medicamento}
+            disabled={isDisabled}
             required
-          >
-            <input
-              id={EXTRAS_PAGE.fields.medicamento.id}
-              type="text"
-              placeholder={EXTRAS_PAGE.fields.medicamento.placeholder}
-              value={values.medicamento}
-              onChange={(event) =>
-                updateField("medicamento", event.target.value)
-              }
-              disabled={isDisabled}
-              autoComplete="off"
-            />
-          </FormField>
+            onChange={(value) => updateField("medicamento", value)}
+          />
 
           <FormField
             id={EXTRAS_PAGE.fields.quantidadeSolicitada.id}

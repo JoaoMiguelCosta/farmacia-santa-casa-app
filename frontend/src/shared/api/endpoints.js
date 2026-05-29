@@ -37,6 +37,11 @@ export const API_ENDPOINTS = Object.freeze({
     archiveUtente: (utenteId) => `/santacasa/utentes/${utenteId}/archive`,
     reactivateUtente: (utenteId) => `/santacasa/utentes/${utenteId}/reactivate`,
 
+    medicacaoHabitual: (utenteId) =>
+      `/santacasa/utentes/${utenteId}/medicacao-habitual`,
+    medicacaoHabitualById: (utenteId, medicacaoId) =>
+      `/santacasa/utentes/${utenteId}/medicacao-habitual/${medicacaoId}`,
+
     semReceita: (utenteId) => `/santacasa/utentes/${utenteId}/sem-receita`,
     semReceitaById: (utenteId, semReceitaId) =>
       `/santacasa/utentes/${utenteId}/sem-receita/${semReceitaId}`,

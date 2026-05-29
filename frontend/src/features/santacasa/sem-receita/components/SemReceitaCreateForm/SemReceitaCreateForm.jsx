@@ -2,6 +2,8 @@ import Button from "../../../../../shared/ui/Button/Button";
 import FormField from "../../../../../shared/ui/FormField/FormField";
 import SurfaceCard from "../../../../../shared/ui/SurfaceCard/SurfaceCard";
 
+import MedicamentoAutocomplete from "../../../medicacao-habitual/components/MedicamentoAutocomplete/MedicamentoAutocomplete";
+
 import { SEM_RECEITA_PAGE } from "../../config/semReceitaPage.config";
 import { useSemReceitaCreateForm } from "../../hooks/useSemReceitaCreateForm";
 
@@ -11,6 +13,7 @@ export default function SemReceitaCreateForm({
   selectedUtenteId,
   onCreate,
   isSubmitting = false,
+  medicacaoHabitualOptions = [],
 }) {
   const {
     values,
@@ -39,25 +42,18 @@ export default function SemReceitaCreateForm({
         ) : null}
 
         <div className={styles.grid}>
-          <FormField
+          <MedicamentoAutocomplete
             id={SEM_RECEITA_PAGE.fields.medicamento.id}
             label={SEM_RECEITA_PAGE.fields.medicamento.label}
             hint={SEM_RECEITA_PAGE.fields.medicamento.hint}
+            placeholder={SEM_RECEITA_PAGE.fields.medicamento.placeholder}
+            value={values.medicamento}
+            options={medicacaoHabitualOptions}
             error={errors.medicamento}
+            disabled={isDisabled}
             required
-          >
-            <input
-              id={SEM_RECEITA_PAGE.fields.medicamento.id}
-              type="text"
-              placeholder={SEM_RECEITA_PAGE.fields.medicamento.placeholder}
-              value={values.medicamento}
-              onChange={(event) =>
-                updateField("medicamento", event.target.value)
-              }
-              disabled={isDisabled}
-              autoComplete="off"
-            />
-          </FormField>
+            onChange={(value) => updateField("medicamento", value)}
+          />
 
           <FormField
             id={SEM_RECEITA_PAGE.fields.quantidade.id}

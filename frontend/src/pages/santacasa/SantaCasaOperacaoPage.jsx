@@ -19,6 +19,9 @@ import SemReceitaList from "../../features/santacasa/sem-receita/components/SemR
 import ExtraCreateForm from "../../features/santacasa/extras/components/ExtraCreateForm/ExtraCreateForm";
 import ExtrasList from "../../features/santacasa/extras/components/ExtrasList/ExtrasList";
 
+import MedicacaoHabitualManager from "../../features/santacasa/medicacao-habitual/components/MedicacaoHabitualManager/MedicacaoHabitualManager";
+import { useMedicacaoHabitual } from "../../features/santacasa/medicacao-habitual/hooks/useMedicacaoHabitual";
+
 import { usePedidoDraft } from "../../features/santacasa/pedidos/state/usePedidoDraft";
 
 import OperationSection from "../../features/santacasa/operacao/components/OperationSection/OperationSection";
@@ -57,6 +60,10 @@ export default function SantaCasaOperacaoPage() {
     handleSelectUtente,
     refreshOperationData,
   } = useSantaCasaOperacao();
+
+  const medicacaoHabitual = useMedicacaoHabitual({
+    selectedUtenteId,
+  });
 
   const {
     items: pedidoDraftItems,
@@ -166,6 +173,7 @@ export default function SantaCasaOperacaoPage() {
   );
 
   const isReceitaBusy = isCreatingReceita || isConfirmingRegularizacao;
+  const medicacaoHabitualOptions = medicacaoHabitual.options;
 
   return (
     <section className={styles.page} aria-labelledby="operacao-title">
@@ -242,6 +250,12 @@ export default function SantaCasaOperacaoPage() {
         ) : null}
       </SurfaceCard>
 
+      <MedicacaoHabitualManager
+        selectedUtenteId={selectedUtenteId}
+        selectedUtente={selectedUtente}
+        controller={medicacaoHabitual}
+      />
+
       <SurfaceCard
         eyebrow="Pedido geral"
         title="Itens selecionados para Farmácia"
@@ -272,6 +286,7 @@ export default function SantaCasaOperacaoPage() {
             onCreate={handleCreateReceita}
             isSubmitting={isReceitaBusy}
             resetKey={receitaFormResetKey}
+            medicacaoHabitualOptions={medicacaoHabitualOptions}
           />
 
           <ReceitasList
@@ -302,6 +317,7 @@ export default function SantaCasaOperacaoPage() {
             selectedUtenteId={selectedUtenteId}
             onCreate={handleCreateSemReceita}
             isSubmitting={isCreatingSemReceita}
+            medicacaoHabitualOptions={medicacaoHabitualOptions}
           />
 
           <SemReceitaList
@@ -331,6 +347,7 @@ export default function SantaCasaOperacaoPage() {
             selectedUtenteId={selectedUtenteId}
             onCreate={handleCreateExtra}
             isSubmitting={isCreatingExtra}
+            medicacaoHabitualOptions={medicacaoHabitualOptions}
           />
 
           <ExtrasList

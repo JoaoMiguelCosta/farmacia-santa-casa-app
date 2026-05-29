@@ -100,11 +100,12 @@ model Utente {
   archivedById   String?
   archivedBy     User?        @relation("UtenteArchivedBy", fields: [archivedById], references: [id], onDelete: SetNull)
 
-  receitas       Receita[]
-  semReceita     SemReceita[]
-  extras         Extra[]
-  pedidoItens    PedidoItem[]
-  regularizacoes RegularizacaoExtra[]
+  receitas            Receita[]
+  semReceita          SemReceita[]
+  extras              Extra[]
+  pedidoItens         PedidoItem[]
+  regularizacoes      RegularizacaoExtra[]
+  medicacoesHabituais MedicacaoHabitual[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -117,6 +118,23 @@ model Utente {
   @@index([status, nome])
   @@index([deletedAt, status, nome])
   @@index([deletedAt, status, numero9])
+}
+
+model MedicacaoHabitual {
+  id       String @id @default(cuid())
+  utenteId String
+  utente   Utente @relation(fields: [utenteId], references: [id])
+
+  medicamento     String
+  medicamentoNorm String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([utenteId, medicamentoNorm])
+  @@index([utenteId])
+  @@index([medicamentoNorm])
+  @@index([utenteId, createdAt])
 }
 
 model Medicamento {
