@@ -395,6 +395,7 @@ async function applyPendingToLinhasTx(tx, { utenteId, receitaLinhaIds = [] }) {
     return {
       totalRegularizado: 0,
       totalEventos: 0,
+      regularizacoesAtualizadas: [],
     };
   }
 
@@ -428,6 +429,8 @@ async function applyPendingToLinhasTx(tx, { utenteId, receitaLinhaIds = [] }) {
 
   let totalRegularizado = 0;
   let totalEventos = 0;
+
+  const regularizacaoIdsAtualizadas = new Set();
 
   for (const linha of linhas) {
     let disponivelLinha = Math.max(
@@ -481,6 +484,7 @@ async function applyPendingToLinhasTx(tx, { utenteId, receitaLinhaIds = [] }) {
       if (faltaRegularizar <= 0) continue;
 
       const quantidadeUsada = Math.min(faltaRegularizar, disponivelLinha);
+      const novaRegularizada = regularizadaAtual + quantidadeUsada;
 
       await tx.regularizacaoEvento.create({
         data: {
@@ -489,8 +493,6 @@ async function applyPendingToLinhasTx(tx, { utenteId, receitaLinhaIds = [] }) {
           quantidade: quantidadeUsada,
         },
       });
-
-      const novaRegularizada = regularizadaAtual + quantidadeUsada;
 
       await tx.regularizacaoExtra.update({
         where: {
@@ -519,15 +521,33 @@ async function applyPendingToLinhasTx(tx, { utenteId, receitaLinhaIds = [] }) {
         },
       });
 
+      regularizacaoIdsAtualizadas.add(pendente.id);
+
       disponivelLinha -= quantidadeUsada;
       totalRegularizado += quantidadeUsada;
       totalEventos += 1;
     }
   }
 
+  const regularizacaoIds = Array.from(regularizacaoIdsAtualizadas);
+
+  const regularizacoesAtualizadas =
+    regularizacaoIds.length > 0
+      ? await tx.regularizacaoExtra.findMany({
+          where: {
+            id: {
+              in: regularizacaoIds,
+            },
+          },
+          select: regularizacaoSelect,
+          orderBy: [{ updatedAt: "desc" }, { createdAt: "desc" }],
+        })
+      : [];
+
   return {
     totalRegularizado,
     totalEventos,
+    regularizacoesAtualizadas,
   };
 }
 

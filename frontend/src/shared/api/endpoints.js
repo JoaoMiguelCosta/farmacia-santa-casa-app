@@ -39,8 +39,8 @@ export const API_ENDPOINTS = Object.freeze({
 
     medicacaoHabitual: (utenteId) =>
       `/santacasa/utentes/${utenteId}/medicacao-habitual`,
-    medicacaoHabitualById: (utenteId, medicacaoId) =>
-      `/santacasa/utentes/${utenteId}/medicacao-habitual/${medicacaoId}`,
+    medicacaoHabitualById: (utenteId, medicacaoHabitualId) =>
+      `/santacasa/utentes/${utenteId}/medicacao-habitual/${medicacaoHabitualId}`,
 
     semReceita: (utenteId) => `/santacasa/utentes/${utenteId}/sem-receita`,
     semReceitaById: (utenteId, semReceitaId) =>
@@ -69,6 +69,10 @@ export const API_ENDPOINTS = Object.freeze({
     health: "/farmacia/health",
 
     dashboard: "/farmacia/dashboard/sinais",
+
+    alertas: "/farmacia/alertas",
+    alertaDismiss: (alertaId) => `/farmacia/alertas/${alertaId}/dismiss`,
+    alertasDismissAll: "/farmacia/alertas/dismiss-all",
 
     pedidos: "/farmacia/pedidos",
     validarPedido: (pedidoId) => `/farmacia/pedidos/${pedidoId}/validar`,

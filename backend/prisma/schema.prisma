@@ -62,6 +62,16 @@ enum UserRole {
   ADMIN
 }
 
+enum AlertaOperacionalTipo {
+  PEDIDO_ENVIADO
+  REGULARIZACAO_PARCIAL
+  REGULARIZACAO_TOTAL
+}
+
+enum AlertaOperacionalDestino {
+  FARMACIA
+}
+
 model User {
   id           String   @id @default(cuid())
   name         String
@@ -77,6 +87,8 @@ model User {
   rejectedPedidoItems PedidoItem[] @relation("PedidoItemRejectedBy")
 
   archivedUtentes Utente[] @relation("UtenteArchivedBy")
+
+  alertaDismissals AlertaOperacionalDismissal[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -421,4 +433,40 @@ model RegularizacaoEvento {
   @@index([createdAt])
   @@index([regularizacaoId, createdAt])
   @@index([receitaLinhaId, createdAt])
+}
+
+model AlertaOperacional {
+  id              String                    @id @default(cuid())
+  tipo            AlertaOperacionalTipo
+  destino         AlertaOperacionalDestino
+  titulo          String
+  mensagem        String
+  pedidoId        String?
+  regularizacaoId String?
+  utenteId        String?
+  metadata        Json?
+  idempotencyKey  String                    @unique
+  createdAt       DateTime                  @default(now())
+  updatedAt       DateTime                  @updatedAt
+
+  dismissals AlertaOperacionalDismissal[]
+
+  @@index([destino, createdAt])
+  @@index([tipo, createdAt])
+  @@index([pedidoId])
+  @@index([regularizacaoId])
+  @@index([utenteId])
+}
+
+model AlertaOperacionalDismissal {
+  id          String   @id @default(cuid())
+  alertaId    String
+  userId      String
+  dismissedAt DateTime @default(now())
+
+  alerta AlertaOperacional @relation(fields: [alertaId], references: [id], onDelete: Cascade)
+  user   User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([alertaId, userId])
+  @@index([userId, dismissedAt])
 }

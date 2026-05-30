@@ -3,6 +3,7 @@ const { Router } = require("express");
 
 const farmaciaRoutes = require("../modules/farmacia/farmacia.routes");
 const regularizacoesRoutes = require("../modules/regularizacoes/regularizacoes.routes");
+const alertasRoutes = require("../modules/alertas/alertas.routes");
 
 const router = Router();
 
@@ -13,6 +14,7 @@ router.get("/health", (_req, res) => {
   });
 });
 
+router.use("/alertas", alertasRoutes);
 router.use("/regularizacoes", regularizacoesRoutes);
 router.use("/", farmaciaRoutes);
 

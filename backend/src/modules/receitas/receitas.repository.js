@@ -536,10 +536,11 @@ async function createReceitaWithLinhas(utenteId, payload) {
       createdLinhaIds.push(created.id);
     }
 
-    await regularizacoesRepository.applyPendingToLinhasTx(tx, {
-      utenteId,
-      receitaLinhaIds: createdLinhaIds,
-    });
+    const regularizacaoResult =
+      await regularizacoesRepository.applyPendingToLinhasTx(tx, {
+        utenteId,
+        receitaLinhaIds: createdLinhaIds,
+      });
 
     const createdLinhas = await tx.receitaLinha.findMany({
       where: {
@@ -560,6 +561,8 @@ async function createReceitaWithLinhas(utenteId, payload) {
       receita,
       linhas: createdLinhas,
       extrasResolvidos,
+      regularizacoesAtualizadas:
+        regularizacaoResult.regularizacoesAtualizadas || [],
     };
   });
 }

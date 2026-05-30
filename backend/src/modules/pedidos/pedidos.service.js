@@ -1,5 +1,6 @@
 // src/modules/pedidos/pedidos.service.js
 const repository = require("./pedidos.repository");
+const alertasService = require("../alertas/alertas.service");
 
 const {
   validateCreatePedidoPayload,
@@ -288,9 +289,17 @@ async function createPedido(payload) {
     builtItems.push(await buildPedidoItem(item, parsed.items));
   }
 
-  const pedido = await repository.createPedidoWithItems(builtItems);
+const pedido = await repository.createPedidoWithItems(builtItems);
 
-  return toPedidoDTO(pedido);
+try {
+  await alertasService.createPedidoEnviadoAlerta({
+    pedido,
+  });
+} catch (error) {
+  console.error("[alertas] falha ao criar alerta de pedido enviado", error);
+}
+
+return toPedidoDTO(pedido);
 }
 
 async function getPedidoById(pedidoId) {

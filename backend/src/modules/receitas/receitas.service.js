@@ -1,6 +1,7 @@
 // src/modules/receitas/receitas.service.js
 const receitasRepository = require("./receitas.repository");
 const utentesRepository = require("../utentes/utentes.repository");
+const alertasService = require("../alertas/alertas.service");
 
 const {
   toReceitaLinhaDTO,
@@ -34,6 +35,20 @@ function throwRegularizacaoConfirmationRequired(preview) {
     REGULARIZACAO_CONFIRMATION_REQUIRED,
     preview,
   );
+}
+
+async function notifyRegularizacoesAtualizadas(regularizacoes = []) {
+  if (!Array.isArray(regularizacoes) || regularizacoes.length === 0) return;
+
+  for (const regularizacao of regularizacoes) {
+    try {
+      await alertasService.createRegularizacaoAlerta({
+        regularizacao,
+      });
+    } catch (error) {
+      console.error("[alertas] falha ao criar alerta de regularização", error);
+    }
+  }
 }
 
 async function listByUtente(utenteId) {
@@ -73,6 +88,8 @@ async function createForUtente(utenteId, payload) {
     utenteId,
     data,
   );
+
+  await notifyRegularizacoesAtualizadas(result.regularizacoesAtualizadas);
 
   return toReceitaCreatedDTO(
     result.receita,

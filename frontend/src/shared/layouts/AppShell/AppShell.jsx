@@ -1,9 +1,10 @@
-import { NavLink, Outlet } from "react-router-dom";
+import { NavLink, Outlet, useLocation } from "react-router-dom";
 
 import { AUTH_ROLES } from "../../../features/auth/config/auth.config";
 import AuthSessionBar from "../../../features/auth/components/AuthSessionBar/AuthSessionBar";
 import IdleSessionWarning from "../../../features/auth/components/IdleSessionWarning/IdleSessionWarning";
 import { useAuth } from "../../../features/auth/hooks/useAuth";
+import FarmaciaAlertasTray from "../../../features/farmacia/alertas/components/FarmaciaAlertasTray/FarmaciaAlertasTray";
 
 import BrandMark from "../../components/BrandMark/BrandMark.jsx";
 
@@ -60,13 +61,31 @@ function getVisibleNavItems({ isAuthenticated, role }) {
   });
 }
 
+function isFarmaciaPath(pathname) {
+  return pathname === "/farmacia" || pathname.startsWith("/farmacia/");
+}
+
+function canSeeFarmaciaAlertas({ isAuthenticated, role }) {
+  return (
+    isAuthenticated && [AUTH_ROLES.FARMACIA, AUTH_ROLES.ADMIN].includes(role)
+  );
+}
+
 export default function AppShell() {
   const { isAuthenticated, role } = useAuth();
+  const { pathname } = useLocation();
 
   const visibleNavItems = getVisibleNavItems({
     isAuthenticated,
     role,
   });
+
+  const shouldShowFarmaciaAlertas =
+    isFarmaciaPath(pathname) &&
+    canSeeFarmaciaAlertas({
+      isAuthenticated,
+      role,
+    });
 
   return (
     <div className={styles.shell}>
@@ -100,6 +119,8 @@ export default function AppShell() {
       </header>
 
       <AuthSessionBar />
+
+      <FarmaciaAlertasTray enabled={shouldShowFarmaciaAlertas} />
 
       <main id="main-content" className={styles.main}>
         <Outlet />
