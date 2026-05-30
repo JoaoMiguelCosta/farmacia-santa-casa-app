@@ -1,0 +1,130 @@
+.nav {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.35rem;
+
+    min-width: 0;
+    max-width: 100%;
+
+    padding: 0.3rem;
+
+    border: 1px solid var(--clinic-border);
+    border-radius: var(--clinic-radius-lg);
+
+    background-color: var(--clinic-soft);
+
+    box-shadow:
+        0 8px 22px rgba(23, 33, 29, 0.045),
+        inset 0 1px 0 rgba(255, 255, 255, 0.84);
+}
+
+.link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 2.5rem;
+    padding: 0.7rem 0.95rem;
+
+    border: 1px solid transparent;
+    border-radius: var(--clinic-radius-md);
+
+    color: var(--clinic-muted-strong);
+    background-color: transparent;
+
+    font-size: var(--clinic-font-size-sm);
+    font-weight: 850;
+    line-height: 1;
+    white-space: nowrap;
+
+    transition:
+        color var(--clinic-transition),
+        background-color var(--clinic-transition),
+        border-color var(--clinic-transition),
+        box-shadow var(--clinic-transition),
+        transform var(--clinic-transition);
+}
+
+.link:hover {
+    color: var(--clinic-green-900);
+    background-color: var(--clinic-white);
+    border-color: var(--clinic-border-strong);
+
+    transform: translateY(-1px);
+}
+
+.link:active {
+    transform: translateY(0);
+}
+
+.link:focus-visible {
+    outline: 3px solid rgba(31, 95, 81, 0.32);
+    outline-offset: 3px;
+}
+
+.active {
+    color: var(--clinic-white);
+    background-color: var(--clinic-green-700);
+    border-color: var(--clinic-green-700);
+
+    box-shadow: 0 8px 20px rgba(31, 95, 81, 0.16);
+}
+
+.active:hover {
+    color: var(--clinic-white);
+    background-color: var(--clinic-green-800);
+    border-color: var(--clinic-green-800);
+}
+
+@media (max-width: 1180px) {
+    .nav {
+        justify-content: flex-start;
+        width: 100%;
+    }
+}
+
+@media (max-width: 680px) {
+    .nav {
+        overflow-x: auto;
+        overflow-y: hidden;
+
+        border-radius: var(--clinic-radius-md);
+
+        scroll-snap-type: x proximity;
+        scrollbar-width: none;
+    }
+
+    .nav::-webkit-scrollbar {
+        display: none;
+    }
+
+    .link {
+        flex: 0 0 auto;
+
+        scroll-snap-align: start;
+    }
+}
+
+@media (max-width: 460px) {
+    .nav {
+        padding: 0.25rem;
+    }
+
+    .link {
+        min-height: 2.35rem;
+        padding: 0.65rem 0.75rem;
+
+        font-size: 0.82rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .link {
+        transition: none;
+    }
+
+    .link:hover {
+        transform: none;
+    }
+}

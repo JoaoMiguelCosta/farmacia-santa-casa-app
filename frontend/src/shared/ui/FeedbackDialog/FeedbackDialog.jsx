@@ -1,60 +1,31 @@
-import { useEffect } from "react";
+import { useEscapeKey } from "../../hooks/useEscapeKey";
 
 import Button from "../Button/Button";
 
+import { FEEDBACK_DIALOG_CONFIG } from "./FeedbackDialog.config";
+import {
+  getFeedbackDialogCopy,
+  getSafeFeedbackDialogType,
+} from "./FeedbackDialog.utils";
+
 import styles from "./FeedbackDialog.module.css";
-
-const DIALOG_COPY = Object.freeze({
-  success: {
-    eyebrow: "Sucesso",
-    title: "Operação concluída",
-    symbol: "✓",
-  },
-  error: {
-    eyebrow: "Erro",
-    title: "Operação não concluída",
-    symbol: "!",
-  },
-  info: {
-    eyebrow: "Informação",
-    title: "Aviso",
-    symbol: "i",
-  },
-});
-
-const VALID_DIALOG_TYPES = ["success", "error", "info"];
-
-function getSafeDialogType(type) {
-  return VALID_DIALOG_TYPES.includes(type) ? type : "info";
-}
 
 export default function FeedbackDialog({
   isOpen = false,
-  type = "info",
+  type = FEEDBACK_DIALOG_CONFIG.fallbackType,
   title,
   message,
-  closeLabel = "Fechar",
+  closeLabel = FEEDBACK_DIALOG_CONFIG.defaultCloseLabel,
   onClose,
 }) {
-  const dialogType = getSafeDialogType(type);
-  const copy = DIALOG_COPY[dialogType];
+  const dialogType = getSafeFeedbackDialogType(type);
+  const copy = getFeedbackDialogCopy(dialogType);
   const isError = dialogType === "error";
 
-  useEffect(() => {
-    if (!isOpen) return undefined;
-
-    function handleKeyDown(event) {
-      if (event.key === "Escape") {
-        onClose?.();
-      }
-    }
-
-    window.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [isOpen, onClose]);
+  useEscapeKey({
+    enabled: isOpen,
+    onEscape: onClose,
+  });
 
   if (!isOpen) return null;
 
@@ -64,8 +35,10 @@ export default function FeedbackDialog({
         className={`${styles.dialog} ${styles[dialogType]}`}
         role={isError ? "alertdialog" : "dialog"}
         aria-modal="true"
-        aria-labelledby="feedback-dialog-title"
-        aria-describedby={message ? "feedback-dialog-description" : undefined}
+        aria-labelledby={FEEDBACK_DIALOG_CONFIG.ids.title}
+        aria-describedby={
+          message ? FEEDBACK_DIALOG_CONFIG.ids.description : undefined
+        }
       >
         <div className={styles.icon} aria-hidden="true">
           {copy.symbol}
@@ -74,12 +47,15 @@ export default function FeedbackDialog({
         <div className={styles.content}>
           <p className={styles.eyebrow}>{copy.eyebrow}</p>
 
-          <h2 id="feedback-dialog-title" className={styles.title}>
+          <h2 id={FEEDBACK_DIALOG_CONFIG.ids.title} className={styles.title}>
             {title || copy.title}
           </h2>
 
           {message ? (
-            <p id="feedback-dialog-description" className={styles.description}>
+            <p
+              id={FEEDBACK_DIALOG_CONFIG.ids.description}
+              className={styles.description}
+            >
               {message}
             </p>
           ) : null}

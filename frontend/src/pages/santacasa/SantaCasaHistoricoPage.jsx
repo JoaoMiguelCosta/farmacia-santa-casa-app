@@ -1,6 +1,6 @@
 import PageHeader from "../../shared/ui/PageHeader/PageHeader";
 
-import SantaCasaSectionNav from "../../features/santacasa/shared/components/SantaCasaSectionNav/SantaCasaSectionNav";
+
 import SantaCasaHistoricoList from "../../features/santacasa/historico/components/SantaCasaHistoricoList/SantaCasaHistoricoList";
 
 import { SANTACASA_HISTORICO_PAGE } from "../../features/santacasa/historico/config/santaCasaHistoricoPage.config";
@@ -78,7 +78,7 @@ export default function SantaCasaHistoricoPage() {
         description={SANTACASA_HISTORICO_PAGE.header.description}
       />
 
-      <SantaCasaSectionNav />
+   
 
       <section className={styles.toolbar} aria-label="Filtros do histórico">
         <form className={styles.filters} onSubmit={handleSubmit}>

@@ -3,11 +3,13 @@ import JsBarcode from "jsbarcode";
 
 import { classNames } from "../../utils/classNames";
 
-import styles from "./BarcodeValue.module.css";
+import { BARCODE_VALUE_CONFIG } from "./BarcodeValue.config";
+import {
+  getBarcodeAriaLabel,
+  normalizeBarcodeValue,
+} from "./BarcodeValue.utils";
 
-function normalizeBarcodeValue(value) {
-  return String(value ?? "").trim();
-}
+import styles from "./BarcodeValue.module.css";
 
 export default function BarcodeValue({
   label,
@@ -27,9 +29,10 @@ export default function BarcodeValue({
   const barcodeValue = normalizeBarcodeValue(value);
 
   const ariaLabel = useMemo(() => {
-    if (!label) return `Código de barras ${barcodeValue}`;
-
-    return `${label}: ${barcodeValue}`;
+    return getBarcodeAriaLabel({
+      label,
+      value: barcodeValue,
+    });
   }, [barcodeValue, label]);
 
   useEffect(() => {
@@ -44,17 +47,17 @@ export default function BarcodeValue({
         height,
         margin,
         displayValue,
-        font: "system-ui",
+        font: BARCODE_VALUE_CONFIG.font,
         fontSize,
         textMargin,
-        lineColor: "currentColor",
-        background: "transparent",
+        lineColor: BARCODE_VALUE_CONFIG.lineColor,
+        background: BARCODE_VALUE_CONFIG.background,
       });
 
-      svgElement.removeAttribute("data-barcode-error");
+      svgElement.removeAttribute(BARCODE_VALUE_CONFIG.errorAttribute);
     } catch {
       svgElement.replaceChildren();
-      svgElement.setAttribute("data-barcode-error", "true");
+      svgElement.setAttribute(BARCODE_VALUE_CONFIG.errorAttribute, "true");
     }
   }, [
     barcodeValue,

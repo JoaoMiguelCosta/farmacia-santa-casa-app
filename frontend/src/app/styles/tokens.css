@@ -1,60 +1,83 @@
 :root {
     color-scheme: light;
 
+    /* Base */
     --clinic-white: #ffffff;
-    --clinic-cream: #fbfaf6;
-    --clinic-mist: #f3f7f5;
-    --clinic-soft: #eef5f1;
-    --clinic-surface: rgba(255, 255, 255, 0.82);
-    --clinic-surface-strong: rgba(255, 255, 255, 0.94);
+    --clinic-cream: #f8faf9;
+    --clinic-mist: #f3f6f4;
+    --clinic-soft: #eef3f0;
+    --clinic-surface: #ffffff;
+    --clinic-surface-strong: #ffffff;
 
-    --clinic-ink: #14211d;
-    --clinic-ink-soft: #34433e;
-    --clinic-muted: #6d7b76;
-    --clinic-muted-strong: #52645d;
+    /* Text */
+    --clinic-ink: #17211d;
+    --clinic-ink-soft: #2e3b35;
+    --clinic-muted: #66736d;
+    --clinic-muted-strong: #4e5d56;
 
-    --clinic-green-900: #10392f;
-    --clinic-green-800: #16493e;
+    /* Primary green */
+    --clinic-green-900: #12372f;
+    --clinic-green-800: #17483d;
     --clinic-green-700: #1f5f51;
-    --clinic-green-600: #287567;
-    --clinic-green-500: #4f9b8b;
+    --clinic-green-600: #2d7565;
+    --clinic-green-500: #4d9382;
 
-    --clinic-sage-500: #91b7a6;
-    --clinic-sage-300: #c8ddd3;
-    --clinic-sage-200: #dcebe4;
+    /* Support sage */
+    --clinic-sage-500: #91aa9e;
+    --clinic-sage-300: #cbd9d2;
+    --clinic-sage-200: #e2ebe6;
 
-    --clinic-blue-900: #102c36;
-    --clinic-blue-700: #1e5364;
-    --clinic-blue-500: #33798d;
+    /* Info blue */
+    --clinic-blue-900: #173040;
+    --clinic-blue-700: #235d73;
+    --clinic-blue-500: #397f96;
 
-    --clinic-gold-500: #c6a15b;
-    --clinic-gold-300: #e3cf9f;
-    --clinic-gold-soft: rgba(198, 161, 91, 0.18);
+    /* Accent */
+    --clinic-gold-500: #a9782d;
+    --clinic-gold-300: #d8bd84;
+    --clinic-gold-soft: rgba(169, 120, 45, 0.12);
 
-    --clinic-danger: #b54747;
-    --clinic-warning: #b8792d;
-    --clinic-success: #2f7d63;
+    /* Semantic */
+    --clinic-danger: #b42318;
+    --clinic-warning: #a15c07;
+    --clinic-success: #25735a;
 
-    --clinic-border: rgba(31, 95, 81, 0.14);
-    --clinic-border-strong: rgba(31, 95, 81, 0.24);
-    --clinic-border-gold: rgba(198, 161, 91, 0.34);
+    /* Borders */
+    --clinic-border: rgba(23, 33, 29, 0.12);
+    --clinic-border-strong: rgba(23, 33, 29, 0.22);
+    --clinic-border-gold: rgba(169, 120, 45, 0.28);
 
-    --clinic-shadow-soft: 0 18px 55px rgba(16, 44, 54, 0.08);
-    --clinic-shadow-card: 0 20px 70px rgba(16, 44, 54, 0.1);
-    --clinic-shadow-hover: 0 28px 90px rgba(16, 44, 54, 0.14);
+    /* Shadows */
+    --clinic-shadow-soft: 0 8px 24px rgba(23, 33, 29, 0.06);
+    --clinic-shadow-card: 0 12px 34px rgba(23, 33, 29, 0.08);
+    --clinic-shadow-hover: 0 16px 44px rgba(23, 33, 29, 0.11);
 
-    --clinic-radius-sm: 0.75rem;
-    --clinic-radius-md: 1rem;
-    --clinic-radius-lg: 1.35rem;
-    --clinic-radius-xl: 1.75rem;
-    --clinic-radius-2xl: 2.25rem;
+    /* Radius */
+    --clinic-radius-sm: 0.55rem;
+    --clinic-radius-md: 0.75rem;
+    --clinic-radius-lg: 1rem;
+    --clinic-radius-xl: 1.25rem;
+    --clinic-radius-2xl: 1.5rem;
 
+    /* Layout */
     --clinic-page-max: 1180px;
     --clinic-page-pad: clamp(1rem, 3vw, 2rem);
 
+    /* Typography */
     --clinic-font:
         Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-        sans-serif;
+        Roboto, Arial, sans-serif;
 
-    --clinic-transition: 180ms ease;
+    --clinic-font-size-xs: 0.78rem;
+    --clinic-font-size-sm: 0.9rem;
+    --clinic-font-size-md: 1rem;
+    --clinic-font-size-lg: 1.125rem;
+    --clinic-font-size-xl: 1.35rem;
+    --clinic-font-size-2xl: 1.75rem;
+
+    --clinic-line-height-tight: 1.15;
+    --clinic-line-height-base: 1.5;
+
+    /* Motion */
+    --clinic-transition: 160ms ease;
 }

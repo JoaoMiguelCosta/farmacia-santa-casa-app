@@ -2,6 +2,7 @@
 import { formatDateTime } from "../../../../shared/utils/formatDate";
 
 import {
+  UTENTE_LIST_FALLBACKS,
   UTENTE_STATUS,
   UTENTE_STATUS_LABELS,
 } from "../config/utentesStatus.config";
@@ -33,14 +34,16 @@ export function getUtenteStatusLabel(utente) {
     return UTENTE_STATUS_LABELS[status];
   }
 
-  return utente?.isValid ? "Ativo" : "Inválido";
+  return utente?.isValid
+    ? UTENTE_LIST_FALLBACKS.activeLabel
+    : UTENTE_LIST_FALLBACKS.invalidLabel;
 }
 
 export function getUtenteDateLabel(utente) {
   if (isUtenteArchived(utente)) {
     return utente.archivedAt
       ? formatDateTime(utente.archivedAt)
-      : "Sem data de arquivo";
+      : UTENTE_LIST_FALLBACKS.missingArchivedDate;
   }
 
   return formatDateTime(utente.createdAt);
@@ -56,8 +59,16 @@ export function getUtenteArchiveDetails(utente) {
   }
 
   if (utente.archivedBy?.name || utente.archivedBy?.email) {
-    parts.push(`Por: ${utente.archivedBy.name || utente.archivedBy.email}`);
+    parts.push(
+      `${UTENTE_LIST_FALLBACKS.archivedByPrefix}: ${
+        utente.archivedBy.name || utente.archivedBy.email
+      }`,
+    );
   }
 
   return parts.join(" · ");
+}
+
+export function getUtenteActionAriaLabel(prefix, utente) {
+  return `${prefix} ${utente?.nome || ""}`.trim();
 }

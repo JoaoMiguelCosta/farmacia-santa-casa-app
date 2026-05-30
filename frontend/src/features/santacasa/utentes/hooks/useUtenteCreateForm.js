@@ -1,45 +1,22 @@
-// src/features/santacasa/utentes/hooks/useUtenteCreateForm.js
 import { useState } from "react";
 
-const INITIAL_FORM = Object.freeze({
-  numero9: "",
-  nome: "",
-});
-
-function onlyDigits(value) {
-  return String(value || "").replace(/\D/g, "");
-}
-
-function validateForm(values) {
-  const errors = {};
-
-  if (!/^\d{9}$/.test(values.numero9)) {
-    errors.numero9 = "O número deve ter exatamente 9 dígitos.";
-  }
-
-  if (!values.nome.trim()) {
-    errors.nome = "O nome é obrigatório.";
-  }
-
-  return errors;
-}
-
-function normalizePayload(values) {
-  return {
-    numero9: values.numero9,
-    nome: values.nome.trim(),
-  };
-}
+import {
+  UTENTE_CREATE_INITIAL_FORM,
+  hasFormErrors,
+  normalizeUtenteCreateFieldValue,
+  normalizeUtenteCreatePayload,
+  validateUtenteCreateForm,
+} from "../utils/utentesForm.utils";
 
 export function useUtenteCreateForm({ onCreate }) {
-  const [values, setValues] = useState(INITIAL_FORM);
+  const [values, setValues] = useState(UTENTE_CREATE_INITIAL_FORM);
   const [errors, setErrors] = useState({});
   const [submitError, setSubmitError] = useState(null);
 
   function updateField(name, value) {
     setValues((currentValues) => ({
       ...currentValues,
-      [name]: name === "numero9" ? onlyDigits(value).slice(0, 9) : value,
+      [name]: normalizeUtenteCreateFieldValue(name, value),
     }));
 
     setErrors((currentErrors) => ({
@@ -53,16 +30,16 @@ export function useUtenteCreateForm({ onCreate }) {
   async function handleSubmit(event) {
     event.preventDefault();
 
-    const nextErrors = validateForm(values);
+    const nextErrors = validateUtenteCreateForm(values);
 
-    if (Object.keys(nextErrors).length > 0) {
+    if (hasFormErrors(nextErrors)) {
       setErrors(nextErrors);
       return;
     }
 
     setSubmitError(null);
 
-    const result = await onCreate?.(normalizePayload(values));
+    const result = await onCreate?.(normalizeUtenteCreatePayload(values));
 
     if (!result?.ok) {
       setErrors((currentErrors) => ({
@@ -77,7 +54,7 @@ export function useUtenteCreateForm({ onCreate }) {
       return;
     }
 
-    setValues(INITIAL_FORM);
+    setValues(UTENTE_CREATE_INITIAL_FORM);
     setErrors({});
     setSubmitError(null);
   }

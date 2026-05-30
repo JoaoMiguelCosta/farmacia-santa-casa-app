@@ -1,0 +1,174 @@
+.toolbar {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(18rem, 1.35fr);
+    gap: clamp(0.9rem, 2vw, 1.1rem);
+    align-items: end;
+
+    width: 100%;
+    min-width: 0;
+    padding: clamp(1rem, 2vw, 1.15rem);
+
+    border: 1px solid var(--clinic-border);
+    border-radius: var(--clinic-radius-xl);
+
+    background-color: var(--clinic-white);
+
+    box-shadow: var(--clinic-shadow-soft);
+}
+
+.filterGroup,
+.searchGroup {
+    display: grid;
+    gap: 0.55rem;
+
+    min-width: 0;
+}
+
+.filterLabel {
+    color: var(--clinic-muted-strong);
+
+    font-size: var(--clinic-font-size-sm);
+    font-weight: 850;
+    line-height: 1.25;
+}
+
+.filterOptions,
+.searchControls {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+
+    min-width: 0;
+}
+
+.filterButton {
+    min-height: 2.45rem;
+    padding: 0.68rem 0.9rem;
+
+    border: 1px solid var(--clinic-border);
+    border-radius: var(--clinic-radius-md);
+
+    color: var(--clinic-muted-strong);
+    background-color: var(--clinic-white);
+
+    font-size: var(--clinic-font-size-sm);
+    font-weight: 850;
+    line-height: 1;
+    white-space: nowrap;
+
+    transition:
+        color var(--clinic-transition),
+        background-color var(--clinic-transition),
+        border-color var(--clinic-transition),
+        box-shadow var(--clinic-transition),
+        transform var(--clinic-transition);
+}
+
+.filterButton:hover:not(:disabled) {
+    color: var(--clinic-green-900);
+    background-color: var(--clinic-soft);
+    border-color: var(--clinic-border-strong);
+
+    transform: translateY(-1px);
+}
+
+.filterButton:disabled {
+    cursor: not-allowed;
+    opacity: 0.58;
+}
+
+.filterButtonActive {
+    color: var(--clinic-white);
+    background-color: var(--clinic-green-700);
+    border-color: var(--clinic-green-700);
+
+    box-shadow: 0 8px 20px rgba(31, 95, 81, 0.14);
+}
+
+.filterButtonActive:hover:not(:disabled) {
+    color: var(--clinic-white);
+    background-color: var(--clinic-green-800);
+    border-color: var(--clinic-green-800);
+}
+
+.searchInput {
+    flex: 1 1 16rem;
+
+    width: 100%;
+    min-width: 12rem;
+    min-height: 2.45rem;
+    padding: 0.68rem 0.9rem;
+
+    border: 1px solid var(--clinic-border);
+    border-radius: var(--clinic-radius-md);
+
+    color: var(--clinic-ink);
+    background-color: var(--clinic-white);
+
+    font-size: var(--clinic-font-size-md);
+    font-weight: 600;
+    line-height: 1.35;
+
+    box-shadow: inset 0 1px 2px rgba(23, 33, 29, 0.04);
+
+    transition:
+        border-color var(--clinic-transition),
+        box-shadow var(--clinic-transition);
+}
+
+.searchInput:focus {
+    outline: none;
+
+    border-color: var(--clinic-green-700);
+
+    box-shadow:
+        0 0 0 3px rgba(31, 95, 81, 0.16),
+        inset 0 1px 2px rgba(23, 33, 29, 0.04);
+}
+
+.searchInput:disabled {
+    cursor: not-allowed;
+
+    color: var(--clinic-muted);
+    background-color: var(--clinic-soft);
+
+    opacity: 0.74;
+}
+
+@media (max-width: 920px) {
+    .toolbar {
+        grid-template-columns: 1fr;
+        align-items: stretch;
+    }
+}
+
+@media (max-width: 620px) {
+    .toolbar {
+        border-radius: var(--clinic-radius-lg);
+    }
+
+    .filterOptions,
+    .searchControls {
+        display: grid;
+        grid-template-columns: 1fr;
+
+        width: 100%;
+    }
+
+    .filterButton,
+    .searchInput,
+    .searchControls>* {
+        width: 100%;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .filterButton {
+        transition: none;
+    }
+
+    .filterButton:hover:not(:disabled) {
+        transform: none;
+    }
+}

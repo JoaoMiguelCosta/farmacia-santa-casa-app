@@ -7,7 +7,7 @@ import FeedbackDialog from "../../shared/ui/FeedbackDialog/FeedbackDialog";
 import PageHeader from "../../shared/ui/PageHeader/PageHeader";
 import SurfaceCard from "../../shared/ui/SurfaceCard/SurfaceCard";
 
-import SantaCasaSectionNav from "../../features/santacasa/shared/components/SantaCasaSectionNav/SantaCasaSectionNav";
+
 import UtenteSelector from "../../features/santacasa/shared/components/UtenteSelector/UtenteSelector";
 
 import ReceitaCreateForm from "../../features/santacasa/receitas/components/ReceitaCreateForm/ReceitaCreateForm";
@@ -195,7 +195,7 @@ export default function SantaCasaOperacaoPage() {
         }
       />
 
-      <SantaCasaSectionNav />
+    
 
       <SurfaceCard
         eyebrow="Utente selecionado"

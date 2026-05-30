@@ -1,5 +1,10 @@
 import { Link } from "react-router-dom";
 
+import {
+  getAreaLandingLabel,
+  getAreaLandingModulesLabel,
+} from "./AreaLanding.utils";
+
 import styles from "./AreaLanding.module.css";
 
 export default function AreaLanding({
@@ -10,21 +15,22 @@ export default function AreaLanding({
   actions = [],
 }) {
   const toneClassName = styles[tone] || styles.green;
-  const areaLabel = eyebrow || title || "Área";
+  const areaLabel = getAreaLandingLabel({ eyebrow, title });
+  const modulesLabel = getAreaLandingModulesLabel(areaLabel);
 
   return (
     <section className={styles.page} aria-labelledby="area-title">
       <div className={`${styles.header} ${toneClassName}`}>
-        <p className={styles.kicker}>{eyebrow}</p>
+        {eyebrow ? <p className={styles.kicker}>{eyebrow}</p> : null}
 
         <h1 id="area-title" className={styles.title}>
           {title}
         </h1>
 
-        <p className={styles.lead}>{description}</p>
+        {description ? <p className={styles.lead}>{description}</p> : null}
       </div>
 
-      <div className={styles.panel} aria-label={`Módulos — ${areaLabel}`}>
+      <div className={styles.panel} aria-label={modulesLabel}>
         {actions.map((action) => {
           const content = (
             <>

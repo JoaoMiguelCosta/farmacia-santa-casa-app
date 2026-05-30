@@ -3,7 +3,6 @@ import ConfirmDialog from "../../shared/ui/ConfirmDialog/ConfirmDialog";
 import FeedbackDialog from "../../shared/ui/FeedbackDialog/FeedbackDialog";
 import PageHeader from "../../shared/ui/PageHeader/PageHeader";
 
-import SantaCasaSectionNav from "../../features/santacasa/shared/components/SantaCasaSectionNav/SantaCasaSectionNav";
 
 import PedidoGeralList from "../../features/santacasa/pedidos/components/PedidoGeralList/PedidoGeralList";
 import PedidoPendingList from "../../features/santacasa/pedidos/components/PedidoPendingList/PedidoPendingList";
@@ -125,7 +124,7 @@ export default function SantaCasaPedidosPage() {
         }
       />
 
-      <SantaCasaSectionNav />
+    
 
       <div
         className={styles.summary}

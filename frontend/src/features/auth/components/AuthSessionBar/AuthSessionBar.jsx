@@ -1,22 +1,23 @@
-import { Link, useNavigate } from "react-router-dom";
+// src/features/auth/components/AuthSessionBar/AuthSessionBar.jsx
+import { useNavigate } from "react-router-dom";
 
-import { AUTH_REDIRECTS, AUTH_ROLES } from "../../config/auth.config";
+import AppSessionBar from "../../../../shared/layouts/AppShell/components/AppSessionBar/AppSessionBar";
+
+import { AUTH_REDIRECTS } from "../../config/auth.config";
 import { useAuth } from "../../hooks/useAuth";
 
-import styles from "./AuthSessionBar.module.css";
-
-const ROLE_LABELS = Object.freeze({
-  [AUTH_ROLES.SANTACASA]: "Santa Casa",
-  [AUTH_ROLES.FARMACIA]: "Farmácia",
-  [AUTH_ROLES.ADMIN]: "Sistema/Admin",
-});
+import { AUTH_SESSION_BAR_CONFIG } from "./AuthSessionBar.config";
 
 function getRoleLabel(role) {
-  return ROLE_LABELS[role] || role || "Utilizador";
+  return (
+    AUTH_SESSION_BAR_CONFIG.roleLabels[role] ||
+    role ||
+    AUTH_SESSION_BAR_CONFIG.labels.fallbackRole
+  );
 }
 
-function getUserHomePath(role) {
-  return AUTH_REDIRECTS.byRole[role] || "/";
+function getSessionMeta({ roleLabel, email }) {
+  return email ? `${roleLabel} · ${email}` : roleLabel;
 }
 
 export default function AuthSessionBar() {
@@ -44,41 +45,23 @@ export default function AuthSessionBar() {
   }
 
   const roleLabel = getRoleLabel(role);
-  const homePath = getUserHomePath(role);
 
   return (
-    <section className={styles.bar} aria-label="Sessão do utilizador">
-      <div className={styles.inner}>
-        <div className={styles.identity}>
-          <span className={styles.statusDot} aria-hidden="true" />
-
-          <div className={styles.userText}>
-            <span className={styles.label}>Sessão ativa</span>
-
-            <strong className={styles.name}>{user.name}</strong>
-
-            <span className={styles.meta}>
-              {roleLabel}
-              {user.email ? ` · ${user.email}` : ""}
-            </span>
-          </div>
-        </div>
-
-        <div className={styles.actions}>
-          <Link className={styles.areaLink} to={homePath}>
-            Ir para a minha área
-          </Link>
-
-          <button
-            type="button"
-            className={styles.logoutButton}
-            disabled={isLoggingOut}
-            onClick={handleLogout}
-          >
-            {isLoggingOut ? "A terminar..." : "Terminar sessão"}
-          </button>
-        </div>
-      </div>
-    </section>
+    <AppSessionBar
+      ariaLabel={AUTH_SESSION_BAR_CONFIG.ariaLabel}
+      activeLabel={AUTH_SESSION_BAR_CONFIG.labels.activeSession}
+      userName={user.name}
+      meta={getSessionMeta({
+        roleLabel,
+        email: user.email,
+      })}
+      logoutLabel={
+        isLoggingOut
+          ? AUTH_SESSION_BAR_CONFIG.labels.loggingOut
+          : AUTH_SESSION_BAR_CONFIG.labels.logout
+      }
+      isLoggingOut={isLoggingOut}
+      onLogout={handleLogout}
+    />
   );
 }
