@@ -1,0 +1,83 @@
+.codesPanel {
+    display: grid;
+    gap: 0.7rem;
+
+    min-width: 0;
+    padding: 0.85rem;
+
+    border: 1px solid rgba(210, 224, 218, 0.82);
+    border-radius: var(--clinic-radius-md);
+
+    background-color: rgba(248, 252, 250, 0.72);
+}
+
+.codesHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+}
+
+.codesHeader h4 {
+    margin: 0;
+
+    color: var(--clinic-muted-strong);
+
+    font-size: 0.66rem;
+    font-weight: 950;
+    letter-spacing: 0.09em;
+    line-height: 1.15;
+    text-transform: uppercase;
+}
+
+.codesGrid {
+    display: grid;
+    grid-template-columns:
+        minmax(13rem, 1.1fr) minmax(10rem, 0.85fr) minmax(10rem, 0.85fr);
+    gap: 0.75rem;
+
+    min-width: 0;
+}
+
+.codeCell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    min-width: 0;
+    min-height: 6.8rem;
+    padding: 0.68rem;
+
+    border: 1px solid rgba(210, 224, 218, 0.88);
+    border-radius: var(--clinic-radius-md);
+
+    background-color: rgba(255, 255, 255, 0.96);
+
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.95),
+        0 0.5rem 1.2rem rgba(15, 38, 32, 0.04);
+}
+
+.codeBarcode {
+    width: 100%;
+    max-width: 15rem;
+    margin-inline: auto;
+
+    justify-self: center;
+}
+
+.codeCell :global([class*="_caption_"]) {
+    display: none !important;
+}
+
+@media (max-width: 1360px) {
+    .codesGrid {
+        grid-template-columns: 1fr 1fr 1fr;
+    }
+}
+
+@media (max-width: 860px) {
+    .codesGrid {
+        grid-template-columns: 1fr;
+    }
+}

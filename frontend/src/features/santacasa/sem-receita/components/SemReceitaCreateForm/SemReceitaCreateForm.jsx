@@ -1,3 +1,4 @@
+// src/features/santacasa/sem-receita/components/SemReceitaCreateForm/SemReceitaCreateForm.jsx
 import Button from "../../../../../shared/ui/Button/Button";
 import FormField from "../../../../../shared/ui/FormField/FormField";
 import SurfaceCard from "../../../../../shared/ui/SurfaceCard/SurfaceCard";
@@ -37,7 +38,7 @@ export default function SemReceitaCreateForm({
       <form className={styles.form} onSubmit={handleSubmit} noValidate>
         {!selectedUtenteId ? (
           <p className={styles.notice} role="status">
-            Seleciona um utente antes de adicionar medicamento.
+            {SEM_RECEITA_PAGE.form.noUtenteSelectedMessage}
           </p>
         ) : null}
 

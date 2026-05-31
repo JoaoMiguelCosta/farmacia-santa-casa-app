@@ -90,8 +90,15 @@ export const RECEITAS_PAGE = Object.freeze({
       optionPrefix: "Opção",
       total: "Total",
       dispensada: "Dispensada",
+      usadaRegularizacao: "Usada em regularização",
       emPedido: "Em pedido",
       quantidadeShort: "Qtd",
+    },
+
+    codes: {
+      title: "Códigos da receita",
+      showLabel: "Ver códigos",
+      hideLabel: "Ocultar códigos",
     },
 
     pedidoActions: {

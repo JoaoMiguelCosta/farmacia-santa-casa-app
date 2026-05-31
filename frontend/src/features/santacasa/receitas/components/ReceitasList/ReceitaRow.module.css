@@ -1,0 +1,206 @@
+.row {
+    --receita-control-height: 2.55rem;
+    --receita-label-gap: 0.28rem;
+
+    display: grid;
+    gap: 0.78rem;
+
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    padding: 0.88rem 0.95rem;
+
+    overflow: hidden;
+
+    border: 1px solid rgba(193, 211, 203, 0.82);
+    border-radius: var(--clinic-radius-lg);
+
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.995), rgba(249, 252, 251, 0.97));
+
+    box-shadow:
+        0 0.75rem 1.8rem rgba(15, 38, 32, 0.055),
+        0 0.08rem 0.22rem rgba(15, 38, 32, 0.04);
+
+    transition:
+        border-color var(--clinic-transition),
+        box-shadow var(--clinic-transition),
+        background-color var(--clinic-transition);
+}
+
+.row:hover {
+    border-color: rgba(31, 95, 81, 0.3);
+
+    box-shadow:
+        0 0.9rem 2.1rem rgba(15, 38, 32, 0.075),
+        inset 3px 0 0 rgba(31, 95, 81, 0.16);
+}
+
+.compactContent {
+    display: grid;
+    grid-template-columns:
+        minmax(0, 1fr) minmax(15rem, 0.85fr) minmax(10rem, auto) minmax(21rem, auto);
+    gap: 0.95rem;
+    align-items: start;
+
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+}
+
+.compactContent>* {
+    min-width: 0;
+    align-self: start;
+}
+
+.medicationCell {
+    display: grid;
+    grid-template-rows: auto var(--receita-control-height);
+    gap: var(--receita-label-gap);
+    align-content: start;
+
+    min-width: 0;
+}
+
+.medicationCell>span,
+.validityBox>span,
+.statusBox>span {
+    color: var(--clinic-muted-strong);
+
+    font-size: 0.66rem;
+    font-weight: 950;
+    letter-spacing: 0.09em;
+    line-height: 1.15;
+    text-transform: uppercase;
+}
+
+.medicationCell strong {
+    align-self: center;
+
+    color: var(--clinic-ink);
+
+    font-size: clamp(1.06rem, 1.3vw, 1.24rem);
+    font-weight: 950;
+    line-height: 1.05;
+
+    overflow-wrap: anywhere;
+}
+
+.metaCell {
+    display: flex;
+    align-items: start;
+    justify-content: flex-start;
+    gap: 1rem;
+
+    min-width: 0;
+}
+
+.validityBox,
+.statusBox {
+    display: grid;
+    grid-template-rows: auto var(--receita-control-height);
+    gap: var(--receita-label-gap);
+    align-content: start;
+
+    min-width: max-content;
+}
+
+.validityBox strong {
+    align-self: center;
+
+    color: var(--clinic-ink);
+
+    font-size: 0.94rem;
+    font-weight: 950;
+    line-height: 1.05;
+    white-space: nowrap;
+}
+
+.status {
+    align-self: center;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    width: fit-content;
+    min-height: 1.72rem;
+    padding: 0.3rem 0.66rem;
+
+    border: 1px solid rgba(31, 95, 81, 0.2);
+    border-radius: 999px;
+
+    color: var(--clinic-green-800);
+    background-color: rgba(238, 245, 241, 0.98);
+
+    font-size: 0.7rem;
+    font-weight: 950;
+    letter-spacing: 0.07em;
+    line-height: 1;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.fefoBlockedRow {
+    border-color: rgba(190, 126, 25, 0.24);
+
+    background:
+        linear-gradient(180deg, rgba(255, 252, 244, 0.98), rgba(255, 248, 232, 0.9));
+}
+
+.fefoBlockedRow:hover {
+    border-color: rgba(190, 126, 25, 0.38);
+
+    box-shadow:
+        0 0.9rem 2.1rem rgba(90, 58, 12, 0.08),
+        inset 3px 0 0 rgba(190, 126, 25, 0.3);
+}
+
+.fefoNotice {
+    max-width: 48ch;
+    margin: 0.22rem 0 0;
+
+    color: var(--clinic-warning);
+
+    font-size: 0.8rem;
+    font-weight: 850;
+    line-height: 1.35;
+}
+
+@media (max-width: 1360px) {
+    .compactContent {
+        grid-template-columns:
+            minmax(0, 1fr) minmax(20rem, auto);
+        gap: 0.82rem;
+    }
+}
+
+@media (max-width: 860px) {
+    .compactContent {
+        grid-template-columns: 1fr;
+    }
+
+    .metaCell {
+        flex-wrap: wrap;
+    }
+}
+
+@media (max-width: 560px) {
+    .row {
+        padding: 0.82rem;
+
+        border-radius: var(--clinic-radius-md);
+    }
+
+    .metaCell {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 0.65rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .row {
+        transition: none;
+    }
+}

@@ -1,0 +1,28 @@
+.recipeGrid {
+    display: grid;
+    grid-template-columns: minmax(18rem, 1.4fr) minmax(10rem, 0.7fr) minmax(10rem, 0.7fr);
+    gap: clamp(0.85rem, 2vw, 1.05rem);
+
+    width: 100%;
+    min-width: 0;
+}
+
+@media (max-width: 980px) {
+    .recipeGrid {
+        grid-template-columns: minmax(0, 1fr) minmax(9rem, 0.55fr);
+    }
+
+    .recipeGrid> :first-child {
+        grid-column: 1 / -1;
+    }
+}
+
+@media (max-width: 720px) {
+    .recipeGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .recipeGrid> :first-child {
+        grid-column: auto;
+    }
+}

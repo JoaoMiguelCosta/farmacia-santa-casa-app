@@ -1,3 +1,4 @@
+// src/features/santacasa/sem-receita/config/semReceitaPage.config.js
 export const SEM_RECEITA_PAGE = Object.freeze({
   header: {
     eyebrow: "Santa Casa",
@@ -12,8 +13,15 @@ export const SEM_RECEITA_PAGE = Object.freeze({
       "Regista um medicamento disponível para o utente selecionado, sem ligação a receita oficial.",
     submitLabel: "Adicionar medicamento",
     submittingLabel: "A adicionar...",
+    noUtenteSelectedMessage:
+      "Seleciona um utente antes de adicionar medicamento.",
     successMessage:
       "Medicamento não sujeito a receita médica criado com sucesso.",
+
+    errors: {
+      medicamentoRequired: "O medicamento é obrigatório.",
+      quantidadeInvalid: "A quantidade deve ser maior que 0.",
+    },
   },
 
   list: {
@@ -23,13 +31,44 @@ export const SEM_RECEITA_PAGE = Object.freeze({
     emptyTitle: "Sem medicamentos não sujeitos a receita médica disponíveis.",
     emptyDescription:
       "Adiciona um medicamento não sujeito a receita médica ou seleciona outro utente.",
+    noUtenteTitle: "Seleciona um utente.",
+    noUtenteDescription:
+      "Depois de selecionares um utente, os medicamentos não sujeitos a receita médica aparecem aqui.",
     loadingTitle: "A carregar medicamentos não sujeitos a receita médica...",
+    loadingDescription:
+      "Aguarda enquanto os medicamentos não sujeitos a receita médica são carregados.",
     errorTitle:
       "Não foi possível carregar os medicamentos não sujeitos a receita médica.",
+    retryLabel: "Tentar novamente",
+
     deleteLabel: "Remover",
     deletingLabel: "A remover...",
     deleteSuccessMessage:
       "Medicamento não sujeito a receita médica removido com sucesso.",
+
+    emptyValue: "—",
+
+    columns: {
+      medicamento: "Medicamento",
+      quantidade: "Quantidade",
+      criadoEm: "Criado em",
+      pedido: "Pedido",
+      remover: "Remover",
+    },
+
+    labels: {
+      semReceitaDescription: "Medicamento não sujeito a receita médica",
+      total: "Total",
+      dispensada: "Dispensada",
+      emPedido: "Em pedido",
+      quantidadeShort: "Qtd",
+    },
+
+    pedidoActions: {
+      addLabel: "Adicionar",
+      noStockLabel: "Sem saldo",
+      quantityAriaLabelPrefix: "Quantidade para pedido de",
+    },
   },
 
   deleteDialog: {

@@ -1,4 +1,7 @@
+// src/features/santacasa/sem-receita/hooks/useSemReceitaCreateForm.js
 import { useState } from "react";
+
+import { SEM_RECEITA_PAGE } from "../config/semReceitaPage.config";
 
 const INITIAL_FORM = Object.freeze({
   medicamento: "",
@@ -13,15 +16,16 @@ function onlyDigits(value, maxLength) {
 
 function validateForm(values) {
   const errors = {};
+  const formErrors = SEM_RECEITA_PAGE.form.errors;
 
   if (!values.medicamento.trim()) {
-    errors.medicamento = "O medicamento é obrigatório.";
+    errors.medicamento = formErrors.medicamentoRequired;
   }
 
   const quantidade = Number(values.quantidade);
 
   if (!Number.isInteger(quantidade) || quantidade <= 0) {
-    errors.quantidade = "A quantidade deve ser maior que 0.";
+    errors.quantidade = formErrors.quantidadeInvalid;
   }
 
   return errors;
