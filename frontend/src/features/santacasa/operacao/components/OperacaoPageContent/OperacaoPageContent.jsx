@@ -4,21 +4,15 @@ import { useMemo } from "react";
 import Button from "../../../../../shared/ui/Button/Button";
 import PageHeader from "../../../../../shared/ui/PageHeader/PageHeader";
 
-import ReceitaCreateForm from "../../../receitas/components/ReceitaCreateForm/ReceitaCreateForm";
-import ReceitasList from "../../../receitas/components/ReceitasList/ReceitasList";
-
-import SemReceitaCreateForm from "../../../sem-receita/components/SemReceitaCreateForm/SemReceitaCreateForm";
-import SemReceitaList from "../../../sem-receita/components/SemReceitaList/SemReceitaList";
-
-import ExtraCreateForm from "../../../extras/components/ExtraCreateForm/ExtraCreateForm";
-import ExtrasList from "../../../extras/components/ExtrasList/ExtrasList";
-
+import { useMedicacaoHabitual } from "../../../medicacao-habitual/hooks/useMedicacaoHabitual";
 import { usePedidoDraft } from "../../../pedidos/state/usePedidoDraft";
 
 import OperacaoDialogs from "../OperacaoDialogs/OperacaoDialogs";
-import OperacaoDraftNotice from "../OperacaoDraftNotice/OperacaoDraftNotice";
+import OperacaoExtrasSection from "../OperacaoExtrasSection/OperacaoExtrasSection";
+import OperacaoMedicacaoHabitualSection from "../OperacaoMedicacaoHabitualSection/OperacaoMedicacaoHabitualSection";
+import OperacaoReceitasSection from "../OperacaoReceitasSection/OperacaoReceitasSection";
 import OperacaoSelectedUtenteCard from "../OperacaoSelectedUtenteCard/OperacaoSelectedUtenteCard";
-import OperationSection from "../OperationSection/OperationSection";
+import OperacaoSemReceitaSection from "../OperacaoSemReceitaSection/OperacaoSemReceitaSection";
 
 import { OPERACAO_PAGE } from "../../config/operacaoPage.config";
 
@@ -58,9 +52,14 @@ export default function OperacaoPageContent() {
     refreshOperationData,
   } = useSantaCasaOperacao();
 
+  const medicacaoHabitualController = useMedicacaoHabitual({
+    selectedUtenteId,
+  });
+
+  const medicacaoHabitualOptions = medicacaoHabitualController.options || [];
+
   const {
     items: pedidoDraftItems,
-    count: pedidoDraftCount,
     addItem: addPedidoDraftItem,
     removeItemsByKeys,
   } = usePedidoDraft();
@@ -167,6 +166,16 @@ export default function OperacaoPageContent() {
 
   const isReceitaBusy = isCreatingReceita || isConfirmingRegularizacao;
 
+  const isPageRefreshing =
+    isRefreshing || medicacaoHabitualController.isRefreshing;
+
+  async function handleRefreshPage() {
+    await Promise.all([
+      refreshOperationData(),
+      medicacaoHabitualController.refreshMedicacaoHabitual(),
+    ]);
+  }
+
   return (
     <section
       className={styles.page}
@@ -181,11 +190,11 @@ export default function OperacaoPageContent() {
           <Button
             type="button"
             variant="secondary"
-            onClick={refreshOperationData}
-            isLoading={isRefreshing}
-            disabled={!selectedUtenteId || isRefreshing}
+            onClick={handleRefreshPage}
+            isLoading={isPageRefreshing}
+            disabled={!selectedUtenteId || isPageRefreshing}
           >
-            {isRefreshing
+            {isPageRefreshing
               ? OPERACAO_PAGE.header.refreshingLabel
               : OPERACAO_PAGE.header.refreshLabel}
           </Button>
@@ -196,107 +205,77 @@ export default function OperacaoPageContent() {
         utentes={utentes}
         selectedUtenteId={selectedUtenteId}
         selectedUtente={selectedUtente}
-        receitasCount={receitas.length}
-        semReceitaCount={semReceita.length}
-        extrasCount={extras.length}
-        pedidoDraftCount={pedidoDraftCount}
         isLoadingUtentes={isLoadingUtentes}
         utentesError={utentesError}
         dataError={dataError}
         onSelectUtente={handleSelectOperationUtente}
       />
 
-      <OperacaoDraftNotice pedidoDraftCount={pedidoDraftCount} />
-
       <div className={styles.sections}>
-        <OperationSection
-          id={OPERACAO_PAGE.sections.receitas.id}
-          eyebrow={OPERACAO_PAGE.sections.receitas.eyebrow}
-          title={OPERACAO_PAGE.sections.receitas.title}
-          description={OPERACAO_PAGE.sections.receitas.description}
-        >
-          <ReceitaCreateForm
-            selectedUtenteId={selectedUtenteId}
-            onCreate={handleCreateReceita}
-            isSubmitting={isReceitaBusy}
-            resetKey={receitaFormResetKey}
-          />
+        <OperacaoMedicacaoHabitualSection
+          selectedUtenteId={selectedUtenteId}
+          selectedUtente={selectedUtente}
+          medicacaoHabitualController={medicacaoHabitualController}
+        />
 
-          <ReceitasList
-            receitas={visibleReceitas}
-            selectedUtenteId={selectedUtenteId}
-            selectedUtente={selectedUtente}
-            isLoading={isLoadingData}
-            error={dataError}
-            deletingLinhaId={getDeletingId(deletingTargetKey, "receita")}
-            pedidoQuantities={pedidoQuantities}
-            pedidoItemsQuantities={pedidoItemsQuantities}
-            onPedidoQuantityChange={handlePedidoQuantityInputChange}
-            onAddToPedido={handleAddPedidoItem}
-            onRetry={refreshOperationData}
-            onBlockedDelete={handleBlockedDelete}
-            onDelete={(linha) => handleRequestDelete("receita", linha)}
-            onQuantityBackToList={handleAfterReceitaQuantityBackToList}
-          />
-        </OperationSection>
+        <OperacaoReceitasSection
+          selectedUtenteId={selectedUtenteId}
+          selectedUtente={selectedUtente}
+          receitas={visibleReceitas}
+          isLoading={isLoadingData}
+          error={dataError}
+          isReceitaBusy={isReceitaBusy}
+          receitaFormResetKey={receitaFormResetKey}
+          medicacaoHabitualOptions={medicacaoHabitualOptions}
+          deletingLinhaId={getDeletingId(deletingTargetKey, "receita")}
+          pedidoQuantities={pedidoQuantities}
+          pedidoItemsQuantities={pedidoItemsQuantities}
+          onCreateReceita={handleCreateReceita}
+          onPedidoQuantityChange={handlePedidoQuantityInputChange}
+          onAddToPedido={handleAddPedidoItem}
+          onRetry={refreshOperationData}
+          onBlockedDelete={handleBlockedDelete}
+          onRequestDelete={(linha) => handleRequestDelete("receita", linha)}
+          onQuantityBackToList={handleAfterReceitaQuantityBackToList}
+        />
 
-        <OperationSection
-          id={OPERACAO_PAGE.sections.semReceita.id}
-          eyebrow={OPERACAO_PAGE.sections.semReceita.eyebrow}
-          title={OPERACAO_PAGE.sections.semReceita.title}
-          description={OPERACAO_PAGE.sections.semReceita.description}
-        >
-          <SemReceitaCreateForm
-            selectedUtenteId={selectedUtenteId}
-            onCreate={handleCreateSemReceita}
-            isSubmitting={isCreatingSemReceita}
-          />
+        <OperacaoSemReceitaSection
+          selectedUtenteId={selectedUtenteId}
+          selectedUtente={selectedUtente}
+          items={visibleSemReceita}
+          isLoading={isLoadingData}
+          error={dataError}
+          isCreating={isCreatingSemReceita}
+          medicacaoHabitualOptions={medicacaoHabitualOptions}
+          deletingItemId={getDeletingId(deletingTargetKey, "semReceita")}
+          pedidoQuantities={pedidoQuantities}
+          pedidoItemsQuantities={pedidoItemsQuantities}
+          onCreateSemReceita={handleCreateSemReceita}
+          onPedidoQuantityChange={handlePedidoQuantityInputChange}
+          onAddToPedido={handleAddPedidoItem}
+          onRetry={refreshOperationData}
+          onBlockedDelete={handleBlockedDelete}
+          onRequestDelete={(item) => handleRequestDelete("semReceita", item)}
+        />
 
-          <SemReceitaList
-            items={visibleSemReceita}
-            selectedUtenteId={selectedUtenteId}
-            selectedUtente={selectedUtente}
-            isLoading={isLoadingData}
-            error={dataError}
-            deletingItemId={getDeletingId(deletingTargetKey, "semReceita")}
-            pedidoQuantities={pedidoQuantities}
-            pedidoItemsQuantities={pedidoItemsQuantities}
-            onPedidoQuantityChange={handlePedidoQuantityInputChange}
-            onAddToPedido={handleAddPedidoItem}
-            onRetry={refreshOperationData}
-            onBlockedDelete={handleBlockedDelete}
-            onDelete={(item) => handleRequestDelete("semReceita", item)}
-          />
-        </OperationSection>
-
-        <OperationSection
-          id={OPERACAO_PAGE.sections.extras.id}
-          eyebrow={OPERACAO_PAGE.sections.extras.eyebrow}
-          title={OPERACAO_PAGE.sections.extras.title}
-          description={OPERACAO_PAGE.sections.extras.description}
-        >
-          <ExtraCreateForm
-            selectedUtenteId={selectedUtenteId}
-            onCreate={handleCreateExtra}
-            isSubmitting={isCreatingExtra}
-          />
-
-          <ExtrasList
-            items={visibleExtras}
-            selectedUtenteId={selectedUtenteId}
-            selectedUtente={selectedUtente}
-            isLoading={isLoadingData}
-            error={dataError}
-            deletingItemId={getDeletingId(deletingTargetKey, "extra")}
-            pedidoQuantities={pedidoQuantities}
-            pedidoItemsQuantities={pedidoItemsQuantities}
-            onPedidoQuantityChange={handlePedidoQuantityInputChange}
-            onAddToPedido={handleAddPedidoItem}
-            onRetry={refreshOperationData}
-            onBlockedDelete={handleBlockedDelete}
-            onDelete={(item) => handleRequestDelete("extra", item)}
-          />
-        </OperationSection>
+        <OperacaoExtrasSection
+          selectedUtenteId={selectedUtenteId}
+          selectedUtente={selectedUtente}
+          items={visibleExtras}
+          isLoading={isLoadingData}
+          error={dataError}
+          isCreating={isCreatingExtra}
+          medicacaoHabitualOptions={medicacaoHabitualOptions}
+          deletingItemId={getDeletingId(deletingTargetKey, "extra")}
+          pedidoQuantities={pedidoQuantities}
+          pedidoItemsQuantities={pedidoItemsQuantities}
+          onCreateExtra={handleCreateExtra}
+          onPedidoQuantityChange={handlePedidoQuantityInputChange}
+          onAddToPedido={handleAddPedidoItem}
+          onRetry={refreshOperationData}
+          onBlockedDelete={handleBlockedDelete}
+          onRequestDelete={(item) => handleRequestDelete("extra", item)}
+        />
       </div>
 
       <OperacaoDialogs

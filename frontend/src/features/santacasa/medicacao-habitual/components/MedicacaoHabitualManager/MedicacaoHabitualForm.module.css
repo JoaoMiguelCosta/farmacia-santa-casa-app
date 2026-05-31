@@ -1,0 +1,83 @@
+.form {
+    display: grid;
+    gap: clamp(0.9rem, 2vw, 1.05rem);
+
+    min-width: 0;
+    padding: clamp(1rem, 2.3vw, 1.2rem);
+
+    border: 1px solid rgba(193, 211, 203, 0.82);
+    border-radius: var(--clinic-radius-lg);
+
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.995), rgba(249, 252, 251, 0.97));
+
+    box-shadow:
+        0 0.75rem 1.8rem rgba(15, 38, 32, 0.055),
+        0 0.08rem 0.22rem rgba(15, 38, 32, 0.04);
+}
+
+.intro {
+    display: grid;
+    gap: 0.25rem;
+
+    min-width: 0;
+}
+
+.intro h3 {
+    margin: 0;
+
+    color: var(--clinic-ink);
+
+    font-size: clamp(1.05rem, 1.8vw, 1.18rem);
+    font-weight: 950;
+    letter-spacing: -0.035em;
+    line-height: 1.12;
+}
+
+.intro p {
+    max-width: 68ch;
+    margin: 0;
+
+    color: var(--clinic-muted-strong);
+
+    font-size: var(--clinic-font-size-sm);
+    font-weight: 650;
+    line-height: 1.45;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: minmax(16rem, 1fr) auto;
+    gap: clamp(0.85rem, 2vw, 1.05rem);
+    align-items: end;
+
+    min-width: 0;
+}
+
+.action {
+    display: flex;
+    justify-content: flex-end;
+
+    min-width: 0;
+    padding-bottom: 0.02rem;
+}
+
+@media (max-width: 760px) {
+    .grid {
+        grid-template-columns: 1fr;
+    }
+
+    .action {
+        justify-content: stretch;
+    }
+
+    .action button {
+        width: 100%;
+    }
+}
+
+@media (max-width: 520px) {
+    .form {
+        border-radius: var(--clinic-radius-md);
+    }
+}

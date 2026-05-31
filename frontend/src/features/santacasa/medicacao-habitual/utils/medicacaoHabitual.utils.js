@@ -1,3 +1,6 @@
+// src/features/santacasa/medicacao-habitual/utils/medicacaoHabitual.utils.js
+import { MEDICACAO_HABITUAL_CONFIG } from "../config/medicacaoHabitual.config";
+
 const collator = new Intl.Collator("pt-PT", {
   sensitivity: "base",
   numeric: true,
@@ -45,11 +48,11 @@ export function validateMedicacaoHabitualValue(value) {
   const medicamento = String(value || "").trim();
 
   if (!medicamento) {
-    return "O medicamento é obrigatório.";
+    return MEDICACAO_HABITUAL_CONFIG.validation.medicamentoRequired;
   }
 
   if (medicamento.length > 160) {
-    return "O medicamento não pode exceder 160 caracteres.";
+    return MEDICACAO_HABITUAL_CONFIG.validation.medicamentoMaxLength;
   }
 
   return "";

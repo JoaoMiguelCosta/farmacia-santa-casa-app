@@ -8,7 +8,7 @@ export const OPERACAO_PAGE = Object.freeze({
     eyebrow: "Santa Casa",
     title: "Operação diária",
     description:
-      "Gere receitas, medicamentos não sujeitos a receita médica e vendas suspensas. A partir daqui podes adicionar itens ao pedido geral para a Farmácia.",
+      "Gere medicação habitual, receitas, medicamentos não sujeitos a receita médica e vendas suspensas. A partir daqui podes adicionar itens ao pedido geral para a Farmácia.",
     refreshLabel: "Atualizar operação",
     refreshingLabel: "A atualizar...",
   },
@@ -17,31 +17,19 @@ export const OPERACAO_PAGE = Object.freeze({
     eyebrow: "Utente selecionado",
     titleFallback: "Seleciona um utente",
     descriptionFallback:
-      "Escolhe um utente para carregar receitas, medicamentos não sujeitos a receita médica e vendas suspensas.",
+      "Escolhe um utente para carregar medicação habitual, receitas, medicamentos não sujeitos a receita médica e vendas suspensas.",
     numberLabel: "Número de utente",
   },
 
-  summary: {
-    ariaLabel: "Resumo operacional",
-    receitasLabel: "Linhas de receita",
-    semReceitaLabel: "Medicamentos não sujeitos a receita médica",
-    extrasLabel: "Vendas Suspensas",
-    pedidoDraftLabel: "No pedido geral",
-  },
-
-  draft: {
-    eyebrow: "Pedido geral",
-    title: "Itens selecionados para Farmácia",
-    description:
-      "Os itens adicionados nesta página ficam guardados no pedido geral. Podes adicionar itens de vários utentes e enviar tudo pela página Pedidos.",
-    linkLabel: "Ver pedido geral",
-    singularItemLabel: "item",
-    pluralItemLabel: "itens",
-    buildNotice: (count) =>
-      `Existem ${count} ${count === 1 ? "item" : "itens"} no pedido geral.`,
-  },
-
   sections: {
+    medicacaoHabitual: {
+      id: "operacao-medicacao-habitual",
+      eyebrow: "Medicação habitual",
+      title: "Medicação habitual do utente",
+      description:
+        "Regista medicamentos usados com frequência para acelerar o preenchimento das receitas, medicamentos não sujeitos a receita médica e vendas suspensas.",
+    },
+
     receitas: {
       id: "operacao-receitas",
       eyebrow: "Receitas",

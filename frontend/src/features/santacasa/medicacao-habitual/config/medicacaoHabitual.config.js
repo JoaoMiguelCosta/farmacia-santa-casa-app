@@ -1,3 +1,4 @@
+// src/features/santacasa/medicacao-habitual/config/medicacaoHabitual.config.js
 export const MEDICACAO_HABITUAL_CONFIG = Object.freeze({
   section: {
     title: "Medicação habitual",
@@ -7,7 +8,25 @@ export const MEDICACAO_HABITUAL_CONFIG = Object.freeze({
     emptyDescription:
       "Adiciona medicamentos usados com frequência para poderes selecioná-los mais rapidamente nas receitas, medicamentos não sujeitos a receita médica e vendas suspensas.",
     loadingTitle: "A carregar medicação habitual...",
+    loadingDescription: "Aguarda enquanto a medicação habitual é carregada.",
     errorTitle: "Não foi possível carregar a medicação habitual.",
+    retryLabel: "Tentar novamente",
+    noUtenteTitle: "Seleciona um utente.",
+    noUtenteDescription:
+      "Depois de selecionares um utente, podes gerir a medicação habitual.",
+  },
+
+  context: {
+    selectedUtenteLabel: "Utente selecionado",
+    nameLabel: "Nome",
+    numberLabel: "N.º utente",
+    selectedUtenteFallback: "Utente selecionado",
+    numberFallback: "—",
+  },
+
+  actions: {
+    refreshLabel: "Atualizar",
+    refreshingLabel: "A atualizar...",
   },
 
   form: {
@@ -29,11 +48,16 @@ export const MEDICACAO_HABITUAL_CONFIG = Object.freeze({
   },
 
   list: {
+    title: "Medicamentos registados",
+    description: "Sugestões disponíveis nos formulários da operação.",
+    itemLabel: "Medicamento",
+    createdAtLabel: "Criado em",
     removeLabel: "Remover",
     removingLabel: "A remover...",
     clearLabel: "Limpar lista",
     clearSuccessMessage: "Medicação habitual limpa com sucesso.",
     deleteSuccessMessage: "Medicamento removido da medicação habitual.",
+    removeAriaLabelPrefix: "Remover",
   },
 
   clearDialog: {
@@ -50,10 +74,18 @@ export const MEDICACAO_HABITUAL_CONFIG = Object.freeze({
       "Esta ação remove apenas este medicamento da lista de medicação habitual do utente.",
     confirmLabel: "Remover",
     cancelLabel: "Cancelar",
+    medicationPrefix: "Medicamento:",
+    emptyMedication: "—",
   },
 
   feedback: {
     genericError: "Ocorreu um erro inesperado.",
     missingUtente: "Seleciona um utente antes de gerir a medicação habitual.",
+  },
+
+  validation: {
+    medicamentoRequired: "O medicamento é obrigatório.",
+    medicamentoMaxLength: "O medicamento não pode exceder 160 caracteres.",
+    duplicateMedicamento: "Este medicamento já existe na medicação habitual.",
   },
 });

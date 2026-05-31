@@ -20,11 +20,6 @@ export default function OperacaoSelectedUtenteCard({
   selectedUtenteId,
   selectedUtente,
 
-  receitasCount = 0,
-  semReceitaCount = 0,
-  extrasCount = 0,
-  pedidoDraftCount = 0,
-
   isLoadingUtentes = false,
   utentesError = null,
   dataError = null,
@@ -50,34 +45,6 @@ export default function OperacaoSelectedUtenteCard({
         <p className={styles.error} role="alert">
           {dataError}
         </p>
-      ) : null}
-
-      {selectedUtente ? (
-        <div
-          className={styles.summary}
-          aria-label={OPERACAO_PAGE.summary.ariaLabel}
-          role="list"
-        >
-          <article role="listitem">
-            <strong>{receitasCount}</strong>
-            <span>{OPERACAO_PAGE.summary.receitasLabel}</span>
-          </article>
-
-          <article role="listitem">
-            <strong>{semReceitaCount}</strong>
-            <span>{OPERACAO_PAGE.summary.semReceitaLabel}</span>
-          </article>
-
-          <article role="listitem">
-            <strong>{extrasCount}</strong>
-            <span>{OPERACAO_PAGE.summary.extrasLabel}</span>
-          </article>
-
-          <article role="listitem">
-            <strong>{pedidoDraftCount}</strong>
-            <span>{OPERACAO_PAGE.summary.pedidoDraftLabel}</span>
-          </article>
-        </div>
       ) : null}
     </SurfaceCard>
   );
