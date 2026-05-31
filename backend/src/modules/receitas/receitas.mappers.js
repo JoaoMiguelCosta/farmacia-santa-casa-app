@@ -5,19 +5,24 @@ function calculateReservedQuantity(row) {
   }, 0);
 }
 
+function getQuantidadeUsadaRegularizacao(row) {
+  return Math.max(0, Number(row?.quantidadeUsadaRegularizacao) || 0);
+}
+
 function toReceitaLinhaDTO(row) {
   if (!row) return null;
 
   const quantidade = Number(row.quantidade) || 0;
   const quantidadeDispensada = Number(row.quantidadeDispensada) || 0;
   const quantidadeReservadaPendente = calculateReservedQuantity(row);
+  const quantidadeUsadaRegularizacao = getQuantidadeUsadaRegularizacao(row);
 
   const quantidadeRestante = Math.max(
     0,
     quantidade - quantidadeDispensada - quantidadeReservadaPendente,
   );
 
-  return {
+  const dto = {
     linhaId: row.id,
     receitaId: row.receitaId,
     utenteId: row.receita?.utenteId || null,
@@ -40,6 +45,12 @@ function toReceitaLinhaDTO(row) {
     createdAt: row.createdAt,
     updatedAt: row.updatedAt,
   };
+
+  if (quantidadeUsadaRegularizacao > 0) {
+    dto.quantidadeUsadaRegularizacao = quantidadeUsadaRegularizacao;
+  }
+
+  return dto;
 }
 
 function toResolvedExtraDTO(row) {

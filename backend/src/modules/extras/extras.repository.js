@@ -26,12 +26,10 @@ const extraSelect = Object.freeze({
   },
 
   pedidoItens: {
-    where: {
-      status: "PENDENTE",
-    },
     select: {
       id: true,
       quantidade: true,
+      status: true,
     },
   },
 });

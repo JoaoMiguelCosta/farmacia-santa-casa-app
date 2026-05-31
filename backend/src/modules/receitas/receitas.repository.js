@@ -121,8 +121,41 @@ const regularizacaoPreviewSelect = Object.freeze({
   },
 });
 
-function findLinhasByUtente(utenteId) {
-  return prisma.receitaLinha.findMany({
+async function getRegularizacaoQuantityMap(client, receitaLinhaIds = []) {
+  const uniqueIds = Array.from(new Set(receitaLinhaIds.filter(Boolean)));
+
+  if (uniqueIds.length === 0) return new Map();
+
+  const rows = await client.regularizacaoEvento.groupBy({
+    by: ["receitaLinhaId"],
+    where: {
+      receitaLinhaId: {
+        in: uniqueIds,
+      },
+    },
+    _sum: {
+      quantidade: true,
+    },
+  });
+
+  return new Map(
+    rows.map((row) => [
+      row.receitaLinhaId,
+      Number(row._sum?.quantidade || 0),
+    ]),
+  );
+}
+
+function attachRegularizacaoQuantities(linhas = [], regularizacaoQuantityMap) {
+  return linhas.map((linha) => ({
+    ...linha,
+    quantidadeUsadaRegularizacao:
+      regularizacaoQuantityMap.get(linha.id) || 0,
+  }));
+}
+
+async function findLinhasByUtente(utenteId) {
+  const linhas = await prisma.receitaLinha.findMany({
     where: {
       receita: {
         utenteId,
@@ -132,6 +165,13 @@ function findLinhasByUtente(utenteId) {
     select: linhaSelect,
     orderBy: linhaFefoOrderBy,
   });
+
+  const regularizacaoQuantityMap = await getRegularizacaoQuantityMap(
+    prisma,
+    linhas.map((linha) => linha.id),
+  );
+
+  return attachRegularizacaoQuantities(linhas, regularizacaoQuantityMap);
 }
 
 function findReceitaByNumero19(numero19) {
@@ -147,13 +187,21 @@ function findReceitaByNumero19(numero19) {
   });
 }
 
-function findLinhaById(linhaId) {
-  return prisma.receitaLinha.findUnique({
+async function findLinhaById(linhaId) {
+  const linha = await prisma.receitaLinha.findUnique({
     where: {
       id: linhaId,
     },
     select: linhaSelect,
   });
+
+  if (!linha) return null;
+
+  const regularizacaoQuantityMap = await getRegularizacaoQuantityMap(prisma, [
+    linha.id,
+  ]);
+
+  return attachRegularizacaoQuantities([linha], regularizacaoQuantityMap)[0];
 }
 
 function countDispensasByLinha(linhaId) {
@@ -552,14 +600,24 @@ async function createReceitaWithLinhas(utenteId, payload) {
       orderBy: linhaFefoOrderBy,
     });
 
+    const regularizacaoQuantityMap = await getRegularizacaoQuantityMap(
+      tx,
+      createdLinhaIds,
+    );
+
+    const createdLinhasWithRegularizacao = attachRegularizacaoQuantities(
+      createdLinhas,
+      regularizacaoQuantityMap,
+    );
+
     const extrasResolvidos = await resolveOpenExtrasForCreatedLinhasTx(tx, {
       utenteId,
-      linhas: createdLinhas,
+      linhas: createdLinhasWithRegularizacao,
     });
 
     return {
       receita,
-      linhas: createdLinhas,
+      linhas: createdLinhasWithRegularizacao,
       extrasResolvidos,
       regularizacoesAtualizadas:
         regularizacaoResult.regularizacoesAtualizadas || [],

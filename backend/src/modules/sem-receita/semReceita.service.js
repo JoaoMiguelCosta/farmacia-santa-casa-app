@@ -79,13 +79,22 @@ async function removeForUtente(utenteId, semReceitaId) {
     );
   }
 
+  const pendingPedidoItems =
+    await semReceitaRepository.countPendingPedidoItemsBySemReceita(
+      semReceitaId,
+    );
+
+  if (pendingPedidoItems > 0) {
+    throw conflict(
+      "Não é possível remover: o medicamento ainda está associado a pedidos pendentes.",
+    );
+  }
+
   const linkedPedidoItems =
     await semReceitaRepository.countPedidoItemsBySemReceita(semReceitaId);
 
   if (linkedPedidoItems > 0) {
-    throw conflict(
-      "Não é possível remover: o medicamento já está associado a pedidos.",
-    );
+    await semReceitaRepository.unlinkPedidoItemsBySemReceita(semReceitaId);
   }
 
   await semReceitaRepository.deleteById(semReceitaId);
