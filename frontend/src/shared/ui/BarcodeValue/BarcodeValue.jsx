@@ -20,8 +20,9 @@ export default function BarcodeValue({
   height = 34,
   margin = 0,
   displayValue = true,
-  fontSize = 11,
+  fontSize = 12,
   textMargin = 5,
+  fontOptions = "bold",
   size = "default",
   className = "",
 }) {
@@ -48,6 +49,7 @@ export default function BarcodeValue({
         margin,
         displayValue,
         font: BARCODE_VALUE_CONFIG.font,
+        fontOptions,
         fontSize,
         textMargin,
         lineColor: BARCODE_VALUE_CONFIG.lineColor,
@@ -62,6 +64,7 @@ export default function BarcodeValue({
   }, [
     barcodeValue,
     displayValue,
+    fontOptions,
     fontSize,
     format,
     height,

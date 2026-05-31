@@ -1,4 +1,7 @@
+// src/features/santacasa/receitas/hooks/useReceitaCreateForm.js
 import { useEffect, useMemo, useRef, useState } from "react";
+
+import { RECEITAS_PAGE } from "../config/receitasPage.config";
 
 const INITIAL_LINE = Object.freeze({
   medicamento: "",
@@ -48,37 +51,37 @@ function isDateBeforeToday(value, todayInputValue) {
 
 function validateForm(values, todayInputValue) {
   const errors = {};
+  const formErrors = RECEITAS_PAGE.form.errors;
 
   if (!/^\d{19}$/.test(values.numero19)) {
-    errors.numero19 = "O número da receita deve ter exatamente 19 dígitos.";
+    errors.numero19 = formErrors.numero19Invalid;
   }
 
   if (!/^\d{6}$/.test(values.pinAcesso6)) {
-    errors.pinAcesso6 = "O PIN de acesso deve ter exatamente 6 dígitos.";
+    errors.pinAcesso6 = formErrors.pinAcesso6Invalid;
   }
 
   if (!/^\d{4}$/.test(values.pinOpcao4)) {
-    errors.pinOpcao4 = "O PIN de opção deve ter exatamente 4 dígitos.";
+    errors.pinOpcao4 = formErrors.pinOpcao4Invalid;
   }
 
   values.linhas.forEach((linha, index) => {
     const prefix = `linhas.${index}`;
 
     if (!linha.medicamento.trim()) {
-      errors[`${prefix}.medicamento`] = "O medicamento é obrigatório.";
+      errors[`${prefix}.medicamento`] = formErrors.medicamentoRequired;
     }
 
     const quantidade = Number(linha.quantidade);
 
     if (!Number.isInteger(quantidade) || quantidade <= 0) {
-      errors[`${prefix}.quantidade`] = "A quantidade deve ser maior que 0.";
+      errors[`${prefix}.quantidade`] = formErrors.quantidadeInvalid;
     }
 
     if (!linha.validade) {
-      errors[`${prefix}.validade`] = "A validade é obrigatória.";
+      errors[`${prefix}.validade`] = formErrors.validadeRequired;
     } else if (isDateBeforeToday(linha.validade, todayInputValue)) {
-      errors[`${prefix}.validade`] =
-        "A validade não pode ser anterior ao dia atual.";
+      errors[`${prefix}.validade`] = formErrors.validadePast;
     }
   });
 

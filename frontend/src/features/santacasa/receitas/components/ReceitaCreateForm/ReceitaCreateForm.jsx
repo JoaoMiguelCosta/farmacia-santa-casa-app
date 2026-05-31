@@ -1,3 +1,4 @@
+// src/features/santacasa/receitas/components/ReceitaCreateForm/ReceitaCreateForm.jsx
 import Button from "../../../../../shared/ui/Button/Button";
 import FormField from "../../../../../shared/ui/FormField/FormField";
 import SurfaceCard from "../../../../../shared/ui/SurfaceCard/SurfaceCard";
@@ -44,7 +45,7 @@ export default function ReceitaCreateForm({
       <form className={styles.form} onSubmit={handleSubmit} noValidate>
         {!selectedUtenteId ? (
           <p className={styles.notice} role="status">
-            Seleciona um utente antes de criar receita.
+            {RECEITAS_PAGE.form.noUtenteSelectedMessage}
           </p>
         ) : null}
 
@@ -114,8 +115,8 @@ export default function ReceitaCreateForm({
 
         <div className={styles.linesHeader}>
           <div className={styles.linesTitleGroup}>
-            <p>Composição</p>
-            <h3>Linhas da receita</h3>
+            <p>{RECEITAS_PAGE.form.compositionEyebrow}</p>
+            <h3>{RECEITAS_PAGE.form.linesTitle}</h3>
           </div>
 
           <Button
@@ -135,7 +136,9 @@ export default function ReceitaCreateForm({
 
             return (
               <fieldset key={linha.id} className={styles.line}>
-                <legend>Linha {index + 1}</legend>
+                <legend>
+                  {RECEITAS_PAGE.form.lineLegendPrefix} {index + 1}
+                </legend>
 
                 <div className={styles.lineGrid}>
                   <MedicamentoAutocomplete

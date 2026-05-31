@@ -1,22 +1,27 @@
-import Button from "../../../../../shared/ui/Button/Button";
+// src/features/santacasa/receitas/components/ReceitasList/ReceitasList.jsx
+import { useState } from "react";
+
 import BarcodeValue from "../../../../../shared/ui/BarcodeValue/BarcodeValue";
+import Button from "../../../../../shared/ui/Button/Button";
 import DataState from "../../../../../shared/ui/DataState/DataState";
 import SurfaceCard from "../../../../../shared/ui/SurfaceCard/SurfaceCard";
-import { formatDateTime } from "../../../../../shared/utils/formatDate";
 
 import { RECEITAS_PAGE } from "../../config/receitasPage.config";
 
 import styles from "./ReceitasList.module.css";
 
-const FEFO_BLOCKED_MESSAGE =
-  "Usa primeiro a receita com validade mais próxima.";
+const CODE_TOGGLE_LABELS = Object.freeze({
+  show: "Ver códigos",
+  hide: "Ocultar códigos",
+  title: "Códigos da receita",
+});
 
 function formatDateOnly(value) {
-  if (!value) return "—";
+  if (!value) return RECEITAS_PAGE.list.emptyValue;
 
   const date = new Date(value);
 
-  if (Number.isNaN(date.getTime())) return "—";
+  if (Number.isNaN(date.getTime())) return RECEITAS_PAGE.list.emptyValue;
 
   return new Intl.DateTimeFormat("pt-PT", {
     dateStyle: "short",
@@ -79,42 +84,14 @@ function hasEarlierAvailableReceita({
   });
 }
 
-function getRecipeKey(linha) {
-  return [linha.receitaId, linha.numero19, linha.pinAcesso6, linha.pinOpcao4]
-    .filter(Boolean)
-    .join("-");
-}
-
-function groupReceitasByRecipe(receitas = []) {
-  const groups = [];
-
-  receitas.forEach((linha) => {
-    const key = getRecipeKey(linha);
-    const latestGroup = groups[groups.length - 1];
-
-    if (latestGroup?.key === key) {
-      latestGroup.linhas.push(linha);
-      return;
-    }
-
-    groups.push({
-      key,
-      receita: linha,
-      linhas: [linha],
-    });
-  });
-
-  return groups;
-}
-
 function buildPedidoItem(linha) {
   return {
     key: getReceitaPedidoKey(linha),
     tipo: "COM_RECEITA",
     id: linha.linhaId,
     title: linha.medicamento,
-    description: `Receita ${linha.numero19}`,
-    meta: `PIN ${linha.pinAcesso6} · Opção ${linha.pinOpcao4}`,
+    description: `${RECEITAS_PAGE.list.labels.receitaPrefix} ${linha.numero19}`,
+    meta: `${RECEITAS_PAGE.list.labels.pinPrefix} ${linha.pinAcesso6} · ${RECEITAS_PAGE.list.labels.optionPrefix} ${linha.pinOpcao4}`,
     quantidadeRestante: Number(linha.quantidadeRestante) || 0,
     source: linha,
   };
@@ -130,50 +107,319 @@ function getInputQuantity(value, max) {
   return Math.min(quantity, max);
 }
 
-function ReceitaBarcodes({ receita }) {
-  const codes = [
-    {
-      key: "numero19",
-      label: "N.º receita",
-      value: receita.numero19,
-      width: 0.72,
-    },
-    {
-      key: "pinAcesso6",
-      label: "PIN acesso",
-      value: receita.pinAcesso6,
-      width: 1.08,
-    },
-    {
-      key: "pinOpcao4",
-      label: "PIN opção",
-      value: receita.pinOpcao4,
-      width: 1.16,
-    },
-  ];
+function getPedidoButtonLabel({ quantidadeDisponivel, isBlockedByFefo }) {
+  if (quantidadeDisponivel <= 0) {
+    return RECEITAS_PAGE.list.pedidoActions.noStockLabel;
+  }
+
+  if (isBlockedByFefo) {
+    return RECEITAS_PAGE.list.pedidoActions.usePreviousLabel;
+  }
+
+  return RECEITAS_PAGE.list.pedidoActions.addLabel;
+}
+
+function ReceitaCodeCell({ label, value, size = "compact" }) {
+  return (
+    <div className={styles.codeCell}>
+      <BarcodeValue
+        label={label}
+        value={value}
+        caption=""
+        size={size}
+        className={styles.codeBarcode}
+      />
+    </div>
+  );
+}
+
+function ReceitaCodesPanel({ linha, panelId }) {
+  return (
+    <section
+      id={panelId}
+      className={styles.codesPanel}
+      aria-label={CODE_TOGGLE_LABELS.title}
+    >
+      <div className={styles.codesHeader}>
+        <h4>{CODE_TOGGLE_LABELS.title}</h4>
+      </div>
+
+      <div className={styles.codesGrid}>
+        <ReceitaCodeCell
+          label={RECEITAS_PAGE.fields.numero19.label}
+          value={linha.numero19}
+        />
+
+        <ReceitaCodeCell
+          label={RECEITAS_PAGE.fields.pinAcesso6.label}
+          value={linha.pinAcesso6}
+        />
+
+        <ReceitaCodeCell
+          label={RECEITAS_PAGE.fields.pinOpcao4.label}
+          value={linha.pinOpcao4}
+        />
+      </div>
+    </section>
+  );
+}
+
+function ReceitaQuantitySummary({
+  linha,
+  quantidadeDisponivel,
+  quantidadeEmPedido,
+}) {
+  return (
+    <div className={styles.quantitySummary}>
+      <div className={styles.quantityAvailable}>
+        <span>{RECEITAS_PAGE.list.columns.quantidade}</span>
+        <strong>{quantidadeDisponivel}</strong>
+      </div>
+
+      <div className={styles.quantityDetails}>
+        <span>
+          {RECEITAS_PAGE.list.labels.total} <strong>{linha.quantidade}</strong>
+        </span>
+
+        <span>
+          {RECEITAS_PAGE.list.labels.dispensada}{" "}
+          <strong>{linha.quantidadeDispensada}</strong>
+        </span>
+
+        <span>
+          {RECEITAS_PAGE.list.labels.emPedido}{" "}
+          <strong>{quantidadeEmPedido}</strong>
+        </span>
+      </div>
+    </div>
+  );
+}
+
+function ReceitaActionsCell({
+  linha,
+  pedidoItem,
+  quantity,
+  quantidadeDisponivel,
+  quantidadeEmPedido,
+  isBlockedByFefo,
+  isPedidoDisabled,
+  isDeleting,
+  deletingLinhaId,
+  isCodesExpanded,
+  codesPanelId,
+  hasPedidoActions,
+  hasDeleteActions,
+  onToggleCodes,
+  onPedidoQuantityChange,
+  onAddToPedido,
+  onBlockedDelete,
+  onDelete,
+}) {
+  return (
+    <div className={styles.actionsCell}>
+      {hasPedidoActions ? (
+        <div className={styles.pedidoAction}>
+          <label htmlFor={`receita-pedido-${linha.linhaId}`}>
+            {RECEITAS_PAGE.list.labels.quantidadeShort}
+          </label>
+
+          <input
+            id={`receita-pedido-${linha.linhaId}`}
+            type="number"
+            min="1"
+            max={quantidadeDisponivel}
+            value={quantity}
+            disabled={isPedidoDisabled}
+            aria-describedby={
+              isBlockedByFefo ? `fefo-notice-${linha.linhaId}` : undefined
+            }
+            onChange={(event) =>
+              onPedidoQuantityChange?.(
+                pedidoItem.key,
+                event.target.value,
+                quantidadeDisponivel,
+              )
+            }
+          />
+
+          <div className={styles.addButtonSlot}>
+            <Button
+              type="button"
+              size="sm"
+              disabled={isPedidoDisabled}
+              aria-describedby={
+                isBlockedByFefo ? `fefo-notice-${linha.linhaId}` : undefined
+              }
+              onClick={() =>
+                onAddToPedido({
+                  ...pedidoItem,
+                  quantidade: quantity,
+                })
+              }
+            >
+              {getPedidoButtonLabel({
+                quantidadeDisponivel,
+                isBlockedByFefo,
+              })}
+            </Button>
+          </div>
+        </div>
+      ) : null}
+
+      <div className={styles.codesButtonSlot}>
+        <Button
+          type="button"
+          size="sm"
+          variant="secondary"
+          aria-expanded={isCodesExpanded}
+          aria-controls={codesPanelId}
+          onClick={() => onToggleCodes(linha.linhaId)}
+        >
+          {isCodesExpanded ? CODE_TOGGLE_LABELS.hide : CODE_TOGGLE_LABELS.show}
+        </Button>
+      </div>
+
+      {hasDeleteActions ? (
+        <div className={styles.deleteButtonSlot}>
+          <Button
+            variant="danger"
+            size="sm"
+            isLoading={isDeleting}
+            disabled={Boolean(deletingLinhaId)}
+            onClick={() => {
+              if (quantidadeEmPedido > 0) {
+                onBlockedDelete?.(linha, quantidadeEmPedido);
+                return;
+              }
+
+              onDelete(linha);
+            }}
+          >
+            {isDeleting
+              ? RECEITAS_PAGE.list.deletingLabel
+              : RECEITAS_PAGE.list.deleteLabel}
+          </Button>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+function ReceitaRow({
+  linha,
+  receitas,
+  deletingLinhaId,
+  pedidoQuantities,
+  pedidoItemsQuantities,
+  expandedLinhaId,
+  hasPedidoActions,
+  hasDeleteActions,
+  onToggleCodes,
+  onPedidoQuantityChange,
+  onAddToPedido,
+  onBlockedDelete,
+  onDelete,
+}) {
+  const pedidoItem = buildPedidoItem(linha);
+  const quantidadeEmPedido = Number(pedidoItemsQuantities[pedidoItem.key]) || 0;
+
+  const quantidadeDisponivel = Math.max(
+    0,
+    pedidoItem.quantidadeRestante - quantidadeEmPedido,
+  );
+
+  const quantity = getInputQuantity(
+    pedidoQuantities[pedidoItem.key],
+    quantidadeDisponivel,
+  );
+
+  const isDeleting = deletingLinhaId === linha.linhaId;
+
+  const isBlockedByFefo = hasEarlierAvailableReceita({
+    linha,
+    receitas,
+    pedidoItemsQuantities,
+  });
+
+  const isPedidoDisabled = quantidadeDisponivel <= 0 || isBlockedByFefo;
+  const isCodesExpanded = expandedLinhaId === linha.linhaId;
+
+  const titleId = `receita-title-${linha.linhaId}`;
+  const codesPanelId = `receita-codes-${linha.linhaId}`;
 
   return (
-    <div className={styles.barcodePanel} aria-label="Códigos da receita">
-      {codes.map((code) => (
-        <BarcodeValue
-          key={code.key}
-          size="compact"
-          label={code.label}
-          value={code.value}
-          caption={code.value}
-          height={28}
-          width={code.width}
-          displayValue={false}
+    <article
+      className={
+        isBlockedByFefo ? `${styles.row} ${styles.fefoBlockedRow}` : styles.row
+      }
+      role="listitem"
+      aria-labelledby={titleId}
+    >
+      <div className={styles.compactContent}>
+        <div className={styles.medicationCell}>
+          <span>{RECEITAS_PAGE.list.columns.medicamento}</span>
+          <strong id={titleId}>{linha.medicamento}</strong>
+
+          {isBlockedByFefo ? (
+            <p
+              id={`fefo-notice-${linha.linhaId}`}
+              className={styles.fefoNotice}
+            >
+              {RECEITAS_PAGE.list.fefo.blockedMessage}
+            </p>
+          ) : null}
+        </div>
+
+        <ReceitaQuantitySummary
+          linha={linha}
+          quantidadeDisponivel={quantidadeDisponivel}
+          quantidadeEmPedido={quantidadeEmPedido}
         />
-      ))}
-    </div>
+
+        <div className={styles.metaCell}>
+          <div className={styles.validityBox}>
+            <span>{RECEITAS_PAGE.list.columns.validade}</span>
+            <strong>{formatDateOnly(linha.validade)}</strong>
+          </div>
+
+          <div className={styles.statusBox}>
+            <span>{RECEITAS_PAGE.list.columns.estado}</span>
+            <strong className={styles.status}>{linha.status}</strong>
+          </div>
+        </div>
+
+        <ReceitaActionsCell
+          linha={linha}
+          pedidoItem={pedidoItem}
+          quantity={quantity}
+          quantidadeDisponivel={quantidadeDisponivel}
+          quantidadeEmPedido={quantidadeEmPedido}
+          isBlockedByFefo={isBlockedByFefo}
+          isPedidoDisabled={isPedidoDisabled}
+          isDeleting={isDeleting}
+          deletingLinhaId={deletingLinhaId}
+          isCodesExpanded={isCodesExpanded}
+          codesPanelId={codesPanelId}
+          hasPedidoActions={hasPedidoActions}
+          hasDeleteActions={hasDeleteActions}
+          onToggleCodes={onToggleCodes}
+          onPedidoQuantityChange={onPedidoQuantityChange}
+          onAddToPedido={onAddToPedido}
+          onBlockedDelete={onBlockedDelete}
+          onDelete={onDelete}
+        />
+      </div>
+
+      {isCodesExpanded ? (
+        <ReceitaCodesPanel linha={linha} panelId={codesPanelId} />
+      ) : null}
+    </article>
   );
 }
 
 export default function ReceitasList({
   receitas = [],
   selectedUtenteId = "",
-  selectedUtente = null,
   isLoading = false,
   error = null,
   deletingLinhaId = null,
@@ -185,15 +431,23 @@ export default function ReceitasList({
   onBlockedDelete,
   onDelete,
 }) {
+  const [expandedLinhaId, setExpandedLinhaId] = useState(null);
+
   const hasPedidoActions = typeof onAddToPedido === "function";
   const hasDeleteActions = typeof onDelete === "function";
+
+  function handleToggleCodes(linhaId) {
+    setExpandedLinhaId((currentLinhaId) =>
+      currentLinhaId === linhaId ? null : linhaId,
+    );
+  }
 
   if (!selectedUtenteId) {
     return (
       <DataState
         type="empty"
-        title="Seleciona um utente."
-        description="Depois de selecionares um utente, as receitas disponíveis aparecem aqui."
+        title={RECEITAS_PAGE.list.noUtenteTitle}
+        description={RECEITAS_PAGE.list.noUtenteDescription}
       />
     );
   }
@@ -203,7 +457,7 @@ export default function ReceitasList({
       <DataState
         type="loading"
         title={RECEITAS_PAGE.list.loadingTitle}
-        description="Aguarda enquanto as receitas são carregadas."
+        description={RECEITAS_PAGE.list.loadingDescription}
       />
     );
   }
@@ -214,7 +468,7 @@ export default function ReceitasList({
         type="error"
         title={RECEITAS_PAGE.list.errorTitle}
         description={error}
-        actionLabel="Tentar novamente"
+        actionLabel={RECEITAS_PAGE.list.retryLabel}
         onAction={onRetry}
       />
     );
@@ -230,208 +484,31 @@ export default function ReceitasList({
     );
   }
 
-  const receitaGroups = groupReceitasByRecipe(receitas);
-
   return (
     <SurfaceCard
       title={RECEITAS_PAGE.list.title}
       description={RECEITAS_PAGE.list.description}
       tone="strong"
     >
-      <div className={styles.tableWrap}>
-        <table className={styles.table}>
-          <thead>
-            <tr>
-              <th>Utente</th>
-              <th>Receita</th>
-              <th>Medicamento</th>
-              <th>Quantidade</th>
-              <th>Validade</th>
-              <th>Estado</th>
-              <th>Criado em</th>
-              {hasPedidoActions ? <th>Pedido</th> : null}
-              {hasDeleteActions ? <th>Remover</th> : null}
-            </tr>
-          </thead>
-
-          <tbody>
-            {receitaGroups.map((group) =>
-              group.linhas.map((linha, index) => {
-                const pedidoItem = buildPedidoItem(linha);
-                const quantidadeEmPedido =
-                  Number(pedidoItemsQuantities[pedidoItem.key]) || 0;
-
-                const isDeleteBlocked = quantidadeEmPedido > 0;
-
-                const quantidadeDisponivel = Math.max(
-                  0,
-                  pedidoItem.quantidadeRestante - quantidadeEmPedido,
-                );
-
-                const quantity = getInputQuantity(
-                  pedidoQuantities[pedidoItem.key],
-                  quantidadeDisponivel,
-                );
-
-                const isDeleting = deletingLinhaId === linha.linhaId;
-                const isFirstRecipeLine = index === 0;
-
-                const isBlockedByFefo = hasEarlierAvailableReceita({
-                  linha,
-                  receitas,
-                  pedidoItemsQuantities,
-                });
-
-                const isPedidoDisabled =
-                  quantidadeDisponivel <= 0 || isBlockedByFefo;
-
-                return (
-                  <tr
-                    key={linha.linhaId}
-                    className={isBlockedByFefo ? styles.fefoBlockedRow : ""}
-                  >
-                    {isFirstRecipeLine ? (
-                      <td
-                        rowSpan={group.linhas.length}
-                        className={styles.groupCell}
-                      >
-                        <strong>
-                          {selectedUtente?.nome || "Utente selecionado"}
-                        </strong>
-                        <span>
-                          {selectedUtente?.numero9 || selectedUtenteId}
-                        </span>
-                      </td>
-                    ) : null}
-
-                    {isFirstRecipeLine ? (
-                      <td
-                        rowSpan={group.linhas.length}
-                        className={styles.groupCell}
-                      >
-                        <ReceitaBarcodes receita={linha} />
-                      </td>
-                    ) : null}
-
-                    <td>
-                      <strong>{linha.medicamento}</strong>
-                      <span>{linha.linhaId}</span>
-
-                      {isBlockedByFefo ? (
-                        <span className={styles.fefoInlineNotice}>
-                          {FEFO_BLOCKED_MESSAGE}
-                        </span>
-                      ) : null}
-                    </td>
-
-                    <td>
-                      <strong>{quantidadeDisponivel}</strong>
-                      <span>
-                        Total {linha.quantidade} · Dispensada{" "}
-                        {linha.quantidadeDispensada}
-                      </span>
-                      <span>Em pedido {quantidadeEmPedido}</span>
-                    </td>
-
-                    <td>{formatDateOnly(linha.validade)}</td>
-
-                    <td>
-                      <span className={styles.status}>{linha.status}</span>
-                    </td>
-
-                    <td>{formatDateTime(linha.createdAt)}</td>
-
-                    {hasPedidoActions ? (
-                      <td className={styles.actionCell}>
-                        <div className={styles.actionStack}>
-                          <label htmlFor={`receita-pedido-${linha.linhaId}`}>
-                            Qtd
-                          </label>
-
-                          <input
-                            id={`receita-pedido-${linha.linhaId}`}
-                            type="number"
-                            min="1"
-                            max={quantidadeDisponivel}
-                            value={quantity}
-                            disabled={isPedidoDisabled}
-                            aria-describedby={
-                              isBlockedByFefo
-                                ? `fefo-notice-${linha.linhaId}`
-                                : undefined
-                            }
-                            onChange={(event) =>
-                              onPedidoQuantityChange?.(
-                                pedidoItem.key,
-                                event.target.value,
-                                quantidadeDisponivel,
-                              )
-                            }
-                          />
-
-                          <Button
-                            type="button"
-                            size="sm"
-                            disabled={isPedidoDisabled}
-                            aria-describedby={
-                              isBlockedByFefo
-                                ? `fefo-notice-${linha.linhaId}`
-                                : undefined
-                            }
-                            onClick={() =>
-                              onAddToPedido({
-                                ...pedidoItem,
-                                quantidade: quantity,
-                              })
-                            }
-                          >
-                            {quantidadeDisponivel <= 0
-                              ? "Sem saldo"
-                              : isBlockedByFefo
-                                ? "Usar anterior"
-                                : "Adicionar"}
-                          </Button>
-
-                          {isBlockedByFefo ? (
-                            <p
-                              id={`fefo-notice-${linha.linhaId}`}
-                              className={styles.fefoNotice}
-                            >
-                              {FEFO_BLOCKED_MESSAGE}
-                            </p>
-                          ) : null}
-                        </div>
-                      </td>
-                    ) : null}
-
-                    {hasDeleteActions ? (
-                      <td className={styles.actionCell}>
-                        <Button
-                          variant="danger"
-                          size="sm"
-                          isLoading={isDeleting}
-                          disabled={Boolean(deletingLinhaId)}
-                          onClick={() => {
-                            if (isDeleteBlocked) {
-                              onBlockedDelete?.(linha, quantidadeEmPedido);
-                              return;
-                            }
-
-                            onDelete(linha);
-                          }}
-                        >
-                          {isDeleting
-                            ? RECEITAS_PAGE.list.deletingLabel
-                            : RECEITAS_PAGE.list.deleteLabel}
-                        </Button>
-                      </td>
-                    ) : null}
-                  </tr>
-                );
-              }),
-            )}
-          </tbody>
-        </table>
+      <div className={styles.list} role="list">
+        {receitas.map((linha) => (
+          <ReceitaRow
+            key={linha.linhaId}
+            linha={linha}
+            receitas={receitas}
+            deletingLinhaId={deletingLinhaId}
+            pedidoQuantities={pedidoQuantities}
+            pedidoItemsQuantities={pedidoItemsQuantities}
+            expandedLinhaId={expandedLinhaId}
+            hasPedidoActions={hasPedidoActions}
+            hasDeleteActions={hasDeleteActions}
+            onToggleCodes={handleToggleCodes}
+            onPedidoQuantityChange={onPedidoQuantityChange}
+            onAddToPedido={onAddToPedido}
+            onBlockedDelete={onBlockedDelete}
+            onDelete={onDelete}
+          />
+        ))}
       </div>
     </SurfaceCard>
   );
