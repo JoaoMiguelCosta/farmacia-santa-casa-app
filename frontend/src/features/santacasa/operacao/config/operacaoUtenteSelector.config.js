@@ -1,12 +1,12 @@
-// src/features/santacasa/shared/config/utenteSelector.config.js
-export const UTENTE_SELECTOR = Object.freeze({
-  titleId: "utente-selector-title",
+// src/features/santacasa/operacao/config/operacaoUtenteSelector.config.js
+export const OPERACAO_UTENTE_SELECTOR = Object.freeze({
+  titleId: "operacao-utente-selector-title",
 
   title: "Selecionar utente",
   description: "Escolhe o utente para consultar ou registar dados.",
 
   field: {
-    id: "utente-selector",
+    id: "operacao-utente-selector",
     label: "Utente",
     loadingHint: "A carregar utentes...",
     defaultHint: "Escolhe o utente para carregar os dados da operação.",

@@ -1,5 +1,5 @@
 // src/features/santacasa/operacao/components/OperacaoSelectedUtenteCard/OperacaoSelectedUtenteCard.jsx
-import UtenteSelector from "../../../shared/components/UtenteSelector/UtenteSelector";
+import OperacaoUtenteSelector from "../OperacaoUtenteSelector/OperacaoUtenteSelector";
 
 import { OPERACAO_PAGE } from "../../config/operacaoPage.config";
 
@@ -54,7 +54,7 @@ export default function OperacaoSelectedUtenteCard({
       </header>
 
       <div className={styles.selectorPanel}>
-        <UtenteSelector
+        <OperacaoUtenteSelector
           utentes={utentes}
           value={selectedUtenteId}
           onChange={onSelectUtente}
