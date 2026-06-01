@@ -1,50 +1,45 @@
 // src/features/santacasa/sem-receita/config/semReceitaPage.config.js
 export const SEM_RECEITA_PAGE = Object.freeze({
   header: {
-    eyebrow: "Santa Casa",
+    eyebrow: "Sem receita médica",
     title: "Medicamentos não sujeitos a receita médica",
     description:
-      "Regista e consulta medicamentos não sujeitos a receita médica associados a cada utente.",
+      "Medicamentos que não exigem receita médica e podem ser pedidos diretamente.",
   },
 
   form: {
-    title: "Adicionar medicamento não sujeito a receita médica",
+    title: "Adicionar Medicamento não sujeito a receita médica",
     description:
-      "Regista um medicamento disponível para o utente selecionado, sem ligação a receita oficial.",
-    submitLabel: "Adicionar medicamento",
+      "Adiciona um Medicamento que o utente pode pedir sem apresentar receita médica.",
+    submitLabel: "Adicionar Medicamento",
     submittingLabel: "A adicionar...",
     noUtenteSelectedMessage:
-      "Seleciona um utente antes de adicionar medicamento.",
-    successMessage:
-      "Medicamento não sujeito a receita médica criado com sucesso.",
+      "Seleciona um utente antes de adicionar Medicamento.",
+    successMessage: "Medicamento adicionado com sucesso.",
 
     errors: {
-      medicamentoRequired: "O medicamento é obrigatório.",
+      medicamentoRequired: "O Medicamento é obrigatório.",
       quantidadeInvalid: "A quantidade deve ser maior que 0.",
     },
   },
 
   list: {
-    title: "Medicamentos não sujeitos a receita médica disponíveis",
+    title: "Medicamentos disponíveis",
     description:
-      "Lista de medicamentos não sujeitos a receita médica com quantidade restante para o utente selecionado.",
-    emptyTitle: "Sem medicamentos não sujeitos a receita médica disponíveis.",
-    emptyDescription:
-      "Adiciona um medicamento não sujeito a receita médica ou seleciona outro utente.",
+      "Medicamentos não sujeitos a receita médica, com quantidade disponível para pedido à Farmácia.",
+    emptyTitle: "Sem Medicamentos disponíveis.",
+    emptyDescription: "Adiciona um Medicamento ou seleciona outro utente.",
     noUtenteTitle: "Seleciona um utente.",
     noUtenteDescription:
-      "Depois de selecionares um utente, os medicamentos não sujeitos a receita médica aparecem aqui.",
-    loadingTitle: "A carregar medicamentos não sujeitos a receita médica...",
-    loadingDescription:
-      "Aguarda enquanto os medicamentos não sujeitos a receita médica são carregados.",
-    errorTitle:
-      "Não foi possível carregar os medicamentos não sujeitos a receita médica.",
+      "Depois de selecionares um utente, os Medicamentos aparecem aqui.",
+    loadingTitle: "A carregar Medicamentos...",
+    loadingDescription: "Aguarda enquanto os Medicamentos são carregados.",
+    errorTitle: "Não foi possível carregar os Medicamentos.",
     retryLabel: "Tentar novamente",
 
     deleteLabel: "Remover",
     deletingLabel: "A remover...",
-    deleteSuccessMessage:
-      "Medicamento não sujeito a receita médica removido com sucesso.",
+    deleteSuccessMessage: "Medicamento removido com sucesso.",
 
     emptyValue: "—",
 
@@ -57,10 +52,10 @@ export const SEM_RECEITA_PAGE = Object.freeze({
     },
 
     labels: {
-      semReceitaDescription: "Medicamento não sujeito a receita médica",
-      total: "Total",
-      dispensada: "Dispensada",
-      emPedido: "Em pedido",
+      semReceitaDescription: "Não exige receita médica",
+      total: "Total:",
+      dispensada: "Dispensadas",
+      emPedido: "Em pedidos:",
       quantidadeShort: "Qtd",
     },
 
@@ -72,10 +67,10 @@ export const SEM_RECEITA_PAGE = Object.freeze({
   },
 
   deleteDialog: {
-    title: "Remover medicamento não sujeito a receita médica?",
+    title: "Remover Medicamento?",
     description:
-      "Esta ação pode ser bloqueada se o medicamento já estiver associado a pedidos.",
-    confirmLabel: "Remover medicamento",
+      "Pode não ser possível remover se o Medicamento já estiver associado a pedidos.",
+    confirmLabel: "Remover Medicamento",
     cancelLabel: "Cancelar",
   },
 
@@ -83,13 +78,13 @@ export const SEM_RECEITA_PAGE = Object.freeze({
     medicamento: {
       id: "sem-receita-medicamento",
       label: "Medicamento",
-      hint: "Indica o nome do medicamento.",
+      hint: "Indica o nome do Medicamento.",
       placeholder: "Ex: Ben-u-ron",
     },
     quantidade: {
       id: "sem-receita-quantidade",
       label: "Quantidade",
-      hint: "Deve ser um número inteiro maior que 0.",
+      hint: "Indica a quantidade disponível.",
       placeholder: "Ex: 2",
     },
   },

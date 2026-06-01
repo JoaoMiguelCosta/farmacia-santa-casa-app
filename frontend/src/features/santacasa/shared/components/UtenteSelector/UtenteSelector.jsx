@@ -1,5 +1,29 @@
+// src/features/santacasa/shared/components/UtenteSelector/UtenteSelector.jsx
 import FormField from "../../../../../shared/ui/FormField/FormField";
-import SurfaceCard from "../../../../../shared/ui/SurfaceCard/SurfaceCard";
+
+import { UTENTE_SELECTOR } from "../../config/utenteSelector.config";
+
+import UtenteCombobox from "../UtenteCombobox/UtenteCombobox";
+
+import styles from "./UtenteSelector.module.css";
+
+function getSelectorHint({ isLoading, hasUtentes }) {
+  if (isLoading) {
+    return UTENTE_SELECTOR.field.loadingHint;
+  }
+
+  if (!hasUtentes) {
+    return UTENTE_SELECTOR.field.emptyHint;
+  }
+
+  return UTENTE_SELECTOR.field.defaultHint;
+}
+
+function getPlaceholderLabel(hasUtentes) {
+  return hasUtentes
+    ? UTENTE_SELECTOR.field.placeholder
+    : UTENTE_SELECTOR.field.emptyPlaceholder;
+}
 
 export default function UtenteSelector({
   utentes = [],
@@ -11,42 +35,42 @@ export default function UtenteSelector({
   const hasUtentes = utentes.length > 0;
   const isDisabled = isLoading || !hasUtentes;
 
-  const hint = isLoading
-    ? "A carregar utentes..."
-    : hasUtentes
-      ? "Escolhe o utente para carregar os dados da operação."
-      : "Ainda não existem utentes disponíveis.";
+  const hint = getSelectorHint({
+    isLoading,
+    hasUtentes,
+  });
 
   return (
-    <SurfaceCard
-      title="Selecionar utente"
-      description="Escolhe o utente para consultar ou registar dados."
-      tone="strong"
+    <section
+      className={styles.selector}
+      aria-labelledby={UTENTE_SELECTOR.titleId}
     >
+      <header className={styles.header}>
+        <h3 id={UTENTE_SELECTOR.titleId} className={styles.title}>
+          {UTENTE_SELECTOR.title}
+        </h3>
+
+        <p className={styles.description}>{UTENTE_SELECTOR.description}</p>
+      </header>
+
       <FormField
-        id="utente-selector"
-        label="Utente"
+        id={UTENTE_SELECTOR.field.id}
+        label={UTENTE_SELECTOR.field.label}
         hint={hint}
         error={error}
         required
       >
-        <select
-          id="utente-selector"
+        <UtenteCombobox
+          id={UTENTE_SELECTOR.field.id}
+          utentes={utentes}
           value={value}
-          onChange={(event) => onChange?.(event.target.value)}
+          onChange={onChange}
           disabled={isDisabled}
-        >
-          <option value="">
-            {hasUtentes ? "Seleciona um utente" : "Nenhum utente disponível"}
-          </option>
-
-          {utentes.map((utente) => (
-            <option key={utente.id} value={utente.id}>
-              {utente.nome} — {utente.numero9}
-            </option>
-          ))}
-        </select>
+          placeholder={getPlaceholderLabel(hasUtentes)}
+          searchPlaceholder={UTENTE_SELECTOR.field.searchPlaceholder}
+          noResultsLabel={UTENTE_SELECTOR.field.noResultsLabel}
+        />
       </FormField>
-    </SurfaceCard>
+    </section>
   );
 }

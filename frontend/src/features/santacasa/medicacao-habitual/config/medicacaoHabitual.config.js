@@ -3,10 +3,10 @@ export const MEDICACAO_HABITUAL_CONFIG = Object.freeze({
   section: {
     title: "Medicação habitual",
     description:
-      "Lista de medicamentos normalmente associados ao utente selecionado.",
+      "Medicamentos que o utente toma com frequência e que podem ser reutilizados nos formulários.",
     emptyTitle: "Sem medicação habitual registada.",
     emptyDescription:
-      "Adiciona medicamentos usados com frequência para poderes selecioná-los mais rapidamente nas receitas, medicamentos não sujeitos a receita médica e vendas suspensas.",
+      "Adiciona os Medicamentos que o utente toma habitualmente para os poderes selecionar mais rapidamente em receitas, Medicamentos não sujeitos a receita médica e Medicamentos para venda suspensa.",
     loadingTitle: "A carregar medicação habitual...",
     loadingDescription: "Aguarda enquanto a medicação habitual é carregada.",
     errorTitle: "Não foi possível carregar a medicação habitual.",
@@ -30,12 +30,12 @@ export const MEDICACAO_HABITUAL_CONFIG = Object.freeze({
   },
 
   form: {
-    title: "Adicionar medicamento",
+    title: "Adicionar Medicamento habitual",
     description:
-      "Regista um medicamento habitual para reutilizar nos formulários da operação.",
+      "Adiciona um Medicamento que o utente toma com frequência para o reutilizar nos formulários.",
     submitLabel: "Adicionar",
     submittingLabel: "A adicionar...",
-    successMessage: "Medicamento adicionado à medicação habitual.",
+    successMessage: "Medicamento habitual adicionado com sucesso.",
   },
 
   fields: {
@@ -43,13 +43,14 @@ export const MEDICACAO_HABITUAL_CONFIG = Object.freeze({
       id: "medicacao-habitual-medicamento",
       label: "Medicamento",
       placeholder: "Ex: Paracetamol 1000mg",
-      hint: "Escreve o nome do medicamento usado habitualmente pelo utente.",
+      hint: "Escreve o nome do Medicamento usado habitualmente pelo utente.",
     },
   },
 
   list: {
-    title: "Medicamentos registados",
-    description: "Sugestões disponíveis nos formulários da operação.",
+    title: "Medicamentos habituais",
+    description:
+      "Sugestões disponíveis para preencher mais rapidamente os formulários da operação.",
     itemLabel: "Medicamento",
     createdAtLabel: "Criado em",
     removeLabel: "Remover",
@@ -63,15 +64,15 @@ export const MEDICACAO_HABITUAL_CONFIG = Object.freeze({
   clearDialog: {
     title: "Limpar medicação habitual?",
     description:
-      "Esta ação remove todos os medicamentos habituais deste utente. Não remove receitas, medicamentos não sujeitos a receita médica, vendas suspensas, pedidos ou histórico.",
+      "Esta ação remove apenas a lista de Medicamentos habituais deste utente. Não remove receitas, Medicamentos não sujeitos a receita médica, Medicamentos para venda suspensa, pedidos ou histórico.",
     confirmLabel: "Limpar lista",
     cancelLabel: "Cancelar",
   },
 
   deleteDialog: {
-    title: "Remover medicamento habitual?",
+    title: "Remover Medicamento habitual?",
     description:
-      "Esta ação remove apenas este medicamento da lista de medicação habitual do utente.",
+      "Esta ação remove apenas este Medicamento da lista de medicação habitual do utente.",
     confirmLabel: "Remover",
     cancelLabel: "Cancelar",
     medicationPrefix: "Medicamento:",
@@ -84,8 +85,8 @@ export const MEDICACAO_HABITUAL_CONFIG = Object.freeze({
   },
 
   validation: {
-    medicamentoRequired: "O medicamento é obrigatório.",
-    medicamentoMaxLength: "O medicamento não pode exceder 160 caracteres.",
-    duplicateMedicamento: "Este medicamento já existe na medicação habitual.",
+    medicamentoRequired: "O Medicamento é obrigatório.",
+    medicamentoMaxLength: "O Medicamento não pode exceder 160 caracteres.",
+    duplicateMedicamento: "Este Medicamento já existe na medicação habitual.",
   },
 });

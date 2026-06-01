@@ -1,38 +1,37 @@
 // src/features/santacasa/receitas/config/receitasPage.config.js
 export const RECEITAS_PAGE = Object.freeze({
   header: {
-    eyebrow: "Santa Casa",
-    title: "Receitas",
+    eyebrow: "Receitas",
+    title: "Receitas do utente",
     description:
-      "Cria receitas oficiais, consulta linhas disponíveis e gere saldos por utente.",
+      "Cria receitas com Medicamentos e consulta as quantidades disponíveis para pedido.",
   },
 
   form: {
-    title: "Criar receita",
+    title: "Criar receita com Medicamentos",
     description:
-      "Regista uma receita com os respetivos códigos e uma ou mais linhas de medicamentos.",
+      "Insere os códigos da receita e adiciona pelo menos um Medicamento.",
     submitLabel: "Criar receita",
     submittingLabel: "A criar...",
-    addLineLabel: "Adicionar linha",
-    removeLineLabel: "Remover linha",
-    noUtenteSelectedMessage: "Seleciona um utente antes de criar receita.",
-    compositionEyebrow: "Composição",
-    linesTitle: "Linhas da receita",
-    lineLegendPrefix: "Linha",
+    addLineLabel: "Adicionar Medicamento",
+    removeLineLabel: "Remover Medicamento",
+    noUtenteSelectedMessage: "Seleciona um utente antes de criar uma receita.",
+    lineLegendPrefix: "Medicamento",
     successMessage: "Receita criada com sucesso.",
-    regularizationSuccessPrefix: "Regularização automática:",
-    regularizationUsedSingular: "foi usada para regularização",
-    regularizationUsedPlural: "foram usadas para regularização",
-    regularizationRemainingSingular: "ficou disponível na linha de receita",
-    regularizationRemainingPlural: "ficaram disponíveis na linha de receita",
-    regularizationNoRemaining:
-      "não ficou quantidade disponível na linha de receita",
+    regularizationSuccessPrefix: "Venda suspensa atualizada:",
+    regularizationUsedSingular:
+      "foi usada para regularizar Medicamento pendente",
+    regularizationUsedPlural:
+      "foram usadas para regularizar Medicamentos pendentes",
+    regularizationRemainingSingular: "ficou disponível na receita",
+    regularizationRemainingPlural: "ficaram disponíveis na receita",
+    regularizationNoRemaining: "não ficou quantidade disponível na receita",
 
     errors: {
       numero19Invalid: "O número da receita deve ter exatamente 19 dígitos.",
       pinAcesso6Invalid: "O PIN de acesso deve ter exatamente 6 dígitos.",
       pinOpcao4Invalid: "O PIN de opção deve ter exatamente 4 dígitos.",
-      medicamentoRequired: "O medicamento é obrigatório.",
+      medicamentoRequired: "O Medicamento é obrigatório.",
       quantidadeInvalid: "A quantidade deve ser maior que 0.",
       validadeRequired: "A validade é obrigatória.",
       validadePast: "A validade não pode ser anterior ao dia atual.",
@@ -41,25 +40,25 @@ export const RECEITAS_PAGE = Object.freeze({
   },
 
   regularizationDialog: {
-    title: "Confirmar regularização automática?",
+    title: "Atualizar Medicamentos para venda suspensa?",
     description:
-      "Esta receita vai regularizar vendas suspensas pendentes deste utente. Confirma apenas se os dados da receita estiverem corretos.",
-    confirmLabel: "Criar receita e regularizar",
+      "Esta receita pode ser usada para regularizar Medicamentos que estavam sem receita disponível. Confirma apenas se os dados da receita estiverem corretos.",
+    confirmLabel: "Criar receita e atualizar",
     cancelLabel: "Voltar atrás",
     fallbackDetails:
-      "A receita tem impacto em regularizações pendentes. Confirma para continuar.",
+      "Esta receita tem impacto em Medicamentos para venda suspensa. Confirma para continuar.",
   },
 
   list: {
-    title: "Linhas de receita disponíveis",
+    title: "Medicamentos com receita",
     description:
-      "Linhas ativas com quantidade restante para o utente selecionado.",
-    emptyTitle: "Sem linhas de receita disponíveis.",
+      "Medicamentos com receita ativa, com quantidade disponível para pedido à Farmácia.",
+    emptyTitle: "Sem Medicamentos disponíveis.",
     emptyDescription:
       "Cria uma receita para este utente ou seleciona outro utente.",
     noUtenteTitle: "Seleciona um utente.",
     noUtenteDescription:
-      "Depois de selecionares um utente, as receitas disponíveis aparecem aqui.",
+      "Depois de selecionares um utente, os Medicamentos com receita aparecem aqui.",
     loadingTitle: "A carregar receitas...",
     loadingDescription: "Aguarda enquanto as receitas são carregadas.",
     errorTitle: "Não foi possível carregar as receitas.",
@@ -67,7 +66,7 @@ export const RECEITAS_PAGE = Object.freeze({
 
     deleteLabel: "Remover",
     deletingLabel: "A remover...",
-    deleteSuccessMessage: "Linha de receita removida com sucesso.",
+    deleteSuccessMessage: "Medicamento removido com sucesso.",
 
     selectedUtenteFallback: "Utente selecionado",
     emptyValue: "—",
@@ -88,10 +87,10 @@ export const RECEITAS_PAGE = Object.freeze({
       receitaPrefix: "Receita",
       pinPrefix: "PIN",
       optionPrefix: "Opção",
-      total: "Total",
-      dispensada: "Dispensada",
-      usadaRegularizacao: "Usada em regularização",
-      emPedido: "Em pedido",
+      total: "Total:",
+      dispensada: "Dispensadas",
+      usadaRegularizacao: "Para regularizações:",
+      emPedido: "Em pedidos:",
       quantidadeShort: "Qtd",
     },
 
@@ -113,10 +112,10 @@ export const RECEITAS_PAGE = Object.freeze({
   },
 
   deleteDialog: {
-    title: "Remover linha de receita?",
+    title: "Remover Medicamento da receita?",
     description:
-      "Esta ação pode ser bloqueada se a linha já tiver sido usada em pedidos, dispensas ou regularizações.",
-    confirmLabel: "Remover linha",
+      "Pode não ser possível remover se alguma quantidade já tiver sido usada em pedidos ou em Medicamentos para venda suspensa.",
+    confirmLabel: "Remover Medicamento",
     cancelLabel: "Cancelar",
   },
 

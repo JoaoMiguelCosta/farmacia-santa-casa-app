@@ -1,18 +1,16 @@
 // src/features/santacasa/operacao/components/OperacaoSelectedUtenteCard/OperacaoSelectedUtenteCard.jsx
-import SurfaceCard from "../../../../../shared/ui/SurfaceCard/SurfaceCard";
-
 import UtenteSelector from "../../../shared/components/UtenteSelector/UtenteSelector";
 
 import { OPERACAO_PAGE } from "../../config/operacaoPage.config";
 
 import styles from "./OperacaoSelectedUtenteCard.module.css";
 
-function getSelectedUtenteDescription(selectedUtente) {
-  if (!selectedUtente) {
-    return OPERACAO_PAGE.selectedUtente.descriptionFallback;
-  }
+function getSelectedUtenteName(selectedUtente) {
+  return selectedUtente?.nome || OPERACAO_PAGE.selectedUtente.titleFallback;
+}
 
-  return `${OPERACAO_PAGE.selectedUtente.numberLabel}: ${selectedUtente.numero9}`;
+function getSelectedUtenteNumber(selectedUtente) {
+  return selectedUtente?.numero9 || null;
 }
 
 export default function OperacaoSelectedUtenteCard({
@@ -26,26 +24,50 @@ export default function OperacaoSelectedUtenteCard({
 
   onSelectUtente,
 }) {
+  const selectedUtenteNumber = getSelectedUtenteNumber(selectedUtente);
+
   return (
-    <SurfaceCard
-      eyebrow={OPERACAO_PAGE.selectedUtente.eyebrow}
-      title={selectedUtente?.nome || OPERACAO_PAGE.selectedUtente.titleFallback}
-      description={getSelectedUtenteDescription(selectedUtente)}
-      tone="green"
-    >
-      <UtenteSelector
-        utentes={utentes}
-        value={selectedUtenteId}
-        onChange={onSelectUtente}
-        isLoading={isLoadingUtentes}
-        error={utentesError}
-      />
+    <section className={styles.card} aria-labelledby="selected-utente-title">
+      <header className={styles.header}>
+        <div className={styles.identity}>
+          <p className={styles.eyebrow}>
+            {OPERACAO_PAGE.selectedUtente.eyebrow}
+          </p>
+
+          <div className={styles.identityGrid}>
+            <div className={styles.identityField}>
+              <span>Nome</span>
+
+              <h2 id="selected-utente-title" className={styles.title}>
+                {getSelectedUtenteName(selectedUtente)}
+              </h2>
+            </div>
+
+            {selectedUtenteNumber ? (
+              <div className={styles.numberCard}>
+                <span>N.º utente</span>
+                <strong>{selectedUtenteNumber}</strong>
+              </div>
+            ) : null}
+          </div>
+        </div>
+      </header>
+
+      <div className={styles.selectorPanel}>
+        <UtenteSelector
+          utentes={utentes}
+          value={selectedUtenteId}
+          onChange={onSelectUtente}
+          isLoading={isLoadingUtentes}
+          error={utentesError}
+        />
+      </div>
 
       {dataError ? (
         <p className={styles.error} role="alert">
           {dataError}
         </p>
       ) : null}
-    </SurfaceCard>
+    </section>
   );
 }

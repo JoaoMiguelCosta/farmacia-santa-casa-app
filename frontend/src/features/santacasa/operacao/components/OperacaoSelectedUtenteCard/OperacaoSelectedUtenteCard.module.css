@@ -1,6 +1,197 @@
-.error {
+.card {
+    position: relative;
+    isolation: isolate;
+
+    display: grid;
+    gap: clamp(1rem, 2.4vw, 1.25rem);
+
+    width: 100%;
+    min-width: 0;
+    padding: clamp(1rem, 2.5vw, 1.35rem);
+
+    overflow: hidden;
+
+    border: 1px solid rgba(31, 95, 81, 0.24);
+    border-radius: var(--clinic-radius-xl);
+
+    background:
+        radial-gradient(circle at 96% 0%,
+            rgba(31, 95, 81, 0.14),
+            transparent 18rem),
+        radial-gradient(circle at 0% 100%,
+            rgba(198, 161, 91, 0.1),
+            transparent 16rem),
+        linear-gradient(135deg,
+            rgba(255, 255, 255, 0.99),
+            rgba(241, 248, 245, 0.94));
+
+    box-shadow:
+        0 1.15rem 2.6rem rgba(23, 33, 29, 0.075),
+        0 0.12rem 0.35rem rgba(23, 33, 29, 0.04),
+        inset 0 1px 0 rgba(255, 255, 255, 0.92);
+}
+
+.card::before {
+    content: "";
+
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: 0;
+    z-index: 1;
+
+    width: 5px;
+
+    background:
+        linear-gradient(180deg,
+            var(--clinic-green-700),
+            rgba(31, 95, 81, 0.34),
+            transparent 86%);
+
+    pointer-events: none;
+}
+
+.card::after {
+    content: "";
+
+    position: absolute;
+    inset-inline: 0;
+    inset-block-start: 0;
+    z-index: 1;
+
+    height: 4px;
+
+    background:
+        linear-gradient(90deg,
+            var(--clinic-green-700),
+            rgba(198, 161, 91, 0.5),
+            transparent);
+
+    opacity: 0.86;
+    pointer-events: none;
+}
+
+.header {
+    position: relative;
+    z-index: 2;
+
+    display: grid;
+    gap: 0.75rem;
+
+    min-width: 0;
+}
+
+.identity {
+    display: grid;
+    gap: 0.55rem;
+
+    min-width: 0;
+}
+
+.eyebrow {
+    width: fit-content;
     margin: 0;
-    padding: 0.75rem 0.9rem;
+    padding: 0.34rem 0.62rem;
+
+    border: 1px solid rgba(31, 95, 81, 0.22);
+    border-radius: 999px;
+
+    color: var(--clinic-green-800);
+    background-color: rgba(238, 247, 243, 0.94);
+
+    font-size: clamp(0.7rem, 1vw, 0.76rem);
+    font-weight: 950;
+    letter-spacing: 0.105em;
+    line-height: 1;
+    text-transform: uppercase;
+}
+
+.identityGrid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(11rem, auto);
+    gap: clamp(0.85rem, 2vw, 1.25rem);
+    align-items: stretch;
+
+    min-width: 0;
+}
+
+.identityField {
+    display: grid;
+    gap: 0.22rem;
+
+    min-width: 0;
+}
+
+.identityField span,
+.numberCard span {
+    color: var(--clinic-green-800);
+
+    font-size: 0.7rem;
+    font-weight: 950;
+    letter-spacing: 0.09em;
+    line-height: 1;
+    text-transform: uppercase;
+}
+
+.title {
+    margin: 0;
+
+    color: var(--clinic-ink);
+
+    font-size: clamp(1.45rem, 3vw, 2rem);
+    font-weight: 950;
+    letter-spacing: -0.05em;
+    line-height: 1.03;
+
+    overflow-wrap: anywhere;
+}
+
+.numberCard {
+    display: grid;
+    gap: 0.25rem;
+    align-content: center;
+
+    min-width: 0;
+    padding: 0.78rem 0.95rem;
+
+    border: 1px solid rgba(31, 95, 81, 0.22);
+    border-radius: var(--clinic-radius-lg);
+
+    background:
+        radial-gradient(circle at 100% 0%,
+            rgba(31, 95, 81, 0.12),
+            transparent 8rem),
+        linear-gradient(135deg,
+            rgba(255, 255, 255, 0.96),
+            rgba(238, 247, 243, 0.9));
+
+    box-shadow:
+        0 0.75rem 1.45rem rgba(23, 33, 29, 0.05),
+        inset 4px 0 0 rgba(31, 95, 81, 0.16),
+        inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+.numberCard strong {
+    color: var(--clinic-ink);
+
+    font-size: clamp(1.05rem, 1.6vw, 1.22rem);
+    font-weight: 950;
+    letter-spacing: -0.025em;
+    line-height: 1.05;
+}
+
+.selectorPanel {
+    position: relative;
+    z-index: 2;
+
+    min-width: 0;
+}
+
+.error {
+    position: relative;
+    z-index: 2;
+
+    margin: 0;
+    padding: 0.8rem 0.95rem;
 
     border: 1px solid rgba(180, 35, 24, 0.24);
     border-radius: var(--clinic-radius-md);
@@ -9,6 +200,27 @@
     background-color: #fff7f6;
 
     font-size: var(--clinic-font-size-sm);
-    font-weight: 800;
+    font-weight: 850;
     line-height: 1.4;
+}
+
+@media (max-width: 760px) {
+    .identityGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .title {
+        font-size: clamp(1.3rem, 6vw, 1.65rem);
+    }
+}
+
+@media (max-width: 520px) {
+    .card {
+        padding: 1rem;
+        border-radius: var(--clinic-radius-lg);
+    }
+
+    .numberCard {
+        border-radius: var(--clinic-radius-md);
+    }
 }

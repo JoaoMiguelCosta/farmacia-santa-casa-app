@@ -8,7 +8,7 @@ export const OPERACAO_PAGE = Object.freeze({
     eyebrow: "Santa Casa",
     title: "Operação diária",
     description:
-      "Gere medicação habitual, receitas, medicamentos não sujeitos a receita médica e vendas suspensas. A partir daqui podes adicionar itens ao pedido geral para a Farmácia.",
+      "Gere medicação habitual, receitas, medicamentos não sujeitos a receita médica e vendas suspensas. A partir daqui podes adicionar Medicamentos e quantidades ao pedido geral para enviar à Farmácia.",
     refreshLabel: "Atualizar operação",
     refreshingLabel: "A atualizar...",
   },
@@ -24,22 +24,25 @@ export const OPERACAO_PAGE = Object.freeze({
   sections: {
     medicacaoHabitual: {
       id: "operacao-medicacao-habitual",
+      tone: "habitual",
       eyebrow: "Medicação habitual",
       title: "Medicação habitual do utente",
       description:
-        "Regista medicamentos usados com frequência para acelerar o preenchimento das receitas, medicamentos não sujeitos a receita médica e vendas suspensas.",
+        "Regista medicamentos usados com frequência para acelerar o preenchimento das receitas, medicamentos não sujeitos a receita médica e medicamentos para venda suspensa.",
     },
 
     receitas: {
       id: "operacao-receitas",
+      tone: "receitas",
       eyebrow: "Receitas",
       title: "Receitas do utente",
       description:
-        "Cria receitas, seleciona linhas para o pedido geral ou remove linhas ainda removíveis.",
+        "Cria receitas, seleciona medicamentos para o pedido geral ou remove medicamentos ainda removíveis.",
     },
 
     semReceita: {
       id: "operacao-sem-receita",
+      tone: "semReceita",
       eyebrow: "Medicamentos não sujeitos a receita médica",
       title: "Medicamentos não sujeitos a receita médica",
       description:
@@ -48,8 +51,9 @@ export const OPERACAO_PAGE = Object.freeze({
 
     extras: {
       id: "operacao-extras",
+      tone: "extras",
       eyebrow: "Vendas Suspensas",
-      title: "Vendas suspensas em aberto",
+      title: "Vendas Suspensas",
       description:
         "Cria vendas suspensas, seleciona para o pedido geral ou remove registos ainda removíveis.",
     },

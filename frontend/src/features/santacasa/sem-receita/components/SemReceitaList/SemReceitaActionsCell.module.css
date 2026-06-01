@@ -21,7 +21,7 @@
     grid-area: label;
     align-self: start;
 
-    color: var(--clinic-muted-strong);
+    color: var(--operation-accent-strong, var(--clinic-muted-strong));
 
     font-size: 0.66rem;
     font-weight: 950;
@@ -54,8 +54,8 @@
 }
 
 .pedidoAction input:focus {
-    border-color: rgba(31, 95, 81, 0.42);
-    outline: 3px solid rgba(31, 95, 81, 0.16);
+    border-color: var(--operation-header-border, rgba(31, 111, 168, 0.42));
+    outline: 3px solid var(--operation-accent-softer, rgba(31, 111, 168, 0.16));
     outline-offset: 1px;
 }
 

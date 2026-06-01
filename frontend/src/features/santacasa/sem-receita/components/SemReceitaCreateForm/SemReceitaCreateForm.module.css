@@ -4,21 +4,71 @@
 
     width: 100%;
     min-width: 0;
+    padding: clamp(1rem, 2.3vw, 1.3rem);
+
+    overflow: hidden;
+
+    border: 1px solid var(--operation-panel-border, rgba(31, 111, 168, 0.34));
+    border-radius: var(--clinic-radius-xl);
+
+    background:
+        radial-gradient(circle at 96% 0%,
+            var(--operation-accent-softer, rgba(31, 111, 168, 0.16)),
+            transparent 16rem),
+        radial-gradient(circle at 0% 100%,
+            var(--operation-accent-softer, rgba(31, 111, 168, 0.1)),
+            transparent 14rem),
+        var(--operation-panel-background,
+            linear-gradient(135deg,
+                rgba(255, 255, 255, 0.98),
+                rgba(235, 247, 254, 0.93)));
+
+    box-shadow:
+        var(--operation-panel-shadow,
+            0 0.95rem 2.1rem rgba(23, 79, 120, 0.08)),
+        inset 5px 0 0 var(--operation-accent-softer, rgba(31, 111, 168, 0.14)),
+        inset 0 1px 0 rgba(255, 255, 255, 0.9);
+
+    transition:
+        border-color var(--clinic-transition),
+        box-shadow var(--clinic-transition),
+        background-color var(--clinic-transition);
+}
+
+.form:focus-within {
+    border-color: var(--operation-header-border, rgba(31, 111, 168, 0.42));
+
+    box-shadow:
+        0 1rem 2.25rem rgba(23, 79, 120, 0.12),
+        0 0 0 3px var(--operation-accent-softer, rgba(31, 111, 168, 0.16)),
+        inset 5px 0 0 var(--operation-accent-soft, rgba(31, 111, 168, 0.26)),
+        inset 0 1px 0 rgba(255, 255, 255, 0.92);
 }
 
 .notice {
     margin: 0;
     padding: 0.9rem 1rem;
 
-    border: 1px solid rgba(184, 121, 45, 0.26);
+    border: 1px solid var(--operation-state-border, rgba(31, 111, 168, 0.3));
     border-radius: var(--clinic-radius-md);
 
-    color: var(--clinic-warning);
-    background-color: rgba(255, 248, 232, 0.82);
+    color: var(--operation-accent-strong, var(--clinic-warning));
+    background:
+        radial-gradient(circle at 96% 0%,
+            var(--operation-accent-softer, rgba(31, 111, 168, 0.14)),
+            transparent 12rem),
+        var(--operation-state-background,
+            linear-gradient(135deg,
+                rgba(255, 255, 255, 0.98),
+                rgba(235, 247, 254, 0.92)));
 
     font-size: var(--clinic-font-size-sm);
     font-weight: 800;
     line-height: 1.45;
+
+    box-shadow:
+        0 0.65rem 1.35rem rgba(23, 79, 120, 0.055),
+        inset 4px 0 0 var(--operation-accent-softer, rgba(31, 111, 168, 0.14));
 }
 
 .grid {
@@ -40,17 +90,32 @@
 }
 
 @media (max-width: 760px) {
+    .form {
+        border-radius: var(--clinic-radius-lg);
+    }
+
     .grid {
         grid-template-columns: 1fr;
     }
 }
 
 @media (max-width: 560px) {
+    .form {
+        padding: 1rem;
+        border-radius: var(--clinic-radius-md);
+    }
+
     .actions {
         justify-content: stretch;
     }
 
     .actions>button {
         width: 100%;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .form {
+        transition: none;
     }
 }

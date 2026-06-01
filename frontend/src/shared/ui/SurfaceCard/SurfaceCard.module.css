@@ -7,13 +7,13 @@
 
     padding: clamp(1rem, 2.4vw, 1.35rem);
 
-    border: 1px solid var(--clinic-border);
+    border: 1px solid var(--operation-panel-border, var(--clinic-border));
     border-radius: var(--clinic-radius-xl);
 
     color: var(--clinic-ink);
-    background-color: var(--clinic-surface);
+    background: var(--operation-panel-background, var(--clinic-surface));
 
-    box-shadow: var(--clinic-shadow-soft);
+    box-shadow: var(--operation-panel-shadow, var(--clinic-shadow-soft));
 }
 
 .header {
@@ -26,7 +26,7 @@
 .eyebrow {
     margin: 0;
 
-    color: var(--clinic-green-700);
+    color: var(--operation-accent-strong, var(--clinic-green-700));
 
     font-size: var(--clinic-font-size-xs);
     font-weight: 900;
@@ -47,7 +47,7 @@
 }
 
 .description {
-    max-width: 68ch;
+    
     margin: 0;
 
     color: var(--clinic-muted-strong);
@@ -73,51 +73,51 @@
     min-width: 0;
     padding-top: 1rem;
 
-    border-top: 1px solid var(--clinic-border);
+    border-top: 1px solid var(--operation-panel-border, var(--clinic-border));
 }
 
 /* Tones */
 
 .default {
-    border-color: var(--clinic-border);
-    background-color: var(--clinic-surface);
+    border-color: var(--operation-panel-border, var(--clinic-border));
+    background: var(--operation-panel-background, var(--clinic-surface));
 }
 
 .strong {
-    border-color: var(--clinic-border-strong);
-    background-color: var(--clinic-white);
+    border-color: var(--operation-panel-border, var(--clinic-border-strong));
+    background: var(--operation-panel-background, var(--clinic-white));
 }
 
 .green {
-    border-color: rgba(31, 95, 81, 0.22);
-    background-color: var(--clinic-white);
+    border-color: var(--operation-panel-border, rgba(31, 95, 81, 0.22));
+    background: var(--operation-panel-background, var(--clinic-white));
 }
 
 .green .eyebrow {
-    color: var(--clinic-green-700);
+    color: var(--operation-accent-strong, var(--clinic-green-700));
 }
 
 .gold {
-    border-color: var(--clinic-border-gold);
-    background-color: var(--clinic-white);
+    border-color: var(--operation-panel-border, var(--clinic-border-gold));
+    background: var(--operation-panel-background, var(--clinic-white));
 }
 
 .gold .eyebrow {
-    color: var(--clinic-gold-500);
+    color: var(--operation-accent-strong, var(--clinic-gold-500));
 }
 
 .warning {
-    border-color: rgba(161, 92, 7, 0.26);
-    background-color: #fffaf2;
+    border-color: var(--operation-panel-border, rgba(161, 92, 7, 0.26));
+    background: var(--operation-panel-background, #fffaf2);
 }
 
 .warning .eyebrow {
-    color: var(--clinic-warning);
+    color: var(--operation-accent-strong, var(--clinic-warning));
 }
 
 .danger {
     border-color: rgba(180, 35, 24, 0.24);
-    background-color: #fff7f6;
+    background: #fff7f6;
 }
 
 .danger .eyebrow {

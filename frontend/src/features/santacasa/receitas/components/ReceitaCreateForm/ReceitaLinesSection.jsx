@@ -1,4 +1,3 @@
-// src/features/santacasa/receitas/components/ReceitaCreateForm/ReceitaLinesSection.jsx
 import Button from "../../../../../shared/ui/Button/Button";
 
 import { RECEITAS_PAGE } from "../../config/receitasPage.config";
@@ -20,14 +19,9 @@ export default function ReceitaLinesSection({
   return (
     <>
       <div className={styles.linesHeader}>
-        <div className={styles.linesTitleGroup}>
-          <p>{RECEITAS_PAGE.form.compositionEyebrow}</p>
-          <h3>{RECEITAS_PAGE.form.linesTitle}</h3>
-        </div>
-
         <Button
           type="button"
-          variant="secondary"
+          variant="primary"
           size="sm"
           onClick={onAddLine}
           disabled={isDisabled}

@@ -5,10 +5,28 @@
     min-width: 0;
     padding: clamp(1rem, 2.3vw, 1.2rem);
 
-    border: 1px dashed rgba(31, 95, 81, 0.22);
+    overflow: hidden;
+
+    border: 1px dashed var(--operation-panel-border, rgba(111, 127, 47, 0.34));
     border-radius: var(--clinic-radius-lg);
 
-    background-color: rgba(238, 245, 241, 0.56);
+    background:
+        radial-gradient(circle at 96% 0%,
+            var(--operation-accent-softer, rgba(111, 127, 47, 0.16)),
+            transparent 13rem),
+        radial-gradient(circle at 0% 100%,
+            var(--operation-accent-softer, rgba(111, 127, 47, 0.1)),
+            transparent 11rem),
+        var(--operation-state-background,
+            linear-gradient(135deg,
+                rgba(255, 255, 255, 0.98),
+                rgba(244, 248, 225, 0.92)));
+
+    box-shadow:
+        var(--operation-state-shadow,
+            0 0.75rem 1.5rem rgba(68, 82, 31, 0.06)),
+        inset 5px 0 0 var(--operation-accent-softer, rgba(111, 127, 47, 0.16)),
+        inset 0 1px 0 rgba(255, 255, 255, 0.9);
 }
 
 .emptyState strong {
@@ -20,7 +38,7 @@
 }
 
 .emptyState span {
-    max-width: 72ch;
+   
 
     color: var(--clinic-muted-strong);
 
@@ -82,11 +100,11 @@
     min-height: 2.2rem;
     padding: 0.35rem 0.65rem;
 
-    border: 1px solid rgba(31, 95, 81, 0.18);
+    border: 1px solid var(--operation-header-border, rgba(111, 127, 47, 0.32));
     border-radius: 999px;
 
-    color: var(--clinic-green-800);
-    background-color: rgba(238, 245, 241, 0.9);
+    color: var(--operation-accent-strong, var(--clinic-green-800));
+    background-color: var(--operation-eyebrow-bg, rgba(243, 248, 224, 0.98));
 
     font-size: 0.9rem;
     font-weight: 950;

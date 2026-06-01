@@ -35,6 +35,7 @@ export default function OperacaoReceitasSection({
   return (
     <OperationSection
       id={section.id}
+      tone={section.tone}
       eyebrow={section.eyebrow}
       title={section.title}
       description={section.description}

@@ -194,7 +194,7 @@ describe("receitas.validators", () => {
             },
           ],
         });
-      }).toThrow("Linha 1: o medicamento é obrigatório.");
+      }).toThrow("Medicamento 1: o medicamento é obrigatório.");
     });
 
     it("deve rejeitar quantidade zero", () => {
@@ -211,7 +211,7 @@ describe("receitas.validators", () => {
             },
           ],
         });
-      }).toThrow("Linha 1: a quantidade deve ser maior que 0.");
+      }).toThrow("Medicamento 1: a quantidade deve ser maior que 0.");
     });
 
     it("deve rejeitar quantidade negativa", () => {
@@ -228,7 +228,7 @@ describe("receitas.validators", () => {
             },
           ],
         });
-      }).toThrow("Linha 1: a quantidade deve ser maior que 0.");
+      }).toThrow("Medicamento 1: a quantidade deve ser maior que 0.");
     });
 
     it("deve rejeitar validade inválida", () => {
@@ -245,7 +245,7 @@ describe("receitas.validators", () => {
             },
           ],
         });
-      }).toThrow("Linha 1: a validade é inválida.");
+      }).toThrow("Medicamento 1: a validade é inválida.");
     });
 
     it("deve rejeitar validade passada", () => {
@@ -262,7 +262,7 @@ describe("receitas.validators", () => {
             },
           ],
         });
-      }).toThrow("Linha 1: a validade deve ser futura.");
+      }).toThrow("Medicamento 1: a validade deve ser futura.");
     });
 
     it("deve rejeitar medicamentos repetidos na mesma receita", () => {
