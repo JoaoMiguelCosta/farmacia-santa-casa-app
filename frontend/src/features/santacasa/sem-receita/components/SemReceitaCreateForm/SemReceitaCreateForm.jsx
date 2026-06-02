@@ -3,7 +3,7 @@ import Button from "../../../../../shared/ui/Button/Button";
 import FormField from "../../../../../shared/ui/FormField/FormField";
 import SurfaceCard from "../../../../../shared/ui/SurfaceCard/SurfaceCard";
 
-import MedicamentoAutocomplete from "../../../medicacao-habitual/components/MedicamentoAutocomplete/MedicamentoAutocomplete";
+import MedicamentoAutocomplete from "../../../shared/components/MedicamentoAutocomplete/MedicamentoAutocomplete";
 
 import { SEM_RECEITA_PAGE } from "../../config/semReceitaPage.config";
 import { useSemReceitaCreateForm } from "../../hooks/useSemReceitaCreateForm";

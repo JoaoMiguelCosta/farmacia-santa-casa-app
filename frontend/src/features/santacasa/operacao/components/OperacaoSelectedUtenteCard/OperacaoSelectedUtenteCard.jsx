@@ -36,7 +36,7 @@ export default function OperacaoSelectedUtenteCard({
 
           <div className={styles.identityGrid}>
             <div className={styles.identityField}>
-              <span>Nome</span>
+              <span>{OPERACAO_PAGE.selectedUtente.nameLabel}</span>
 
               <h2 id="selected-utente-title" className={styles.title}>
                 {getSelectedUtenteName(selectedUtente)}
@@ -45,7 +45,7 @@ export default function OperacaoSelectedUtenteCard({
 
             {selectedUtenteNumber ? (
               <div className={styles.numberCard}>
-                <span>N.º utente</span>
+                <span>{OPERACAO_PAGE.selectedUtente.numberLabel}</span>
                 <strong>{selectedUtenteNumber}</strong>
               </div>
             ) : null}

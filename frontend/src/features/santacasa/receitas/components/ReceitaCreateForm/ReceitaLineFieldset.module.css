@@ -6,7 +6,7 @@
     margin: 0;
     padding: clamp(1rem, 2.2vw, 1.2rem);
 
-    overflow: hidden;
+    overflow: visible;
 
     border: 1px solid var(--operation-panel-border, rgba(8, 112, 92, 0.32));
     border-radius: var(--clinic-radius-lg);

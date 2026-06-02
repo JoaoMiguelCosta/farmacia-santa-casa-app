@@ -55,8 +55,8 @@ export const EXTRAS_PAGE = Object.freeze({
 
     labels: {
       extraDescription: "Para Venda Suspensa",
-      total: "Total:",
-      dispensada: "Dispensadas",
+      total: "Total inicial:",
+      dispensada: "Dispensadas:",
       emPedido: "Em pedidos:",
       quantidadeShort: "Qtd",
     },

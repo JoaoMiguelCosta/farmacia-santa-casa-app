@@ -63,6 +63,16 @@
     white-space: nowrap;
 }
 
+/* Dispensadas */
+.quantityDetails span:nth-child(2) {
+    color: var(--clinic-danger);
+}
+
+/* Em pedidos */
+.quantityDetails span:nth-child(3) {
+    color: var(--clinic-warning);
+}
+
 .quantityDetails strong {
     color: var(--clinic-ink);
 

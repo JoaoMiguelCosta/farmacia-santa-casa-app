@@ -19,6 +19,7 @@ export function useOperacaoUtenteCombobox({
   const wrapperRef = useRef(null);
   const triggerRef = useRef(null);
   const searchInputRef = useRef(null);
+  const focusFrameIdRef = useRef(null);
 
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
@@ -41,11 +42,21 @@ export function useOperacaoUtenteCombobox({
   const listboxId = `${id}-listbox`;
   const searchInputId = `${id}-search`;
 
-  const focusTrigger = useCallback(() => {
-    window.requestAnimationFrame(() => {
-      triggerRef.current?.focus();
-    });
+  const cancelScheduledTriggerFocus = useCallback(() => {
+    if (focusFrameIdRef.current === null) return;
+
+    window.cancelAnimationFrame(focusFrameIdRef.current);
+    focusFrameIdRef.current = null;
   }, []);
+
+  const focusTrigger = useCallback(() => {
+    cancelScheduledTriggerFocus();
+
+    focusFrameIdRef.current = window.requestAnimationFrame(() => {
+      triggerRef.current?.focus();
+      focusFrameIdRef.current = null;
+    });
+  }, [cancelScheduledTriggerFocus]);
 
   const closeDropdown = useCallback(() => {
     setIsOpen(false);
@@ -169,6 +180,12 @@ export function useOperacaoUtenteCombobox({
     },
     [activeIndex, closeDropdown, filteredUtentes, focusTrigger, selectUtente],
   );
+
+  useEffect(() => {
+    return () => {
+      cancelScheduledTriggerFocus();
+    };
+  }, [cancelScheduledTriggerFocus]);
 
   useEffect(() => {
     if (!isOpen) return undefined;

@@ -53,8 +53,8 @@ export const SEM_RECEITA_PAGE = Object.freeze({
 
     labels: {
       semReceitaDescription: "Não exige receita médica",
-      total: "Total:",
-      dispensada: "Dispensadas",
+      total: "Total inicial:",
+      dispensada: "Dispensadas:",
       emPedido: "Em pedidos:",
       quantidadeShort: "Qtd",
     },

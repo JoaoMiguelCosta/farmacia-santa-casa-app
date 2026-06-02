@@ -2,7 +2,7 @@
 import Button from "../../../../../shared/ui/Button/Button";
 import FormField from "../../../../../shared/ui/FormField/FormField";
 
-import MedicamentoAutocomplete from "../../../medicacao-habitual/components/MedicamentoAutocomplete/MedicamentoAutocomplete";
+import MedicamentoAutocomplete from "../../../shared/components/MedicamentoAutocomplete/MedicamentoAutocomplete";
 
 import { RECEITAS_PAGE } from "../../config/receitasPage.config";
 

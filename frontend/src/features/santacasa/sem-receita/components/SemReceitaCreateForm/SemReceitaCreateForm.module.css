@@ -6,7 +6,7 @@
     min-width: 0;
     padding: clamp(1rem, 2.3vw, 1.3rem);
 
-    overflow: hidden;
+    overflow: visible;
 
     border: 1px solid var(--operation-panel-border, rgba(31, 111, 168, 0.34));
     border-radius: var(--clinic-radius-xl);
@@ -34,6 +34,8 @@
         box-shadow var(--clinic-transition),
         background-color var(--clinic-transition);
 }
+
+/* resto do ficheiro mantém igual */
 
 .form:focus-within {
     border-color: var(--operation-header-border, rgba(31, 111, 168, 0.42));

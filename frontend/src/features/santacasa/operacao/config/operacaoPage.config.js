@@ -8,7 +8,7 @@ export const OPERACAO_PAGE = Object.freeze({
     eyebrow: "Santa Casa",
     title: "Operação diária",
     description:
-      "Gere medicação habitual, receitas, medicamentos não sujeitos a receita médica e vendas suspensas. A partir daqui podes adicionar Medicamentos e quantidades ao pedido geral para enviar à Farmácia.",
+      "Gere medicação habitual, receitas, medicamentos não sujeitos a receita médica e medicamentos para Venda Suspensa. A partir daqui podes adicionar medicamentos e quantidades ao pedido geral para enviar à Farmácia.",
     refreshLabel: "Atualizar operação",
     refreshingLabel: "A atualizar...",
   },
@@ -17,8 +17,9 @@ export const OPERACAO_PAGE = Object.freeze({
     eyebrow: "Utente selecionado",
     titleFallback: "Seleciona um utente",
     descriptionFallback:
-      "Escolhe um utente para carregar medicação habitual, receitas, medicamentos não sujeitos a receita médica e vendas suspensas.",
-    numberLabel: "Número de utente",
+      "Escolhe um utente para carregar medicação habitual, receitas, medicamentos não sujeitos a receita médica e medicamentos para Venda Suspensa.",
+    nameLabel: "Nome",
+    numberLabel: "N.º utente",
   },
 
   sections: {
@@ -28,7 +29,7 @@ export const OPERACAO_PAGE = Object.freeze({
       eyebrow: "Medicação habitual",
       title: "Medicação habitual do utente",
       description:
-        "Regista medicamentos usados com frequência para acelerar o preenchimento das receitas, medicamentos não sujeitos a receita médica e medicamentos para venda suspensa.",
+        "Regista medicamentos usados com frequência para acelerar o preenchimento das receitas, medicamentos não sujeitos a receita médica e medicamentos para Venda Suspensa.",
     },
 
     receitas: {
@@ -53,9 +54,9 @@ export const OPERACAO_PAGE = Object.freeze({
       id: "operacao-extras",
       tone: "extras",
       eyebrow: "Vendas Suspensas",
-      title: "Vendas Suspensas",
+      title: "Medicamentos para Venda Suspensa",
       description:
-        "Cria vendas suspensas, seleciona para o pedido geral ou remove registos ainda removíveis.",
+        "Adiciona medicamentos para Venda Suspensa, seleciona para o pedido geral ou remove registos ainda removíveis.",
     },
   },
 });

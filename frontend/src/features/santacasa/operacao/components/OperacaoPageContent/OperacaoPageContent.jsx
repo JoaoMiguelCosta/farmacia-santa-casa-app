@@ -1,6 +1,4 @@
 // src/features/santacasa/operacao/components/OperacaoPageContent/OperacaoPageContent.jsx
-import { useMemo } from "react";
-
 import Button from "../../../../../shared/ui/Button/Button";
 import PageHeader from "../../../../../shared/ui/PageHeader/PageHeader";
 
@@ -19,15 +17,9 @@ import { OPERACAO_PAGE } from "../../config/operacaoPage.config";
 import { useSantaCasaOperacao } from "../../hooks/useSantaCasaOperacao";
 import { useSantaCasaOperacaoActions } from "../../hooks/useSantaCasaOperacaoActions";
 
-import {
-  buildDraftQuantityMap,
-  getDeletingId,
-  getExtraPedidoKey,
-  getExtraQuantidadeRestante,
-  getQuantidadeDisponivelVisual,
-  getReceitaPedidoKey,
-  getSemReceitaPedidoKey,
-} from "../../utils/santaCasaOperacao.utils";
+import { getDeletingId } from "../../utils/santaCasaOperacao.utils";
+
+import { useOperacaoVisibleItems } from "./useOperacaoVisibleItems";
 
 import styles from "./OperacaoPageContent.module.css";
 
@@ -63,6 +55,18 @@ export default function OperacaoPageContent() {
     addItem: addPedidoDraftItem,
     removeItemsByKeys,
   } = usePedidoDraft();
+
+  const {
+    pedidoItemsQuantities,
+    visibleReceitas,
+    visibleSemReceita,
+    visibleExtras,
+  } = useOperacaoVisibleItems({
+    receitas,
+    semReceita,
+    extras,
+    pedidoDraftItems,
+  });
 
   const {
     pedidoQuantities,
@@ -111,59 +115,6 @@ export default function OperacaoPageContent() {
     handleSelectUtente,
   });
 
-  const pedidoItemsQuantities = useMemo(
-    () => buildDraftQuantityMap(pedidoDraftItems),
-    [pedidoDraftItems],
-  );
-
-  const visibleReceitas = useMemo(
-    () =>
-      receitas.filter((linha) => {
-        const pedidoKey = getReceitaPedidoKey(linha);
-
-        return (
-          getQuantidadeDisponivelVisual(
-            linha.quantidadeRestante,
-            pedidoKey,
-            pedidoItemsQuantities,
-          ) > 0
-        );
-      }),
-    [receitas, pedidoItemsQuantities],
-  );
-
-  const visibleSemReceita = useMemo(
-    () =>
-      semReceita.filter((item) => {
-        const pedidoKey = getSemReceitaPedidoKey(item);
-
-        return (
-          getQuantidadeDisponivelVisual(
-            item.quantidadeRestante,
-            pedidoKey,
-            pedidoItemsQuantities,
-          ) > 0
-        );
-      }),
-    [semReceita, pedidoItemsQuantities],
-  );
-
-  const visibleExtras = useMemo(
-    () =>
-      extras.filter((item) => {
-        const pedidoKey = getExtraPedidoKey(item);
-
-        return (
-          getQuantidadeDisponivelVisual(
-            getExtraQuantidadeRestante(item),
-            pedidoKey,
-            pedidoItemsQuantities,
-          ) > 0
-        );
-      }),
-    [extras, pedidoItemsQuantities],
-  );
-
   const isReceitaBusy = isCreatingReceita || isConfirmingRegularizacao;
 
   const isPageRefreshing =
@@ -174,6 +125,10 @@ export default function OperacaoPageContent() {
       refreshOperationData(),
       medicacaoHabitualController.refreshMedicacaoHabitual(),
     ]);
+  }
+
+  function handleCloseFeedback() {
+    setFeedback(null);
   }
 
   return (
@@ -286,11 +241,11 @@ export default function OperacaoPageContent() {
         deleteDialogData={deleteDialogData}
         deletingTargetKey={deletingTargetKey}
         feedback={feedback}
-        setFeedback={setFeedback}
         onConfirmRegularizacao={handleConfirmRegularizacaoConfirmation}
         onCancelRegularizacao={handleCancelRegularizacaoConfirmation}
         onConfirmDelete={handleConfirmDelete}
         onCancelDelete={handleCancelDelete}
+        onCloseFeedback={handleCloseFeedback}
       />
     </section>
   );

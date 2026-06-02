@@ -12,13 +12,14 @@ export default function OperacaoDialogs({
   deletingTargetKey,
 
   feedback,
-  setFeedback,
 
   onConfirmRegularizacao,
   onCancelRegularizacao,
 
   onConfirmDelete,
   onCancelDelete,
+
+  onCloseFeedback,
 }) {
   return (
     <>
@@ -48,7 +49,7 @@ export default function OperacaoDialogs({
         isOpen={Boolean(feedback)}
         type={feedback?.type}
         message={feedback?.message}
-        onClose={() => setFeedback(null)}
+        onClose={onCloseFeedback}
       />
     </>
   );

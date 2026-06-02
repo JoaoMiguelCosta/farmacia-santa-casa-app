@@ -17,7 +17,7 @@
     grid-column: 1;
     grid-row: 1;
 
-    color: var(--clinic-muted-strong);
+    color: var(--operation-accent-strong, var(--clinic-muted-strong));
 
     font-size: 0.66rem;
     font-weight: 950;
@@ -61,6 +61,16 @@
     font-weight: 760;
     line-height: 1.25;
     white-space: nowrap;
+}
+
+/* Dispensadas */
+.quantityDetails span:nth-child(2) {
+    color: var(--clinic-danger);
+}
+
+/* Em pedidos */
+.quantityDetails span:nth-child(3) {
+    color: var(--clinic-warning);
 }
 
 .quantityDetails strong {
