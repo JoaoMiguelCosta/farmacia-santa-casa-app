@@ -23,7 +23,7 @@ export const SANTACASA_HISTORICO_PAGE = Object.freeze({
     statusLabel: "Estado",
     searchLabel: "Pesquisa",
     searchPlaceholder:
-      "Pesquisar por pedido, utente, medicamento ou receita...",
+      "Pesquisar por Pedido, Utente, Medicamento ou Receita...",
     fromLabel: "Data inicial",
     toLabel: "Data final",
     submit: "Filtrar",

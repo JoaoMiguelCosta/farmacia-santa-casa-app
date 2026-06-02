@@ -22,7 +22,7 @@ export const FARMACIA_HISTORICO_PAGE = Object.freeze({
   filters: {
     statusLabel: "Estado",
     searchLabel: "Pesquisa",
-    searchPlaceholder: "Pesquisar por pedido, utente ou medicamento...",
+    searchPlaceholder: "Pesquisar por Pedido, Utente ou Medicamento...",
     fromLabel: "Data inicial",
     toLabel: "Data final",
     submit: "Filtrar",

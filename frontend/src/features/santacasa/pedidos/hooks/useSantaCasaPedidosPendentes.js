@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+// src/features/santacasa/pedidos/hooks/useSantaCasaPedidosPendentes.js
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { useAuth } from "../../../auth/hooks/useAuth";
 
@@ -24,8 +25,23 @@ function getInitialMeta() {
   };
 }
 
+function getSafeMeta(meta) {
+  const total = Number(meta?.total) || 0;
+  const skip = Number(meta?.skip) || 0;
+  const take = Number(meta?.take) || DEFAULT_QUERY.take;
+
+  return {
+    total,
+    skip,
+    take: take > 0 ? take : DEFAULT_QUERY.take,
+  };
+}
+
 export function useSantaCasaPedidosPendentes() {
   const { handleAuthError } = useAuth();
+
+  const isMountedRef = useRef(true);
+  const requestIdRef = useRef(0);
 
   const [pedidos, setPedidos] = useState([]);
   const [meta, setMeta] = useState(getInitialMeta);
@@ -45,17 +61,23 @@ export function useSantaCasaPedidosPendentes() {
   const currentQuery = useMemo(() => query, [query]);
   const pedidoToCancelId = pedidoToCancel?.id;
 
-  const totalPages = Math.max(1, Math.ceil(meta.total / meta.take));
+  const safeMeta = getSafeMeta(meta);
+
+  const totalPages = Math.max(1, Math.ceil(safeMeta.total / safeMeta.take));
   const currentPage = Math.min(
     totalPages,
-    Math.floor(meta.skip / meta.take) + 1,
+    Math.floor(safeMeta.skip / safeMeta.take) + 1,
   );
 
-  const hasPreviousPage = meta.skip > 0;
-  const hasNextPage = meta.skip + meta.take < meta.total;
+  const hasPreviousPage = safeMeta.skip > 0;
+  const hasNextPage = safeMeta.skip + safeMeta.take < safeMeta.total;
 
   const loadPendentes = useCallback(
     async ({ showRefreshing = false } = {}) => {
+      requestIdRef.current += 1;
+
+      const requestId = requestIdRef.current;
+
       if (showRefreshing) {
         setIsRefreshing(true);
       } else {
@@ -67,9 +89,17 @@ export function useSantaCasaPedidosPendentes() {
       try {
         const result = await getPedidosPendentes(currentQuery);
 
+        if (!isMountedRef.current || requestId !== requestIdRef.current) {
+          return;
+        }
+
         setPedidos(result.data);
         setMeta(result.meta);
       } catch (loadError) {
+        if (!isMountedRef.current || requestId !== requestIdRef.current) {
+          return;
+        }
+
         if (handleAuthError(loadError)) return;
 
         setError(
@@ -79,8 +109,10 @@ export function useSantaCasaPedidosPendentes() {
           ),
         );
       } finally {
-        setIsLoading(false);
-        setIsRefreshing(false);
+        if (isMountedRef.current && requestId === requestIdRef.current) {
+          setIsLoading(false);
+          setIsRefreshing(false);
+        }
       }
     },
     [currentQuery, handleAuthError],
@@ -126,7 +158,7 @@ export function useSantaCasaPedidosPendentes() {
       const currentTake = Number(currentQueryValue.take || DEFAULT_QUERY.take);
       const nextSkip = currentSkip + currentTake;
 
-      if (nextSkip >= meta.total) {
+      if (nextSkip >= safeMeta.total) {
         return currentQueryValue;
       }
 
@@ -135,7 +167,7 @@ export function useSantaCasaPedidosPendentes() {
         skip: nextSkip,
       };
     });
-  }, [meta.total]);
+  }, [safeMeta.total]);
 
   const requestCancelPedido = useCallback((pedido) => {
     setPedidoToCancel(pedido);
@@ -158,6 +190,8 @@ export function useSantaCasaPedidosPendentes() {
         reason: PEDIDOS_PAGE.cancelDialog.reason,
       });
 
+      if (!isMountedRef.current) return;
+
       setPedidoToCancel(null);
 
       setFeedback({
@@ -167,6 +201,7 @@ export function useSantaCasaPedidosPendentes() {
 
       await loadPendentes({ showRefreshing: true });
     } catch (cancelError) {
+      if (!isMountedRef.current) return;
       if (handleAuthError(cancelError)) return;
 
       setFeedback({
@@ -177,7 +212,9 @@ export function useSantaCasaPedidosPendentes() {
         ),
       });
     } finally {
-      setIsCanceling(false);
+      if (isMountedRef.current) {
+        setIsCanceling(false);
+      }
     }
   }, [handleAuthError, loadPendentes, pedidoToCancelId]);
 
@@ -186,42 +223,23 @@ export function useSantaCasaPedidosPendentes() {
   }, []);
 
   useEffect(() => {
-    let isMounted = true;
-
-    async function loadInitialPendentes() {
-      setIsLoading(true);
-      setError(null);
-
-      try {
-        const result = await getPedidosPendentes(currentQuery);
-
-        if (!isMounted) return;
-
-        setPedidos(result.data);
-        setMeta(result.meta);
-      } catch (loadError) {
-        if (!isMounted) return;
-        if (handleAuthError(loadError)) return;
-
-        setError(
-          getErrorMessage(
-            loadError,
-            "Não foi possível carregar os pedidos pendentes.",
-          ),
-        );
-      } finally {
-        if (isMounted) {
-          setIsLoading(false);
-        }
-      }
-    }
-
-    loadInitialPendentes();
+    isMountedRef.current = true;
 
     return () => {
-      isMounted = false;
+      isMountedRef.current = false;
+      requestIdRef.current += 1;
     };
-  }, [currentQuery, handleAuthError]);
+  }, []);
+
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      void loadPendentes();
+    }, 0);
+
+    return () => {
+      clearTimeout(timeoutId);
+    };
+  }, [loadPendentes]);
 
   return {
     pedidos,

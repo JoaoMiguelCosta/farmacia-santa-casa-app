@@ -119,6 +119,12 @@ export function buildPedidoItem(linha) {
     title: linha.medicamento,
     description: `${RECEITAS_PAGE.list.labels.receitaPrefix} ${linha.numero19}`,
     meta: `${RECEITAS_PAGE.list.labels.pinPrefix} ${linha.pinAcesso6} · ${RECEITAS_PAGE.list.labels.optionPrefix} ${linha.pinOpcao4}`,
+
+    numero19: linha.numero19,
+    pinAcesso6: linha.pinAcesso6,
+    pinOpcao4: linha.pinOpcao4,
+    validade: linha.validade,
+
     quantidadeRestante: getReceitaRestanteQuantity(linha),
     source: linha,
   };

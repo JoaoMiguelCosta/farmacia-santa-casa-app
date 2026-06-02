@@ -1,3 +1,4 @@
+// src/features/santacasa/pedidos/hooks/useSantaCasaPedidosActions.js
 import { useState } from "react";
 
 import { useAuth } from "../../../auth/hooks/useAuth";
@@ -9,8 +10,6 @@ import { deleteExtra, getExtrasByUtente } from "../../extras/api/extrasApi";
 import {
   buildPedidoPayload,
   buildRemoveAllMessage,
-  buildRemoveMessage,
-  clampQuantity,
   isSameMedication,
 } from "../utils/santaCasaPedidos.utils";
 
@@ -31,8 +30,6 @@ export function useSantaCasaPedidosActions({
   items,
   hasItems,
 
-  updateItemQuantity,
-  removeItemQuantity,
   removeItem,
   removeItemsByKeys,
   clearDraft,
@@ -41,7 +38,6 @@ export function useSantaCasaPedidosActions({
 }) {
   const { handleAuthError } = useAuth();
 
-  const [returnQuantities, setReturnQuantities] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isClearDialogOpen, setIsClearDialogOpen] = useState(false);
   const [feedback, setFeedback] = useState(null);
@@ -129,77 +125,12 @@ export function useSantaCasaPedidosActions({
     }
   }
 
-  function handleReturnQuantityChange(itemKey, value, max) {
-    const quantity = max > 0 ? clampQuantity(value, max) : 0;
-
-    setReturnQuantities((currentQuantities) => ({
-      ...currentQuantities,
-      [itemKey]: quantity,
-    }));
-  }
-
-  async function handleReturnQuantity(itemKey, quantityToReturn) {
-    const item = items.find((currentItem) => currentItem.key === itemKey);
-
-    if (!item) return;
-
-    const currentQuantity = Number(item.quantidade) || 0;
-    const returnQuantity = clampQuantity(quantityToReturn, currentQuantity);
-
-    removeItemQuantity(itemKey, returnQuantity);
-
-    setReturnQuantities((currentQuantities) => ({
-      ...currentQuantities,
-      [itemKey]: 1,
-    }));
-
-    let extraInfo = null;
-
-    if (item.tipo === "COM_RECEITA") {
-      extraInfo = await deleteCompatibleExtrasFromBackend(item);
-    }
-
-    const extraMessage = buildRemovedVendasSuspensasMessage(extraInfo);
-
-    setFeedback({
-      type: "success",
-      message: `${buildRemoveMessage(item, returnQuantity)}${extraMessage}`,
-    });
-  }
-
-  async function handleQuantityChange(itemKey, value) {
-    const item = items.find((currentItem) => currentItem.key === itemKey);
-
-    if (!item) return;
-
-    const currentQuantity = Number(item.quantidade) || 0;
-    const nextQuantity = clampQuantity(value, item.quantidadeRestante);
-
-    updateItemQuantity(itemKey, nextQuantity);
-
-    if (item.tipo === "COM_RECEITA" && nextQuantity < currentQuantity) {
-      const extraInfo = await deleteCompatibleExtrasFromBackend(item);
-
-      if (extraInfo.removedCount > 0) {
-        setFeedback({
-          type: "info",
-          message: buildRemovedVendasSuspensasMessage(extraInfo).trim(),
-        });
-      }
-    }
-  }
-
   async function handleRemoveItem(itemKey) {
     const item = items.find((currentItem) => currentItem.key === itemKey);
 
     if (!item) return;
 
     removeItem(itemKey);
-
-    setReturnQuantities((currentQuantities) => ({
-      ...currentQuantities,
-      [itemKey]: 1,
-    }));
 
     let extraInfo = null;
 
@@ -227,7 +158,6 @@ export function useSantaCasaPedidosActions({
 
   function handleConfirmClearDraft() {
     clearDraft();
-    setReturnQuantities({});
     setIsClearDialogOpen(false);
 
     setFeedback({
@@ -242,7 +172,8 @@ export function useSantaCasaPedidosActions({
     if (!hasItems) {
       setFeedback({
         type: "info",
-        message: "Adiciona pelo menos um item ao pedido geral antes de enviar.",
+        message:
+          "Adiciona pelo menos um medicamento ao pedido geral antes de enviar.",
       });
 
       return;
@@ -255,7 +186,6 @@ export function useSantaCasaPedidosActions({
       await createPedido(buildPedidoPayload(items));
 
       clearDraft();
-      setReturnQuantities({});
 
       setFeedback({
         type: "success",
@@ -278,16 +208,11 @@ export function useSantaCasaPedidosActions({
   }
 
   return {
-    returnQuantities,
-
     isSubmitting,
     isClearDialogOpen,
     feedback,
     setFeedback,
 
-    handleReturnQuantityChange,
-    handleReturnQuantity,
-    handleQuantityChange,
     handleRemoveItem,
 
     handleRequestClearDraft,
