@@ -1,0 +1,315 @@
+.group {
+    position: relative;
+    isolation: isolate;
+
+    display: grid;
+    gap: clamp(0.85rem, 2vw, 1.05rem);
+
+    width: 100%;
+    min-width: 0;
+    padding: clamp(0.95rem, 2.2vw, 1.15rem);
+
+    overflow: hidden;
+
+    border: 1px solid rgba(31, 95, 81, 0.2);
+    border-radius: var(--clinic-radius-xl);
+
+    background:
+        radial-gradient(circle at 100% 0%,
+            rgba(31, 95, 81, 0.1),
+            transparent 17rem),
+        radial-gradient(circle at 0% 100%,
+            rgba(198, 161, 91, 0.07),
+            transparent 15rem),
+        linear-gradient(135deg,
+            rgba(255, 255, 255, 0.96),
+            rgba(247, 252, 249, 0.78));
+
+    box-shadow:
+        0 1rem 2.35rem rgba(23, 33, 29, 0.06),
+        inset 0 1px 0 rgba(255, 255, 255, 0.86);
+}
+
+.group::before {
+    content: "";
+
+    position: absolute;
+    inset-inline: 0;
+    inset-block-start: 0;
+    z-index: 1;
+
+    height: 3px;
+
+    background:
+        linear-gradient(90deg,
+            var(--clinic-green-700),
+            rgba(198, 161, 91, 0.58),
+            transparent 76%);
+
+    opacity: 0.86;
+    pointer-events: none;
+}
+
+.groupHeader {
+    position: relative;
+    z-index: 2;
+
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: clamp(0.85rem, 2vw, 1rem);
+
+    min-width: 0;
+}
+
+.groupIdentity {
+    display: grid;
+    gap: 0.28rem;
+
+    min-width: 0;
+}
+
+.groupEyebrow {
+    width: fit-content;
+    margin: 0;
+    padding: 0.34rem 0.6rem;
+
+    border: 1px solid rgba(31, 95, 81, 0.2);
+    border-radius: 999px;
+
+    color: var(--clinic-green-800);
+    background:
+        linear-gradient(135deg,
+            rgba(238, 247, 243, 0.98),
+            rgba(255, 255, 255, 0.86));
+
+    font-size: 0.68rem;
+    font-weight: 950;
+    letter-spacing: 0.12em;
+    line-height: 1;
+    text-transform: uppercase;
+}
+
+.groupHeader h3 {
+    max-width: 100%;
+    margin: 0;
+
+    overflow: hidden;
+
+    color: var(--clinic-ink);
+
+    font-size: clamp(1.16rem, 2.5vw, 1.45rem);
+    font-weight: 950;
+    letter-spacing: -0.05em;
+    line-height: 1.08;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.groupHeader span {
+    overflow: hidden;
+
+    color: var(--clinic-muted-strong);
+
+    font-size: clamp(0.82rem, 1.2vw, 0.9rem);
+    font-weight: 760;
+    line-height: 1.35;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.groupHeaderAside {
+    display: grid;
+    gap: 0.55rem;
+    justify-items: end;
+
+    flex: 0 0 auto;
+    min-width: 0;
+}
+
+.groupCounters {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+
+    min-width: 0;
+}
+
+.groupCounters strong,
+.groupCounters em {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 2.05rem;
+    padding: 0.42rem 0.72rem;
+
+    border: 1px solid rgba(31, 95, 81, 0.22);
+    border-radius: 999px;
+
+    color: var(--clinic-green-900);
+    background:
+        radial-gradient(circle at 30% 0%,
+            rgba(255, 255, 255, 0.74),
+            transparent 60%),
+        rgba(47, 125, 99, 0.1);
+
+    box-shadow:
+        0 0.45rem 1rem rgba(23, 33, 29, 0.04),
+        inset 0 1px 0 rgba(255, 255, 255, 0.78);
+
+    font-size: 0.78rem;
+    font-style: normal;
+    font-weight: 900;
+    line-height: 1;
+    white-space: nowrap;
+}
+
+.groupCounters em {
+    color: var(--clinic-muted-strong);
+    background: rgba(255, 255, 255, 0.62);
+}
+
+.groupDetails {
+    position: relative;
+    z-index: 2;
+
+    display: grid;
+    gap: clamp(0.8rem, 1.8vw, 1rem);
+
+    min-width: 0;
+    padding-top: clamp(0.75rem, 1.8vw, 0.95rem);
+
+    border-top: 1px solid rgba(31, 95, 81, 0.14);
+}
+
+.groupDetailsMeta {
+    width: fit-content;
+    max-width: 100%;
+    padding: 0.34rem 0.58rem;
+
+    border: 1px solid rgba(31, 95, 81, 0.14);
+    border-radius: 999px;
+
+    color: var(--clinic-green-900);
+    background: rgba(47, 125, 99, 0.08);
+
+    font-size: 0.74rem;
+    font-weight: 850;
+    line-height: 1.15;
+}
+
+.groupDetailsActions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 0.55rem;
+
+    min-width: 0;
+}
+
+.items {
+    position: relative;
+    z-index: 2;
+
+    display: grid;
+    gap: clamp(0.85rem, 2vw, 1rem);
+
+    width: 100%;
+    min-width: 0;
+}
+
+@media (max-width: 860px) {
+    .groupHeader {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .groupHeader h3,
+    .groupHeader span {
+        white-space: normal;
+    }
+
+    .groupHeaderAside {
+        justify-items: start;
+    }
+
+    .groupCounters {
+        justify-content: flex-start;
+    }
+}
+
+@media (max-width: 620px) {
+    .group {
+        padding: 0.85rem;
+
+        border-radius: var(--clinic-radius-lg);
+    }
+
+    .groupHeaderAside,
+    .groupHeaderAside>button,
+    .groupDetailsActions,
+    .groupDetailsActions>button {
+        width: 100%;
+    }
+
+    .groupCounters {
+        display: grid;
+        grid-template-columns: 1fr;
+    }
+
+    .groupCounters strong,
+    .groupCounters em {
+        width: 100%;
+    }
+}
+
+@media (max-width: 420px) {
+    .items {
+        gap: 0.85rem;
+    }
+
+    .group {
+        padding: 0.78rem;
+
+        border-radius: var(--clinic-radius-md);
+    }
+
+    .groupHeader {
+        gap: 0.72rem;
+    }
+
+    .groupEyebrow {
+        font-size: 0.62rem;
+    }
+
+    .groupHeader h3 {
+        font-size: 1.06rem;
+    }
+
+    .groupHeader span {
+        font-size: 0.78rem;
+    }
+
+    .groupCounters strong,
+    .groupCounters em {
+        min-height: 1.9rem;
+        padding: 0.38rem 0.62rem;
+
+        font-size: 0.72rem;
+    }
+
+    .groupDetailsMeta {
+        width: 100%;
+
+        text-align: center;
+    }
+}
+
+@media (max-width: 360px) {
+    .group {
+        padding: 0.72rem;
+    }
+}

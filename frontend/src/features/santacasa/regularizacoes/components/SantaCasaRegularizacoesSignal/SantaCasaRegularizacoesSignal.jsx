@@ -1,3 +1,5 @@
+// src/features/santacasa/regularizacoes/components/SantaCasaRegularizacoesSignal/SantaCasaRegularizacoesSignal.jsx
+
 import styles from "./SantaCasaRegularizacoesSignal.module.css";
 
 import { SANTACASA_REGULARIZACOES_PAGE } from "../../config/santaCasaRegularizacoesPage.config";
@@ -8,6 +10,31 @@ import {
   getSignalTotalUnidades,
 } from "../../utils/santaCasaRegularizacoes.utils";
 
+function getReceitasLabel(value) {
+  const total = Number(value) || 0;
+
+  return total === 1 ? "receita" : "receitas";
+}
+
+function getUnidadesLabel(value) {
+  const total = Number(value) || 0;
+
+  return total === 1 ? "unidade" : "unidades";
+}
+
+function SignalValue({ value, suffix, muted = false }) {
+  const className = muted
+    ? `${styles.metricValue} ${styles.metricValueMuted}`
+    : styles.metricValue;
+
+  return (
+    <strong className={className}>
+      <span>{value}</span>
+      {suffix ? <small>{suffix}</small> : null}
+    </strong>
+  );
+}
+
 function SantaCasaRegularizacoesSignalState({
   title,
   description,
@@ -15,19 +42,25 @@ function SantaCasaRegularizacoesSignalState({
   onAction,
 }) {
   return (
-    <div className={styles.state}>
-      <strong className={styles.stateTitle}>{title}</strong>
+    <section className={styles.section} aria-live="polite">
+      <div className={styles.state}>
+        <strong className={styles.stateTitle}>{title}</strong>
 
-      {description ? (
-        <p className={styles.stateDescription}>{description}</p>
-      ) : null}
+        {description ? (
+          <p className={styles.stateDescription}>{description}</p>
+        ) : null}
 
-      {actionLabel && onAction ? (
-        <button type="button" className={styles.stateAction} onClick={onAction}>
-          {actionLabel}
-        </button>
-      ) : null}
-    </div>
+        {actionLabel && onAction ? (
+          <button
+            type="button"
+            className={styles.stateAction}
+            onClick={onAction}
+          >
+            {actionLabel}
+          </button>
+        ) : null}
+      </div>
+    </section>
   );
 }
 
@@ -40,27 +73,27 @@ export default function SantaCasaRegularizacoesSignal({
 }) {
   if (isLoading) {
     return (
-      <section className={styles.section} aria-live="polite">
-        <SantaCasaRegularizacoesSignalState
-          title={SANTACASA_REGULARIZACOES_PAGE.sections.signal.loadingTitle}
-          description="Aguarda enquanto o resumo é carregado."
-        />
-      </section>
+      <SantaCasaRegularizacoesSignalState
+        title={SANTACASA_REGULARIZACOES_PAGE.sections.signal.loadingTitle}
+        description={SANTACASA_REGULARIZACOES_PAGE.sections.signal.description}
+      />
     );
   }
 
   if (error) {
     return (
-      <section className={styles.section} aria-live="polite">
-        <SantaCasaRegularizacoesSignalState
-          title={SANTACASA_REGULARIZACOES_PAGE.sections.signal.errorTitle}
-          description={error}
-          actionLabel={SANTACASA_REGULARIZACOES_PAGE.actions.refresh}
-          onAction={onRefresh}
-        />
-      </section>
+      <SantaCasaRegularizacoesSignalState
+        title={SANTACASA_REGULARIZACOES_PAGE.sections.signal.errorTitle}
+        description={error}
+        actionLabel={SANTACASA_REGULARIZACOES_PAGE.actions.refresh}
+        onAction={onRefresh}
+      />
     );
   }
+
+  const totalEventos = getSignalTotalEventos(signal);
+  const totalUnidades = getSignalTotalUnidades(signal);
+  const latestEventoAt = getSignalLatestEventoAtLabel(signal);
 
   return (
     <section
@@ -69,6 +102,8 @@ export default function SantaCasaRegularizacoesSignal({
     >
       <header className={styles.header}>
         <div className={styles.heading}>
+          <span className={styles.eyebrow}>Rastreabilidade</span>
+
           <h2
             id="santacasa-regularizacoes-signal-title"
             className={styles.title}
@@ -94,19 +129,28 @@ export default function SantaCasaRegularizacoesSignal({
       </header>
 
       <div className={styles.grid}>
-        <article className={styles.metric}>
+        <article className={`${styles.metric} ${styles.metricPrimary}`}>
           <span>{SANTACASA_REGULARIZACOES_PAGE.labels.totalEventos}</span>
-          <strong>{getSignalTotalEventos(signal)}</strong>
+
+          <SignalValue
+            value={totalEventos}
+            suffix={getReceitasLabel(totalEventos)}
+          />
         </article>
 
-        <article className={styles.metric}>
+        <article className={`${styles.metric} ${styles.metricSuccess}`}>
           <span>{SANTACASA_REGULARIZACOES_PAGE.labels.totalUnidades}</span>
-          <strong>{getSignalTotalUnidades(signal)}</strong>
+
+          <SignalValue
+            value={totalUnidades}
+            suffix={getUnidadesLabel(totalUnidades)}
+          />
         </article>
 
-        <article className={styles.metric}>
+        <article className={`${styles.metric} ${styles.metricDate}`}>
           <span>{SANTACASA_REGULARIZACOES_PAGE.labels.latestEventoAt}</span>
-          <strong>{getSignalLatestEventoAtLabel(signal)}</strong>
+
+          <SignalValue value={latestEventoAt} muted />
         </article>
       </div>
     </section>

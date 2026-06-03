@@ -1,0 +1,49 @@
+/* src/features/santacasa/regularizacoes/components/SantaCasaRegularizacaoCard/SantaCasaRegularizacaoProgress.module.css */
+
+.progressWrap {
+    display: grid;
+    gap: 0.45rem;
+}
+
+.progressHeader {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    color: #52786a;
+    font-size: 0.82rem;
+    font-weight: 800;
+}
+
+.progressHeader strong {
+    color: #275c48;
+    text-align: right;
+}
+
+.progressTrack {
+    position: relative;
+    overflow: hidden;
+    block-size: 0.65rem;
+    border-radius: 999px;
+    background: rgba(39, 92, 72, 0.11);
+}
+
+.progressBar {
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: 0;
+    inline-size: var(--progress-value, 0%);
+    border-radius: inherit;
+    background: linear-gradient(90deg, #275c48, #5da07e);
+    transition: inline-size 180ms ease;
+}
+
+@media (max-width: 720px) {
+    .progressHeader {
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    .progressHeader strong {
+        text-align: left;
+    }
+}

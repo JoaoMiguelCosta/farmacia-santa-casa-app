@@ -1,27 +1,29 @@
+// src/features/santacasa/regularizacoes/config/santaCasaRegularizacoesPage.config.js
+
 export const SANTACASA_REGULARIZACOES_PAGE = Object.freeze({
   header: {
     eyebrow: "Santa Casa",
     title: "Regularizações",
     description:
-      "Acompanha vendas suspensas enviadas para a Farmácia que aguardam receita futura ou já foram regularizadas.",
+      "Acompanha medicamentos de Venda Suspensa pendentes e consulta o histórico das regularizações concluídas.",
   },
 
   sections: {
     signal: {
-      title: "Resumo das regularizações",
+      title: "Atividade de regularizações",
       description:
-        "Visão geral das regularizações associadas às vendas suspensas enviadas pela Santa Casa.",
-      loadingTitle: "A carregar resumo...",
-      errorTitle: "Não foi possível carregar o resumo.",
+        "Resumo das receitas usadas para compensar medicamentos de Venda Suspensa.",
+      loadingTitle: "A carregar atividade...",
+      errorTitle: "Não foi possível carregar a atividade das regularizações.",
     },
 
     pending: {
       title: "Regularizações pendentes",
       description:
-        "Vendas suspensas que ainda precisam de receita futura para ficarem totalmente regularizadas.",
+        "Medicamentos que ainda precisam de receita para ficarem totalmente regularizados.",
       emptyTitle: "Sem regularizações pendentes.",
       emptyDescription:
-        "Quando existirem vendas suspensas ainda por regularizar, aparecem aqui.",
+        "Quando existirem medicamentos por regularizar, aparecem aqui.",
       loadingTitle: "A carregar regularizações pendentes...",
       errorTitle: "Não foi possível carregar as regularizações pendentes.",
     },
@@ -29,7 +31,7 @@ export const SANTACASA_REGULARIZACOES_PAGE = Object.freeze({
     history: {
       title: "Histórico de regularizações",
       description:
-        "Regularizações concluídas com as receitas que foram usadas para compensar vendas suspensas anteriores.",
+        "Regularizações concluídas com receitas usadas pela Farmácia para compensar medicamentos de Venda Suspensa anteriores.",
       emptyTitle: "Sem histórico de regularizações.",
       emptyDescription:
         "Quando uma regularização ficar concluída, aparece neste histórico.",
@@ -46,8 +48,20 @@ export const SANTACASA_REGULARIZACOES_PAGE = Object.freeze({
   actions: {
     refresh: "Atualizar",
     refreshing: "A atualizar...",
-    viewDetails: "Ver receita usada",
-    hideDetails: "Ocultar receita",
+
+    viewDetails: "Ver receitas usadas",
+    hideDetails: "Ocultar receitas usadas",
+
+    viewMedicamentos: "Ver medicamentos",
+    hideMedicamentos: "Ocultar medicamentos",
+    viewMoreMedicamentos: "Ver mais",
+    viewAllMedicamentos: "Ver todos",
+
+    viewRegularizacoes: "Ver regularizações",
+    hideRegularizacoes: "Ocultar regularizações",
+    viewMoreRegularizacoes: "Ver mais",
+    viewAllRegularizacoes: "Ver todos",
+    showLessRegularizacoes: "Mostrar menos",
   },
 
   status: {
@@ -62,13 +76,19 @@ export const SANTACASA_REGULARIZACOES_PAGE = Object.freeze({
     pedidoNumber: "N.º pedido",
     status: "Estado",
 
+    date: "Data",
+    historyDateDescription: "Regularizações concluídas neste dia",
+
     utente: "Utente",
     utenteNumber: "N.º utente",
 
     medicamento: "Medicamento",
-    quantidadeSolicitada: "Quantidade enviada como venda suspensa",
-    quantidadeRegularizada: "Quantidade regularizada",
-    quantidadeRestante: "Quantidade ainda em falta",
+    quantidadeSolicitada: "Total de unidades para regularizar",
+    quantidadeRegularizada: "Regularizado",
+    quantidadeRestante: "Falta regularizar",
+    unidadesRegularizadas: "Unidades regularizadas",
+
+    progress: "Progresso",
 
     createdAt: "Criada em",
     updatedAt: "Atualizada em",
@@ -81,29 +101,35 @@ export const SANTACASA_REGULARIZACOES_PAGE = Object.freeze({
     pinAcesso: "PIN de acesso",
     pinOpcao: "PIN de opção",
     validade: "Validade",
-    quantidade: "Quantidade regularizada",
+    quantidade: "Regularizou",
 
-    totalEventos: "Regularizações feitas",
-    totalUnidades: "Unidades regularizadas",
-    latestEventoAt: "Última regularização",
+    totalEventos: "Receitas usadas na regularização:",
+    totalUnidades: "Unidades regularizadas:",
+    latestEventoAt: "Última receita usada:",
+
+    regularizacoesPendentes: "Regularizações pendentes",
+    regularizacoesConcluidas: "Regularizações concluídas",
+
+    regularizacoesShort: "Regularizações",
+    unidadesShort: "Unidades",
+    receitasShort: "Receitas",
   },
 
   waitingRecipe: {
     title: "A aguardar receita",
     description:
-      "Esta Venda Suspensa ainda precisa de uma receita futura com o mesmo medicamento para ser regularizada.",
+      "Este medicamento ainda precisa de uma ou mais receitas para ficar regularizado.",
   },
 
   completedRecipe: {
     title: "Regularização concluída",
     description:
-      "Esta Venda Suspensa já foi compensada por uma ou mais receitas futuras.",
+      "Este medicamento já foi compensado por uma ou mais receitas futuras.",
   },
 
   filters: {
     searchLabel: "Pesquisa geral",
-    searchPlaceholder:
-      "Pesquisar por Pedido, Utente, Medicamento, Receita ou PIN...",
+    searchPlaceholder: "Pesquisar por pedido, utente, medicamento, receita...",
     fromLabel: "Data inicial",
     toLabel: "Data final",
     clear: "Limpar",
@@ -112,5 +138,6 @@ export const SANTACASA_REGULARIZACOES_PAGE = Object.freeze({
 
   feedback: {
     genericError: "Ocorreu um erro inesperado.",
+    loadingDescription: "Aguarda enquanto os dados são carregados.",
   },
 });

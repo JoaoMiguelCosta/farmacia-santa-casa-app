@@ -1,3 +1,5 @@
+/* src/features/santacasa/regularizacoes/components/SantaCasaRegularizacoesList/SantaCasaRegularizacoesList.module.css */
+
 .section {
     display: grid;
     gap: clamp(1rem, 2vw, 1.35rem);
@@ -6,34 +8,46 @@
 
 .header {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     justify-content: space-between;
     gap: 1rem;
+    padding: clamp(1rem, 2.4vw, 1.35rem);
+    border: 1px solid rgba(39, 92, 72, 0.14);
+    border-radius: 1.35rem;
+    background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.97), rgba(247, 251, 249, 0.92)),
+        radial-gradient(circle at top left, rgba(93, 160, 126, 0.08), transparent 42%);
+    box-shadow: 0 16px 42px rgba(24, 43, 35, 0.065);
 }
 
 .heading {
     display: grid;
-    gap: 0.35rem;
+    gap: 0.34rem;
     min-width: 0;
 }
 
 .title {
     margin: 0;
-    color: #16251f;
-    font-size: clamp(1.35rem, 2.4vw, 1.85rem);
-    line-height: 1.1;
+    color: var(--clinic-ink);
+    font-size: clamp(1.45rem, 2vw, 1.85rem);
+    font-weight: 900;
+    letter-spacing: -0.025em;
+    line-height: var(--clinic-line-height-tight);
 }
 
 .description {
-    max-width: 68ch;
+    max-width: 70ch;
     margin: 0;
-    color: #60766d;
-    font-size: 0.96rem;
-    line-height: 1.6;
+    color: var(--clinic-muted-strong);
+    font-size: var(--clinic-font-size-md);
+    font-weight: 500;
+    line-height: var(--clinic-line-height-base);
 }
 
 .refreshButton,
-.stateAction {
+.stateAction,
+.groupButton,
+.groupSecondaryButton {
     min-height: 2.55rem;
     padding: 0.72rem 1rem;
     border: 1px solid rgba(39, 92, 72, 0.18);
@@ -52,8 +66,22 @@
         opacity 160ms ease;
 }
 
+.refreshButton,
+.groupButton {
+    flex: 0 0 auto;
+    box-shadow: 0 10px 24px rgba(24, 43, 35, 0.055);
+}
+
+.groupSecondaryButton {
+    min-height: 2.35rem;
+    padding: 0.62rem 0.9rem;
+    font-size: 0.84rem;
+}
+
 .refreshButton:hover,
-.stateAction:hover {
+.stateAction:hover,
+.groupButton:hover,
+.groupSecondaryButton:hover {
     transform: translateY(-1px);
     border-color: rgba(39, 92, 72, 0.28);
     background: rgba(247, 251, 249, 0.96);
@@ -61,22 +89,179 @@
 }
 
 .refreshButton:focus-visible,
-.stateAction:focus-visible {
+.stateAction:focus-visible,
+.groupButton:focus-visible,
+.groupSecondaryButton:focus-visible {
     outline: 3px solid rgba(72, 128, 102, 0.28);
     outline-offset: 3px;
 }
 
 .refreshButton:disabled,
-.stateAction:disabled {
+.stateAction:disabled,
+.groupButton:disabled,
+.groupSecondaryButton:disabled {
     cursor: not-allowed;
     opacity: 0.56;
     transform: none;
     box-shadow: none;
 }
 
-.list {
+.list,
+.groups,
+.groupContent,
+.groupList,
+.historyContent {
     display: grid;
     gap: clamp(1rem, 2vw, 1.25rem);
+}
+
+.group {
+    display: grid;
+    gap: clamp(0.9rem, 2vw, 1.15rem);
+    padding: clamp(1rem, 2vw, 1.2rem);
+    border: 1px solid rgba(39, 92, 72, 0.14);
+    border-radius: 1.35rem;
+    background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.96), rgba(247, 251, 249, 0.91)),
+        radial-gradient(circle at top left, rgba(93, 160, 126, 0.08), transparent 42%);
+    box-shadow: 0 16px 42px rgba(24, 43, 35, 0.065);
+}
+
+.historyGroup {
+    padding-block: clamp(0.95rem, 1.8vw, 1.12rem);
+}
+
+.groupHeader {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(18rem, 0.85fr) auto;
+    align-items: center;
+    gap: 0.9rem;
+}
+
+.groupHeaderHistory {
+    grid-template-columns: minmax(14rem, 1fr) minmax(28rem, auto) auto;
+}
+
+.groupIdentity {
+    display: grid;
+    gap: 0.22rem;
+    min-width: 0;
+}
+
+.groupEyebrow {
+    color: #52786a;
+    font-size: 0.72rem;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    line-height: 1.2;
+    text-transform: uppercase;
+}
+
+.groupTitle {
+    overflow-wrap: anywhere;
+    color: var(--clinic-ink);
+    font-size: clamp(1.15rem, 1.8vw, 1.45rem);
+    font-weight: 950;
+    letter-spacing: -0.035em;
+    line-height: 1.08;
+}
+
+.groupDescription {
+    color: #60766d;
+    font-size: 0.9rem;
+    font-weight: 750;
+    line-height: 1.35;
+}
+
+.groupStats {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.55rem;
+    margin: 0;
+}
+
+.groupStatsWide {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: stretch;
+    justify-content: flex-end;
+    gap: 0.52rem;
+}
+
+.groupStats div {
+    display: grid;
+    gap: 0.18rem;
+    min-width: 0;
+    padding: 0.65rem 0.75rem;
+    border: 1px solid rgba(39, 92, 72, 0.1);
+    border-radius: 1rem;
+    background: rgba(255, 255, 255, 0.72);
+}
+
+.groupStatsWide div {
+    width: clamp(8.8rem, 11vw, 10.2rem);
+    gap: 0.12rem;
+    padding: 0.58rem 0.7rem;
+}
+
+.groupStats dt {
+    color: #6d8279;
+    font-size: 0.72rem;
+    font-weight: 850;
+    line-height: 1.25;
+}
+
+.groupStatsWide dt {
+    font-size: 0.68rem;
+    line-height: 1.15;
+    white-space: nowrap;
+}
+
+.groupStats dd {
+    margin: 0;
+    overflow-wrap: anywhere;
+    color: #1d3028;
+    font-size: 0.95rem;
+    font-weight: 900;
+    line-height: 1.2;
+}
+
+.groupStatsWide dd {
+    overflow-wrap: normal;
+    font-size: 0.9rem;
+    line-height: 1.15;
+    white-space: nowrap;
+}
+
+.groupList {
+    padding-top: 0.1rem;
+}
+
+.groupPagination,
+.historyPagination {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.85rem 0.95rem;
+    border: 1px solid rgba(39, 92, 72, 0.1);
+    border-radius: 1rem;
+    background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.82), rgba(247, 251, 249, 0.9));
+}
+
+.groupPaginationInfo {
+    color: #60766d;
+    font-size: 0.88rem;
+    font-weight: 760;
+    line-height: 1.4;
+}
+
+.groupPaginationActions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 0.5rem;
 }
 
 .state {
@@ -87,35 +272,79 @@
     border: 1px solid rgba(39, 92, 72, 0.14);
     border-radius: 1.35rem;
     background:
-        linear-gradient(135deg,
-            rgba(255, 255, 255, 0.94),
-            rgba(247, 251, 249, 0.9)),
-        radial-gradient(circle at top left,
-            rgba(93, 160, 126, 0.1),
-            transparent 44%);
+        linear-gradient(135deg, rgba(255, 255, 255, 0.94), rgba(247, 251, 249, 0.9)),
+        radial-gradient(circle at top left, rgba(93, 160, 126, 0.1), transparent 44%);
     box-shadow: 0 18px 50px rgba(24, 43, 35, 0.07);
 }
 
 .stateTitle {
-    color: #16251f;
-    font-size: clamp(1rem, 1.6vw, 1.2rem);
+    color: var(--clinic-ink);
+    font-size: clamp(1.45rem, 2vw, 1.85rem);
+    font-weight: 900;
+    letter-spacing: -0.025em;
+    line-height: var(--clinic-line-height-tight);
 }
 
 .stateDescription {
-    max-width: 62ch;
+    max-width: 70ch;
     margin: 0;
-    color: #60766d;
-    font-size: 0.94rem;
-    line-height: 1.55;
+    color: var(--clinic-muted-strong);
+    font-size: var(--clinic-font-size-md);
+    font-weight: 500;
+    line-height: var(--clinic-line-height-base);
+}
+
+@media (max-width: 1280px) {
+
+    .groupHeader,
+    .groupHeaderHistory {
+        grid-template-columns: 1fr;
+    }
+
+    .groupButton {
+        width: fit-content;
+    }
+
+    .groupStatsWide {
+        justify-content: flex-start;
+    }
 }
 
 @media (max-width: 760px) {
-    .header {
+
+    .header,
+    .groupPagination,
+    .historyPagination {
         align-items: stretch;
         flex-direction: column;
     }
 
-    .refreshButton {
+    .refreshButton,
+    .groupButton {
+        width: 100%;
+    }
+
+    .groupStats,
+    .groupStatsWide {
+        display: grid;
+        grid-template-columns: 1fr;
+    }
+
+    .groupStatsWide div {
+        width: auto;
+    }
+
+    .groupStatsWide dt,
+    .groupStatsWide dd {
+        white-space: normal;
+    }
+
+    .groupPaginationActions {
+        display: grid;
+        grid-template-columns: 1fr;
+    }
+
+    .groupSecondaryButton {
         width: 100%;
     }
 }

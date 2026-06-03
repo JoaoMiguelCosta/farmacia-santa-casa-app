@@ -1,23 +1,17 @@
 // src/features/santacasa/pedidos/components/PedidoPendingList/PedidoPendingItem.jsx
 import { PEDIDOS_PAGE } from "../../config/pedidosPage.config";
 
+import PedidoPendingQuantity from "./PedidoPendingQuantity";
 import PedidoPendingReceitaBarcodes from "./PedidoPendingReceitaBarcodes";
+import PedidoPendingTypeBadge from "./PedidoPendingTypeBadge";
+import PedidoPendingValidity from "./PedidoPendingValidity";
 
 import {
   getPedidoItemReceita,
   getReceitaValidityLabel,
-  getTypeLabel,
 } from "./pedidoPendingList.utils";
 
-import styles from "./PedidoPendingList.module.css";
-
-function getTypeClassName(tipo) {
-  if (tipo === "COM_RECEITA") return styles.receita;
-  if (tipo === "SEM_RECEITA") return styles.semReceita;
-  if (tipo === "EXTRA") return styles.extra;
-
-  return styles.defaultType;
-}
+import styles from "./PedidoPendingItem.module.css";
 
 export default function PedidoPendingItem({ item }) {
   if (!item) return null;
@@ -25,32 +19,21 @@ export default function PedidoPendingItem({ item }) {
   const receita = getPedidoItemReceita(item);
   const validadeLabel = getReceitaValidityLabel(receita);
 
-  const typeClassName = [styles.itemType, getTypeClassName(item.tipo)]
-    .filter(Boolean)
-    .join(" ");
-
   return (
     <li className={styles.item}>
       <div className={styles.itemMain}>
-        <span className={typeClassName}>{getTypeLabel(item.tipo)}</span>
+        <PedidoPendingTypeBadge tipo={item.tipo} />
 
         <strong>
           {item.medicamento || PEDIDOS_PAGE.labels.medicamentoFallback}
         </strong>
 
-        {validadeLabel ? (
-          <span className={styles.receitaValidity}>
-            <strong>{PEDIDOS_PAGE.labels.validadeReceita}:</strong>{" "}
-            {validadeLabel}
-          </span>
-        ) : null}
+        <PedidoPendingValidity validadeLabel={validadeLabel} />
 
         <PedidoPendingReceitaBarcodes receita={receita} />
       </div>
 
-      <span className={styles.itemQuantity}>
-        {PEDIDOS_PAGE.labels.quantityShort} {Number(item.quantidade) || 0}
-      </span>
+      <PedidoPendingQuantity quantidade={item.quantidade} />
     </li>
   );
 }

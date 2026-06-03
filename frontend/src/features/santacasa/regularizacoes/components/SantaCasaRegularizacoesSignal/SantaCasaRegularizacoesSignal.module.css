@@ -1,18 +1,20 @@
+/* src/features/santacasa/regularizacoes/components/SantaCasaRegularizacoesSignal/SantaCasaRegularizacoesSignal.module.css */
+
 .section {
     display: grid;
-    gap: clamp(1rem, 2vw, 1.35rem);
+    gap: clamp(1rem, 2vw, 1.25rem);
     inline-size: 100%;
     padding: clamp(1rem, 2.5vw, 1.35rem);
     border: 1px solid rgba(39, 92, 72, 0.14);
     border-radius: 1.35rem;
     background:
         linear-gradient(135deg,
-            rgba(255, 255, 255, 0.95),
-            rgba(247, 251, 249, 0.9)),
+            rgba(255, 255, 255, 0.96),
+            rgba(247, 251, 249, 0.92)),
         radial-gradient(circle at top left,
-            rgba(93, 160, 126, 0.1),
+            rgba(93, 160, 126, 0.08),
             transparent 42%);
-    box-shadow: 0 18px 46px rgba(24, 43, 35, 0.07);
+    box-shadow: 0 16px 42px rgba(24, 43, 35, 0.065);
 }
 
 .header {
@@ -24,23 +26,36 @@
 
 .heading {
     display: grid;
-    gap: 0.35rem;
+    gap: 0.34rem;
     min-width: 0;
+}
+
+.eyebrow {
+    width: fit-content;
+    color: #52786a;
+    font-size: 0.72rem;
+    font-weight: 900;
+    letter-spacing: 0.09em;
+    line-height: 1.25;
+    text-transform: uppercase;
 }
 
 .title {
     margin: 0;
-    color: #16251f;
-    font-size: clamp(1.25rem, 2.2vw, 1.65rem);
-    line-height: 1.1;
+    color: var(--clinic-ink);
+    font-size: clamp(1.45rem, 2vw, 1.85rem);
+    font-weight: 900;
+    letter-spacing: -0.025em;
+    line-height: var(--clinic-line-height-tight);
 }
 
 .description {
-    max-width: 68ch;
+    max-width: 70ch;
     margin: 0;
-    color: #60766d;
-    font-size: 0.95rem;
-    line-height: 1.6;
+    color: var(--clinic-muted-strong);
+    font-size: var(--clinic-font-size-md);
+    font-weight: 500;
+    line-height: var(--clinic-line-height-base);
 }
 
 .refreshButton,
@@ -88,36 +103,93 @@
 .grid {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 0.85rem;
+    gap: 0.8rem;
 }
 
 .metric {
     display: grid;
-    gap: 0.35rem;
+    align-content: center;
+    gap: 0.42rem;
     min-width: 0;
+    min-height: 6.4rem;
     padding: clamp(0.9rem, 2vw, 1rem);
     border: 1px solid rgba(39, 92, 72, 0.12);
     border-radius: 1.1rem;
     background:
         linear-gradient(135deg,
-            rgba(255, 255, 255, 0.82),
-            rgba(246, 250, 248, 0.92)),
+            rgba(255, 255, 255, 0.86),
+            rgba(246, 250, 248, 0.94));
+}
+
+.metricPrimary {
+    border-color: rgba(39, 92, 72, 0.15);
+}
+
+.metricSuccess {
+    border-color: rgba(39, 92, 72, 0.17);
+    background:
+        linear-gradient(135deg,
+            rgba(246, 252, 249, 0.96),
+            rgba(255, 255, 255, 0.92)),
         radial-gradient(circle at top right,
-            rgba(93, 160, 126, 0.08),
+            rgba(93, 160, 126, 0.1),
             transparent 44%);
 }
 
-.metric span {
-    color: #6d8279;
-    font-size: 0.78rem;
-    font-weight: 800;
+.metricDate {
+    border-color: rgba(39, 92, 72, 0.1);
+    background: rgba(255, 255, 255, 0.74);
 }
 
-.metric strong {
+.metric > span {
+    color: #6d8279;
+    font-size: 0.76rem;
+    font-weight: 820;
+    line-height: 1.25;
+}
+
+.metricPrimary > span,
+.metricSuccess > span {
+    color: #52786a;
+    font-weight: 950;
+}
+
+.metricValue {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.34rem;
+    min-width: 0;
     overflow-wrap: anywhere;
     color: #275c48;
-    font-size: clamp(1.25rem, 2vw, 1.55rem);
-    line-height: 1.05;
+    line-height: 1;
+}
+
+.metricValue > span {
+    color: inherit;
+    font-size: clamp(1.45rem, 2.4vw, 1.9rem);
+    font-weight: 950;
+    letter-spacing: -0.04em;
+    line-height: 1;
+}
+
+.metricValue small {
+    color: #52786a;
+    font-size: 0.82rem;
+    font-weight: 850;
+    letter-spacing: -0.01em;
+    line-height: 1;
+}
+
+.metricValueMuted {
+    color: #1d3028;
+}
+
+.metricValueMuted > span {
+    font-size: clamp(1rem, 1.5vw, 1.18rem);
+    font-weight: 900;
+    letter-spacing: -0.02em;
+    line-height: 1.25;
 }
 
 .state {
@@ -127,16 +199,20 @@
 }
 
 .stateTitle {
-    color: #16251f;
-    font-size: clamp(1rem, 1.6vw, 1.2rem);
+    color: var(--clinic-ink);
+    font-size: clamp(1.45rem, 2vw, 1.85rem);
+    font-weight: 900;
+    letter-spacing: -0.025em;
+    line-height: var(--clinic-line-height-tight);
 }
 
 .stateDescription {
-    max-width: 62ch;
+    max-width: 70ch;
     margin: 0;
-    color: #60766d;
-    font-size: 0.94rem;
-    line-height: 1.55;
+    color: var(--clinic-muted-strong);
+    font-size: var(--clinic-font-size-md);
+    font-weight: 500;
+    line-height: var(--clinic-line-height-base);
 }
 
 @media (max-width: 860px) {
@@ -151,5 +227,9 @@
 
     .grid {
         grid-template-columns: 1fr;
+    }
+
+    .metric {
+        min-height: auto;
     }
 }

@@ -6,7 +6,7 @@ import {
   hasReceitaBarcodeData,
 } from "./pedidoGeralList.utils";
 
-import styles from "./PedidoGeralList.module.css";
+import styles from "./PedidoGeralItem.module.css";
 
 export default function PedidoGeralReceitaBarcodes({ receita }) {
   if (!hasReceitaBarcodeData(receita)) return null;

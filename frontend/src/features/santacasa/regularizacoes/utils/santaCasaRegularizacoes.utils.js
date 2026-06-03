@@ -1,7 +1,41 @@
+// src/features/santacasa/regularizacoes/utils/santaCasaRegularizacoes.utils.js
+
 import { formatDateTime } from "../../../../shared/utils/formatDate";
 import { SANTACASA_REGULARIZACOES_PAGE } from "../config/santaCasaRegularizacoesPage.config";
 
 const UNKNOWN_LABEL = "—";
+
+function getSafeDate(value) {
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) return null;
+
+  return date;
+}
+
+function getDateKey(value) {
+  const date = getSafeDate(value);
+
+  if (!date) return "sem-data";
+
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+}
+
+function getDateLabel(value) {
+  const date = getSafeDate(value);
+
+  if (!date) return UNKNOWN_LABEL;
+
+  return new Intl.DateTimeFormat("pt-PT", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  }).format(date);
+}
 
 export function getRegularizacaoStatusLabel(status) {
   return (
@@ -17,9 +51,25 @@ export function getRegularizacaoPedidoLabel(regularizacao) {
   return `#${numero}`;
 }
 
+export function getRegularizacaoUtenteKey(regularizacao) {
+  return (
+    regularizacao?.utente?.id ||
+    regularizacao?.utenteId ||
+    `utente-${UNKNOWN_LABEL}`
+  );
+}
+
+export function getRegularizacaoUtenteNomeLabel(regularizacao) {
+  return regularizacao?.utente?.nome || UNKNOWN_LABEL;
+}
+
+export function getRegularizacaoUtenteNumeroLabel(regularizacao) {
+  return regularizacao?.utente?.numero9 || UNKNOWN_LABEL;
+}
+
 export function getRegularizacaoUtenteLabel(regularizacao) {
-  const nome = regularizacao?.utente?.nome || UNKNOWN_LABEL;
-  const numero9 = regularizacao?.utente?.numero9 || UNKNOWN_LABEL;
+  const nome = getRegularizacaoUtenteNomeLabel(regularizacao);
+  const numero9 = getRegularizacaoUtenteNumeroLabel(regularizacao);
 
   return `${nome} · ${numero9}`;
 }
@@ -171,4 +221,60 @@ export function hasRegularizacaoRestante(regularizacao) {
 
 export function isRegularizacaoConcluida(regularizacao) {
   return regularizacao?.status === "REGULARIZADO";
+}
+
+export function groupRegularizacoesByUtente(regularizacoes = []) {
+  const groupsMap = new Map();
+
+  for (const regularizacao of regularizacoes) {
+    const key = getRegularizacaoUtenteKey(regularizacao);
+
+    if (!groupsMap.has(key)) {
+      groupsMap.set(key, {
+        key,
+        utenteNome: getRegularizacaoUtenteNomeLabel(regularizacao),
+        utenteNumero: getRegularizacaoUtenteNumeroLabel(regularizacao),
+        regularizacoes: [],
+        totalRestante: 0,
+        totalRegularizada: 0,
+      });
+    }
+
+    const group = groupsMap.get(key);
+
+    group.regularizacoes.push(regularizacao);
+    group.totalRestante += getRegularizacaoQuantidadeRestante(regularizacao);
+    group.totalRegularizada +=
+      getRegularizacaoQuantidadeRegularizada(regularizacao);
+  }
+
+  return Array.from(groupsMap.values());
+}
+
+export function groupRegularizacoesHistoricoByDate(regularizacoes = []) {
+  const groupsMap = new Map();
+
+  for (const regularizacao of regularizacoes) {
+    const dateValue = regularizacao?.updatedAt || regularizacao?.createdAt;
+    const key = getDateKey(dateValue);
+
+    if (!groupsMap.has(key)) {
+      groupsMap.set(key, {
+        key,
+        dateLabel: getDateLabel(dateValue),
+        regularizacoes: [],
+        totalRegularizada: 0,
+        totalEventos: 0,
+      });
+    }
+
+    const group = groupsMap.get(key);
+
+    group.regularizacoes.push(regularizacao);
+    group.totalRegularizada +=
+      getRegularizacaoQuantidadeRegularizada(regularizacao);
+    group.totalEventos += getRegularizacaoEventosCount(regularizacao);
+  }
+
+  return Array.from(groupsMap.values());
 }

@@ -8,7 +8,7 @@ import {
   hasReceitaBarcodeData,
 } from "./pedidoPendingList.utils";
 
-import styles from "./PedidoPendingList.module.css";
+import styles from "./PedidoPendingItem.module.css";
 
 export default function PedidoPendingReceitaBarcodes({ receita }) {
   if (!hasReceitaBarcodeData(receita)) return null;

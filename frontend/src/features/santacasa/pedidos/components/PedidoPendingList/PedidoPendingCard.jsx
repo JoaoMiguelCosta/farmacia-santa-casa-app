@@ -1,57 +1,40 @@
 // src/features/santacasa/pedidos/components/PedidoPendingList/PedidoPendingCard.jsx
-import { useState } from "react";
-
 import Button from "../../../../../shared/ui/Button/Button";
-
-import { formatDateTime } from "../../../../../shared/utils/formatDate";
 
 import { PEDIDOS_PAGE } from "../../config/pedidosPage.config";
 
 import PedidoPendingDetails from "./PedidoPendingDetails";
 
-import {
-  getMedicamentosCountLabel,
-  getPedidoMedicamentosCount,
-  getPedidoNumberLabel,
-  getPedidoTotalQuantity,
-  getPedidoUtentesCount,
-  getUnidadesCountLabel,
-  getUtentesCountLabel,
-} from "./pedidoPendingList.utils";
+import { usePedidoPendingCard } from "./usePedidoPendingCard";
 
-import styles from "./PedidoPendingList.module.css";
-
-function getSafeDetailsId(pedido) {
-  const safePedidoId = String(pedido?.id || pedido?.numero || "sem-id").replace(
-    /[^a-zA-Z0-9_-]/g,
-    "-",
-  );
-
-  return `pedido-${safePedidoId}-medicamentos`;
-}
+import styles from "./PedidoPendingCard.module.css";
 
 export default function PedidoPendingCard({
   pedido,
   isCanceling = false,
   onCancelRequest,
 }) {
-  const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+  const {
+    detailsId,
 
-  const utentesCount = getPedidoUtentesCount(pedido);
-  const medicamentosCount = getPedidoMedicamentosCount(pedido);
-  const totalQuantity = getPedidoTotalQuantity(pedido);
-  const detailsId = getSafeDetailsId(pedido);
+    isDetailsOpen,
 
-  const toggleLabel = isDetailsOpen
-    ? PEDIDOS_PAGE.actions.hideMedicamentos
-    : PEDIDOS_PAGE.actions.viewMedicamentos;
+    pedidoNumberLabel,
+    createdAtLabel,
+    utentesCountLabel,
+    medicamentosCountLabel,
+    totalQuantityLabel,
+    toggleLabel,
+
+    handleToggleDetails,
+  } = usePedidoPendingCard(pedido);
 
   return (
     <article className={styles.card}>
       <header className={styles.cardHeader}>
         <div className={styles.identity}>
           <span>{PEDIDOS_PAGE.labels.pedido}</span>
-          <h3>{getPedidoNumberLabel(pedido)}</h3>
+          <h3>{pedidoNumberLabel}</h3>
         </div>
 
         <span className={styles.status}>
@@ -62,22 +45,22 @@ export default function PedidoPendingCard({
       <dl className={styles.summary}>
         <div>
           <dt>{PEDIDOS_PAGE.labels.createdAt}</dt>
-          <dd>{formatDateTime(pedido?.createdAt)}</dd>
+          <dd>{createdAtLabel}</dd>
         </div>
 
         <div>
           <dt>{PEDIDOS_PAGE.labels.utentes}</dt>
-          <dd>{getUtentesCountLabel(utentesCount)}</dd>
+          <dd>{utentesCountLabel}</dd>
         </div>
 
         <div>
           <dt>{PEDIDOS_PAGE.labels.items}</dt>
-          <dd>{getMedicamentosCountLabel(medicamentosCount)}</dd>
+          <dd>{medicamentosCountLabel}</dd>
         </div>
 
         <div>
           <dt>{PEDIDOS_PAGE.labels.totalQuantity}</dt>
-          <dd>{getUnidadesCountLabel(totalQuantity)}</dd>
+          <dd>{totalQuantityLabel}</dd>
         </div>
       </dl>
 
@@ -92,7 +75,7 @@ export default function PedidoPendingCard({
           size="sm"
           aria-expanded={isDetailsOpen}
           aria-controls={detailsId}
-          onClick={() => setIsDetailsOpen((currentValue) => !currentValue)}
+          onClick={handleToggleDetails}
         >
           {toggleLabel}
         </Button>

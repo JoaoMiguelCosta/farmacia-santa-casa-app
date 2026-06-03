@@ -1,0 +1,119 @@
+/* src/features/santacasa/regularizacoes/components/SantaCasaRegularizacaoCard/SantaCasaRegularizacaoEvent.module.css */
+
+.event {
+    display: grid;
+    gap: 0.72rem;
+    min-width: 0;
+    padding: 0.88rem;
+    border: 1px solid rgba(39, 92, 72, 0.12);
+    border-radius: 1.1rem;
+    background:
+        linear-gradient(135deg,
+            rgba(255, 255, 255, 0.9),
+            rgba(246, 250, 248, 0.93)),
+        radial-gradient(circle at top right,
+            rgba(93, 160, 126, 0.07),
+            transparent 38%);
+}
+
+.eventHeader {
+    display: grid;
+    gap: 0.18rem;
+    min-width: 0;
+}
+
+.eventEyebrow {
+    color: #52786a;
+    font-size: 0.72rem;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    line-height: 1.2;
+    text-transform: uppercase;
+}
+
+.eventTitle {
+    overflow-wrap: anywhere;
+    color: #16251f;
+    font-size: 1rem;
+    font-weight: 900;
+    line-height: 1.15;
+}
+
+.eventDataList {
+    display: grid;
+    grid-template-columns:
+        minmax(7rem, 0.75fr) minmax(8rem, 0.8fr) minmax(8.5rem, 0.85fr) minmax(10rem, 1.15fr) minmax(8.25rem, 0.9fr) minmax(7.5rem, 0.85fr);
+    align-items: stretch;
+    gap: 0.5rem;
+    margin: 0;
+}
+
+.eventDataList div {
+    display: grid;
+    align-content: center;
+    gap: 0.16rem;
+    min-width: 0;
+    padding: 0.58rem 0.62rem;
+    border: 1px solid rgba(39, 92, 72, 0.1);
+    border-radius: 0.85rem;
+    background: rgba(255, 255, 255, 0.7);
+}
+
+.eventDataList dt {
+    color: #6d8279;
+    font-size: 0.68rem;
+    font-weight: 850;
+    line-height: 1.2;
+}
+
+.eventDataList dd {
+    min-width: 0;
+    margin: 0;
+    overflow-wrap: anywhere;
+    color: #1d3028;
+    font-size: 0.82rem;
+    font-weight: 900;
+    line-height: 1.25;
+}
+
+.eventMetaHighlight {
+    border-color: rgba(39, 92, 72, 0.16) !important;
+    background:
+        linear-gradient(135deg,
+            rgba(246, 252, 249, 0.96),
+            rgba(255, 255, 255, 0.9)) !important;
+}
+
+.eventMetaHighlight dd,
+.eventMetaHighlight :global(.unitValue) {
+    color: #275c48;
+}
+
+.eventCodeCell {
+    padding: 0.48rem 0.52rem !important;
+}
+
+.eventCodeCell dd {
+    display: grid;
+}
+
+.eventCodeValue {
+    min-width: 0;
+}
+
+.eventCodeValue :global(svg) {
+    display: block;
+    max-width: 100%;
+}
+
+@media (max-width: 1180px) {
+    .eventDataList {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 860px) {
+    .eventDataList {
+        grid-template-columns: 1fr;
+    }
+}

@@ -1,25 +1,13 @@
 // src/features/santacasa/pedidos/components/PedidoGeralList/PedidoGeralGroup.jsx
-import { useState } from "react";
-
 import Button from "../../../../../shared/ui/Button/Button";
 
 import { PEDIDOS_PAGE } from "../../config/pedidosPage.config";
 
 import PedidoGeralItem from "./PedidoGeralItem";
 
-import {
-  getItemsQuantityTotal,
-  getLimitedPedidoItems,
-  getMedicamentosCountLabel,
-  getNextVisibleMedicamentosCount,
-  getRemainingMedicamentosCount,
-  getSafeDetailsId,
-  getUnidadesCountLabel,
-  getViewMoreMedicamentosLabel,
-  getVisibleMedicamentosLabel,
-} from "./pedidoGeralList.utils";
+import { usePedidoGeralGroup } from "./usePedidoGeralGroup";
 
-import styles from "./PedidoGeralList.module.css";
+import styles from "./PedidoGeralGroup.module.css";
 
 export default function PedidoGeralGroup({
   group,
@@ -27,47 +15,27 @@ export default function PedidoGeralGroup({
   isSubmitting = false,
   onRemoveItem,
 }) {
-  const visibleStep = PEDIDOS_PAGE.sections.draft.detailsVisibleLimit;
-  const detailsId = getSafeDetailsId("pedido-geral-utente", group.utenteId);
+  const {
+    detailsId,
 
-  const [isOpen, setIsOpen] = useState(defaultOpen);
-  const [visibleLimit, setVisibleLimit] = useState(visibleStep);
+    isOpen,
+    canShowMore,
 
-  const totalMedicamentos = group.items.length;
-  const totalQuantidade = getItemsQuantityTotal(group.items);
+    visibleItems,
+    visibleMedicamentosLabel,
+    viewMoreMedicamentosLabel,
 
-  const visibleItems = getLimitedPedidoItems(group.items, visibleLimit);
-  const visibleMedicamentos = visibleItems.length;
+    totalMedicamentosLabel,
+    totalQuantidadeLabel,
+    toggleLabel,
 
-  const remainingMedicamentos = getRemainingMedicamentosCount({
-    visible: visibleMedicamentos,
-    total: totalMedicamentos,
-    step: visibleStep,
+    handleToggleOpen,
+    handleShowMore,
+    handleShowAll,
+  } = usePedidoGeralGroup({
+    group,
+    defaultOpen,
   });
-
-  const canShowMore = visibleMedicamentos < totalMedicamentos;
-
-  const toggleLabel = isOpen
-    ? PEDIDOS_PAGE.actions.hideMedicamentos
-    : PEDIDOS_PAGE.actions.viewMedicamentos;
-
-  function handleToggleOpen() {
-    setIsOpen((currentValue) => !currentValue);
-  }
-
-  function handleShowMore() {
-    setVisibleLimit((currentVisibleLimit) =>
-      getNextVisibleMedicamentosCount({
-        currentVisible: currentVisibleLimit,
-        total: totalMedicamentos,
-        step: visibleStep,
-      }),
-    );
-  }
-
-  function handleShowAll() {
-    setVisibleLimit(totalMedicamentos);
-  }
 
   return (
     <section className={styles.group}>
@@ -82,8 +50,8 @@ export default function PedidoGeralGroup({
 
         <div className={styles.groupHeaderAside}>
           <div className={styles.groupCounters}>
-            <strong>{getMedicamentosCountLabel(totalMedicamentos)}</strong>
-            <em>{getUnidadesCountLabel(totalQuantidade)}</em>
+            <strong>{totalMedicamentosLabel}</strong>
+            <em>{totalQuantidadeLabel}</em>
           </div>
 
           <Button
@@ -102,10 +70,7 @@ export default function PedidoGeralGroup({
       {isOpen ? (
         <div id={detailsId} className={styles.groupDetails}>
           <span className={styles.groupDetailsMeta}>
-            {getVisibleMedicamentosLabel({
-              visible: visibleMedicamentos,
-              total: totalMedicamentos,
-            })}
+            {visibleMedicamentosLabel}
           </span>
 
           <div
@@ -134,7 +99,7 @@ export default function PedidoGeralGroup({
                 size="sm"
                 onClick={handleShowMore}
               >
-                {getViewMoreMedicamentosLabel(remainingMedicamentos)}
+                {viewMoreMedicamentosLabel}
               </Button>
 
               <Button

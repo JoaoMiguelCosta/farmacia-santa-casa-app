@@ -1,39 +1,32 @@
-import styles from "./SantaCasaRegularizacoesList.module.css";
+// src/features/santacasa/regularizacoes/components/SantaCasaRegularizacoesList/SantaCasaRegularizacoesList.jsx
+
+import { useMemo } from "react";
 
 import SantaCasaRegularizacaoCard from "../SantaCasaRegularizacaoCard/SantaCasaRegularizacaoCard";
 
 import { SANTACASA_REGULARIZACOES_PAGE } from "../../config/santaCasaRegularizacoesPage.config";
 
-function SantaCasaRegularizacoesState({
-  title,
-  description,
-  actionLabel,
-  onAction,
-}) {
-  return (
-    <div className={styles.state}>
-      <strong className={styles.stateTitle}>{title}</strong>
+import {
+  groupRegularizacoesByUtente,
+  groupRegularizacoesHistoricoByDate,
+} from "../../utils/santaCasaRegularizacoes.utils";
 
-      {description ? (
-        <p className={styles.stateDescription}>{description}</p>
-      ) : null}
+import styles from "./SantaCasaRegularizacoesList.module.css";
 
-      {actionLabel && onAction ? (
-        <button type="button" className={styles.stateAction} onClick={onAction}>
-          {actionLabel}
-        </button>
-      ) : null}
-    </div>
-  );
-}
+import SantaCasaRegularizacoesHistoryDateGroup from "./SantaCasaRegularizacoesHistoryDateGroup";
+import SantaCasaRegularizacoesPendingGroup from "./SantaCasaRegularizacoesPendingGroup";
+import SantaCasaRegularizacoesState from "./SantaCasaRegularizacoesState";
 
-function getSectionConfig(variant) {
-  if (variant === "history") {
-    return SANTACASA_REGULARIZACOES_PAGE.sections.history;
-  }
+import {
+  GROUP_THRESHOLD,
+  INITIAL_VISIBLE_HISTORY,
+  INITIAL_VISIBLE_MEDICAMENTOS,
+  VISIBLE_HISTORY_INCREMENT,
+  VISIBLE_MEDICAMENTOS_INCREMENT,
+  getSectionConfig,
+} from "./santaCasaRegularizacoesList.utils";
 
-  return SANTACASA_REGULARIZACOES_PAGE.sections.pending;
-}
+import { useRegularizacoesGroupVisibility } from "./useRegularizacoesGroupVisibility";
 
 export default function SantaCasaRegularizacoesList({
   regularizacoes = [],
@@ -43,15 +36,42 @@ export default function SantaCasaRegularizacoesList({
   error = null,
   onRefresh,
 }) {
+  const pendingVisibility = useRegularizacoesGroupVisibility({
+    initialVisibleCount: INITIAL_VISIBLE_MEDICAMENTOS,
+    visibleIncrement: VISIBLE_MEDICAMENTOS_INCREMENT,
+  });
+
+  const historyVisibility = useRegularizacoesGroupVisibility({
+    initialVisibleCount: INITIAL_VISIBLE_HISTORY,
+    visibleIncrement: VISIBLE_HISTORY_INCREMENT,
+  });
+
   const sectionConfig = getSectionConfig(variant);
   const hasRegularizacoes = regularizacoes.length > 0;
+
+  const shouldGroupRegularizacoes =
+    variant === "pending" && regularizacoes.length > GROUP_THRESHOLD;
+
+  const groupedRegularizacoes = useMemo(() => {
+    if (!shouldGroupRegularizacoes) return [];
+
+    return groupRegularizacoesByUtente(regularizacoes);
+  }, [regularizacoes, shouldGroupRegularizacoes]);
+
+  const groupedHistoryRegularizacoes = useMemo(() => {
+    if (variant !== "history") return [];
+
+    return groupRegularizacoesHistoricoByDate(regularizacoes);
+  }, [regularizacoes, variant]);
 
   if (isLoading) {
     return (
       <section className={styles.section} aria-live="polite">
         <SantaCasaRegularizacoesState
           title={sectionConfig.loadingTitle}
-          description="Aguarda enquanto os dados são carregados."
+          description={
+            SANTACASA_REGULARIZACOES_PAGE.feedback.loadingDescription
+          }
         />
       </section>
     );
@@ -104,6 +124,55 @@ export default function SantaCasaRegularizacoesList({
           title={sectionConfig.emptyTitle}
           description={sectionConfig.emptyDescription}
         />
+      ) : shouldGroupRegularizacoes ? (
+        <div className={styles.groups}>
+          {groupedRegularizacoes.map((group) => (
+            <SantaCasaRegularizacoesPendingGroup
+              key={group.key}
+              group={group}
+              variant={variant}
+              isOpen={pendingVisibility.openGroupKeys.has(group.key)}
+              visibleCount={pendingVisibility.getVisibleCount(group.key)}
+              onToggle={() => pendingVisibility.toggleGroup(group.key)}
+              onShowMore={() =>
+                pendingVisibility.showMore(
+                  group.key,
+                  group.regularizacoes.length,
+                )
+              }
+              onShowAll={() =>
+                pendingVisibility.showAll(
+                  group.key,
+                  group.regularizacoes.length,
+                )
+              }
+            />
+          ))}
+        </div>
+      ) : variant === "history" ? (
+        <div className={styles.historyContent}>
+          {groupedHistoryRegularizacoes.map((group) => (
+            <SantaCasaRegularizacoesHistoryDateGroup
+              key={group.key}
+              group={group}
+              isOpen={historyVisibility.openGroupKeys.has(group.key)}
+              visibleCount={historyVisibility.getVisibleCount(group.key)}
+              onToggle={() => historyVisibility.toggleGroup(group.key)}
+              onShowMore={() =>
+                historyVisibility.showMore(
+                  group.key,
+                  group.regularizacoes.length,
+                )
+              }
+              onShowAll={() =>
+                historyVisibility.showAll(
+                  group.key,
+                  group.regularizacoes.length,
+                )
+              }
+            />
+          ))}
+        </div>
       ) : (
         <div className={styles.list}>
           {regularizacoes.map((regularizacao) => (
