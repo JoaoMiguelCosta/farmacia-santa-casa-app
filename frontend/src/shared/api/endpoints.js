@@ -48,7 +48,7 @@ export const API_ENDPOINTS = Object.freeze({
 
     receitas: (utenteId) => `/santacasa/utentes/${utenteId}/receitas`,
     receitaLinhaById: (utenteId, linhaId) =>
-      `/santacasa/utentes/${utenteId}/medicamentos/receita/${linhaId}`,
+      `/santacasa/utentes/${utenteId}/receitas/linhas/${linhaId}`,
 
     extras: (utenteId) => `/santacasa/utentes/${utenteId}/extras`,
     extraById: (utenteId, extraId) =>

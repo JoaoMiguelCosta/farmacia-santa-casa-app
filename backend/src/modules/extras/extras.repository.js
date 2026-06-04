@@ -1,6 +1,12 @@
 // src/modules/extras/extras.repository.js
 const { prisma } = require("../../db/prisma");
 
+const NON_BLOCKING_PEDIDO_ITEM_STATUSES = Object.freeze([
+  "REJEITADO",
+  "CANCELADO",
+  "CANCELADO_POR_EXPIRACAO",
+]);
+
 const extraSelect = Object.freeze({
   id: true,
   utenteId: true,
@@ -129,20 +135,60 @@ function create(utenteId, data) {
   });
 }
 
-function countPedidoItemsByExtra(extraId) {
+function countPedidoItemsByExtraAndStatus(extraId, statuses = []) {
   return prisma.pedidoItem.count({
+    where: {
+      extraId,
+      status: {
+        in: statuses,
+      },
+    },
+  });
+}
+
+function countRegularizacoesByExtra(extraId) {
+  return prisma.regularizacaoExtra.count({
     where: {
       extraId,
     },
   });
 }
 
-function deleteById(extraId) {
-  return prisma.extra.delete({
+function cancelRemainingById(extraId, quantidadeCancelada) {
+  return prisma.extra.update({
     where: {
       id: extraId,
     },
+    data: {
+      quantidadeCancelada: {
+        increment: quantidadeCancelada,
+      },
+      status: "REGULARIZADO",
+    },
     select: extraSelect,
+  });
+}
+
+function deleteById(extraId) {
+  return prisma.$transaction(async (tx) => {
+    await tx.pedidoItem.updateMany({
+      where: {
+        extraId,
+        status: {
+          in: NON_BLOCKING_PEDIDO_ITEM_STATUSES,
+        },
+      },
+      data: {
+        extraId: null,
+      },
+    });
+
+    return tx.extra.delete({
+      where: {
+        id: extraId,
+      },
+      select: extraSelect,
+    });
   });
 }
 
@@ -152,6 +198,8 @@ module.exports = {
   findActiveReceitaLinhasByUtente,
   findOpenExtrasByUtente,
   create,
-  countPedidoItemsByExtra,
+  countPedidoItemsByExtraAndStatus,
+  countRegularizacoesByExtra,
+  cancelRemainingById,
   deleteById,
 };

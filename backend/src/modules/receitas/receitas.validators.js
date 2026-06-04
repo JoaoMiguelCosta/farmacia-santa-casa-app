@@ -29,25 +29,31 @@ function parseBoolean(value) {
   return ["1", "true", "yes", "on", "sim"].includes(normalized);
 }
 
+function getLinhaLabel(index) {
+  return `Medicamento ${index + 1}`;
+}
+
 function parseLinha(raw = {}, index) {
+  const linhaLabel = getLinhaLabel(index);
+
   const nome = String(raw.nome || raw.medicamento || "").trim();
   const quantidade = Math.floor(Number(raw.quantidade));
   const validade = raw.validade ? new Date(raw.validade) : null;
 
   if (!nome) {
-    throw badRequest(`Linha ${index + 1}: o medicamento é obrigatório.`);
+    throw badRequest(`${linhaLabel}: o medicamento é obrigatório.`);
   }
 
   if (!Number.isFinite(quantidade) || quantidade <= 0) {
-    throw badRequest(`Linha ${index + 1}: a quantidade deve ser maior que 0.`);
+    throw badRequest(`${linhaLabel}: a quantidade deve ser maior que 0.`);
   }
 
   if (!(validade instanceof Date) || Number.isNaN(validade.getTime())) {
-    throw badRequest(`Linha ${index + 1}: a validade é inválida.`);
+    throw badRequest(`${linhaLabel}: a validade é inválida.`);
   }
 
   if (validade <= new Date()) {
-    throw badRequest(`Linha ${index + 1}: a validade deve ser futura.`);
+    throw badRequest(`${linhaLabel}: a validade deve ser futura.`);
   }
 
   return {

@@ -185,6 +185,7 @@ const pedidoActionSelect = {
           medicamentoNorm: true,
           quantidadeSolicitada: true,
           quantidadeRegularizada: true,
+          quantidadeCancelada: true,
           status: true,
           pedidoItens: {
             where: {
@@ -277,6 +278,20 @@ function validateSemReceitaItem(item) {
   }
 }
 
+function getExtraQuantidadeLivreDepoisDeValidarItem(item) {
+  const extra = item.extra;
+  const reservadoPorOutros = sumPendingExcept(extra.pedidoItens, item.id);
+
+  return Math.max(
+    0,
+    Number(extra.quantidadeSolicitada || 0) -
+      Number(extra.quantidadeRegularizada || 0) -
+      Number(extra.quantidadeCancelada || 0) -
+      Number(item.quantidade || 0) -
+      reservadoPorOutros,
+  );
+}
+
 function validateExtraItem(item) {
   const extra = item.extra;
 
@@ -296,6 +311,7 @@ function validateExtraItem(item) {
     0,
     Number(extra.quantidadeSolicitada || 0) -
       Number(extra.quantidadeRegularizada || 0) -
+      Number(extra.quantidadeCancelada || 0) -
       reservadoPorOutros,
   );
 
@@ -609,6 +625,8 @@ async function validarPedido(pedidoId, { validatedById = null } = {}) {
 
       if (item.tipo === "EXTRA") {
         const extra = item.extra;
+        const quantidadeLivreParaFechar =
+          getExtraQuantidadeLivreDepoisDeValidarItem(item);
 
         await tx.regularizacaoExtra.create({
           data: {
@@ -624,19 +642,15 @@ async function validarPedido(pedidoId, { validatedById = null } = {}) {
           },
         });
 
-        const restanteExtra = Math.max(
-          0,
-          Number(extra.quantidadeSolicitada || 0) -
-            Number(item.quantidade || 0),
-        );
-
         await tx.extra.update({
           where: {
             id: extra.id,
           },
           data: {
-            quantidadeSolicitada: restanteExtra,
-            status: restanteExtra > 0 ? "PENDENTE" : "REGULARIZADO",
+            quantidadeCancelada: {
+              increment: quantidadeLivreParaFechar,
+            },
+            status: "REGULARIZADO",
           },
         });
       }
