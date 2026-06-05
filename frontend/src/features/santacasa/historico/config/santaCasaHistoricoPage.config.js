@@ -29,6 +29,9 @@ export const SANTACASA_HISTORICO_PAGE = Object.freeze({
     submit: "Filtrar",
     clear: "Limpar",
 
+    itemSearchPlaceholder:
+      "Pesquisar por utente, medicamento, receita, PIN ou estado...",
+
     statusOptions: [
       {
         value: "TODOS",
@@ -52,8 +55,16 @@ export const SANTACASA_HISTORICO_PAGE = Object.freeze({
   actions: {
     refresh: "Atualizar",
     refreshing: "A atualizar...",
+
     viewDetails: "Ver detalhes",
     hideDetails: "Ocultar detalhes",
+
+    showMoreItems: "Ver mais",
+    showAllItems: "Ver todos",
+    hideAllItems: "Ocultar lista inteira",
+    showInitialItems: "Mostrar",
+
+    hideItems: "Ocultar medicamentos",
   },
 
   status: {
@@ -85,23 +96,37 @@ export const SANTACASA_HISTORICO_PAGE = Object.freeze({
     createdAt: "Criado em",
     validatedAt: "Validado em",
     rejectedAt: "Rejeitado em",
+    canceledAt: "Cancelado em",
     closedAt: "Fechado em",
+
+    validatedBy: "Validado por",
+    rejectedBy: "Rejeitado por",
+    canceledBy: "Cancelado por",
 
     closedReason: "Motivo",
     rejectionReason: "Motivo da rejeição",
     cancellationReason: "Motivo do cancelamento",
 
     utente: "Utente",
+    utentes: "Utentes",
     utenteNumber: "N.º utente",
 
     medicamento: "Medicamento",
+    medicamentoSingular: "medicamento",
+    medicamentoPlural: "medicamentos",
+
     quantidade: "Quantidade",
+    unidadeSingular: "unidade",
+    unidadePlural: "unidades",
+
     tipo: "Tipo",
 
     receita: "Receita",
     receitaNumber: "N.º receita",
     pinAcesso: "PIN de acesso",
     pinOpcao: "PIN de opção",
+    validadeReceita: "Validade",
+    receitaBarcodesAriaLabel: "Códigos da receita",
 
     semReceita: "Medicamento não sujeito a receita médica",
     extra: "Venda Suspensa",
@@ -114,9 +139,30 @@ export const SANTACASA_HISTORICO_PAGE = Object.freeze({
     validatedQuantity: "Quantidade validada",
     notValidatedQuantity: "Quantidade não validada",
 
+    cardStatsTitle: "Resumo operacional",
+    cardStatsAriaLabel: "Resumo operacional do pedido",
+    statsValidated: "Validados",
+    statsRejected: "Rejeitados",
+    statsCanceled: "Cancelados",
+    statsCanceledByExpiry: "Cancelados por expiração",
+    statsValidatedQuantity: "Quantidade validada",
+    statsNotValidatedQuantity: "Quantidade não validada",
+    statsReleasedQuantity: "Quantidade libertada",
+
+    showingItems: "A mostrar",
+    hiddenItems: "Lista de medicamentos ocultada.",
+    of: "de",
+
+    itemSearch: "Pesquisa no pedido",
+    itemSearchResults: "Resultado da pesquisa",
+    itemSearchEmpty: "Nenhum medicamento encontrado neste pedido.",
+
     automaticCancellationNoticeTitle: "Cancelamento automático",
     manualCancellationNoticeTitle: "Cancelamento pela Santa Casa",
     validatedWithWarningsNoticeTitle: "Pedido validado com avisos",
+
+    systemAutomatic: "Sistema automático",
+    emptyValue: "—",
   },
 
   messages: {

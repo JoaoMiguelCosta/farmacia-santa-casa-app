@@ -25,6 +25,11 @@ const pedidoSelect = {
     select: auditUserSelect,
   },
 
+  canceledById: true,
+  canceledBy: {
+    select: auditUserSelect,
+  },
+
   closedReason: true,
 
   createdAt: true,
@@ -147,20 +152,7 @@ const receitaLinhaPedidoSelect = {
       quantidade: true,
     },
   },
-
-  regularizacaoEventos: {
-    select: {
-      id: true,
-      quantidade: true,
-    },
-  },
 };
-
-function getStartOfDay(value = new Date()) {
-  const date = new Date(value);
-
-  return new Date(date.getFullYear(), date.getMonth(), date.getDate());
-}
 
 function findPedidoById(pedidoId) {
   return prisma.pedido.findUnique({
@@ -211,7 +203,7 @@ function findEarlierActiveReceitaLinhasByUtente({
       },
       status: "ATIVA",
       validade: {
-        gte: getStartOfDay(new Date()),
+        gt: new Date(),
         lt: beforeValidade,
       },
     },
@@ -313,7 +305,7 @@ async function createPedidoWithItems(items = []) {
   });
 }
 
-async function cancelPendingPedidoById(pedidoId, reason) {
+async function cancelPendingPedidoById(pedidoId, reason, canceledById = null) {
   return prisma.$transaction(async (tx) => {
     const existingPedido = await tx.pedido.findUnique({
       where: {
@@ -367,6 +359,7 @@ async function cancelPendingPedidoById(pedidoId, reason) {
       data: {
         status: "CANCELADO",
         closedReason: reason,
+        canceledById,
       },
       select: pedidoSelect,
     });

@@ -26,23 +26,13 @@ function sumPendingQuantity(items = []) {
   }, 0);
 }
 
-function sumRegularizacaoQuantity(events = []) {
-  return events.reduce((total, event) => {
-    return total + (Number(event.quantidade) || 0);
-  }, 0);
-}
-
 function getReceitaLinhaDisponivel(linha) {
   const reservadoPendente = sumPendingQuantity(linha.pedidoItens);
-  const usadoRegularizacao = sumRegularizacaoQuantity(
-    linha.regularizacaoEventos,
-  );
 
   return Math.max(
     0,
     Number(linha.quantidade || 0) -
       Number(linha.quantidadeDispensada || 0) -
-      usadoRegularizacao -
       reservadoPendente,
   );
 }
@@ -76,22 +66,6 @@ function getDateLabel(value) {
   return date.toISOString().slice(0, 10);
 }
 
-function getStartOfDay(value = new Date()) {
-  const date = new Date(value);
-
-  return new Date(date.getFullYear(), date.getMonth(), date.getDate());
-}
-
-function isReceitaLinhaExpired(validade, referenceDate = new Date()) {
-  const validadeDate = new Date(validade);
-
-  if (Number.isNaN(validadeDate.getTime())) {
-    return true;
-  }
-
-  return validadeDate < getStartOfDay(referenceDate);
-}
-
 function getRequestedQuantityForReceitaLinha(items = [], linhaId) {
   return items.reduce((total, item) => {
     if (item.tipo !== "COM_RECEITA") return total;
@@ -118,12 +92,8 @@ function validateReceitaLinhaAvailability(linha, quantidade) {
     throw conflict("Linha de receita não está ativa.");
   }
 
-  if (isReceitaLinhaExpired(linha.validade)) {
-    throw conflict(
-      `A receita de "${getReceitaLinhaMedicamentoName(
-        linha,
-      )}" expirou e já não pode ser incluída no pedido.`,
-    );
+  if (new Date(linha.validade) <= new Date()) {
+    throw conflict("Linha de receita expirada.");
   }
 
   const disponivel = getReceitaLinhaDisponivel(linha);
@@ -319,17 +289,17 @@ async function createPedido(payload) {
     builtItems.push(await buildPedidoItem(item, parsed.items));
   }
 
-  const pedido = await repository.createPedidoWithItems(builtItems);
+const pedido = await repository.createPedidoWithItems(builtItems);
 
-  try {
-    await alertasService.createPedidoEnviadoAlerta({
-      pedido,
-    });
-  } catch (error) {
-    console.error("[alertas] falha ao criar alerta de pedido enviado", error);
-  }
+try {
+  await alertasService.createPedidoEnviadoAlerta({
+    pedido,
+  });
+} catch (error) {
+  console.error("[alertas] falha ao criar alerta de pedido enviado", error);
+}
 
-  return toPedidoDTO(pedido);
+return toPedidoDTO(pedido);
 }
 
 async function getPedidoById(pedidoId) {
@@ -342,12 +312,13 @@ async function getPedidoById(pedidoId) {
   return toPedidoDTO(pedido);
 }
 
-async function cancelPedido(pedidoId, payload = {}) {
+async function cancelPedido(pedidoId, payload = {}, userId = null) {
   const params = parseCancelPedidoPayload(payload);
 
   const result = await repository.cancelPendingPedidoById(
     pedidoId,
     params.reason,
+    userId,
   );
 
   if (!result.pedido) {

@@ -1,6 +1,48 @@
 .page {
+    position: relative;
+    isolation: isolate;
+
     display: grid;
-    gap: clamp(1.25rem, 2.5vw, 2rem);
-    inline-size: min(100%, 1180px);
-    margin-inline: auto;
+    gap: clamp(1rem, 2.5vw, 1.35rem);
+
+    width: 100%;
+    min-width: 0;
+}
+
+.page::before {
+    content: "";
+
+    position: absolute;
+    inset: -1.6rem -1rem auto;
+    z-index: -1;
+
+    height: clamp(15rem, 36vw, 24rem);
+
+    pointer-events: none;
+
+    background:
+        radial-gradient(circle at 12% 12%,
+            color-mix(in srgb, var(--clinic-green-700) 10%, transparent),
+            transparent 20rem),
+        radial-gradient(circle at 92% 4%,
+            color-mix(in srgb, var(--clinic-gold-500) 9%, transparent),
+            transparent 22rem);
+
+    opacity: 0.82;
+}
+
+.page>* {
+    min-width: 0;
+}
+
+@media (max-width: 760px) {
+    .page {
+        gap: 1.05rem;
+    }
+}
+
+@media (max-width: 420px) {
+    .page {
+        gap: 0.95rem;
+    }
 }

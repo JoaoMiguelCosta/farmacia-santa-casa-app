@@ -86,6 +86,8 @@ model User {
   rejectedPedidos     Pedido[]     @relation("PedidoRejectedBy")
   rejectedPedidoItems PedidoItem[] @relation("PedidoItemRejectedBy")
 
+  canceledPedidos Pedido[] @relation("PedidoCanceledBy")
+
   archivedUtentes Utente[] @relation("UtenteArchivedBy")
 
   alertaDismissals AlertaOperacionalDismissal[]
@@ -277,6 +279,9 @@ model Pedido {
   rejectedById String?
   rejectedBy   User?     @relation("PedidoRejectedBy", fields: [rejectedById], references: [id])
 
+  canceledById String?
+  canceledBy   User?   @relation("PedidoCanceledBy", fields: [canceledById], references: [id])
+
   closedReason String?
 
   regularizacoesCriadas RegularizacaoExtra[]
@@ -291,6 +296,7 @@ model Pedido {
   @@index([validatedById])
   @@index([rejectedAt])
   @@index([rejectedById])
+  @@index([canceledById])
   @@index([status, createdAt])
   @@index([status, updatedAt])
   @@index([status, validatedAt])
