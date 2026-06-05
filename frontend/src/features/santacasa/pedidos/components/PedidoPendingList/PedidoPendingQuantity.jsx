@@ -3,9 +3,18 @@ import { PEDIDOS_PAGE } from "../../config/pedidosPage.config";
 
 import styles from "./PedidoPendingItem.module.css";
 
-export default function PedidoPendingQuantity({ quantidade }) {
+function getQuantityClassName(isCanceled) {
+  return [styles.itemQuantity, isCanceled ? styles.itemQuantityCanceled : ""]
+    .filter(Boolean)
+    .join(" ");
+}
+
+export default function PedidoPendingQuantity({
+  quantidade,
+  isCanceled = false,
+}) {
   return (
-    <span className={styles.itemQuantity}>
+    <span className={getQuantityClassName(isCanceled)}>
       {PEDIDOS_PAGE.labels.quantityShort} {Number(quantidade) || 0}
     </span>
   );

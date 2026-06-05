@@ -19,7 +19,10 @@ function toReceitaLinhaDTO(row) {
 
   const quantidadeRestante = Math.max(
     0,
-    quantidade - quantidadeDispensada - quantidadeReservadaPendente,
+    quantidade -
+      quantidadeDispensada -
+      quantidadeUsadaRegularizacao -
+      quantidadeReservadaPendente,
   );
 
   const dto = {

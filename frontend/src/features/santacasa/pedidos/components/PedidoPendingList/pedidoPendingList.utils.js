@@ -6,6 +6,31 @@ const collator = new Intl.Collator("pt-PT", {
   numeric: true,
 });
 
+const PEDIDO_ITEM_STATUS = Object.freeze({
+  pending: "PENDENTE",
+  validated: "VALIDADO",
+  rejected: "REJEITADO",
+  canceled: "CANCELADO",
+  canceledByExpiration: "CANCELADO_POR_EXPIRACAO",
+});
+
+const PEDIDO_STATUS = Object.freeze({
+  pending: "PENDENTE",
+  validated: "VALIDADO",
+  rejected: "REJEITADO",
+  canceled: "CANCELADO",
+});
+
+function getStatusSortWeight(status) {
+  if (status === PEDIDO_ITEM_STATUS.pending) return 1;
+  if (status === PEDIDO_ITEM_STATUS.validated) return 2;
+  if (status === PEDIDO_ITEM_STATUS.rejected) return 3;
+  if (status === PEDIDO_ITEM_STATUS.canceledByExpiration) return 4;
+  if (status === PEDIDO_ITEM_STATUS.canceled) return 5;
+
+  return 9;
+}
+
 export function getPedidoNumberLabel(pedido) {
   const numero = Number(pedido?.numero);
 
@@ -30,6 +55,72 @@ export function getPedidoItems(pedido) {
 
 export function getPedidoItemKey(item, index) {
   return item?.id || `${item?.tipo || "item"}-${item?.medicamento || index}`;
+}
+
+export function isPedidoItemCanceledByExpiration(item) {
+  return item?.status === PEDIDO_ITEM_STATUS.canceledByExpiration;
+}
+
+export function getPedidoCanceledByExpirationItems(pedido) {
+  return getPedidoItems(pedido).filter(isPedidoItemCanceledByExpiration);
+}
+
+export function hasPedidoExpirationWarnings(pedido) {
+  return getPedidoCanceledByExpirationItems(pedido).length > 0;
+}
+
+export function getPedidoExpirationWarningsCount(pedido) {
+  return getPedidoCanceledByExpirationItems(pedido).length;
+}
+
+export function isPedidoItemPending(item) {
+  return item?.status === PEDIDO_ITEM_STATUS.pending;
+}
+
+export function getPedidoPendingItems(pedido) {
+  return getPedidoItems(pedido).filter(isPedidoItemPending);
+}
+
+export function getPedidoPendingMedicamentosCount(pedido) {
+  return getPedidoPendingItems(pedido).length;
+}
+
+export function getPedidoCanceledByExpirationQuantity(pedido) {
+  return getPedidoCanceledByExpirationItems(pedido).reduce((total, item) => {
+    return total + (Number(item?.quantidade) || 0);
+  }, 0);
+}
+
+export function getPedidoPendingQuantity(pedido) {
+  return getPedidoPendingItems(pedido).reduce((total, item) => {
+    return total + (Number(item?.quantidade) || 0);
+  }, 0);
+}
+
+export function getPedidoStatusLabel(pedido) {
+  const hasWarnings = hasPedidoExpirationWarnings(pedido);
+
+  if (pedido?.status === PEDIDO_STATUS.validated && hasWarnings) {
+    return PEDIDOS_PAGE.labels.validatedWithWarningsStatus;
+  }
+
+  if (pedido?.status === PEDIDO_STATUS.pending && hasWarnings) {
+    return PEDIDOS_PAGE.labels.pendingWithWarningsStatus;
+  }
+
+  if (pedido?.status === PEDIDO_STATUS.validated) {
+    return PEDIDOS_PAGE.labels.validatedStatus;
+  }
+
+  if (pedido?.status === PEDIDO_STATUS.rejected) {
+    return PEDIDOS_PAGE.labels.rejectedStatus;
+  }
+
+  if (pedido?.status === PEDIDO_STATUS.canceled) {
+    return PEDIDOS_PAGE.labels.canceledStatus;
+  }
+
+  return PEDIDOS_PAGE.labels.pendingStatus;
 }
 
 export function getPedidoTotalQuantity(pedido) {
@@ -71,6 +162,14 @@ export function getMedicamentosCountLabel(count) {
     amount: count,
     singular: PEDIDOS_PAGE.labels.itemSingular,
     plural: PEDIDOS_PAGE.labels.itemPlural,
+  })}`;
+}
+
+export function getExpiredMedicamentosCountLabel(count) {
+  return `${count} ${getPluralLabel({
+    amount: count,
+    singular: PEDIDOS_PAGE.labels.expiredItemSingular,
+    plural: PEDIDOS_PAGE.labels.expiredItemPlural,
   })}`;
 }
 
@@ -205,6 +304,11 @@ export function groupPedidoItemsByUtente(items = []) {
     .map((group) => ({
       ...group,
       items: [...group.items].sort((a, b) => {
+        const statusCompare =
+          getStatusSortWeight(a?.status) - getStatusSortWeight(b?.status);
+
+        if (statusCompare !== 0) return statusCompare;
+
         const tipoCompare = collator.compare(a?.tipo || "", b?.tipo || "");
 
         if (tipoCompare !== 0) return tipoCompare;

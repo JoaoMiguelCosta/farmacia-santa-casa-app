@@ -19,6 +19,18 @@
         inset 0 1px 0 rgba(255, 255, 255, 0.78);
 }
 
+.itemCanceled {
+    border-color: rgba(196, 122, 8, 0.24);
+
+    background:
+        radial-gradient(circle at 100% 0%,
+            rgba(196, 122, 8, 0.08),
+            transparent 10rem),
+        linear-gradient(135deg,
+            rgba(255, 252, 246, 0.98),
+            rgba(255, 248, 235, 0.82));
+}
+
 .itemMain {
     display: grid;
     gap: 0.38rem;
@@ -85,6 +97,46 @@
     line-height: 1.25;
 }
 
+.itemCanceled strong {
+    color: rgb(91, 58, 15);
+}
+
+.itemWarning {
+    display: grid;
+    gap: 0.2rem;
+
+    width: min(100%, 34rem);
+    min-width: 0;
+    padding: 0.58rem 0.64rem;
+
+    border: 1px solid rgba(196, 122, 8, 0.2);
+    border-radius: var(--clinic-radius-md);
+
+    background: rgba(255, 255, 255, 0.62);
+}
+
+.itemWarning span {
+    width: fit-content;
+
+    color: rgb(130, 74, 4);
+
+    font-size: 0.68rem;
+    font-weight: 950;
+    letter-spacing: 0.07em;
+    line-height: 1;
+    text-transform: uppercase;
+}
+
+.itemWarning p {
+    margin: 0;
+
+    color: rgba(110, 72, 22, 0.88);
+
+    font-size: 0.78rem;
+    font-weight: 720;
+    line-height: 1.34;
+}
+
 .receitaValidity {
     display: inline-flex;
     align-items: center;
@@ -142,6 +194,13 @@
     white-space: nowrap;
 }
 
+.itemQuantityCanceled {
+    border-color: rgba(196, 122, 8, 0.22);
+
+    color: rgb(130, 74, 4);
+    background: rgba(196, 122, 8, 0.1);
+}
+
 .barcodePanel {
     display: grid;
     grid-template-columns: repeat(3, minmax(7.5rem, 1fr));
@@ -164,6 +223,11 @@
         inset 0 1px 0 rgba(255, 255, 255, 0.92);
 }
 
+.itemCanceled .barcodePanel,
+.itemCanceled .receitaValidity {
+    border-color: rgba(196, 122, 8, 0.18);
+}
+
 @media (max-width: 760px) {
     .barcodePanel {
         grid-template-columns: 1fr;
@@ -177,6 +241,10 @@
         grid-template-columns: 1fr;
         align-items: start;
     }
+
+    .itemQuantity {
+        width: fit-content;
+    }
 }
 
 @media (max-width: 420px) {
@@ -188,11 +256,16 @@
         font-size: 0.84rem;
     }
 
-    .itemType {
+    .itemType,
+    .itemWarning span {
         font-size: 0.62rem;
     }
 
     .receitaValidity {
         white-space: normal;
+    }
+
+    .itemWarning {
+        padding: 0.52rem;
     }
 }

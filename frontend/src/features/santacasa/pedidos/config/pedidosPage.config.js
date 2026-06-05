@@ -72,6 +72,9 @@ export const PEDIDOS_PAGE = Object.freeze({
       paginationEmptyLabel: "Sem pedidos pendentes.",
       paginationLabel:
         "A mostrar {start}-{end} de {total} pedido(s). Página {currentPage} de {totalPages}.",
+      expirationWarningTitle: "Pedido pendente com aviso",
+      expirationWarningDescription:
+        "Alguns medicamentos já não serão incluídos porque a validade da receita terminou antes da validação da Farmácia.",
     },
   },
 
@@ -139,15 +142,27 @@ export const PEDIDOS_PAGE = Object.freeze({
 
     pedido: "Pedido",
     pendingStatus: "Pendente",
+    pendingWithWarningsStatus: "Pendente com avisos",
+    validatedStatus: "Validado",
+    validatedWithWarningsStatus: "Validado com avisos",
+    rejectedStatus: "Rejeitado",
+    canceledStatus: "Cancelado",
+    canceledByExpirationStatus: "Cancelado por expiração",
     status: "Estado",
     createdAt: "Criado em",
     utente: "Utente",
     utentes: "Utentes",
     items: "Medicamentos",
     totalQuantity: "Quantidade total",
+    pendingItems: "Pendentes",
+    canceledItems: "Cancelados",
+    pendingQuantity: "Quantidade pendente",
+    canceledQuantity: "Quantidade cancelada",
 
     itemSingular: "medicamento",
     itemPlural: "medicamentos",
+    expiredItemSingular: "medicamento cancelado por expiração",
+    expiredItemPlural: "medicamentos cancelados por expiração",
     utenteSingular: "utente",
     utentePlural: "utentes",
     unidadeSingular: "unidade",
@@ -157,6 +172,8 @@ export const PEDIDOS_PAGE = Object.freeze({
     pinAcesso: "PIN acesso",
     pinOpcao: "PIN opção",
     validadeReceita: "Validade",
+    expiredReceitaItemDescription:
+      "A receita deste medicamento expirou antes da validação da Farmácia.",
 
     medicamentoFallback: "Medicamento",
     utenteFallback: "Utente",

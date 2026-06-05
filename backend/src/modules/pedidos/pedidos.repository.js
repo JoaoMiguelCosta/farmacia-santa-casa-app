@@ -147,7 +147,20 @@ const receitaLinhaPedidoSelect = {
       quantidade: true,
     },
   },
+
+  regularizacaoEventos: {
+    select: {
+      id: true,
+      quantidade: true,
+    },
+  },
 };
+
+function getStartOfDay(value = new Date()) {
+  const date = new Date(value);
+
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+}
 
 function findPedidoById(pedidoId) {
   return prisma.pedido.findUnique({
@@ -198,7 +211,7 @@ function findEarlierActiveReceitaLinhasByUtente({
       },
       status: "ATIVA",
       validade: {
-        gt: new Date(),
+        gte: getStartOfDay(new Date()),
         lt: beforeValidade,
       },
     },

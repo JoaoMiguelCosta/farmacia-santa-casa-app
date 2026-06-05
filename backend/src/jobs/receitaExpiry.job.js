@@ -6,12 +6,24 @@ const { env } = require("../config/env");
 
 const CANCEL_REASON = "Cancelado automaticamente por expiração da receita.";
 
+function getUniqueValues(values = []) {
+  return Array.from(new Set(values.filter(Boolean)));
+}
+
+function getStartOfDay(value = new Date()) {
+  const date = new Date(value);
+
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+}
+
 async function getExpiredActiveLineIds(client, now) {
+  const expirationBoundary = getStartOfDay(now);
+
   const rows = await client.receitaLinha.findMany({
     where: {
       status: "ATIVA",
       validade: {
-        lte: now,
+        lt: expirationBoundary,
       },
     },
     select: {
@@ -45,7 +57,7 @@ async function getAffectedPendingPedidoIdsFromExpiredLines(
     },
   });
 
-  return Array.from(new Set(affectedItems.map((item) => item.pedidoId)));
+  return getUniqueValues(affectedItems.map((item) => item.pedidoId));
 }
 
 async function countPendingItemsFromExpiredLines(client, receitaLinhaIds) {
@@ -112,7 +124,7 @@ async function preview() {
   };
 }
 
-async function cancelAffectedPedidosByExpiredLines(tx, receitaLinhaIds) {
+async function cancelExpiredPedidoItemsByLineIds(tx, receitaLinhaIds) {
   if (!Array.isArray(receitaLinhaIds) || receitaLinhaIds.length === 0) {
     return {
       affectedPedidoIds: [],
@@ -122,29 +134,10 @@ async function cancelAffectedPedidosByExpiredLines(tx, receitaLinhaIds) {
     };
   }
 
-  const affectedPedidoIds = await getAffectedPendingPedidoIdsFromExpiredLines(
-    tx,
-    receitaLinhaIds,
-  );
-
-  const pendingItemsFromExpiredLines = await countPendingItemsFromExpiredLines(
-    tx,
-    receitaLinhaIds,
-  );
-
-  if (affectedPedidoIds.length === 0) {
-    return {
-      affectedPedidoIds,
-      pendingItemsFromExpiredLines,
-      canceledPedidoItems: 0,
-      canceledPedidos: 0,
-    };
-  }
-
-  const pendingItems = await tx.pedidoItem.findMany({
+  const expiredPendingItems = await tx.pedidoItem.findMany({
     where: {
-      pedidoId: {
-        in: affectedPedidoIds,
+      receitaLinhaId: {
+        in: receitaLinhaIds,
       },
       status: "PENDENTE",
       pedido: {
@@ -153,25 +146,35 @@ async function cancelAffectedPedidosByExpiredLines(tx, receitaLinhaIds) {
     },
     select: {
       id: true,
+      pedidoId: true,
     },
   });
 
-  const pendingItemIds = pendingItems.map((item) => item.id);
+  const expiredPendingItemIds = expiredPendingItems.map((item) => item.id);
+  const affectedPedidoIds = getUniqueValues(
+    expiredPendingItems.map((item) => item.pedidoId),
+  );
 
-  const canceledItems =
-    pendingItemIds.length > 0
-      ? await tx.pedidoItem.updateMany({
-          where: {
-            id: {
-              in: pendingItemIds,
-            },
-            status: "PENDENTE",
-          },
-          data: {
-            status: "CANCELADO_POR_EXPIRACAO",
-          },
-        })
-      : { count: 0 };
+  if (expiredPendingItemIds.length === 0) {
+    return {
+      affectedPedidoIds,
+      pendingItemsFromExpiredLines: 0,
+      canceledPedidoItems: 0,
+      canceledPedidos: 0,
+    };
+  }
+
+  const canceledItems = await tx.pedidoItem.updateMany({
+    where: {
+      id: {
+        in: expiredPendingItemIds,
+      },
+      status: "PENDENTE",
+    },
+    data: {
+      status: "CANCELADO_POR_EXPIRACAO",
+    },
+  });
 
   const canceledPedidos = await tx.pedido.updateMany({
     where: {
@@ -179,6 +182,11 @@ async function cancelAffectedPedidosByExpiredLines(tx, receitaLinhaIds) {
         in: affectedPedidoIds,
       },
       status: "PENDENTE",
+      itens: {
+        none: {
+          status: "PENDENTE",
+        },
+      },
     },
     data: {
       status: "CANCELADO",
@@ -188,7 +196,7 @@ async function cancelAffectedPedidosByExpiredLines(tx, receitaLinhaIds) {
 
   return {
     affectedPedidoIds,
-    pendingItemsFromExpiredLines,
+    pendingItemsFromExpiredLines: expiredPendingItemIds.length,
     canceledPedidoItems: canceledItems.count,
     canceledPedidos: canceledPedidos.count,
   };
@@ -227,13 +235,14 @@ async function runOnce() {
         id: {
           in: expiredLineIds,
         },
+        status: "ATIVA",
       },
       data: {
         status: "EXPIRADA",
       },
     });
 
-    const cancellation = await cancelAffectedPedidosByExpiredLines(
+    const cancellation = await cancelExpiredPedidoItemsByLineIds(
       tx,
       expiredLineIds,
     );

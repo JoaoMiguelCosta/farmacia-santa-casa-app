@@ -9,6 +9,12 @@ import { usePedidoPendingCard } from "./usePedidoPendingCard";
 
 import styles from "./PedidoPendingCard.module.css";
 
+function getStatusClassName(hasExpirationWarning) {
+  return [styles.status, hasExpirationWarning ? styles.statusWarning : ""]
+    .filter(Boolean)
+    .join(" ");
+}
+
 export default function PedidoPendingCard({
   pedido,
   isCanceling = false,
@@ -18,12 +24,18 @@ export default function PedidoPendingCard({
     detailsId,
 
     isDetailsOpen,
+    hasExpirationWarning,
 
     pedidoNumberLabel,
+    pedidoStatusLabel,
     createdAtLabel,
     utentesCountLabel,
     medicamentosCountLabel,
+    pendingMedicamentosCountLabel,
+    canceledMedicamentosCountLabel,
     totalQuantityLabel,
+    pendingQuantityLabel,
+    expirationWarningsLabel,
     toggleLabel,
 
     handleToggleDetails,
@@ -37,8 +49,8 @@ export default function PedidoPendingCard({
           <h3>{pedidoNumberLabel}</h3>
         </div>
 
-        <span className={styles.status}>
-          {PEDIDOS_PAGE.labels.pendingStatus}
+        <span className={getStatusClassName(hasExpirationWarning)}>
+          {pedidoStatusLabel}
         </span>
       </header>
 
@@ -58,11 +70,38 @@ export default function PedidoPendingCard({
           <dd>{medicamentosCountLabel}</dd>
         </div>
 
-        <div>
-          <dt>{PEDIDOS_PAGE.labels.totalQuantity}</dt>
-          <dd>{totalQuantityLabel}</dd>
-        </div>
+        {hasExpirationWarning ? (
+          <>
+            <div>
+              <dt>{PEDIDOS_PAGE.labels.pendingItems}</dt>
+              <dd>{pendingMedicamentosCountLabel}</dd>
+            </div>
+
+            <div>
+              <dt>{PEDIDOS_PAGE.labels.canceledItems}</dt>
+              <dd>{canceledMedicamentosCountLabel}</dd>
+            </div>
+
+            <div>
+              <dt>{PEDIDOS_PAGE.labels.pendingQuantity}</dt>
+              <dd>{pendingQuantityLabel}</dd>
+            </div>
+          </>
+        ) : (
+          <div>
+            <dt>{PEDIDOS_PAGE.labels.totalQuantity}</dt>
+            <dd>{totalQuantityLabel}</dd>
+          </div>
+        )}
       </dl>
+
+      {hasExpirationWarning ? (
+        <aside className={styles.warning} role="status">
+          <strong>{PEDIDOS_PAGE.sections.pending.expirationWarningTitle}</strong>
+          <p>{PEDIDOS_PAGE.sections.pending.expirationWarningDescription}</p>
+          <span>{expirationWarningsLabel}</span>
+        </aside>
+      ) : null}
 
       {isDetailsOpen ? (
         <PedidoPendingDetails id={detailsId} pedido={pedido} />

@@ -58,6 +58,7 @@ export const SANTACASA_HISTORICO_PAGE = Object.freeze({
 
   status: {
     VALIDADO: "Validado",
+    VALIDADO_COM_AVISOS: "Validado com avisos",
     REJEITADO: "Rejeitado",
     CANCELADO: "Cancelado",
   },
@@ -108,14 +109,25 @@ export const SANTACASA_HISTORICO_PAGE = Object.freeze({
     items: "Itens do pedido",
     totalItems: "Total de itens",
     totalQuantity: "Quantidade total",
+    validatedItems: "Validados",
+    expiredCanceledItems: "Cancelados por expiração",
+    validatedQuantity: "Quantidade validada",
+    notValidatedQuantity: "Quantidade não validada",
 
     automaticCancellationNoticeTitle: "Cancelamento automático",
     manualCancellationNoticeTitle: "Cancelamento pela Santa Casa",
+    validatedWithWarningsNoticeTitle: "Pedido validado com avisos",
   },
 
   messages: {
     validated:
       "Este pedido foi validado pela Farmácia e os respetivos efeitos foram aplicados.",
+    validatedWithWarnings:
+      "Este pedido foi validado pela Farmácia, mas alguns medicamentos não foram incluídos porque a validade da receita terminou antes da validação.",
+    validatedWithWarningsNotice:
+      "Confirma os detalhes do pedido. Os medicamentos assinalados como cancelados por expiração não foram dispensados nem incluídos na validação.",
+    itemCancelledByExpiry:
+      "Este medicamento não foi validado no pedido porque a receita expirou antes da Farmácia concluir a validação.",
     rejected:
       "Este pedido foi rejeitado pela Farmácia. Os itens deixaram de estar reservados.",
     cancelledByExpiry:
