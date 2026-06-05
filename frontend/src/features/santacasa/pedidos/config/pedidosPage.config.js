@@ -121,6 +121,12 @@ export const PEDIDOS_PAGE = Object.freeze({
   feedback: {
     cancelSuccess:
       "Pedido cancelado com sucesso. Os medicamentos deixaram de estar reservados.",
+    expiredReceitaRemoved:
+      "{medicamento} foi removido do pedido geral porque a receita expirou ou deixou de estar disponível. Revê o pedido atualizado e volta a enviar.",
+    expiredReceitasRemoved:
+      "{count} medicamentos foram removidos do pedido geral porque as receitas expiraram ou deixaram de estar disponíveis: {medicamentos}. Revê o pedido atualizado e volta a enviar.",
+    draftSyncError:
+      "Não foi possível confirmar se as receitas do pedido geral continuam disponíveis. Atualiza a página e tenta novamente.",
     genericError: "Ocorreu um erro inesperado.",
   },
 

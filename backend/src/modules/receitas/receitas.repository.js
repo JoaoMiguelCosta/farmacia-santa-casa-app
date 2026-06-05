@@ -139,19 +139,21 @@ async function getRegularizacaoQuantityMap(client, receitaLinhaIds = []) {
   });
 
   return new Map(
-    rows.map((row) => [
-      row.receitaLinhaId,
-      Number(row._sum?.quantidade || 0),
-    ]),
+    rows.map((row) => [row.receitaLinhaId, Number(row._sum?.quantidade || 0)]),
   );
 }
 
 function attachRegularizacaoQuantities(linhas = [], regularizacaoQuantityMap) {
   return linhas.map((linha) => ({
     ...linha,
-    quantidadeUsadaRegularizacao:
-      regularizacaoQuantityMap.get(linha.id) || 0,
+    quantidadeUsadaRegularizacao: regularizacaoQuantityMap.get(linha.id) || 0,
   }));
+}
+
+function getStartOfToday() {
+  const now = new Date();
+
+  return new Date(now.getFullYear(), now.getMonth(), now.getDate());
 }
 
 async function findLinhasByUtente(utenteId) {
@@ -161,6 +163,9 @@ async function findLinhasByUtente(utenteId) {
         utenteId,
       },
       status: "ATIVA",
+      validade: {
+        gte: getStartOfToday(),
+      },
     },
     select: linhaSelect,
     orderBy: linhaFefoOrderBy,

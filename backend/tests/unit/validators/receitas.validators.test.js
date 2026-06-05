@@ -2,6 +2,25 @@ const {
   validateCreateReceitaPayload,
 } = require("../../../src/modules/receitas/receitas.validators");
 
+function formatDateInput(date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+}
+
+function getTodayInput() {
+  return formatDateInput(new Date());
+}
+
+function getYesterdayInput() {
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+
+  return formatDateInput(yesterday);
+}
+
 describe("receitas.validators", () => {
   describe("validateCreateReceitaPayload", () => {
     it("deve aceitar uma receita válida", () => {
@@ -26,6 +45,23 @@ describe("receitas.validators", () => {
       expect(result.linhas).toHaveLength(1);
       expect(result.linhas[0].nome).toBe("Paracetamol 1000mg");
       expect(result.linhas[0].quantidade).toBe(2);
+      expect(result.linhas[0].validade).toBeInstanceOf(Date);
+    });
+
+    it("deve aceitar validade igual ao dia atual", () => {
+      const result = validateCreateReceitaPayload({
+        numero19: "1234567890123456789",
+        pinAcesso6: "123456",
+        pinOpcao4: "1234",
+        linhas: [
+          {
+            medicamento: "Paracetamol 1000mg",
+            quantidade: 1,
+            validade: getTodayInput(),
+          },
+        ],
+      });
+
       expect(result.linhas[0].validade).toBeInstanceOf(Date);
     });
 
@@ -248,7 +284,7 @@ describe("receitas.validators", () => {
       }).toThrow("Medicamento 1: a validade é inválida.");
     });
 
-    it("deve rejeitar validade passada", () => {
+    it("deve rejeitar validade anterior ao dia atual", () => {
       expect(() => {
         validateCreateReceitaPayload({
           numero19: "1234567890123456789",
@@ -258,11 +294,11 @@ describe("receitas.validators", () => {
             {
               medicamento: "Paracetamol",
               quantidade: 1,
-              validade: "2020-01-01",
+              validade: getYesterdayInput(),
             },
           ],
         });
-      }).toThrow("Medicamento 1: a validade deve ser futura.");
+      }).toThrow("Medicamento 1: a validade deve ser hoje ou futura.");
     });
 
     it("deve rejeitar medicamentos repetidos na mesma receita", () => {

@@ -33,12 +33,48 @@ function getLinhaLabel(index) {
   return `Medicamento ${index + 1}`;
 }
 
+function getStartOfDay(date = new Date()) {
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+}
+
+function parseDateOnly(value) {
+  const text = String(value || "").trim();
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(text);
+
+  if (!match) return null;
+
+  const [, year, month, day] = match.map(Number);
+  const date = new Date(year, month - 1, day);
+
+  if (
+    date.getFullYear() !== year ||
+    date.getMonth() !== month - 1 ||
+    date.getDate() !== day
+  ) {
+    return null;
+  }
+
+  return date;
+}
+
+function parseValidityDate(value) {
+  const dateOnly = parseDateOnly(value);
+
+  if (dateOnly) return dateOnly;
+
+  return value ? new Date(value) : null;
+}
+
+function isBeforeToday(date) {
+  return getStartOfDay(date).getTime() < getStartOfDay().getTime();
+}
+
 function parseLinha(raw = {}, index) {
   const linhaLabel = getLinhaLabel(index);
 
   const nome = String(raw.nome || raw.medicamento || "").trim();
   const quantidade = Math.floor(Number(raw.quantidade));
-  const validade = raw.validade ? new Date(raw.validade) : null;
+  const validade = parseValidityDate(raw.validade);
 
   if (!nome) {
     throw badRequest(`${linhaLabel}: o medicamento é obrigatório.`);
@@ -52,8 +88,8 @@ function parseLinha(raw = {}, index) {
     throw badRequest(`${linhaLabel}: a validade é inválida.`);
   }
 
-  if (validade <= new Date()) {
-    throw badRequest(`${linhaLabel}: a validade deve ser futura.`);
+  if (isBeforeToday(validade)) {
+    throw badRequest(`${linhaLabel}: a validade deve ser hoje ou futura.`);
   }
 
   return {
