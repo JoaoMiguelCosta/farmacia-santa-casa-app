@@ -11,7 +11,7 @@ import {
   isHistoricoPedidoCancelado,
   isHistoricoPedidoValidadoComAvisos,
   shouldShowHistoricoPedidoReason,
-} from "../../utils/santaCasaHistorico.utils";
+} from "../../../utils/santaCasaHistorico.utils";
 
 function getMessageClassName(pedido) {
   return [

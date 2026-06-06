@@ -1,6 +1,6 @@
 // src/features/santacasa/historico/components/SantaCasaHistoricoCard/santaCasaHistoricoCardDetails.utils.js
 
-import { SANTACASA_HISTORICO_PAGE } from "../../config/santaCasaHistoricoPage.config";
+import { SANTACASA_HISTORICO_PAGE } from "../../../config/santaCasaHistoricoPage.config";
 
 import {
   getHistoricoPedidoItemMedicamentoLabel,
@@ -8,9 +8,9 @@ import {
   getHistoricoPedidoItemStatusLabel,
   getHistoricoPedidoItemTypeLabel,
   getHistoricoPedidoItemUtenteLabel,
-} from "../../utils/santaCasaHistoricoItems.utils";
+} from "../../../utils/santaCasaHistoricoItems.utils";
 
-import { isHistoricoPedidoItemDanger } from "./santaCasaHistoricoItem.utils";
+import { isHistoricoPedidoItemDanger } from "../SantaCasaHistoricoItem/santaCasaHistoricoItem.utils";
 
 const UNIDENTIFIED_UTENTE_KEY = "utente-sem-identificacao";
 

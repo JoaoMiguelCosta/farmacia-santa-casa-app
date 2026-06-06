@@ -25,9 +25,14 @@ export const SANTACASA_HISTORICO_PAGE = Object.freeze({
     },
   },
 
+  details: {
+    itemCountSingular: "medicamento neste pedido.",
+    itemCountPlural: "medicamentos neste pedido.",
+  },
+
   filters: {
     ariaLabel: "Filtros do histórico",
-    totalLabel: "Total",
+    totalLabel: "Total Pedidos",
 
     statusLabel: "Estado",
     searchLabel: "Pesquisa",
@@ -159,6 +164,7 @@ export const SANTACASA_HISTORICO_PAGE = Object.freeze({
     receitaBarcodesAriaLabel: "Códigos da receita",
 
     semReceita: "Medicamento não sujeito a receita médica",
+
     extra: "Venda Suspensa",
     extraRequestedQuantity: "Solicitado",
     extraRegularizedQuantity: "Regularizado",

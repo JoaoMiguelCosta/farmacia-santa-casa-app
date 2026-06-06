@@ -1,4 +1,6 @@
-import BarcodeValue from "../../../../../shared/ui/BarcodeValue/BarcodeValue";
+// src/features/santacasa/historico/components/SantaCasaHistoricoCard/SantaCasaHistoricoItem/SantaCasaHistoricoItemBarcodes/SantaCasaHistoricoItemBarcodes.jsx
+
+import BarcodeValue from "../../../../../../../shared/ui/BarcodeValue/BarcodeValue";
 
 import styles from "./SantaCasaHistoricoItemBarcodes.module.css";
 
@@ -14,7 +16,9 @@ export default function SantaCasaHistoricoItemBarcodes({
 }) {
   const codes = getHistoricoReceitaBarcodeItems(receita);
 
-  if (codes.length === 0) return null;
+  if (codes.length === 0) {
+    return null;
+  }
 
   return (
     <div

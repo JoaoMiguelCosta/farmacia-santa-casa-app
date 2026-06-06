@@ -1,10 +1,10 @@
 // src/features/santacasa/historico/components/SantaCasaHistoricoCard/SantaCasaHistoricoUtenteGroup.jsx
 
-import SantaCasaHistoricoItem from "./SantaCasaHistoricoItem";
+import SantaCasaHistoricoItem from "../../SantaCasaHistoricoItem/SantaCasaHistoricoItem";
 
 import styles from "./SantaCasaHistoricoUtenteGroup.module.css";
 
-import { SANTACASA_HISTORICO_PAGE } from "../../config/santaCasaHistoricoPage.config";
+import { SANTACASA_HISTORICO_PAGE } from "../../../../config/santaCasaHistoricoPage.config";
 
 import { useSantaCasaHistoricoUtenteGroup } from "./useSantaCasaHistoricoUtenteGroup";
 

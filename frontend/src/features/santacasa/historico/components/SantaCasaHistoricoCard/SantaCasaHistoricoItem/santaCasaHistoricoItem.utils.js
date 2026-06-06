@@ -1,6 +1,6 @@
-// src/features/santacasa/historico/components/SantaCasaHistoricoCard/santaCasaHistoricoItem.utils.js
+// src/features/santacasa/historico/components/SantaCasaHistoricoCard/SantaCasaHistoricoItem/santaCasaHistoricoItem.utils.js
 
-import { SANTACASA_HISTORICO_PAGE } from "../../config/santaCasaHistoricoPage.config";
+import { SANTACASA_HISTORICO_PAGE } from "../../../config/santaCasaHistoricoPage.config";
 
 import {
   getHistoricoPedidoExtraMetaLabel,
@@ -13,7 +13,7 @@ import {
   getHistoricoPedidoItemUtenteLabel,
   isHistoricoPedidoItemCancelado,
   isHistoricoPedidoItemCanceladoPorExpiracao,
-} from "../../utils/santaCasaHistoricoItems.utils";
+} from "../../../utils/santaCasaHistoricoItems.utils";
 
 export function isHistoricoPedidoItemDanger(item) {
   return (

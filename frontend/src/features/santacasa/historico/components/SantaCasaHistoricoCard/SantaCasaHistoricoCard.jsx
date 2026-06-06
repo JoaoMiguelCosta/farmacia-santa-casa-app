@@ -1,8 +1,8 @@
-import SantaCasaHistoricoCardDetails from "./SantaCasaHistoricoCardDetails";
-import SantaCasaHistoricoCardHeader from "./SantaCasaHistoricoCardHeader";
-import SantaCasaHistoricoCardNotice from "./SantaCasaHistoricoCardNotice";
-import SantaCasaHistoricoCardStats from "./SantaCasaHistoricoCardStats";
-import SantaCasaHistoricoCardSummary from "./SantaCasaHistoricoCardSummary";
+import SantaCasaHistoricoCardDetails from "./SantaCasaHistoricoCardDetails/SantaCasaHistoricoCardDetails";
+import SantaCasaHistoricoCardHeader from "./SantaCasaHistoricoCardHeader/SantaCasaHistoricoCardHeader";
+import SantaCasaHistoricoCardNotice from "./SantaCasaHistoricoCardNotice/SantaCasaHistoricoCardNotice";
+import SantaCasaHistoricoCardStats from "./SantaCasaHistoricoCardStats/SantaCasaHistoricoCardStats";
+import SantaCasaHistoricoCardSummary from "./SantaCasaHistoricoCardSummary/SantaCasaHistoricoCardSummary";
 
 import styles from "./SantaCasaHistoricoCard.module.css";
 

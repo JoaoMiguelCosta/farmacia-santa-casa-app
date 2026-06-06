@@ -1,6 +1,6 @@
 // src/features/santacasa/historico/components/SantaCasaHistoricoCard/santaCasaHistoricoCardSummary.utils.js
 
-import { SANTACASA_HISTORICO_PAGE } from "../../config/santaCasaHistoricoPage.config";
+import { SANTACASA_HISTORICO_PAGE } from "../../../config/santaCasaHistoricoPage.config";
 
 import {
   getHistoricoPedidoClosedAtLabel,
@@ -14,9 +14,9 @@ import {
   getHistoricoPedidoValidatedQuantity,
   isHistoricoPedidoCanceladoPorExpiracao,
   isHistoricoPedidoValidadoComAvisos,
-} from "../../utils/santaCasaHistorico.utils";
+} from "../../../utils/santaCasaHistorico.utils";
 
-import { getHistoricoPedidoItemUtenteLabel } from "../../utils/santaCasaHistoricoItems.utils";
+import { getHistoricoPedidoItemUtenteLabel } from "../../../utils/santaCasaHistoricoItems.utils";
 
 const MAX_VISIBLE_UTENTES = 2;
 

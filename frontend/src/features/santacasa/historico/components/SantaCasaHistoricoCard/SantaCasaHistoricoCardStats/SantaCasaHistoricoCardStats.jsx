@@ -1,6 +1,6 @@
 import styles from "./SantaCasaHistoricoCardStats.module.css";
 
-import { SANTACASA_HISTORICO_PAGE } from "../../config/santaCasaHistoricoPage.config";
+import { SANTACASA_HISTORICO_PAGE } from "../../../config/santaCasaHistoricoPage.config";
 
 import { getHistoricoPedidoCardStats } from "./santaCasaHistoricoCardStats.utils";
 

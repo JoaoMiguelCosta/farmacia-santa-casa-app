@@ -1,10 +1,10 @@
-// src/features/santacasa/historico/components/SantaCasaHistoricoCard/SantaCasaHistoricoItem.jsx
+// src/features/santacasa/historico/components/SantaCasaHistoricoCard/SantaCasaHistoricoItem/SantaCasaHistoricoItem.jsx
 
-import SantaCasaHistoricoItemBarcodes from "./SantaCasaHistoricoItemBarcodes";
+import SantaCasaHistoricoItemBarcodes from "./SantaCasaHistoricoItemBarcodes/SantaCasaHistoricoItemBarcodes";
 
 import styles from "./SantaCasaHistoricoItem.module.css";
 
-import { SANTACASA_HISTORICO_PAGE } from "../../config/santaCasaHistoricoPage.config";
+import { SANTACASA_HISTORICO_PAGE } from "../../../config/santaCasaHistoricoPage.config";
 
 import {
   getHistoricoItemReceita,

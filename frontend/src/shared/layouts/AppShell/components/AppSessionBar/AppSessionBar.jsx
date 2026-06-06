@@ -1,4 +1,5 @@
 // src/shared/layouts/AppShell/components/AppSessionBar/AppSessionBar.jsx
+
 import styles from "./AppSessionBar.module.css";
 
 export default function AppSessionBar({
@@ -20,9 +21,15 @@ export default function AppSessionBar({
         <div className={styles.userText}>
           <span className={styles.label}>{activeLabel}</span>
 
-          <strong className={styles.name}>{userName}</strong>
+          <strong className={styles.name} title={userName}>
+            {userName}
+          </strong>
 
-          {meta ? <span className={styles.meta}>{meta}</span> : null}
+          {meta ? (
+            <span className={styles.meta} title={meta}>
+              {meta}
+            </span>
+          ) : null}
         </div>
       </div>
 
@@ -30,6 +37,7 @@ export default function AppSessionBar({
         type="button"
         className={styles.logoutButton}
         disabled={isLoggingOut}
+        aria-busy={isLoggingOut}
         onClick={onLogout}
       >
         {logoutLabel}

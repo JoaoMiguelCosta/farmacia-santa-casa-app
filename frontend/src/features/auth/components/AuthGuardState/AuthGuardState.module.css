@@ -1,0 +1,80 @@
+/* src/features/auth/components/AuthGuardState/AuthGuardState.module.css */
+
+.guard {
+    display: grid;
+    place-items: center;
+    min-block-size: min(70svh, 42rem);
+    inline-size: min(100%, var(--clinic-page-max));
+    margin-inline: auto;
+    padding:
+        clamp(1.5rem, 5vw, 3rem) var(--clinic-page-pad);
+}
+
+.card {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: start;
+    gap: 1rem;
+    inline-size: min(100%, 34rem);
+    padding: clamp(1.35rem, 4vw, 2rem);
+    border: 1px solid var(--clinic-border);
+    border-radius: var(--clinic-radius-xl);
+    background: var(--clinic-surface);
+    box-shadow: var(--clinic-shadow-card);
+}
+
+.indicator {
+    inline-size: 0.75rem;
+    block-size: 0.75rem;
+    margin-block-start: 0.45rem;
+    border-radius: 999px;
+    background: var(--clinic-green-600);
+    box-shadow: 0 0 0 0.35rem rgba(45, 117, 101, 0.12);
+}
+
+.content {
+    display: grid;
+    gap: 0.45rem;
+    min-inline-size: 0;
+}
+
+.title {
+    margin: 0;
+    color: var(--clinic-ink);
+    font-size: clamp(var(--clinic-font-size-xl),
+            4vw,
+            var(--clinic-font-size-2xl));
+    font-weight: 750;
+    line-height: var(--clinic-line-height-tight);
+    letter-spacing: -0.025em;
+}
+
+.description {
+    margin: 0;
+    color: var(--clinic-muted-strong);
+    font-size: var(--clinic-font-size-md);
+    font-weight: 500;
+    line-height: 1.6;
+}
+
+@media (max-width: 520px) {
+    .guard {
+        place-items: start center;
+        min-block-size: auto;
+        padding-block: 1.25rem 2rem;
+    }
+
+    .card {
+        gap: 0.85rem;
+        padding: 1.25rem;
+        border-radius: var(--clinic-radius-lg);
+    }
+
+    .title {
+        font-size: var(--clinic-font-size-xl);
+    }
+
+    .description {
+        font-size: var(--clinic-font-size-sm);
+    }
+}

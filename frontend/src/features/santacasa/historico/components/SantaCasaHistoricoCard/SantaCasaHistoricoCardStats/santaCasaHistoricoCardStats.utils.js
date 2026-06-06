@@ -1,9 +1,9 @@
-import { SANTACASA_HISTORICO_PAGE } from "../../config/santaCasaHistoricoPage.config";
+import { SANTACASA_HISTORICO_PAGE } from "../../../config/santaCasaHistoricoPage.config";
 
 import {
   getHistoricoPedidoItems,
   isHistoricoPedidoValidadoComAvisos,
-} from "../../utils/santaCasaHistorico.utils";
+} from "../../../utils/santaCasaHistorico.utils";
 
 function getItemStatus(item) {
   return String(item?.status || "").toUpperCase();

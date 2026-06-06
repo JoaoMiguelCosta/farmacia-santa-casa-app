@@ -1,6 +1,6 @@
 // src/features/santacasa/historico/components/SantaCasaHistoricoCard/santaCasaHistoricoUtenteGroup.utils.js
 
-import { SANTACASA_HISTORICO_PAGE } from "../../config/santaCasaHistoricoPage.config";
+import { SANTACASA_HISTORICO_PAGE } from "../../../../config/santaCasaHistoricoPage.config";
 
 export const HISTORICO_UTENTE_ITEMS_STEP = 5;
 

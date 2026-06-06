@@ -1,12 +1,35 @@
+// src/features/santacasa/historico/components/SantaCasaHistoricoCard/
+// SantaCasaHistoricoCardDetails/SantaCasaHistoricoCardDetails.jsx
+
 import { useId } from "react";
 
-import SantaCasaHistoricoUtenteGroup from "./SantaCasaHistoricoUtenteGroup";
+import SantaCasaHistoricoUtenteGroup from "./SantaCasaHistoricoUtenteGroup/SantaCasaHistoricoUtenteGroup";
 
 import styles from "./SantaCasaHistoricoCardDetails.module.css";
 
-import { SANTACASA_HISTORICO_PAGE } from "../../config/santaCasaHistoricoPage.config";
+import { SANTACASA_HISTORICO_PAGE } from "../../../config/santaCasaHistoricoPage.config";
 
 import { useSantaCasaHistoricoCardDetails } from "./useSantaCasaHistoricoCardDetails";
+
+function getItemsDescription(totalItems) {
+  const safeTotalItems = Math.max(0, Number(totalItems) || 0);
+
+  const description =
+    safeTotalItems === 1
+      ? SANTACASA_HISTORICO_PAGE.details.itemCountSingular
+      : SANTACASA_HISTORICO_PAGE.details.itemCountPlural;
+
+  return `${safeTotalItems} ${description}`;
+}
+
+function getSearchResultsDescription({ filteredItemsCount, totalItems }) {
+  return [
+    `${SANTACASA_HISTORICO_PAGE.labels.itemSearchResults}:`,
+    filteredItemsCount,
+    SANTACASA_HISTORICO_PAGE.labels.of,
+    `${totalItems}.`,
+  ].join(" ");
+}
 
 export default function SantaCasaHistoricoCardDetails({ items = [] }) {
   const searchInputId = useId();
@@ -14,13 +37,23 @@ export default function SantaCasaHistoricoCardDetails({ items = [] }) {
   const {
     search,
     groups,
+
     totalItems,
     filteredItemsCount,
+
     hasSearch,
     hasGroups,
+
     handleSearchChange,
     handleClearSearch,
   } = useSantaCasaHistoricoCardDetails(items);
+
+  const detailsDescription = hasSearch
+    ? getSearchResultsDescription({
+        filteredItemsCount,
+        totalItems,
+      })
+    : getItemsDescription(totalItems);
 
   return (
     <section className={styles.details}>
@@ -30,11 +63,7 @@ export default function SantaCasaHistoricoCardDetails({ items = [] }) {
             {SANTACASA_HISTORICO_PAGE.labels.items}
           </h4>
 
-          <p className={styles.detailsDescription}>
-            {hasSearch
-              ? `${SANTACASA_HISTORICO_PAGE.labels.itemSearchResults}: ${filteredItemsCount} de ${totalItems}.`
-              : `${totalItems} medicamento(s) neste pedido.`}
-          </p>
+          <p className={styles.detailsDescription}>{detailsDescription}</p>
         </div>
 
         <div className={styles.searchBox}>
@@ -47,10 +76,10 @@ export default function SantaCasaHistoricoCardDetails({ items = [] }) {
               id={searchInputId}
               type="search"
               value={search}
-              onChange={handleSearchChange}
               placeholder={
                 SANTACASA_HISTORICO_PAGE.filters.itemSearchPlaceholder
               }
+              onChange={handleSearchChange}
             />
 
             {hasSearch ? (

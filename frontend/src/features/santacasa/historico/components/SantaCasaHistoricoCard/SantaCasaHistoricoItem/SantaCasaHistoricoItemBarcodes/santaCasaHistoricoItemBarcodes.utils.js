@@ -1,4 +1,6 @@
-import { SANTACASA_HISTORICO_PAGE } from "../../config/santaCasaHistoricoPage.config";
+// src/features/santacasa/historico/components/SantaCasaHistoricoCard/SantaCasaHistoricoItem/SantaCasaHistoricoItemBarcodes/santaCasaHistoricoItemBarcodes.utils.js
+
+import { SANTACASA_HISTORICO_PAGE } from "../../../../config/santaCasaHistoricoPage.config";
 
 function getClassName(classNames) {
   return classNames.filter(Boolean).join(" ");

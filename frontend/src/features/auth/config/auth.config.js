@@ -30,10 +30,14 @@ export const AUTH_SESSION_CONFIG = Object.freeze({
 
 export const AUTH_MESSAGES = Object.freeze({
   loadingSession: "A verificar sessão...",
+  sessionCheckError: "Não foi possível verificar a sessão.",
+
   loginRequired: "Tens de iniciar sessão para continuar.",
   forbidden: "Não tens permissão para aceder a esta área.",
+
   loginError: "Não foi possível iniciar sessão.",
   logoutError: "Não foi possível terminar sessão.",
+
   sessionExpired: "Sessão expirada. Inicia sessão novamente.",
   sessionExpiredByInactivity:
     "Sessão terminada por inatividade. Inicia sessão novamente.",

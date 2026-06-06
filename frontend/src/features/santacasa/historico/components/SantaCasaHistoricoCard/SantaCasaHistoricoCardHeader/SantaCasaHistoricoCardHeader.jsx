@@ -1,13 +1,13 @@
 import styles from "./SantaCasaHistoricoCardHeader.module.css";
 
-import { SANTACASA_HISTORICO_PAGE } from "../../config/santaCasaHistoricoPage.config";
+import { SANTACASA_HISTORICO_PAGE } from "../../../config/santaCasaHistoricoPage.config";
 
 import {
   getHistoricoPedidoNumberLabel,
   getHistoricoPedidoVisualStatusLabel,
   isHistoricoPedidoCancelado,
   isHistoricoPedidoValidadoComAvisos,
-} from "../../utils/santaCasaHistorico.utils";
+} from "../../../utils/santaCasaHistorico.utils";
 
 function getStatusClassName(pedido) {
   return [

@@ -1,9 +1,12 @@
+// src/features/auth/components/AuthHomeRedirect.jsx
+
 import { Navigate } from "react-router-dom";
 
-import { AUTH_REDIRECTS, AUTH_MESSAGES } from "../config/auth.config";
+import { AUTH_REDIRECTS } from "../config/auth.config";
 import { useAuth } from "../hooks/useAuth";
 
-import styles from "./AuthGuardState.module.css";
+import AuthGuardState from "./AuthGuardState/AuthGuardState";
+import { AUTH_GUARD_STATE_CONFIG } from "./AuthGuardState/AuthGuardState.config";
 
 function getRedirectPathForRole(role) {
   return AUTH_REDIRECTS.byRole[role] || AUTH_REDIRECTS.login;
@@ -14,14 +17,10 @@ export default function AuthHomeRedirect() {
 
   if (isLoadingSession) {
     return (
-      <section className={styles.guard} aria-live="polite">
-        <div className={styles.card}>
-          <h1 className={styles.title}>{AUTH_MESSAGES.loadingSession}</h1>
-          <p className={styles.description}>
-            A aguardar confirmação da sessão.
-          </p>
-        </div>
-      </section>
+      <AuthGuardState
+        title={AUTH_GUARD_STATE_CONFIG.homeRedirect.title}
+        description={AUTH_GUARD_STATE_CONFIG.homeRedirect.description}
+      />
     );
   }
 
