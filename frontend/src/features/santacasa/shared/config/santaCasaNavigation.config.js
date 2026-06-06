@@ -1,31 +1,39 @@
+import { SANTACASA_ROUTES } from "./santaCasaRoutes.config";
+
 export const SANTACASA_NAV_ITEMS = Object.freeze([
-  {
+  Object.freeze({
     label: "Visão geral",
-    to: "/santacasa",
+    to: SANTACASA_ROUTES.home,
     end: true,
-  },
-  {
+  }),
+
+  Object.freeze({
     label: "Dashboard",
-    to: "/santacasa/dashboard",
-  },
-  {
+    to: SANTACASA_ROUTES.dashboard,
+  }),
+
+  Object.freeze({
     label: "Utentes",
-    to: "/santacasa/utentes",
-  },
-  {
+    to: SANTACASA_ROUTES.utentes,
+  }),
+
+  Object.freeze({
     label: "Operação",
-    to: "/santacasa/operacao",
-  },
-  {
+    to: SANTACASA_ROUTES.operacao,
+  }),
+
+  Object.freeze({
     label: "Pedidos",
-    to: "/santacasa/pedidos",
-  },
-  {
+    to: SANTACASA_ROUTES.pedidos,
+  }),
+
+  Object.freeze({
     label: "Regularizações",
-    to: "/santacasa/regularizacoes",
-  },
-  {
+    to: SANTACASA_ROUTES.regularizacoes,
+  }),
+
+  Object.freeze({
     label: "Histórico",
-    to: "/santacasa/historico",
-  },
+    to: SANTACASA_ROUTES.historico,
+  }),
 ]);

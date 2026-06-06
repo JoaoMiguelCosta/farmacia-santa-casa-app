@@ -1,6 +1,5 @@
 import PageHeader from "../../shared/ui/PageHeader/PageHeader";
 
-
 import SantaCasaDashboardQuickLinks from "../../features/santacasa/dashboard/components/SantaCasaDashboardQuickLinks/SantaCasaDashboardQuickLinks";
 import SantaCasaDashboardSignals from "../../features/santacasa/dashboard/components/SantaCasaDashboardSignals/SantaCasaDashboardSignals";
 
@@ -24,8 +23,6 @@ export default function SantaCasaDashboardPage() {
         title={SANTACASA_DASHBOARD_PAGE.header.title}
         description={SANTACASA_DASHBOARD_PAGE.header.description}
       />
-
-     
 
       <SantaCasaDashboardSignals
         dashboard={dashboard}

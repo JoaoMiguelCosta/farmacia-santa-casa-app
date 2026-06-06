@@ -1,3 +1,5 @@
+import { SANTACASA_ROUTES } from "../../shared/config/santaCasaRoutes.config";
+
 export const SANTACASA_DASHBOARD_PAGE = Object.freeze({
   header: {
     eyebrow: "Santa Casa",
@@ -70,7 +72,7 @@ export const SANTACASA_DASHBOARD_PAGE = Object.freeze({
     utentes: {
       title: "Utentes",
       description: "Criar, consultar e gerir utentes ativos.",
-      to: "/santacasa/utentes",
+      to: SANTACASA_ROUTES.utentes,
       actionLabel: "Ver utentes",
     },
 
@@ -78,14 +80,14 @@ export const SANTACASA_DASHBOARD_PAGE = Object.freeze({
       title: "Operação",
       description:
         "Gerir receitas, medicamentos não sujeitos a receita médica, vendas suspensas e preparação de pedidos.",
-      to: "/santacasa/operacao",
+      to: SANTACASA_ROUTES.operacao,
       actionLabel: "Abrir operação",
     },
 
     pedidos: {
       title: "Pedidos",
       description: "Criar e acompanhar pedidos enviados à Farmácia.",
-      to: "/santacasa/pedidos",
+      to: SANTACASA_ROUTES.pedidos,
       actionLabel: "Ver pedidos",
     },
 
@@ -93,14 +95,14 @@ export const SANTACASA_DASHBOARD_PAGE = Object.freeze({
       title: "Regularizações",
       description:
         "Acompanhar vendas suspensas que aguardam receita futura ou já foram regularizadas.",
-      to: "/santacasa/regularizacoes",
+      to: SANTACASA_ROUTES.regularizacoes,
       actionLabel: "Ver regularizações",
     },
 
     historico: {
       title: "Histórico",
       description: "Consultar pedidos validados ou rejeitados pela Farmácia.",
-      to: "/santacasa/historico",
+      to: SANTACASA_ROUTES.historico,
       actionLabel: "Ver histórico",
     },
   },

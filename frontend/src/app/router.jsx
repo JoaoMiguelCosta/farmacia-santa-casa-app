@@ -1,9 +1,11 @@
 import { Navigate, createBrowserRouter } from "react-router-dom";
 
-import { AUTH_ROLES } from "../features/auth/config/auth.config";
 import AuthHomeRedirect from "../features/auth/components/AuthHomeRedirect";
 import RequireAuth from "../features/auth/components/RequireAuth";
 import RequireRole from "../features/auth/components/RequireRole";
+import { AUTH_ROLES } from "../features/auth/config/auth.config";
+
+import { SANTACASA_ROUTER_PATHS } from "../features/santacasa/shared/config/santaCasaRoutes.config";
 
 import AppShell from "../shared/layouts/AppShell/AppShell.jsx";
 
@@ -56,46 +58,46 @@ export const router = createBrowserRouter([
       },
 
       {
-        path: "santacasa",
+        path: SANTACASA_ROUTER_PATHS.home,
         element: protectedElement(<SantaCasaHomePage />, SANTACASA_ROLES),
       },
       {
-        path: "santacasa/dashboard",
+        path: SANTACASA_ROUTER_PATHS.dashboard,
         element: protectedElement(<SantaCasaDashboardPage />, SANTACASA_ROLES),
       },
       {
-        path: "santacasa/utentes",
+        path: SANTACASA_ROUTER_PATHS.utentes,
         element: protectedElement(<SantaCasaUtentesPage />, SANTACASA_ROLES),
       },
       {
-        path: "santacasa/operacao",
+        path: SANTACASA_ROUTER_PATHS.operacao,
         element: protectedElement(<SantaCasaOperacaoPage />, SANTACASA_ROLES),
       },
       {
-        path: "santacasa/receitas",
-        element: <Navigate to="/santacasa/operacao" replace />,
+        path: SANTACASA_ROUTER_PATHS.legacyReceitas,
+        element: <Navigate to={SANTACASA_ROUTER_PATHS.operacao} replace />,
       },
       {
-        path: "santacasa/sem-receita",
-        element: <Navigate to="/santacasa/operacao" replace />,
+        path: SANTACASA_ROUTER_PATHS.legacySemReceita,
+        element: <Navigate to={SANTACASA_ROUTER_PATHS.operacao} replace />,
       },
       {
-        path: "santacasa/extras",
-        element: <Navigate to="/santacasa/operacao" replace />,
+        path: SANTACASA_ROUTER_PATHS.legacyExtras,
+        element: <Navigate to={SANTACASA_ROUTER_PATHS.operacao} replace />,
       },
       {
-        path: "santacasa/pedidos",
+        path: SANTACASA_ROUTER_PATHS.pedidos,
         element: protectedElement(<SantaCasaPedidosPage />, SANTACASA_ROLES),
       },
       {
-        path: "santacasa/regularizacoes",
+        path: SANTACASA_ROUTER_PATHS.regularizacoes,
         element: protectedElement(
           <SantaCasaRegularizacoesPage />,
           SANTACASA_ROLES,
         ),
       },
       {
-        path: "santacasa/historico",
+        path: SANTACASA_ROUTER_PATHS.historico,
         element: protectedElement(<SantaCasaHistoricoPage />, SANTACASA_ROLES),
       },
 
