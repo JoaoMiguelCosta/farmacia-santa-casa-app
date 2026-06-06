@@ -1,12 +1,18 @@
+// src/features/santacasa/historico/components/SantaCasaHistoricoCard/santaCasaHistoricoCardDetails.utils.js
+
+import { SANTACASA_HISTORICO_PAGE } from "../../config/santaCasaHistoricoPage.config";
+
 import {
   getHistoricoPedidoItemMedicamentoLabel,
   getHistoricoPedidoItemQuantityLabel,
   getHistoricoPedidoItemStatusLabel,
   getHistoricoPedidoItemTypeLabel,
   getHistoricoPedidoItemUtenteLabel,
-} from "../../utils/santaCasaHistorico.utils";
+} from "../../utils/santaCasaHistoricoItems.utils";
 
 import { isHistoricoPedidoItemDanger } from "./santaCasaHistoricoItem.utils";
+
+const UNIDENTIFIED_UTENTE_KEY = "utente-sem-identificacao";
 
 function normalizeText(value) {
   return String(value || "")
@@ -20,10 +26,20 @@ function getComparableText(value) {
     .replace(/[\u0300-\u036f]/g, "");
 }
 
+function getSafeItems(items) {
+  if (!Array.isArray(items)) {
+    return [];
+  }
+
+  return items;
+}
+
 function getSafeQuantity(value) {
   const numberValue = Number(value);
 
-  if (Number.isFinite(numberValue)) return numberValue;
+  if (Number.isFinite(numberValue)) {
+    return numberValue;
+  }
 
   return 0;
 }
@@ -31,30 +47,50 @@ function getSafeQuantity(value) {
 function getItemQuantity(item) {
   const directQuantity = getSafeQuantity(item?.quantidade);
 
-  if (directQuantity > 0) return directQuantity;
+  if (directQuantity > 0) {
+    return directQuantity;
+  }
 
   return getSafeQuantity(getHistoricoPedidoItemQuantityLabel(item));
 }
 
 function getItemTypePriority(tipo) {
-  if (tipo === "COM_RECEITA") return 1;
-  if (tipo === "EXTRA") return 2;
-  if (tipo === "SEM_RECEITA") return 3;
+  if (tipo === "COM_RECEITA") {
+    return 1;
+  }
+
+  if (tipo === "EXTRA") {
+    return 2;
+  }
+
+  if (tipo === "SEM_RECEITA") {
+    return 3;
+  }
 
   return 9;
 }
 
 function getItemStatusPriority(item) {
-  if (isHistoricoPedidoItemDanger(item)) return 1;
+  if (isHistoricoPedidoItemDanger(item)) {
+    return 1;
+  }
 
-  if (item?.status === "PENDENTE") return 2;
-  if (item?.status === "VALIDADO") return 3;
+  if (item?.status === "PENDENTE") {
+    return 2;
+  }
+
+  if (item?.status === "VALIDADO") {
+    return 3;
+  }
 
   return 9;
 }
 
-function compareText(a, b) {
-  return getComparableText(a).localeCompare(getComparableText(b), "pt-PT");
+function compareText(firstValue, secondValue) {
+  return getComparableText(firstValue).localeCompare(
+    getComparableText(secondValue),
+    "pt-PT",
+  );
 }
 
 function sortHistoricoItems(items) {
@@ -62,50 +98,65 @@ function sortHistoricoItems(items) {
     const statusDifference =
       getItemStatusPriority(firstItem) - getItemStatusPriority(secondItem);
 
-    if (statusDifference !== 0) return statusDifference;
+    if (statusDifference !== 0) {
+      return statusDifference;
+    }
 
     const typeDifference =
       getItemTypePriority(firstItem?.tipo) -
       getItemTypePriority(secondItem?.tipo);
 
-    if (typeDifference !== 0) return typeDifference;
+    if (typeDifference !== 0) {
+      return typeDifference;
+    }
 
     const nameDifference = compareText(
       getHistoricoPedidoItemMedicamentoLabel(firstItem),
       getHistoricoPedidoItemMedicamentoLabel(secondItem),
     );
 
-    if (nameDifference !== 0) return nameDifference;
+    if (nameDifference !== 0) {
+      return nameDifference;
+    }
 
     return getItemQuantity(secondItem) - getItemQuantity(firstItem);
   });
+}
+
+function hasIdentifiedUtente(item) {
+  return Boolean(
+    item?.utenteId ||
+      item?.utente?.id ||
+      item?.utente?.nome ||
+      item?.utente?.numero9 ||
+      item?.utente?.numero ||
+      item?.utente?.numeroUtente,
+  );
 }
 
 function getItemUtenteKey(item) {
   return (
     item?.utenteId ||
     item?.utente?.id ||
+    item?.utente?.numero9 ||
     item?.utente?.numero ||
-    getHistoricoPedidoItemUtenteLabel(item) ||
-    "utente-sem-identificacao"
+    item?.utente?.numeroUtente ||
+    UNIDENTIFIED_UTENTE_KEY
   );
 }
 
 function getItemUtenteLabel(item) {
-  return (
-    getHistoricoPedidoItemUtenteLabel(item) ||
-    item?.utente?.nome ||
-    item?.utente?.name ||
-    "Utente não identificado"
-  );
+  if (!hasIdentifiedUtente(item)) {
+    return SANTACASA_HISTORICO_PAGE.labels.unidentifiedUtente;
+  }
+
+  return getHistoricoPedidoItemUtenteLabel(item);
 }
 
 function createEmptyGroup(item) {
-  const utenteLabel = getItemUtenteLabel(item);
-
   return {
     key: String(getItemUtenteKey(item)),
-    utenteLabel,
+    utenteLabel: getItemUtenteLabel(item),
     items: [],
     totalItems: 0,
     totalQuantity: 0,
@@ -118,21 +169,36 @@ function getPluralLabel(value, singular, plural) {
 }
 
 function getGroupSummary(group) {
+  const labels = SANTACASA_HISTORICO_PAGE.labels;
+
   const medicinesLabel = getPluralLabel(
     group.totalItems,
-    "medicamento",
-    "medicamentos",
+    labels.medicamentoSingular,
+    labels.medicamentoPlural,
   );
 
-  const unitsLabel = getPluralLabel(group.totalQuantity, "unidade", "unidades");
+  const unitsLabel = getPluralLabel(
+    group.totalQuantity,
+    labels.unidadeSingular,
+    labels.unidadePlural,
+  );
+
+  const summaryParts = [
+    `${group.totalItems} ${medicinesLabel}`,
+    `${group.totalQuantity} ${unitsLabel}`,
+  ];
 
   if (group.warningItems > 0) {
-    const warningsLabel = getPluralLabel(group.warningItems, "aviso", "avisos");
+    const warningsLabel = getPluralLabel(
+      group.warningItems,
+      labels.warningSingular,
+      labels.warningPlural,
+    );
 
-    return `${group.totalItems} ${medicinesLabel} · ${group.totalQuantity} ${unitsLabel} · ${group.warningItems} ${warningsLabel}`;
+    summaryParts.push(`${group.warningItems} ${warningsLabel}`);
   }
 
-  return `${group.totalItems} ${medicinesLabel} · ${group.totalQuantity} ${unitsLabel}`;
+  return summaryParts.join(" · ");
 }
 
 function sortHistoricoGroups(groups) {
@@ -140,11 +206,15 @@ function sortHistoricoGroups(groups) {
     const warningDifference =
       secondGroup.warningItems - firstGroup.warningItems;
 
-    if (warningDifference !== 0) return warningDifference;
+    if (warningDifference !== 0) {
+      return warningDifference;
+    }
 
     const itemsDifference = secondGroup.totalItems - firstGroup.totalItems;
 
-    if (itemsDifference !== 0) return itemsDifference;
+    if (itemsDifference !== 0) {
+      return itemsDifference;
+    }
 
     return compareText(firstGroup.utenteLabel, secondGroup.utenteLabel);
   });
@@ -153,17 +223,21 @@ function sortHistoricoGroups(groups) {
 function getReceitaSearchValues(item) {
   const receita = item?.receitaLinha?.receita;
 
-  if (!receita) return [];
+  if (!receita) {
+    return [];
+  }
 
   return [receita.numero19, receita.pinAcesso6, receita.pinOpcao4];
 }
 
-export function getHistoricoPedidoItemGroupsSearchIndex(item) {
+function getHistoricoPedidoItemSearchIndex(item) {
   return [
     getHistoricoPedidoItemUtenteLabel(item),
     item?.utente?.nome,
     item?.utente?.name,
+    item?.utente?.numero9,
     item?.utente?.numero,
+    item?.utente?.numeroUtente,
 
     getHistoricoPedidoItemMedicamentoLabel(item),
     item?.medicamento,
@@ -171,6 +245,7 @@ export function getHistoricoPedidoItemGroupsSearchIndex(item) {
 
     getHistoricoPedidoItemTypeLabel(item?.tipo),
     getHistoricoPedidoItemStatusLabel(item?.status),
+
     item?.tipo,
     item?.status,
 
@@ -184,10 +259,31 @@ export function getHistoricoPedidoItemGroupsSearchIndex(item) {
     .join(" ");
 }
 
+function matchesHistoricoItemSearch(item, normalizedSearch) {
+  if (!normalizedSearch) {
+    return true;
+  }
+
+  return getHistoricoPedidoItemSearchIndex(item).includes(normalizedSearch);
+}
+
+export function filterHistoricoPedidoItems(items, search) {
+  const safeItems = getSafeItems(items);
+  const normalizedSearch = getComparableText(search);
+
+  if (!normalizedSearch) {
+    return safeItems;
+  }
+
+  return safeItems.filter((item) => {
+    return matchesHistoricoItemSearch(item, normalizedSearch);
+  });
+}
+
 export function getHistoricoPedidoItemGroups(items = []) {
   const groupsByUtente = new Map();
 
-  items.forEach((item) => {
+  getSafeItems(items).forEach((item) => {
     const key = String(getItemUtenteKey(item));
 
     if (!groupsByUtente.has(key)) {

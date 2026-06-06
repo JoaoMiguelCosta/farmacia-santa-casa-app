@@ -1,17 +1,19 @@
+// src/features/santacasa/historico/components/SantaCasaHistoricoCard/santaCasaHistoricoItem.utils.js
+
 import { SANTACASA_HISTORICO_PAGE } from "../../config/santaCasaHistoricoPage.config";
 
 import {
+  getHistoricoPedidoExtraMetaLabel,
+  getHistoricoPedidoExtraReferenceLabel,
   getHistoricoPedidoItemExpiryNoticeMessage,
   getHistoricoPedidoItemMedicamentoLabel,
-  getHistoricoPedidoItemMetaLabel,
   getHistoricoPedidoItemQuantityLabel,
-  getHistoricoPedidoItemReferenceLabel,
   getHistoricoPedidoItemStatusLabel,
   getHistoricoPedidoItemTypeLabel,
   getHistoricoPedidoItemUtenteLabel,
   isHistoricoPedidoItemCancelado,
   isHistoricoPedidoItemCanceladoPorExpiracao,
-} from "../../utils/santaCasaHistorico.utils";
+} from "../../utils/santaCasaHistoricoItems.utils";
 
 export function isHistoricoPedidoItemDanger(item) {
   return (
@@ -25,21 +27,21 @@ function getClassName(classNames) {
   return classNames.filter(Boolean).join(" ");
 }
 
-export function getHistoricoItemClassName(item, styles) {
+function getHistoricoItemClassName(item, styles) {
   return getClassName([
     styles.item,
     isHistoricoPedidoItemDanger(item) ? styles.itemDanger : "",
   ]);
 }
 
-export function getHistoricoItemStatusClassName(item, styles) {
+function getHistoricoItemStatusClassName(item, styles) {
   return getClassName([
     styles.itemStatus,
     isHistoricoPedidoItemDanger(item) ? styles.itemStatusDanger : "",
   ]);
 }
 
-export function getHistoricoItemTypeClassName(tipo, styles) {
+function getHistoricoItemTypeClassName(tipo, styles) {
   const classNames = [styles.itemType];
 
   if (tipo === "COM_RECEITA") {
@@ -58,17 +60,23 @@ export function getHistoricoItemTypeClassName(tipo, styles) {
 }
 
 export function getHistoricoItemReceita(item) {
-  if (item?.tipo !== "COM_RECEITA") return null;
+  if (item?.tipo !== "COM_RECEITA") {
+    return null;
+  }
 
   return item?.receitaLinha?.receita ?? null;
 }
 
 function formatHistoricoDate(value) {
-  if (!value) return "";
+  if (!value) {
+    return "";
+  }
 
   const date = new Date(value);
 
-  if (Number.isNaN(date.getTime())) return "";
+  if (Number.isNaN(date.getTime())) {
+    return "";
+  }
 
   return new Intl.DateTimeFormat("pt-PT", {
     day: "2-digit",
@@ -77,41 +85,52 @@ function formatHistoricoDate(value) {
   }).format(date);
 }
 
-export function getHistoricoItemValidadeLabel(item) {
+function getHistoricoItemValidadeLabel(item) {
   const formattedDate = formatHistoricoDate(item?.receitaLinha?.validade);
 
-  if (!formattedDate) return "";
+  if (!formattedDate) {
+    return "";
+  }
 
   return `${SANTACASA_HISTORICO_PAGE.labels.validadeReceita}: ${formattedDate}`;
 }
 
-export function shouldShowHistoricoItemReference(item) {
-  return item?.tipo === "EXTRA";
-}
-
-export function shouldShowHistoricoItemMeta(item) {
+function shouldShowExtraDetails(item) {
   return item?.tipo === "EXTRA";
 }
 
 export function getHistoricoItemViewModel(item, styles) {
+  const isDanger = isHistoricoPedidoItemDanger(item);
+  const showExtraDetails = shouldShowExtraDetails(item);
+
   return {
-    isDanger: isHistoricoPedidoItemDanger(item),
+    isDanger,
+    showExtraDetails,
 
     itemClassName: getHistoricoItemClassName(item, styles),
+
     itemStatusClassName: getHistoricoItemStatusClassName(item, styles),
+
     itemTypeClassName: getHistoricoItemTypeClassName(item?.tipo, styles),
 
     typeLabel: getHistoricoPedidoItemTypeLabel(item?.tipo),
-    statusLabel: getHistoricoPedidoItemStatusLabel(item?.status),
-    medicamentoLabel: getHistoricoPedidoItemMedicamentoLabel(item),
-    validadeLabel: getHistoricoItemValidadeLabel(item),
-    quantityLabel: getHistoricoPedidoItemQuantityLabel(item),
-    utenteLabel: getHistoricoPedidoItemUtenteLabel(item),
-    referenceLabel: getHistoricoPedidoItemReferenceLabel(item),
-    metaLabel: getHistoricoPedidoItemMetaLabel(item),
-    expiryNotice: getHistoricoPedidoItemExpiryNoticeMessage(item),
 
-    shouldShowReference: shouldShowHistoricoItemReference(item),
-    shouldShowMeta: shouldShowHistoricoItemMeta(item),
+    statusLabel: getHistoricoPedidoItemStatusLabel(item?.status),
+
+    medicamentoLabel: getHistoricoPedidoItemMedicamentoLabel(item),
+
+    validadeLabel: getHistoricoItemValidadeLabel(item),
+
+    quantityLabel: getHistoricoPedidoItemQuantityLabel(item),
+
+    utenteLabel: getHistoricoPedidoItemUtenteLabel(item),
+
+    referenceLabel: showExtraDetails
+      ? getHistoricoPedidoExtraReferenceLabel(item)
+      : "",
+
+    metaLabel: showExtraDetails ? getHistoricoPedidoExtraMetaLabel(item) : "",
+
+    expiryNotice: getHistoricoPedidoItemExpiryNoticeMessage(item),
   };
 }

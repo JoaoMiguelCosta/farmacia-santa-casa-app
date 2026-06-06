@@ -1,10 +1,12 @@
+// src/features/santacasa/historico/components/SantaCasaHistoricoCard/santaCasaHistoricoCardSummary.utils.js
+
 import { SANTACASA_HISTORICO_PAGE } from "../../config/santaCasaHistoricoPage.config";
 
 import {
   getHistoricoPedidoClosedAtLabel,
   getHistoricoPedidoExpiredCanceledItemsCount,
   getHistoricoPedidoExpiredCanceledQuantity,
-  getHistoricoPedidoItemUtenteLabel,
+  getHistoricoPedidoItems,
   getHistoricoPedidoItemsCount,
   getHistoricoPedidoTotalQuantity,
   getHistoricoPedidoUtentesLabel,
@@ -14,6 +16,8 @@ import {
   isHistoricoPedidoValidadoComAvisos,
 } from "../../utils/santaCasaHistorico.utils";
 
+import { getHistoricoPedidoItemUtenteLabel } from "../../utils/santaCasaHistoricoItems.utils";
+
 const MAX_VISIBLE_UTENTES = 2;
 
 function getAuditUserLabel(user) {
@@ -22,17 +26,11 @@ function getAuditUserLabel(user) {
   );
 }
 
-function getPedidoItems(pedido) {
-  if (Array.isArray(pedido?.itens)) return pedido.itens;
-  if (Array.isArray(pedido?.items)) return pedido.items;
-
-  return [];
-}
-
 function getItemUtenteKey(item) {
   return String(
     item?.utenteId ||
       item?.utente?.id ||
+      item?.utente?.numero9 ||
       item?.utente?.numero ||
       item?.utente?.numeroUtente ||
       getHistoricoPedidoItemUtenteLabel(item) ||
@@ -43,11 +41,13 @@ function getItemUtenteKey(item) {
 function getUniquePedidoUtentes(pedido) {
   const utentesByKey = new Map();
 
-  getPedidoItems(pedido).forEach((item) => {
+  getHistoricoPedidoItems(pedido).forEach((item) => {
     const key = getItemUtenteKey(item);
     const label = getHistoricoPedidoItemUtenteLabel(item);
 
-    if (!key || !label || utentesByKey.has(key)) return;
+    if (!key || !label || utentesByKey.has(key)) {
+      return;
+    }
 
     utentesByKey.set(key, label);
   });
@@ -56,7 +56,11 @@ function getUniquePedidoUtentes(pedido) {
 }
 
 function getUtentesCountLabel(totalUtentes) {
-  return Number(totalUtentes) === 1 ? "1 utente" : `${totalUtentes} utentes`;
+  const labels = SANTACASA_HISTORICO_PAGE.labels;
+
+  const utenteLabel = totalUtentes === 1 ? labels.utente : labels.utentes;
+
+  return `${totalUtentes} ${utenteLabel.toLocaleLowerCase("pt-PT")}`;
 }
 
 function getPedidoUtentesSummaryInfo(pedido) {
@@ -72,15 +76,19 @@ function getPedidoUtentesSummaryInfo(pedido) {
   }
 
   const visibleUtentes = utenteLabels.slice(0, MAX_VISIBLE_UTENTES);
+
   const remainingUtentes = Math.max(totalUtentes - visibleUtentes.length, 0);
 
   return {
     key: "utentes",
+
     label:
       totalUtentes === 1
         ? SANTACASA_HISTORICO_PAGE.labels.utente
         : SANTACASA_HISTORICO_PAGE.labels.utentes,
+
     type: "utentes",
+
     value: {
       countLabel: getUtentesCountLabel(totalUtentes),
       visibleUtentes,
@@ -126,7 +134,7 @@ function getPedidoAuditInfo(pedido) {
     return {
       key: "validatedBy",
       label: SANTACASA_HISTORICO_PAGE.labels.validatedBy,
-      value: getAuditUserLabel(pedido.validatedBy),
+      value: getAuditUserLabel(pedido?.validatedBy),
     };
   }
 
@@ -134,7 +142,7 @@ function getPedidoAuditInfo(pedido) {
     return {
       key: "rejectedBy",
       label: SANTACASA_HISTORICO_PAGE.labels.rejectedBy,
-      value: getAuditUserLabel(pedido.rejectedBy),
+      value: getAuditUserLabel(pedido?.rejectedBy),
     };
   }
 
@@ -151,10 +159,11 @@ function getPedidoAuditInfo(pedido) {
 
 export function getHistoricoPedidoSummaryItems(pedido) {
   const showWarningSummary = isHistoricoPedidoValidadoComAvisos(pedido);
+
   const auditInfo = getPedidoAuditInfo(pedido);
   const utentesInfo = getPedidoUtentesSummaryInfo(pedido);
 
-  const items = [
+  const summaryItems = [
     {
       key: "closedAt",
       label: getHistoricoPedidoDecisionDateLabel(pedido),
@@ -169,7 +178,7 @@ export function getHistoricoPedidoSummaryItems(pedido) {
   ];
 
   if (showWarningSummary) {
-    items.push(
+    summaryItems.push(
       {
         key: "validatedItems",
         label: SANTACASA_HISTORICO_PAGE.labels.validatedItems,
@@ -192,7 +201,7 @@ export function getHistoricoPedidoSummaryItems(pedido) {
       },
     );
   } else {
-    items.push({
+    summaryItems.push({
       key: "totalQuantity",
       label: SANTACASA_HISTORICO_PAGE.labels.totalQuantity,
       value: getHistoricoPedidoTotalQuantity(pedido),
@@ -200,8 +209,8 @@ export function getHistoricoPedidoSummaryItems(pedido) {
   }
 
   if (auditInfo) {
-    items.push(auditInfo);
+    summaryItems.push(auditInfo);
   }
 
-  return items;
+  return summaryItems;
 }

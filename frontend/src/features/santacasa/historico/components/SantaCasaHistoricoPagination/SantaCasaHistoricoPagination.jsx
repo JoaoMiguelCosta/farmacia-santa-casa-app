@@ -3,19 +3,35 @@ import { SANTACASA_HISTORICO_PAGE } from "../../config/santaCasaHistoricoPage.co
 
 import styles from "./SantaCasaHistoricoPagination.module.css";
 
+function getPedidoLabel(total) {
+  return Number(total) === 1
+    ? SANTACASA_HISTORICO_PAGE.pagination.pedidoSingular
+    : SANTACASA_HISTORICO_PAGE.pagination.pedidoPlural;
+}
+
 function getPaginationLabel({ meta, currentPage, totalPages }) {
   const total = Number(meta?.total) || 0;
   const skip = Number(meta?.skip) || 0;
   const take = Number(meta?.take) || 0;
 
   if (total === 0) {
-    return "Sem resultados.";
+    return SANTACASA_HISTORICO_PAGE.pagination.emptyLabel;
   }
 
   const start = skip + 1;
   const end = Math.min(skip + take, total);
 
-  return `A mostrar ${start}-${end} de ${total} pedido(s). Página ${currentPage} de ${totalPages}.`;
+  return [
+    SANTACASA_HISTORICO_PAGE.pagination.showingLabel,
+    `${start}-${end}`,
+    SANTACASA_HISTORICO_PAGE.pagination.ofLabel,
+    total,
+    `${getPedidoLabel(total)}.`,
+    SANTACASA_HISTORICO_PAGE.pagination.pageLabel,
+    currentPage,
+    SANTACASA_HISTORICO_PAGE.pagination.ofLabel,
+    `${totalPages}.`,
+  ].join(" ");
 }
 
 export default function SantaCasaHistoricoPagination({
@@ -37,7 +53,7 @@ export default function SantaCasaHistoricoPagination({
   return (
     <section
       className={styles.pagination}
-      aria-label="Paginação do histórico da Santa Casa"
+      aria-label={SANTACASA_HISTORICO_PAGE.pagination.ariaLabel}
     >
       <p className={styles.paginationInfo}>{paginationLabel}</p>
 

@@ -1,4 +1,6 @@
-import { useCallback, useMemo, useState } from "react";
+// src/features/santacasa/historico/components/SantaCasaHistoricoCard/useSantaCasaHistoricoCard.js
+
+import { useState } from "react";
 
 import styles from "./SantaCasaHistoricoCard.module.css";
 
@@ -27,17 +29,12 @@ function getHistoricoCardClassName(pedido) {
 export function useSantaCasaHistoricoCard(pedido) {
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
 
-  const items = useMemo(() => {
-    return getHistoricoPedidoItems(pedido);
-  }, [pedido]);
+  const items = getHistoricoPedidoItems(pedido);
+  const cardClassName = getHistoricoCardClassName(pedido);
 
-  const cardClassName = useMemo(() => {
-    return getHistoricoCardClassName(pedido);
-  }, [pedido]);
-
-  const handleToggleDetails = useCallback(() => {
+  function handleToggleDetails() {
     setIsDetailsOpen((currentValue) => !currentValue);
-  }, []);
+  }
 
   return {
     items,

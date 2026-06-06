@@ -42,7 +42,7 @@ export default function SantaCasaHistoricoList({
       <section className={styles.section} aria-live="polite">
         <SantaCasaHistoricoState
           title={sectionConfig.loadingTitle}
-          description="Aguarda enquanto os dados são carregados."
+          description={sectionConfig.loadingDescription}
         />
       </section>
     );

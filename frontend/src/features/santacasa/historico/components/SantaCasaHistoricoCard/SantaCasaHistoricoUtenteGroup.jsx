@@ -1,3 +1,5 @@
+// src/features/santacasa/historico/components/SantaCasaHistoricoCard/SantaCasaHistoricoUtenteGroup.jsx
+
 import SantaCasaHistoricoItem from "./SantaCasaHistoricoItem";
 
 import styles from "./SantaCasaHistoricoUtenteGroup.module.css";
@@ -18,25 +20,27 @@ export default function SantaCasaHistoricoUtenteGroup({
 }) {
   const {
     visibleItems,
-    canShowControls,
+
+    shouldShowActions,
     canShowInitial,
     canShowMore,
-    canShowAll,
     canHideAll,
+
     showingItemsLabel,
     showMoreLabel,
     showInitialLabel,
+
     handleShowInitial,
     handleShowMore,
     handleShowAll,
     handleHideAll,
-  } = useSantaCasaHistoricoUtenteGroup(group, { isSearchActive });
+  } = useSantaCasaHistoricoUtenteGroup(group, {
+    isSearchActive,
+  });
 
-  if (!group) return null;
-
-  const shouldShowActions =
-    canShowControls &&
-    (canShowInitial || canShowMore || canShowAll || canHideAll);
+  if (!group) {
+    return null;
+  }
 
   return (
     <article className={getGroupClassName(group)}>
@@ -82,23 +86,23 @@ export default function SantaCasaHistoricoUtenteGroup({
             ) : null}
 
             {canShowMore ? (
-              <button
-                type="button"
-                className={styles.itemsButton}
-                onClick={handleShowMore}
-              >
-                {showMoreLabel}
-              </button>
-            ) : null}
+              <>
+                <button
+                  type="button"
+                  className={styles.itemsButton}
+                  onClick={handleShowMore}
+                >
+                  {showMoreLabel}
+                </button>
 
-            {canShowAll ? (
-              <button
-                type="button"
-                className={styles.itemsButton}
-                onClick={handleShowAll}
-              >
-                {SANTACASA_HISTORICO_PAGE.actions.showAllItems}
-              </button>
+                <button
+                  type="button"
+                  className={styles.itemsButton}
+                  onClick={handleShowAll}
+                >
+                  {SANTACASA_HISTORICO_PAGE.actions.showAllItems}
+                </button>
+              </>
             ) : null}
 
             {canHideAll ? (

@@ -23,7 +23,10 @@ export default function SantaCasaHistoricoFilters({
   }
 
   return (
-    <section className={styles.toolbar} aria-label="Filtros do histórico">
+    <section
+      className={styles.toolbar}
+      aria-label={SANTACASA_HISTORICO_PAGE.filters.ariaLabel}
+    >
       <form className={styles.filters} onSubmit={handleSubmit}>
         <label className={styles.filterField}>
           <span>{SANTACASA_HISTORICO_PAGE.filters.statusLabel}</span>
@@ -96,7 +99,7 @@ export default function SantaCasaHistoricoFilters({
       </form>
 
       <div className={styles.meta}>
-        <span>Total</span>
+        <span>{SANTACASA_HISTORICO_PAGE.filters.totalLabel}</span>
         <strong>{Number(meta?.total) || 0}</strong>
       </div>
     </section>

@@ -1,3 +1,5 @@
+// src/features/santacasa/historico/components/SantaCasaHistoricoCard/SantaCasaHistoricoItem.jsx
+
 import SantaCasaHistoricoItemBarcodes from "./SantaCasaHistoricoItemBarcodes";
 
 import styles from "./SantaCasaHistoricoItem.module.css";
@@ -39,19 +41,19 @@ export default function SantaCasaHistoricoItem({ item, showUtente = true }) {
             receita={receita}
             isDanger={viewModel.isDanger}
           />
-        ) : (
+        ) : viewModel.showExtraDetails ? (
           <>
-            {viewModel.shouldShowReference ? (
+            {viewModel.referenceLabel ? (
               <span className={styles.itemReference}>
                 {viewModel.referenceLabel}
               </span>
             ) : null}
 
-            {viewModel.shouldShowMeta ? (
+            {viewModel.metaLabel ? (
               <span className={styles.itemMeta}>{viewModel.metaLabel}</span>
             ) : null}
           </>
-        )}
+        ) : null}
 
         {viewModel.expiryNotice ? (
           <span className={styles.itemExpiryNotice}>
@@ -62,12 +64,14 @@ export default function SantaCasaHistoricoItem({ item, showUtente = true }) {
 
       <div className={styles.itemSide}>
         <span>{SANTACASA_HISTORICO_PAGE.labels.quantidade}</span>
+
         <strong>{viewModel.quantityLabel}</strong>
       </div>
 
       {showUtente ? (
         <div className={styles.itemFooter}>
           <span>{SANTACASA_HISTORICO_PAGE.labels.utente}</span>
+
           <strong>{viewModel.utenteLabel}</strong>
         </div>
       ) : null}

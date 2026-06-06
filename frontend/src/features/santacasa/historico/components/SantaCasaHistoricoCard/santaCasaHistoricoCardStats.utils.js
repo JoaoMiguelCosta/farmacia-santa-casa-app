@@ -1,13 +1,9 @@
 import { SANTACASA_HISTORICO_PAGE } from "../../config/santaCasaHistoricoPage.config";
 
-import { isHistoricoPedidoValidadoComAvisos } from "../../utils/santaCasaHistorico.utils";
-
-function getPedidoItems(pedido) {
-  if (Array.isArray(pedido?.itens)) return pedido.itens;
-  if (Array.isArray(pedido?.items)) return pedido.items;
-
-  return [];
-}
+import {
+  getHistoricoPedidoItems,
+  isHistoricoPedidoValidadoComAvisos,
+} from "../../utils/santaCasaHistorico.utils";
 
 function getItemStatus(item) {
   return String(item?.status || "").toUpperCase();
@@ -43,7 +39,9 @@ function getQuantityByStatus(items, statuses) {
 }
 
 function getTotalQuantity(items) {
-  return items.reduce((total, item) => total + getItemQuantity(item), 0);
+  return items.reduce((total, item) => {
+    return total + getItemQuantity(item);
+  }, 0);
 }
 
 function getPedidoStatus(pedido) {
@@ -209,7 +207,7 @@ function getFallbackStats(items) {
 }
 
 export function getHistoricoPedidoCardStats(pedido) {
-  const items = getPedidoItems(pedido);
+  const items = getHistoricoPedidoItems(pedido);
 
   if (items.length === 0) {
     return {
