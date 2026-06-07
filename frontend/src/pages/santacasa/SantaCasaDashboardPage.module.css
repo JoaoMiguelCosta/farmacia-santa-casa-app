@@ -1,6 +1,0 @@
-.page {
-    display: grid;
-    gap: clamp(1.25rem, 2.5vw, 2rem);
-    inline-size: min(100%, 1180px);
-    margin-inline: auto;
-}

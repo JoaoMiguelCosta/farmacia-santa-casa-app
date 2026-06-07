@@ -38,6 +38,7 @@
     align-items: center;
     gap: clamp(0.9rem, 2vw, 1.1rem);
 
+    flex: 1 1 auto;
     min-width: 0;
 }
 
@@ -49,6 +50,8 @@
     min-width: 0;
 
     border-radius: var(--clinic-radius-md);
+
+    text-decoration: none;
 
     transition:
         opacity var(--clinic-transition),
@@ -69,6 +72,8 @@
 }
 
 .sessionSlot {
+    flex: 1 1 auto;
+
     min-width: 0;
 }
 
@@ -79,13 +84,14 @@
 
     flex: 0 0 auto;
     min-width: 0;
+    margin-inline-start: auto;
 }
 
 .sectionRow {
     min-width: 0;
 }
 
-@media (max-width: 1180px) {
+@media (max-width: 980px) {
     .topRow {
         align-items: stretch;
         flex-direction: column;
@@ -98,7 +104,9 @@
 
     .navigationGroup {
         justify-content: flex-start;
+
         width: 100%;
+        margin-inline-start: 0;
     }
 }
 
@@ -126,6 +134,10 @@
     .brandLink {
         width: fit-content;
         max-width: 100%;
+    }
+
+    .sessionSlot {
+        width: 100%;
     }
 }
 

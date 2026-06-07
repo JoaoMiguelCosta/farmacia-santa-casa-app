@@ -1,13 +1,49 @@
 // src/features/santacasa/utentes/utils/utentesState.utils.js
+
 import {
   UTENTE_ARCHIVE_DEFAULT_REASON,
   UTENTE_STATUS,
 } from "../config/utentesStatus.config";
 
+const ALLOWED_UTENTE_STATUSES = new Set([
+  UTENTE_STATUS.ATIVO,
+  UTENTE_STATUS.ARQUIVADO,
+  UTENTE_STATUS.TODOS,
+]);
+
 export const UTENTES_DEFAULTS = Object.freeze({
   statusFilter: UTENTE_STATUS.ATIVO,
   pageSize: 50,
 });
+
+export function normalizeUtenteStatusFilter(status) {
+  const normalizedStatus = String(status || UTENTES_DEFAULTS.statusFilter)
+    .trim()
+    .toUpperCase();
+
+  if (!ALLOWED_UTENTE_STATUSES.has(normalizedStatus)) {
+    return UTENTES_DEFAULTS.statusFilter;
+  }
+
+  return normalizedStatus;
+}
+
+export function getUtenteStatusFromSearchParams(searchParams) {
+  const safeSearchParams =
+    searchParams instanceof URLSearchParams
+      ? searchParams
+      : new URLSearchParams(searchParams);
+
+  return normalizeUtenteStatusFilter(safeSearchParams.get("status"));
+}
+
+export function buildUtenteStatusSearchParams({ currentSearchParams, status }) {
+  const nextSearchParams = new URLSearchParams(currentSearchParams);
+
+  nextSearchParams.set("status", normalizeUtenteStatusFilter(status));
+
+  return nextSearchParams;
+}
 
 export function getErrorMessage(error, fallback) {
   return error?.message || fallback;
@@ -74,7 +110,10 @@ export function getNextPageSkip(pagination) {
 
 export function shouldKeepUtenteInCurrentFilter(utente, statusFilter) {
   if (!utente) return false;
-  if (statusFilter === UTENTE_STATUS.TODOS) return true;
+
+  if (statusFilter === UTENTE_STATUS.TODOS) {
+    return true;
+  }
 
   return utente.status === statusFilter;
 }

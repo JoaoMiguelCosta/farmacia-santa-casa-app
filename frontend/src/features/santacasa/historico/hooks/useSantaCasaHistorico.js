@@ -2,11 +2,17 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
+import { useSearchParams } from "react-router-dom";
+
 import { useAuth } from "../../../auth/hooks/useAuth";
 
 import { getSantaCasaHistorico } from "../api/santaCasaHistoricoApi";
 
-import { buildSantaCasaHistoricoQuery } from "../utils/santaCasaHistoricoQuery.utils";
+import {
+  buildSantaCasaHistoricoQuery,
+  buildSantaCasaHistoricoSearchParams,
+  getSantaCasaHistoricoStatusFromSearchParams,
+} from "../utils/santaCasaHistoricoQuery.utils";
 
 const DEFAULT_QUERY = Object.freeze({
   status: "TODOS",
@@ -32,31 +38,52 @@ function getInitialMeta() {
   };
 }
 
+function getInitialQuery(searchParams) {
+  return {
+    ...DEFAULT_QUERY,
+    status: getSantaCasaHistoricoStatusFromSearchParams(searchParams),
+  };
+}
+
 export function useSantaCasaHistorico() {
   const { handleAuthError } = useAuth();
+
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const latestRequestIdRef = useRef(0);
 
   const [pedidos, setPedidos] = useState([]);
   const [meta, setMeta] = useState(getInitialMeta);
 
-  const [query, setQuery] = useState(DEFAULT_QUERY);
+  const [query, setQuery] = useState(() => getInitialQuery(searchParams));
 
-  const [statusInput, setStatusInput] = useState(DEFAULT_QUERY.status);
+  const [statusInput, setStatusInput] = useState(() =>
+    getSantaCasaHistoricoStatusFromSearchParams(searchParams),
+  );
+
   const [searchInput, setSearchInput] = useState(DEFAULT_QUERY.search);
+
   const [fromInput, setFromInput] = useState(DEFAULT_QUERY.from);
+
   const [toInput, setToInput] = useState(DEFAULT_QUERY.to);
 
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
+
   const [error, setError] = useState(null);
+
+  const urlStatus = useMemo(() => {
+    return getSantaCasaHistoricoStatusFromSearchParams(searchParams);
+  }, [searchParams]);
 
   const currentQuery = useMemo(() => {
     return buildSantaCasaHistoricoQuery(query);
   }, [query]);
 
   const safeTake = Math.max(1, Number(meta?.take) || DEFAULT_QUERY.take);
+
   const safeSkip = Math.max(0, Number(meta?.skip) || 0);
+
   const safeTotal = Math.max(0, Number(meta?.total) || 0);
 
   const totalPages = Math.max(1, Math.ceil(safeTotal / safeTake));
@@ -64,7 +91,20 @@ export function useSantaCasaHistorico() {
   const currentPage = Math.min(totalPages, Math.floor(safeSkip / safeTake) + 1);
 
   const hasPreviousPage = safeSkip > 0;
+
   const hasNextPage = safeSkip + safeTake < safeTotal;
+
+  const updateStatusSearchParams = useCallback(
+    (status) => {
+      const nextSearchParams = buildSantaCasaHistoricoSearchParams({
+        currentSearchParams: searchParams,
+        status,
+      });
+
+      setSearchParams(nextSearchParams);
+    },
+    [searchParams, setSearchParams],
+  );
 
   const executeHistoricoRequest = useCallback(
     async ({ requestQuery, mode = "loading" }) => {
@@ -75,14 +115,21 @@ export function useSantaCasaHistorico() {
       try {
         const result = await getSantaCasaHistorico(requestQuery);
 
-        if (requestId !== latestRequestIdRef.current) return;
+        if (requestId !== latestRequestIdRef.current) {
+          return;
+        }
 
         setPedidos(result.data);
         setMeta(result.meta);
         setError(null);
       } catch (requestError) {
-        if (requestId !== latestRequestIdRef.current) return;
-        if (handleAuthError(requestError)) return;
+        if (requestId !== latestRequestIdRef.current) {
+          return;
+        }
+
+        if (handleAuthError(requestError)) {
+          return;
+        }
 
         setError(getErrorMessage(requestError, LOAD_ERROR_MESSAGE));
       } finally {
@@ -130,6 +177,8 @@ export function useSantaCasaHistorico() {
     setIsLoading(true);
     setError(null);
 
+    updateStatusSearchParams(statusInput);
+
     setQuery((currentQueryValue) => ({
       ...currentQueryValue,
       status: statusInput,
@@ -138,7 +187,7 @@ export function useSantaCasaHistorico() {
       to: toInput,
       skip: 0,
     }));
-  }, [fromInput, searchInput, statusInput, toInput]);
+  }, [fromInput, searchInput, statusInput, toInput, updateStatusSearchParams]);
 
   const clearFilters = useCallback(() => {
     setStatusInput(DEFAULT_QUERY.status);
@@ -149,10 +198,12 @@ export function useSantaCasaHistorico() {
     setIsLoading(true);
     setError(null);
 
+    updateStatusSearchParams(DEFAULT_QUERY.status);
+
     setQuery({
       ...DEFAULT_QUERY,
     });
-  }, []);
+  }, [updateStatusSearchParams]);
 
   const goToPreviousPage = useCallback(() => {
     if (!hasPreviousPage) return;
@@ -195,6 +246,30 @@ export function useSantaCasaHistorico() {
       };
     });
   }, [hasNextPage]);
+
+  useEffect(() => {
+    let isCancelled = false;
+
+    queueMicrotask(() => {
+      if (isCancelled || urlStatus === query.status) {
+        return;
+      }
+
+      setStatusInput(urlStatus);
+      setIsLoading(true);
+      setError(null);
+
+      setQuery((currentQueryValue) => ({
+        ...currentQueryValue,
+        status: urlStatus,
+        skip: 0,
+      }));
+    });
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [query.status, urlStatus]);
 
   useEffect(() => {
     let isCancelled = false;

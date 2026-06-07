@@ -1,8 +1,9 @@
-// src/features/santacasa/utentes/components/UtentesPageContent/UtentesPageContent.jsx
 import Button from "../../../../../shared/ui/Button/Button";
 import PageHeader from "../../../../../shared/ui/PageHeader/PageHeader";
 
+import { UTENTES_PAGE } from "../../config/utentesPage.config";
 
+import { useSantaCasaUtentes } from "../../hooks/useSantaCasaUtentes";
 import { useUtentePendingAction } from "../../hooks/useUtentePendingAction";
 
 import UtenteCreateForm from "../UtenteCreateForm/UtenteCreateForm";
@@ -11,56 +12,56 @@ import UtentesList from "../UtentesList/UtentesList";
 import UtentesPagination from "../UtentesPagination/UtentesPagination";
 import UtentesToolbar from "../UtentesToolbar/UtentesToolbar";
 
-import { UTENTES_PAGE } from "../../config/utentesPage.config";
-
 import styles from "./UtentesPageContent.module.css";
 
-export default function UtentesPageContent({
-  utentes,
+export default function UtentesPageContent() {
+  const {
+    utentes,
 
-  statusFilter,
-  statusOptions,
+    statusFilter,
+    statusOptions,
 
-  searchInput,
-  searchQuery,
+    searchInput,
+    searchQuery,
 
-  pagination,
-  currentPage,
-  totalPages,
-  hasPreviousPage,
-  hasNextPage,
+    pagination,
+    currentPage,
+    totalPages,
+    hasPreviousPage,
+    hasNextPage,
 
-  isLoading,
-  isRefreshing,
-  isCreating,
-  isActionRunning,
+    isLoading,
+    isRefreshing,
+    isCreating,
+    isActionRunning,
 
-  deletingUtenteId,
-  archivingUtenteId,
-  reactivatingUtenteId,
+    deletingUtenteId,
+    archivingUtenteId,
+    reactivatingUtenteId,
 
-  utenteToDelete,
+    utenteToDelete,
 
-  error,
-  feedback,
-  setFeedback,
+    error,
+    feedback,
+    setFeedback,
 
-  handleRefreshUtentes,
-  updateStatusFilter,
-  updateSearchInput,
-  handleSubmitSearch,
-  handleClearSearch,
-  handlePreviousPage,
-  handleNextPage,
+    handleRefreshUtentes,
+    updateStatusFilter,
+    updateSearchInput,
+    handleSubmitSearch,
+    handleClearSearch,
+    handlePreviousPage,
+    handleNextPage,
 
-  handleCreateUtente,
-  handleArchiveUtente,
-  handleReactivateUtente,
+    handleCreateUtente,
+    handleArchiveUtente,
+    handleReactivateUtente,
 
-  handleRequestDeleteUtente,
-  handleCancelDeleteUtente,
-  handleConfirmDeleteUtente,
-}) {
+    handleRequestDeleteUtente,
+    handleCancelDeleteUtente,
+    handleConfirmDeleteUtente,
+  } = useSantaCasaUtentes();
+
   const {
     pendingAction,
     actionDialog,
@@ -80,8 +81,6 @@ export default function UtentesPageContent({
       className={styles.page}
       aria-labelledby={UTENTES_PAGE.page.titleId}
     >
-    
-
       <PageHeader
         titleId={UTENTES_PAGE.page.titleId}
         eyebrow={UTENTES_PAGE.header.eyebrow}

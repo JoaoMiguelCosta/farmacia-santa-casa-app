@@ -1,4 +1,12 @@
 import { formatDateTime } from "../../../../shared/utils/formatDate";
+
+import {
+  SANTACASA_REGULARIZACOES_TABS,
+  buildRegularizacoesViewRoute,
+} from "../../regularizacoes/utils/santaCasaRegularizacoes.utils";
+
+import { UTENTE_STATUS } from "../../utentes/config/utentesStatus.config";
+
 import { SANTACASA_DASHBOARD_PAGE } from "../config/santaCasaDashboardPage.config";
 
 const UNKNOWN_LABEL = "—";
@@ -6,13 +14,56 @@ const UNKNOWN_LABEL = "—";
 function toSafeNumber(value) {
   const number = Number(value);
 
-  if (!Number.isFinite(number)) return 0;
+  if (!Number.isFinite(number)) {
+    return 0;
+  }
 
   return number;
 }
 
+function getDangerTone(value) {
+  return value > 0 ? "danger" : "neutral";
+}
+
+function buildRouteWithStatus(baseRoute, status) {
+  const searchParams = new URLSearchParams({
+    status,
+  });
+
+  return `${baseRoute}?${searchParams.toString()}`;
+}
+
+function buildHistoricoStatusRoute(status) {
+  return buildRouteWithStatus(
+    SANTACASA_DASHBOARD_PAGE.cards.historico.to,
+    status,
+  );
+}
+
+function buildUtentesStatusRoute(status) {
+  return buildRouteWithStatus(
+    SANTACASA_DASHBOARD_PAGE.cards.utentes.to,
+    status,
+  );
+}
+
+function buildRegularizacoesRoute(view) {
+  return buildRegularizacoesViewRoute(
+    SANTACASA_DASHBOARD_PAGE.cards.regularizacoes.to,
+    view,
+  );
+}
+
 export function getTotalUtentesCount(dashboard) {
   return toSafeNumber(dashboard?.utentes?.total);
+}
+
+export function getUtentesAtivosCount(dashboard) {
+  return toSafeNumber(dashboard?.utentes?.ativos);
+}
+
+export function getUtentesArquivadosCount(dashboard) {
+  return toSafeNumber(dashboard?.utentes?.arquivados);
 }
 
 export function getTotalReceitasCount(dashboard) {
@@ -23,28 +74,12 @@ export function getReceitasAtivasCount(dashboard) {
   return toSafeNumber(dashboard?.receitas?.linhasAtivas);
 }
 
-export function getReceitasExpiradasCount(dashboard) {
-  return toSafeNumber(dashboard?.receitas?.linhasExpiradas);
-}
-
 export function getTotalSemReceitaCount(dashboard) {
   return toSafeNumber(dashboard?.semReceita?.total);
 }
 
-export function getExtrasPendentesCount(dashboard) {
-  return toSafeNumber(dashboard?.extras?.pendentes);
-}
-
-export function getExtrasParcialmenteRegularizadosCount(dashboard) {
-  return toSafeNumber(dashboard?.extras?.parcialmenteRegularizados);
-}
-
-export function getExtrasRegularizadosCount(dashboard) {
-  return toSafeNumber(dashboard?.extras?.regularizados);
-}
-
-export function getExtrasExpiradosCount(dashboard) {
-  return toSafeNumber(dashboard?.extras?.expirados);
+export function getExtrasAbertosCount(dashboard) {
+  return toSafeNumber(dashboard?.extras?.abertos);
 }
 
 export function getPedidosPendentesCount(dashboard) {
@@ -57,6 +92,10 @@ export function getPedidosValidadosCount(dashboard) {
 
 export function getPedidosRejeitadosCount(dashboard) {
   return toSafeNumber(dashboard?.pedidos?.rejeitados);
+}
+
+export function getPedidosCanceladosCount(dashboard) {
+  return toSafeNumber(dashboard?.pedidos?.cancelados);
 }
 
 export function getRegularizacoesPendentesCount(dashboard) {
@@ -83,7 +122,9 @@ export function getLatestPedidoNumberLabel(dashboard) {
   const pedido = getLatestPedido(dashboard);
   const numero = Number(pedido?.numero);
 
-  if (!Number.isFinite(numero)) return UNKNOWN_LABEL;
+  if (!Number.isFinite(numero)) {
+    return UNKNOWN_LABEL;
+  }
 
   return `#${numero}`;
 }
@@ -96,6 +137,12 @@ export function getLatestPedidoStatusLabel(dashboard) {
     pedido?.status ||
     UNKNOWN_LABEL
   );
+}
+
+export function getLatestPedidoStatusTone(dashboard) {
+  const pedido = getLatestPedido(dashboard);
+
+  return SANTACASA_DASHBOARD_PAGE.statusTones[pedido?.status] || "neutral";
 }
 
 export function getLatestPedidoCreatedAtLabel(dashboard) {
@@ -125,134 +172,204 @@ export function getLatestPedidoDecisionLabel(dashboard) {
     return SANTACASA_DASHBOARD_PAGE.labels.rejectedAt;
   }
 
+  if (pedido?.status === "CANCELADO") {
+    return SANTACASA_DASHBOARD_PAGE.labels.canceledAt;
+  }
+
   return SANTACASA_DASHBOARD_PAGE.labels.createdAt;
 }
 
-export function buildDashboardMainMetrics(dashboard) {
+export function buildDashboardPriorityMetrics(dashboard) {
+  const pedidosPendentes = getPedidosPendentesCount(dashboard);
+
+  const regularizacoesPendentes = getRegularizacoesPendentesCount(dashboard);
+
+  return [
+    {
+      key: "pedidos-pendentes",
+      label: SANTACASA_DASHBOARD_PAGE.labels.pedidosPendentes,
+      value: pedidosPendentes,
+      statusText:
+        pedidosPendentes > 0
+          ? SANTACASA_DASHBOARD_PAGE.priorityStates.pedidosAttention
+          : SANTACASA_DASHBOARD_PAGE.priorityStates.pedidosClear,
+      tone: pedidosPendentes > 0 ? "warning" : "success",
+      to: SANTACASA_DASHBOARD_PAGE.cards.pedidos.to,
+      actionLabel: SANTACASA_DASHBOARD_PAGE.cards.pedidos.actionLabel,
+    },
+
+    {
+      key: "regularizacoes-pendentes",
+      label: SANTACASA_DASHBOARD_PAGE.labels.regularizacoesPendentes,
+      value: regularizacoesPendentes,
+      statusText:
+        regularizacoesPendentes > 0
+          ? SANTACASA_DASHBOARD_PAGE.priorityStates.regularizacoesAttention
+          : SANTACASA_DASHBOARD_PAGE.priorityStates.regularizacoesClear,
+      tone: regularizacoesPendentes > 0 ? "warning" : "success",
+      to: buildRegularizacoesRoute(SANTACASA_REGULARIZACOES_TABS.pending),
+      actionLabel: SANTACASA_DASHBOARD_PAGE.cards.regularizacoes.actionLabel,
+    },
+  ];
+}
+
+export function buildUtentesMetrics(dashboard) {
   return [
     {
       key: "utentes-total",
       label: SANTACASA_DASHBOARD_PAGE.labels.totalUtentes,
       value: getTotalUtentesCount(dashboard),
-      to: SANTACASA_DASHBOARD_PAGE.cards.utentes.to,
+      tone: "neutral",
+      to: buildUtentesStatusRoute(UTENTE_STATUS.TODOS),
     },
+
     {
-      key: "pedidos-pendentes",
-      label: SANTACASA_DASHBOARD_PAGE.labels.pedidosPendentes,
-      value: getPedidosPendentesCount(dashboard),
-      to: SANTACASA_DASHBOARD_PAGE.cards.pedidos.to,
+      key: "utentes-ativos",
+      label: SANTACASA_DASHBOARD_PAGE.labels.utentesAtivos,
+      value: getUtentesAtivosCount(dashboard),
+      tone: "success",
+      to: buildUtentesStatusRoute(UTENTE_STATUS.ATIVO),
     },
+
     {
-      key: "extras-pendentes",
-      label: SANTACASA_DASHBOARD_PAGE.labels.extrasPendentes,
-      value: getExtrasPendentesCount(dashboard),
-      to: SANTACASA_DASHBOARD_PAGE.cards.operacao.to,
-    },
-    {
-      key: "regularizacoes-pendentes",
-      label: SANTACASA_DASHBOARD_PAGE.labels.regularizacoesPendentes,
-      value: getRegularizacoesPendentesCount(dashboard),
-      to: SANTACASA_DASHBOARD_PAGE.cards.regularizacoes.to,
+      key: "utentes-arquivados",
+      label: SANTACASA_DASHBOARD_PAGE.labels.utentesArquivados,
+      value: getUtentesArquivadosCount(dashboard),
+      tone: "neutral",
+      to: buildUtentesStatusRoute(UTENTE_STATUS.ARQUIVADO),
     },
   ];
 }
 
-export function buildReceitasMetrics(dashboard) {
+export function buildReceitasMedicacaoMetrics(dashboard) {
   return [
     {
       key: "receitas-total",
       label: SANTACASA_DASHBOARD_PAGE.labels.totalReceitas,
       value: getTotalReceitasCount(dashboard),
+      tone: "neutral",
     },
+
     {
       key: "receitas-ativas",
       label: SANTACASA_DASHBOARD_PAGE.labels.receitasAtivas,
       value: getReceitasAtivasCount(dashboard),
+      tone: "success",
     },
-    {
-      key: "receitas-expiradas",
-      label: SANTACASA_DASHBOARD_PAGE.labels.receitasExpiradas,
-      value: getReceitasExpiradasCount(dashboard),
-    },
+
     {
       key: "sem-receita-total",
       label: SANTACASA_DASHBOARD_PAGE.labels.totalSemReceita,
       value: getTotalSemReceitaCount(dashboard),
+      tone: "info",
+    },
+
+    {
+      key: "extras-abertos",
+      label: SANTACASA_DASHBOARD_PAGE.labels.extrasAbertos,
+      value: getExtrasAbertosCount(dashboard),
+      tone: "warning",
     },
   ];
 }
 
 export function buildPedidosMetrics(dashboard) {
+  const pedidosPendentes = getPedidosPendentesCount(dashboard);
+
+  const pedidosRejeitados = getPedidosRejeitadosCount(dashboard);
+
+  const pedidosCancelados = getPedidosCanceladosCount(dashboard);
+
   return [
     {
       key: "pedidos-pendentes",
       label: SANTACASA_DASHBOARD_PAGE.labels.pedidosPendentes,
-      value: getPedidosPendentesCount(dashboard),
+      value: pedidosPendentes,
+      tone: pedidosPendentes > 0 ? "warning" : "neutral",
+      to: SANTACASA_DASHBOARD_PAGE.cards.pedidos.to,
     },
+
     {
       key: "pedidos-validados",
       label: SANTACASA_DASHBOARD_PAGE.labels.pedidosValidados,
       value: getPedidosValidadosCount(dashboard),
+      tone: "success",
+      to: buildHistoricoStatusRoute("VALIDADO"),
     },
+
     {
       key: "pedidos-rejeitados",
       label: SANTACASA_DASHBOARD_PAGE.labels.pedidosRejeitados,
-      value: getPedidosRejeitadosCount(dashboard),
+      value: pedidosRejeitados,
+      tone: getDangerTone(pedidosRejeitados),
+      to: buildHistoricoStatusRoute("REJEITADO"),
     },
-  ];
-}
 
-export function buildExtrasMetrics(dashboard) {
-  return [
     {
-      key: "extras-pendentes",
-      label: SANTACASA_DASHBOARD_PAGE.labels.extrasPendentes,
-      value: getExtrasPendentesCount(dashboard),
-    },
-    {
-      key: "extras-parciais",
-      label: SANTACASA_DASHBOARD_PAGE.labels.extrasParcialmenteRegularizados,
-      value: getExtrasParcialmenteRegularizadosCount(dashboard),
-    },
-    {
-      key: "extras-regularizados",
-      label: SANTACASA_DASHBOARD_PAGE.labels.extrasRegularizados,
-      value: getExtrasRegularizadosCount(dashboard),
-    },
-    {
-      key: "extras-expirados",
-      label: SANTACASA_DASHBOARD_PAGE.labels.extrasExpirados,
-      value: getExtrasExpiradosCount(dashboard),
+      key: "pedidos-cancelados",
+      label: SANTACASA_DASHBOARD_PAGE.labels.pedidosCancelados,
+      value: pedidosCancelados,
+      tone: getDangerTone(pedidosCancelados),
+      to: buildHistoricoStatusRoute("CANCELADO"),
     },
   ];
 }
 
 export function buildRegularizacoesMetrics(dashboard) {
+  const regularizacoesPendentes = getRegularizacoesPendentesCount(dashboard);
+
   return [
     {
       key: "regularizacoes-pendentes",
       label: SANTACASA_DASHBOARD_PAGE.labels.regularizacoesPendentes,
-      value: getRegularizacoesPendentesCount(dashboard),
+      value: regularizacoesPendentes,
+      tone: regularizacoesPendentes > 0 ? "warning" : "neutral",
+      to: buildRegularizacoesRoute(SANTACASA_REGULARIZACOES_TABS.pending),
     },
+
     {
       key: "regularizacoes-parciais",
       label: SANTACASA_DASHBOARD_PAGE.labels.regularizacoesParciais,
       value: getRegularizacoesParciaisCount(dashboard),
+      tone: "info",
     },
+
     {
       key: "regularizacoes-concluidas",
       label: SANTACASA_DASHBOARD_PAGE.labels.regularizacoesConcluidas,
       value: getRegularizacoesConcluidasCount(dashboard),
+      tone: "success",
+      to: buildRegularizacoesRoute(SANTACASA_REGULARIZACOES_TABS.history),
     },
   ];
 }
 
-export function getDashboardQuickLinks() {
+export function buildDashboardMetricGroups(dashboard) {
+  const groups = SANTACASA_DASHBOARD_PAGE.sections.groups;
+
   return [
-    SANTACASA_DASHBOARD_PAGE.cards.utentes,
-    SANTACASA_DASHBOARD_PAGE.cards.operacao,
-    SANTACASA_DASHBOARD_PAGE.cards.pedidos,
-    SANTACASA_DASHBOARD_PAGE.cards.regularizacoes,
-    SANTACASA_DASHBOARD_PAGE.cards.historico,
+    {
+      key: "utentes",
+      ...groups.utentes,
+      metrics: buildUtentesMetrics(dashboard),
+    },
+
+    {
+      key: "receitas-medicacao",
+      ...groups.receitasMedicacao,
+      metrics: buildReceitasMedicacaoMetrics(dashboard),
+    },
+
+    {
+      key: "pedidos",
+      ...groups.pedidos,
+      metrics: buildPedidosMetrics(dashboard),
+    },
+
+    {
+      key: "regularizacoes",
+      ...groups.regularizacoes,
+      metrics: buildRegularizacoesMetrics(dashboard),
+    },
   ];
 }

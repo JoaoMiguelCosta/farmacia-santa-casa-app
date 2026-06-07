@@ -8,18 +8,13 @@ export const SANTACASA_NAV_ITEMS = Object.freeze([
   }),
 
   Object.freeze({
-    label: "Dashboard",
-    to: SANTACASA_ROUTES.dashboard,
+    label: "Operação",
+    to: SANTACASA_ROUTES.operacao,
   }),
 
   Object.freeze({
     label: "Utentes",
     to: SANTACASA_ROUTES.utentes,
-  }),
-
-  Object.freeze({
-    label: "Operação",
-    to: SANTACASA_ROUTES.operacao,
   }),
 
   Object.freeze({
@@ -35,5 +30,11 @@ export const SANTACASA_NAV_ITEMS = Object.freeze([
   Object.freeze({
     label: "Histórico",
     to: SANTACASA_ROUTES.historico,
+  }),
+
+  Object.freeze({
+    label: "Dashboard",
+    to: SANTACASA_ROUTES.dashboard,
+    placement: "end",
   }),
 ]);

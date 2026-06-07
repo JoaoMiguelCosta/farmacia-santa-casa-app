@@ -1,22 +1,30 @@
 // src/shared/layouts/AppShell/AppShell.jsx
+
 import { Outlet, useLocation } from "react-router-dom";
 
 import AuthSessionBar from "../../../features/auth/components/AuthSessionBar/AuthSessionBar";
 import IdleSessionWarning from "../../../features/auth/components/IdleSessionWarning/IdleSessionWarning";
 import { useAuth } from "../../../features/auth/hooks/useAuth";
-import { FARMACIA_NAV_ITEMS } from "../../../features/farmacia/shared/config/farmaciaNavigation.config";
+
 import FarmaciaAlertasTray from "../../../features/farmacia/alertas/components/FarmaciaAlertasTray/FarmaciaAlertasTray";
+import { FARMACIA_NAV_ITEMS } from "../../../features/farmacia/shared/config/farmaciaNavigation.config";
+
 import { SANTACASA_NAV_ITEMS } from "../../../features/santacasa/shared/config/santaCasaNavigation.config";
 
 import AppHeader from "./components/AppHeader/AppHeader";
 import AppSectionNav from "./components/AppSectionNav/AppSectionNav";
 
-import { APP_NAV_ITEMS, APP_SHELL_CONFIG } from "./AppShell.config";
+import {
+  APP_AREA_NAV_ITEMS,
+  APP_NAV_ITEMS,
+  APP_SHELL_CONFIG,
+} from "./AppShell.config";
+
 import {
   canSeeFarmaciaAlertas,
   canSeeFarmaciaSectionNav,
   canSeeSantaCasaSectionNav,
-  getVisibleNavItems,
+  getPrimaryNavItems,
   isFarmaciaPath,
   isSantaCasaPath,
 } from "./AppShell.utils";
@@ -27,8 +35,9 @@ export default function AppShell() {
   const { isAuthenticated, role } = useAuth();
   const { pathname } = useLocation();
 
-  const visibleNavItems = getVisibleNavItems({
+  const primaryNavItems = getPrimaryNavItems({
     items: APP_NAV_ITEMS,
+    areaItems: APP_AREA_NAV_ITEMS,
     isAuthenticated,
     role,
   });
@@ -77,7 +86,7 @@ export default function AppShell() {
 
       <AppHeader
         labels={APP_SHELL_CONFIG.labels}
-        primaryNavItems={visibleNavItems}
+        primaryNavItems={primaryNavItems}
         sessionBar={<AuthSessionBar />}
         sectionNav={sectionNav}
       />

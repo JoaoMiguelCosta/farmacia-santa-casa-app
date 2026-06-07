@@ -4,6 +4,13 @@ const DEFAULT_STATUS = "TODOS";
 const DEFAULT_SKIP = 0;
 const DEFAULT_TAKE = 50;
 
+const ALLOWED_STATUSES = new Set([
+  "TODOS",
+  "VALIDADO",
+  "REJEITADO",
+  "CANCELADO",
+]);
+
 function normalizeDateInput(value, mode = "start") {
   const text = String(value || "").trim();
 
@@ -25,10 +32,16 @@ function normalizeDateInput(value, mode = "start") {
   return date.toISOString();
 }
 
-function normalizeStatus(status) {
-  return String(status || DEFAULT_STATUS)
+export function normalizeSantaCasaHistoricoStatus(status) {
+  const normalizedStatus = String(status || DEFAULT_STATUS)
     .trim()
     .toUpperCase();
+
+  if (!ALLOWED_STATUSES.has(normalizedStatus)) {
+    return DEFAULT_STATUS;
+  }
+
+  return normalizedStatus;
 }
 
 function normalizeSearch(search) {
@@ -38,7 +51,9 @@ function normalizeSearch(search) {
 function normalizeSkip(skip) {
   const normalizedSkip = Number(skip);
 
-  if (!Number.isFinite(normalizedSkip)) return DEFAULT_SKIP;
+  if (!Number.isFinite(normalizedSkip)) {
+    return DEFAULT_SKIP;
+  }
 
   return Math.max(DEFAULT_SKIP, normalizedSkip);
 }
@@ -46,9 +61,37 @@ function normalizeSkip(skip) {
 function normalizeTake(take) {
   const normalizedTake = Number(take);
 
-  if (!Number.isFinite(normalizedTake)) return DEFAULT_TAKE;
+  if (!Number.isFinite(normalizedTake)) {
+    return DEFAULT_TAKE;
+  }
 
   return Math.max(1, normalizedTake);
+}
+
+export function getSantaCasaHistoricoStatusFromSearchParams(searchParams) {
+  const safeSearchParams =
+    searchParams instanceof URLSearchParams
+      ? searchParams
+      : new URLSearchParams(searchParams);
+
+  return normalizeSantaCasaHistoricoStatus(safeSearchParams.get("status"));
+}
+
+export function buildSantaCasaHistoricoSearchParams({
+  currentSearchParams,
+  status,
+}) {
+  const nextSearchParams = new URLSearchParams(currentSearchParams);
+
+  const normalizedStatus = normalizeSantaCasaHistoricoStatus(status);
+
+  if (normalizedStatus === DEFAULT_STATUS) {
+    nextSearchParams.delete("status");
+  } else {
+    nextSearchParams.set("status", normalizedStatus);
+  }
+
+  return nextSearchParams;
 }
 
 export function buildSantaCasaHistoricoQuery({
@@ -60,7 +103,7 @@ export function buildSantaCasaHistoricoQuery({
   take = DEFAULT_TAKE,
 } = {}) {
   return {
-    status: normalizeStatus(status),
+    status: normalizeSantaCasaHistoricoStatus(status),
     search: normalizeSearch(search),
     from: normalizeDateInput(from, "start"),
     to: normalizeDateInput(to, "end"),

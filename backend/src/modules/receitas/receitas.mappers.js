@@ -1,4 +1,5 @@
 // src/modules/receitas/receitas.mappers.js
+
 function calculateReservedQuantity(row) {
   return (row.pedidoItens || []).reduce((total, item) => {
     return total + (Number(item.quantidade) || 0);
@@ -9,20 +10,48 @@ function getQuantidadeUsadaRegularizacao(row) {
   return Math.max(0, Number(row?.quantidadeUsadaRegularizacao) || 0);
 }
 
+function getQuantidadeDispensadaDiretamente({
+  quantidadeConsumida,
+  quantidadeUsadaRegularizacao,
+}) {
+  return Math.max(0, quantidadeConsumida - quantidadeUsadaRegularizacao);
+}
+
 function toReceitaLinhaDTO(row) {
   if (!row) return null;
 
   const quantidade = Number(row.quantidade) || 0;
-  const quantidadeDispensada = Number(row.quantidadeDispensada) || 0;
+
+  /*
+   * O campo quantidadeDispensada da base de dados representa toda
+   * a quantidade já consumida pela linha:
+   *
+   * - dispensada através de pedidos validados;
+   * - usada para regularizar Vendas Suspensas.
+   */
+  const quantidadeConsumida = Number(row.quantidadeDispensada) || 0;
+
   const quantidadeReservadaPendente = calculateReservedQuantity(row);
+
   const quantidadeUsadaRegularizacao = getQuantidadeUsadaRegularizacao(row);
 
+  /*
+   * Para a UI, "Dispensada" deve representar apenas a quantidade
+   * dispensada diretamente pela Farmácia, sem incluir a quantidade
+   * usada em regularizações.
+   */
+  const quantidadeDispensada = getQuantidadeDispensadaDiretamente({
+    quantidadeConsumida,
+    quantidadeUsadaRegularizacao,
+  });
+
+  /*
+   * A quantidade usada em regularizações já está incluída em
+   * quantidadeConsumida. Não pode ser subtraída novamente.
+   */
   const quantidadeRestante = Math.max(
     0,
-    quantidade -
-      quantidadeDispensada -
-      quantidadeUsadaRegularizacao -
-      quantidadeReservadaPendente,
+    quantidade - quantidadeConsumida - quantidadeReservadaPendente,
   );
 
   const dto = {
@@ -78,8 +107,11 @@ function toReceitaCreatedDTO(receita, linhas = [], extrasResolvidos = []) {
     numero19: receita.numero19,
     pinAcesso6: receita.pinAcesso6,
     pinOpcao4: receita.pinOpcao4,
+
     linhas: linhas.map(toReceitaLinhaDTO),
+
     extrasResolvidos: extrasResolvidos.map(toResolvedExtraDTO).filter(Boolean),
+
     createdAt: receita.createdAt,
     updatedAt: receita.updatedAt,
   };

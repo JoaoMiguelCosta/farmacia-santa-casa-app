@@ -1,9 +1,20 @@
 // src/features/santacasa/regularizacoes/utils/santaCasaRegularizacoes.utils.js
 
 import { formatDateTime } from "../../../../shared/utils/formatDate";
+
 import { SANTACASA_REGULARIZACOES_PAGE } from "../config/santaCasaRegularizacoesPage.config";
 
 const UNKNOWN_LABEL = "—";
+const REGULARIZACOES_VIEW_PARAM = "view";
+
+export const SANTACASA_REGULARIZACOES_TABS = Object.freeze({
+  pending: "pending",
+  history: "history",
+});
+
+const ALLOWED_REGULARIZACOES_VIEWS = new Set(
+  Object.values(SANTACASA_REGULARIZACOES_TABS),
+);
 
 function getSafeDate(value) {
   const date = new Date(value);
@@ -35,6 +46,63 @@ function getDateLabel(value) {
     month: "2-digit",
     year: "numeric",
   }).format(date);
+}
+
+export function normalizeRegularizacoesView(view) {
+  const normalizedView = String(view || SANTACASA_REGULARIZACOES_TABS.pending)
+    .trim()
+    .toLowerCase();
+
+  if (!ALLOWED_REGULARIZACOES_VIEWS.has(normalizedView)) {
+    return SANTACASA_REGULARIZACOES_TABS.pending;
+  }
+
+  return normalizedView;
+}
+
+export function getRegularizacoesViewFromSearchParams(searchParams) {
+  const safeSearchParams =
+    searchParams instanceof URLSearchParams
+      ? searchParams
+      : new URLSearchParams(searchParams);
+
+  return normalizeRegularizacoesView(
+    safeSearchParams.get(REGULARIZACOES_VIEW_PARAM),
+  );
+}
+
+export function buildRegularizacoesViewSearchParams({
+  currentSearchParams,
+  view,
+}) {
+  const nextSearchParams = new URLSearchParams(currentSearchParams);
+
+  const normalizedView = normalizeRegularizacoesView(view);
+
+  if (normalizedView === SANTACASA_REGULARIZACOES_TABS.pending) {
+    nextSearchParams.delete(REGULARIZACOES_VIEW_PARAM);
+
+    return nextSearchParams;
+  }
+
+  nextSearchParams.set(REGULARIZACOES_VIEW_PARAM, normalizedView);
+
+  return nextSearchParams;
+}
+
+export function buildRegularizacoesViewRoute(baseRoute, view) {
+  const searchParams = buildRegularizacoesViewSearchParams({
+    currentSearchParams: new URLSearchParams(),
+    view,
+  });
+
+  const queryString = searchParams.toString();
+
+  if (!queryString) {
+    return baseRoute;
+  }
+
+  return `${baseRoute}?${queryString}`;
 }
 
 export function getRegularizacaoStatusLabel(status) {
@@ -69,6 +137,7 @@ export function getRegularizacaoUtenteNumeroLabel(regularizacao) {
 
 export function getRegularizacaoUtenteLabel(regularizacao) {
   const nome = getRegularizacaoUtenteNomeLabel(regularizacao);
+
   const numero9 = getRegularizacaoUtenteNumeroLabel(regularizacao);
 
   return `${nome} · ${numero9}`;
@@ -110,6 +179,7 @@ export function getRegularizacaoQuantidadeRestante(regularizacao) {
 
 export function getRegularizacaoProgressPercent(regularizacao) {
   const solicitada = getRegularizacaoQuantidadeSolicitada(regularizacao);
+
   const regularizada = getRegularizacaoQuantidadeRegularizada(regularizacao);
 
   if (solicitada <= 0) return 0;
@@ -148,7 +218,9 @@ export function getRegularizacaoSituationDescription(regularizacao) {
 export function getEventoQuantidadeLabel(evento) {
   const quantidade = Number(evento?.quantidade);
 
-  if (!Number.isFinite(quantidade)) return UNKNOWN_LABEL;
+  if (!Number.isFinite(quantidade)) {
+    return UNKNOWN_LABEL;
+  }
 
   return String(quantidade);
 }
@@ -243,7 +315,9 @@ export function groupRegularizacoesByUtente(regularizacoes = []) {
     const group = groupsMap.get(key);
 
     group.regularizacoes.push(regularizacao);
+
     group.totalRestante += getRegularizacaoQuantidadeRestante(regularizacao);
+
     group.totalRegularizada +=
       getRegularizacaoQuantidadeRegularizada(regularizacao);
   }
@@ -256,6 +330,7 @@ export function groupRegularizacoesHistoricoByDate(regularizacoes = []) {
 
   for (const regularizacao of regularizacoes) {
     const dateValue = regularizacao?.updatedAt || regularizacao?.createdAt;
+
     const key = getDateKey(dateValue);
 
     if (!groupsMap.has(key)) {
@@ -271,8 +346,10 @@ export function groupRegularizacoesHistoricoByDate(regularizacoes = []) {
     const group = groupsMap.get(key);
 
     group.regularizacoes.push(regularizacao);
+
     group.totalRegularizada +=
       getRegularizacaoQuantidadeRegularizada(regularizacao);
+
     group.totalEventos += getRegularizacaoEventosCount(regularizacao);
   }
 

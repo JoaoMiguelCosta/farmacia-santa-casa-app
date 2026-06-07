@@ -1,47 +1,79 @@
 import { SANTACASA_ROUTES } from "../../shared/config/santaCasaRoutes.config";
 
 export const SANTACASA_DASHBOARD_PAGE = Object.freeze({
-  header: {
+  header: Object.freeze({
     eyebrow: "Santa Casa",
     title: "Dashboard",
     description:
-      "Visão rápida da operação da Santa Casa: utentes, receitas, vendas suspensas, pedidos e regularizações.",
-  },
+      "Consulta prioridades, indicadores e o estado atual da operação da Santa Casa.",
+  }),
 
-  sections: {
-    signals: {
-      title: "Sinais operacionais",
+  sections: Object.freeze({
+    priorities: Object.freeze({
+      title: "Prioridades operacionais",
       description:
-        "Resumo dos principais indicadores para acompanhamento diário da Santa Casa.",
+        "Situações que podem exigir acompanhamento ou ação da Santa Casa.",
+      ariaLabel: "Prioridades operacionais da Santa Casa",
+    }),
+
+    indicators: Object.freeze({
+      eyebrow: "Indicadores",
+      title: "Indicadores por área",
+      description:
+        "Consulta os principais totais e estados da atividade da Santa Casa.",
+    }),
+
+    groups: Object.freeze({
+      utentes: Object.freeze({
+        title: "Utentes",
+        description: "Resumo dos utentes registados e do respetivo estado.",
+        tone: "sage",
+      }),
+
+      receitasMedicacao: Object.freeze({
+        title: "Receitas e medicamentos",
+        description:
+          "Resumo das receitas e dos medicamentos registados na operação.",
+        tone: "green",
+      }),
+
+      pedidos: Object.freeze({
+        title: "Pedidos",
+        description: "Estado atual dos pedidos enviados à Farmácia.",
+        tone: "blue",
+      }),
+
+      regularizacoes: Object.freeze({
+        title: "Regularizações",
+        description: "Estado das regularizações realizadas pela Farmácia.",
+        tone: "sage",
+      }),
+    }),
+
+    signals: Object.freeze({
       loadingTitle: "A carregar dashboard...",
+      loadingDescription:
+        "Aguarda enquanto os indicadores operacionais são carregados.",
       errorTitle: "Não foi possível carregar o dashboard.",
-    },
+    }),
+  }),
 
-    quickLinks: {
-      title: "Acessos rápidos",
-      description:
-        "Atalhos para as principais áreas operacionais da Santa Casa.",
-    },
-  },
-
-  labels: {
-    totalUtentes: "Utentes registados",
+  labels: Object.freeze({
+    totalUtentes: "Total de utentes",
+    utentesAtivos: "Utentes ativos",
+    utentesArquivados: "Utentes arquivados",
 
     totalReceitas: "Receitas registadas",
-    receitasAtivas: "Linhas de receita ativas",
-    receitasExpiradas: "Linhas de receita expiradas",
+    receitasAtivas: "Medicamentos com receita ativos",
 
     totalSemReceita: "Medicamentos não sujeitos a receita médica",
 
-    extrasPendentes: "Vendas suspensas pendentes",
-    extrasParcialmenteRegularizados:
-      "Vendas suspensas parcialmente regularizadas",
-    extrasRegularizados: "Vendas suspensas regularizadas",
-    extrasExpirados: "Vendas suspensas expiradas",
+    extrasAbertos: "Medicamentos para Venda Suspensa",
 
     pedidosPendentes: "Pedidos pendentes",
     pedidosValidados: "Pedidos validados",
     pedidosRejeitados: "Pedidos rejeitados",
+    pedidosCancelados: "Pedidos cancelados",
 
     regularizacoesPendentes: "Regularizações pendentes",
     regularizacoesParciais: "Regularizações parciais",
@@ -53,61 +85,68 @@ export const SANTACASA_DASHBOARD_PAGE = Object.freeze({
     createdAt: "Criado em",
     validatedAt: "Validado em",
     rejectedAt: "Rejeitado em",
+    canceledAt: "Cancelado em",
     updatedAt: "Atualizado em",
-  },
+  }),
 
-  status: {
+  priorityStates: Object.freeze({
+    pedidosClear: "Sem pedidos pendentes",
+    pedidosAttention: "Aguardam decisão da Farmácia",
+
+    regularizacoesClear: "Sem regularizações pendentes",
+    regularizacoesAttention: "Requer acompanhamento",
+  }),
+
+  latestPedido: Object.freeze({
+    emptyTitle: "Sem pedidos registados",
+    emptyDescription:
+      "Quando existir atividade, o último pedido enviado aparece aqui.",
+  }),
+
+  status: Object.freeze({
     PENDENTE: "Pendente",
     VALIDADO: "Validado",
     REJEITADO: "Rejeitado",
-  },
+    CANCELADO: "Cancelado",
+  }),
 
-  actions: {
+  statusTones: Object.freeze({
+    PENDENTE: "warning",
+    VALIDADO: "success",
+    REJEITADO: "danger",
+    CANCELADO: "danger",
+  }),
+
+  actions: Object.freeze({
     refresh: "Atualizar",
     refreshing: "A atualizar...",
-    open: "Abrir",
-  },
+  }),
 
-  cards: {
-    utentes: {
-      title: "Utentes",
-      description: "Criar, consultar e gerir utentes ativos.",
+  cards: Object.freeze({
+    utentes: Object.freeze({
       to: SANTACASA_ROUTES.utentes,
-      actionLabel: "Ver utentes",
-    },
+    }),
 
-    operacao: {
-      title: "Operação",
-      description:
-        "Gerir receitas, medicamentos não sujeitos a receita médica, vendas suspensas e preparação de pedidos.",
+    operacao: Object.freeze({
       to: SANTACASA_ROUTES.operacao,
-      actionLabel: "Abrir operação",
-    },
+    }),
 
-    pedidos: {
-      title: "Pedidos",
-      description: "Criar e acompanhar pedidos enviados à Farmácia.",
+    pedidos: Object.freeze({
       to: SANTACASA_ROUTES.pedidos,
       actionLabel: "Ver pedidos",
-    },
+    }),
 
-    regularizacoes: {
-      title: "Regularizações",
-      description:
-        "Acompanhar vendas suspensas que aguardam receita futura ou já foram regularizadas.",
+    regularizacoes: Object.freeze({
       to: SANTACASA_ROUTES.regularizacoes,
       actionLabel: "Ver regularizações",
-    },
+    }),
 
-    historico: {
-      title: "Histórico",
-      description: "Consultar pedidos validados ou rejeitados pela Farmácia.",
+    historico: Object.freeze({
       to: SANTACASA_ROUTES.historico,
-      actionLabel: "Ver histórico",
-    },
-  },
+    }),
+  }),
 
-  feedback: {
+  feedback: Object.freeze({
     genericError: "Ocorreu um erro inesperado.",
-  },
+  }),
 });
