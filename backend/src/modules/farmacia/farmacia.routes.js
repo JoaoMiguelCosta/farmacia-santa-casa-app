@@ -9,6 +9,7 @@ const router = Router();
 router.get("/dashboard/sinais", asyncHandler(controller.getDashboardSignals));
 
 router.get("/pedidos", asyncHandler(controller.listPedidos));
+router.get("/pedidos/:pedidoId", asyncHandler(controller.getPedidoById));
 router.post(
   "/pedidos/:pedidoId/validar",
   asyncHandler(controller.validarPedido),

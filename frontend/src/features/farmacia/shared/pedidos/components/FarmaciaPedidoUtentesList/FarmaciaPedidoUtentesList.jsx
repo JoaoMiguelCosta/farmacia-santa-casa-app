@@ -1,0 +1,144 @@
+// src/features/farmacia/shared/pedidos/components/FarmaciaPedidoUtentesList/FarmaciaPedidoUtentesList.jsx
+import { FARMACIA_PEDIDO_UI } from "../../config/farmaciaPedidoUi.config";
+
+import { useFarmaciaPedidoUtentes } from "../../hooks/useFarmaciaPedidoUtentes";
+
+import FarmaciaPedidoUtenteGroup from "../FarmaciaPedidoUtenteGroup/FarmaciaPedidoUtenteGroup";
+
+import styles from "./FarmaciaPedidoUtentesList.module.css";
+
+function getSafeDomIdFragment(value) {
+  return String(value || "")
+    .trim()
+    .replace(/[^a-zA-Z0-9_-]/g, "-");
+}
+
+export default function FarmaciaPedidoUtentesList({ pedidoId, groups = [] }) {
+  const { labels, utentesList, actions } = FARMACIA_PEDIDO_UI;
+
+  const {
+    search,
+    expandedGroupKey,
+
+    visibleGroups,
+
+    currentPage,
+    totalPages,
+    totalGroups,
+
+    rangeStart,
+    rangeEnd,
+
+    hasPreviousPage,
+    hasNextPage,
+
+    changeSearch,
+    toggleGroup,
+    goToPreviousPage,
+    goToNextPage,
+  } = useFarmaciaPedidoUtentes({
+    groups,
+    pageSize: utentesList.pageSize,
+  });
+
+  const showSearch = groups.length >= utentesList.searchMinItems;
+
+  const showFooter = showSearch || totalPages > 1;
+
+  const safePedidoId = getSafeDomIdFragment(pedidoId);
+
+  return (
+    <section className={styles.section} aria-label={labels.utentes}>
+      <header className={styles.header}>
+        <h4 className={styles.title}>{labels.utentes}</h4>
+
+        <span className={styles.count}>{groups.length}</span>
+      </header>
+
+      {showSearch ? (
+        <label className={styles.searchField}>
+          <span>{utentesList.searchLabel}</span>
+
+          <input
+            type="search"
+            value={search}
+            placeholder={utentesList.searchPlaceholder}
+            onChange={(event) => {
+              changeSearch(event.target.value);
+            }}
+          />
+        </label>
+      ) : null}
+
+      {totalGroups === 0 ? (
+        <div className={styles.emptyState}>
+          <strong>{utentesList.emptyTitle}</strong>
+
+          <p>{utentesList.emptyDescription}</p>
+        </div>
+      ) : (
+        <ul className={styles.list}>
+          {visibleGroups.map((group) => {
+            const safeGroupKey = getSafeDomIdFragment(group.key);
+
+            const detailsId =
+              `farmacia-pedido-${safePedidoId}` +
+              `-utente-${safeGroupKey}-details`;
+
+            return (
+              <FarmaciaPedidoUtenteGroup
+                key={group.key}
+                group={group}
+                detailsId={detailsId}
+                isExpanded={expandedGroupKey === group.key}
+                onToggle={() => {
+                  toggleGroup(group.key);
+                }}
+              />
+            );
+          })}
+        </ul>
+      )}
+
+      {totalGroups > 0 && showFooter ? (
+        <footer className={styles.pagination}>
+          <div className={styles.results}>
+            <span>
+              {utentesList.resultsPrefix}{" "}
+              <strong>
+                {rangeStart}–{rangeEnd}
+              </strong>{" "}
+              {utentesList.resultsSeparator} <strong>{totalGroups}</strong>{" "}
+              {utentesList.resultsSuffix}
+            </span>
+
+            <span>
+              {utentesList.pageLabel} <strong>{currentPage}</strong>{" "}
+              {utentesList.pageSeparator} <strong>{totalPages}</strong>
+            </span>
+          </div>
+
+          {totalPages > 1 ? (
+            <div className={styles.pageActions}>
+              <button
+                type="button"
+                disabled={!hasPreviousPage}
+                onClick={goToPreviousPage}
+              >
+                {actions.previousPage}
+              </button>
+
+              <button
+                type="button"
+                disabled={!hasNextPage}
+                onClick={goToNextPage}
+              >
+                {actions.nextPage}
+              </button>
+            </div>
+          ) : null}
+        </footer>
+      ) : null}
+    </section>
+  );
+}

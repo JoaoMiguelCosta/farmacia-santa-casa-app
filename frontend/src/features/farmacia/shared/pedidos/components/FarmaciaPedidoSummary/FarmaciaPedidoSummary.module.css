@@ -1,0 +1,84 @@
+/* src/features/farmacia/shared/pedidos/components/FarmaciaPedidoSummary/FarmaciaPedidoSummary.module.css */
+
+.summary {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+    gap: 0;
+    margin: 0;
+    padding: 0.55rem 0.65rem;
+    border: 1px solid var(--clinic-border);
+    border-radius: var(--clinic-radius-md);
+    background: var(--clinic-mist);
+}
+
+.summaryItem {
+    display: grid;
+    flex: 0 1 10rem;
+    align-content: center;
+    gap: 0.16rem;
+    min-width: 0;
+    padding: 0.42rem 0.75rem;
+    border-inline-start: 1px solid var(--clinic-border);
+}
+
+.dateItem {
+    flex: 1 1 16rem;
+    border-inline-start: 0;
+}
+
+.summaryItem dt {
+    color: var(--clinic-muted);
+    font-size: 0.7rem;
+    font-weight: 750;
+    letter-spacing: 0.035em;
+    line-height: 1.2;
+    text-transform: uppercase;
+}
+
+.summaryItem dd {
+    min-width: 0;
+    margin: 0;
+    overflow-wrap: anywhere;
+    color: var(--clinic-ink-soft);
+    font-size: 0.88rem;
+    font-weight: 800;
+    line-height: 1.35;
+}
+
+.dateItem dd {
+    color: var(--clinic-ink);
+    font-size: 0.93rem;
+}
+
+@media (max-width: 860px) {
+    .summary {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.45rem;
+    }
+
+    .summaryItem,
+    .dateItem {
+        padding: 0.5rem 0.55rem;
+        border-inline-start: 0;
+    }
+}
+
+@media (max-width: 540px) {
+    .summary {
+        grid-template-columns: 1fr;
+        gap: 0;
+        padding: 0.45rem 0.7rem;
+    }
+
+    .summaryItem,
+    .dateItem {
+        padding: 0.62rem 0.2rem;
+        border-bottom: 1px solid var(--clinic-border);
+    }
+
+    .summaryItem:last-child {
+        border-bottom: 0;
+    }
+}

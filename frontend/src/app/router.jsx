@@ -1,3 +1,4 @@
+// src/app/router.jsx
 import { Navigate, createBrowserRouter } from "react-router-dom";
 
 import AuthHomeRedirect from "../features/auth/components/AuthHomeRedirect";
@@ -24,6 +25,7 @@ import SantaCasaHistoricoPage from "../pages/santacasa/SantaCasaHistoricoPage.js
 import FarmaciaHomePage from "../pages/farmacia/FarmaciaHomePage.jsx";
 import FarmaciaDashboardPage from "../pages/farmacia/FarmaciaDashboardPage.jsx";
 import FarmaciaPedidosPage from "../pages/farmacia/FarmaciaPedidosPage.jsx";
+import FarmaciaPedidoDetailPage from "../pages/farmacia/FarmaciaPedidoDetailPage.jsx";
 import FarmaciaHistoricoPage from "../pages/farmacia/FarmaciaHistoricoPage.jsx";
 import FarmaciaRegularizacoesPage from "../pages/farmacia/FarmaciaRegularizacoesPage.jsx";
 
@@ -32,7 +34,9 @@ import SystemManutencaoPage from "../pages/system/SystemManutencaoPage.jsx";
 import SystemUsersPage from "../pages/system/SystemUsersPage.jsx";
 
 const SANTACASA_ROLES = [AUTH_ROLES.SANTACASA, AUTH_ROLES.ADMIN];
+
 const FARMACIA_ROLES = [AUTH_ROLES.FARMACIA, AUTH_ROLES.ADMIN];
+
 const ADMIN_ROLES = [AUTH_ROLES.ADMIN];
 
 function protectedElement(element, allowedRoles) {
@@ -112,6 +116,10 @@ export const router = createBrowserRouter([
       {
         path: "farmacia/pedidos",
         element: protectedElement(<FarmaciaPedidosPage />, FARMACIA_ROLES),
+      },
+      {
+        path: "farmacia/pedidos/:pedidoId",
+        element: protectedElement(<FarmaciaPedidoDetailPage />, FARMACIA_ROLES),
       },
       {
         path: "farmacia/historico",

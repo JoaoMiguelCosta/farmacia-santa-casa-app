@@ -1,12 +1,12 @@
-import { useState } from "react";
+// src/features/farmacia/shared/pedidos/hooks/useFarmaciaPedidoCard.js
+import { useMemo } from "react";
 
 import { FARMACIA_PEDIDO_UI } from "../config/farmaciaPedidoUi.config";
 
 import {
   getPedidoClosedAtLabel,
   getPedidoCreatedAtLabel,
-  getPedidoItems,
-  isPedidoPending,
+  getPedidoUtenteGroups,
 } from "../utils/farmaciaPedido.utils";
 
 const AUDIT_FALLBACK = "—";
@@ -35,16 +35,13 @@ function getPedidoAuditInfo(pedido) {
   return null;
 }
 
-export function useFarmaciaPedidoCard({
-  pedido,
-  variant = "pending",
-  isActionDisabled = false,
-}) {
-  const [isDetailsOpen, setIsDetailsOpen] = useState(false);
-
+export function useFarmaciaPedidoCard({ pedido, variant = "pending" }) {
   const isHistory = variant === "history";
-  const items = getPedidoItems(pedido);
-  const canAct = isPedidoPending(pedido) && !isActionDisabled;
+
+  const utenteGroups = useMemo(() => {
+    return getPedidoUtenteGroups(pedido);
+  }, [pedido]);
+
   const auditInfo = isHistory ? getPedidoAuditInfo(pedido) : null;
 
   const dateLabel = isHistory
@@ -55,20 +52,10 @@ export function useFarmaciaPedidoCard({
     ? getPedidoClosedAtLabel(pedido)
     : getPedidoCreatedAtLabel(pedido);
 
-  function handleToggleDetails() {
-    setIsDetailsOpen((currentValue) => !currentValue);
-  }
-
   return {
-    isDetailsOpen,
-
-    items,
-    canAct,
+    utenteGroups,
     auditInfo,
-
     dateLabel,
     dateValue,
-
-    handleToggleDetails,
   };
 }

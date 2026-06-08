@@ -1,7 +1,29 @@
+// src/features/farmacia/shared/pedidos/utils/farmaciaPedido.utils.js
 import { formatDateTime } from "../../../../../shared/utils/formatDate";
+
 import { FARMACIA_PEDIDO_UI } from "../config/farmaciaPedidoUi.config";
 
 const UNKNOWN_LABEL = "—";
+
+function getPedidoUtenteGroupKey(utente) {
+  if (utente?.id !== undefined && utente?.id !== null) {
+    return `id-${utente.id}`;
+  }
+
+  const numero9 = String(utente?.numero9 || "").trim();
+
+  if (numero9) {
+    return `numero-${numero9}`;
+  }
+
+  const nome = String(utente?.nome || "").trim();
+
+  if (nome) {
+    return `nome-${nome}`;
+  }
+
+  return "utente-desconhecido";
+}
 
 export function getPedidoNumberLabel(pedido) {
   const numero = Number(pedido?.numero);
@@ -81,22 +103,45 @@ export function getPedidoTotalQuantity(pedido) {
   }, 0);
 }
 
-export function getPedidoUtentes(pedido) {
-  const utentesMap = new Map();
+export function getPedidoUtenteGroups(pedido) {
+  const groupsMap = new Map();
 
   getPedidoItems(pedido).forEach((item) => {
-    const utente = item?.utente;
+    const utente = item?.utente ?? {};
+    const groupKey = getPedidoUtenteGroupKey(utente);
 
-    if (!utente?.id) return;
+    if (!groupsMap.has(groupKey)) {
+      groupsMap.set(groupKey, {
+        key: groupKey,
 
-    utentesMap.set(utente.id, {
-      id: utente.id,
-      nome: utente.nome || UNKNOWN_LABEL,
-      numero9: utente.numero9 || UNKNOWN_LABEL,
-    });
+        utente: {
+          id: utente?.id ?? null,
+          nome: utente?.nome || UNKNOWN_LABEL,
+          numero9: utente?.numero9 || UNKNOWN_LABEL,
+        },
+
+        items: [],
+        itemsCount: 0,
+        totalQuantity: 0,
+      });
+    }
+
+    const group = groupsMap.get(groupKey);
+
+    group.items.push(item);
+    group.itemsCount += 1;
+    group.totalQuantity += Number(item?.quantidade) || 0;
   });
 
-  return Array.from(utentesMap.values());
+  return Array.from(groupsMap.values());
+}
+
+export function getPedidoUtentes(pedido) {
+  return getPedidoUtenteGroups(pedido).map((group) => group.utente);
+}
+
+export function getPedidoUtentesCount(pedido) {
+  return getPedidoUtenteGroups(pedido).length;
 }
 
 export function getPedidoUtentesLabel(pedido) {
@@ -173,6 +218,7 @@ export function getPedidoItemMetaLabel(item) {
 
   if (item.tipo === "EXTRA") {
     const quantidadeSolicitada = Number(item.extra?.quantidadeSolicitada) || 0;
+
     const quantidadeRegularizada =
       Number(item.extra?.quantidadeRegularizada) || 0;
 

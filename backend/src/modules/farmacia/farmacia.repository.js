@@ -605,6 +605,15 @@ function buildListPedidosWhere({ status, search, from, to }) {
   return where;
 }
 
+function findPedidoById(pedidoId) {
+  return prisma.pedido.findUnique({
+    where: {
+      id: pedidoId,
+    },
+    select: pedidoSelect,
+  });
+}
+
 async function listPedidos({ status, search, from, to, skip, take }) {
   const where = buildListPedidosWhere({
     status,
@@ -947,6 +956,7 @@ async function getDashboardSignals() {
 }
 
 module.exports = {
+  findPedidoById,
   listPedidos,
   validarPedido,
   rejeitarPedido,

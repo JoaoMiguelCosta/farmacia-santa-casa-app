@@ -8,6 +8,12 @@ async function listPedidos(req, res) {
   return ok(res, data);
 }
 
+async function getPedidoById(req, res) {
+  const data = await service.getPedidoById(req.params.pedidoId);
+
+  return ok(res, { data });
+}
+
 async function validarPedido(req, res) {
   const data = await service.validarPedido(req.params.pedidoId, req.body, {
     userId: req.user?.id,
@@ -32,6 +38,7 @@ async function getDashboardSignals(_req, res) {
 
 module.exports = {
   listPedidos,
+  getPedidoById,
   validarPedido,
   rejeitarPedido,
   getDashboardSignals,
