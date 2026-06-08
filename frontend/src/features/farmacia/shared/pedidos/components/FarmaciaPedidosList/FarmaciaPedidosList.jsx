@@ -1,4 +1,6 @@
 // src/features/farmacia/shared/pedidos/components/FarmaciaPedidosList/FarmaciaPedidosList.jsx
+import { useLocation } from "react-router-dom";
+
 import { FARMACIA_PEDIDO_UI } from "../../config/farmaciaPedidoUi.config";
 
 import FarmaciaPedidoCard from "../FarmaciaPedidoCard/FarmaciaPedidoCard";
@@ -167,6 +169,28 @@ function getPedidosCountLabel(sectionConfig, totalPedidos) {
   return sectionConfig.countPlural;
 }
 
+function getPedidoDetailsConfig({ pedidoId, variant, currentLocation }) {
+  if (variant === "history") {
+    return {
+      detailsTo: `/farmacia/historico/${pedidoId}`,
+
+      detailsLabel: FARMACIA_PEDIDO_UI.actions.consultPedido,
+
+      detailsNavigationState: {
+        from: currentLocation,
+      },
+    };
+  }
+
+  return {
+    detailsTo: `/farmacia/pedidos/${pedidoId}`,
+
+    detailsLabel: FARMACIA_PEDIDO_UI.actions.openPedido,
+
+    detailsNavigationState: null,
+  };
+}
+
 export default function FarmaciaPedidosList({
   pedidos = [],
   totalPedidos = null,
@@ -189,10 +213,11 @@ export default function FarmaciaPedidosList({
   onPreviousPage,
   onNextPage,
 }) {
+  const location = useLocation();
+
   const sectionConfig = customSectionConfig || getDefaultSectionConfig(variant);
 
   const hasPedidos = pedidos.length > 0;
-
   const isPendingVariant = variant === "pending";
 
   const hasActiveSearch = Boolean(String(searchValue || "").trim());
@@ -225,6 +250,8 @@ export default function FarmaciaPedidosList({
     hasActiveSearch && sectionConfig.search?.emptyDescription
       ? sectionConfig.search.emptyDescription
       : sectionConfig.emptyDescription;
+
+  const currentLocation = `${location.pathname}${location.search}${location.hash}`;
 
   if (isLoading) {
     return (
@@ -316,17 +343,25 @@ export default function FarmaciaPedidosList({
             className={styles.list}
             data-loading={isQuerying ? "true" : "false"}
           >
-            {pedidos.map((pedido) => (
-              <FarmaciaPedidoCard
-                key={pedido.id}
-                pedido={pedido}
-                variant={variant}
-                detailsTo={
-                  isPendingVariant ? `/farmacia/pedidos/${pedido.id}` : null
-                }
-                showUtentes={!isPendingVariant}
-              />
-            ))}
+            {pedidos.map((pedido) => {
+              const detailsConfig = getPedidoDetailsConfig({
+                pedidoId: pedido.id,
+                variant,
+                currentLocation,
+              });
+
+              return (
+                <FarmaciaPedidoCard
+                  key={pedido.id}
+                  pedido={pedido}
+                  variant={variant}
+                  detailsTo={detailsConfig.detailsTo}
+                  detailsLabel={detailsConfig.detailsLabel}
+                  detailsNavigationState={detailsConfig.detailsNavigationState}
+                  showUtentes={false}
+                />
+              );
+            })}
           </div>
 
           <FarmaciaPedidosPagination

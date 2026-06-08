@@ -26,7 +26,11 @@ function normalizeDataValue(value) {
 export default function FarmaciaPedidoCard({
   pedido,
   variant = "pending",
+
   detailsTo = null,
+  detailsLabel = null,
+  detailsNavigationState = null,
+
   showUtentes = true,
 }) {
   const { utenteGroups, auditInfo, dateLabel, dateValue } =
@@ -84,7 +88,11 @@ export default function FarmaciaPedidoCard({
         <FarmaciaPedidoUtentesList pedidoId={pedido.id} groups={utenteGroups} />
       ) : null}
 
-      <FarmaciaPedidoActions detailsTo={detailsTo} />
+      <FarmaciaPedidoActions
+        detailsTo={detailsTo}
+        actionLabel={detailsLabel ?? FARMACIA_PEDIDO_UI.actions.openPedido}
+        navigationState={detailsNavigationState}
+      />
     </article>
   );
 }

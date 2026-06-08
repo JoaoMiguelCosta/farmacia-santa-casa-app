@@ -1,0 +1,93 @@
+/* src/features/farmacia/historico/components/FarmaciaHistoricoPageContent/FarmaciaHistoricoPageContent.module.css */
+
+.page {
+    display: grid;
+    gap: clamp(1.25rem, 2.5vw, 2rem);
+    inline-size: min(100%,
+            var(--clinic-page-max));
+    margin-inline: auto;
+}
+
+.pagination {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.8rem;
+    padding: 0.8rem;
+    border: 1px solid var(--clinic-border);
+    border-radius: var(--clinic-radius-lg);
+    background: var(--clinic-surface);
+    box-shadow: var(--clinic-shadow-soft);
+}
+
+.paginationInfo {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem 1rem;
+    color: var(--clinic-muted);
+    font-size: var(--clinic-font-size-xs);
+    line-height: 1.45;
+}
+
+.paginationInfo strong {
+    color: var(--clinic-ink-soft);
+}
+
+.paginationActions {
+    display: flex;
+    flex: 0 0 auto;
+    gap: 0.5rem;
+}
+
+.paginationButton {
+    min-height: 2.35rem;
+    padding: 0.55rem 0.75rem;
+    border: 1px solid rgba(31, 95, 81, 0.22);
+    border-radius: var(--clinic-radius-md);
+    background: var(--clinic-white);
+    color: var(--clinic-green-700);
+    font: inherit;
+    font-size: var(--clinic-font-size-xs);
+    font-weight: 800;
+    cursor: pointer;
+    transition:
+        transform var(--clinic-transition),
+        border-color var(--clinic-transition),
+        background var(--clinic-transition),
+        box-shadow var(--clinic-transition),
+        opacity var(--clinic-transition);
+}
+
+.paginationButton:hover:not(:disabled) {
+    transform: translateY(-1px);
+    border-color: rgba(31, 95, 81, 0.38);
+    background: var(--clinic-mist);
+    box-shadow: var(--clinic-shadow-soft);
+}
+
+.paginationButton:focus-visible {
+    outline: 3px solid rgba(31, 95, 81, 0.22);
+    outline-offset: 3px;
+}
+
+.paginationButton:disabled {
+    cursor: not-allowed;
+    opacity: 0.45;
+    transform: none;
+    box-shadow: none;
+}
+
+@media (max-width: 680px) {
+    .pagination {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .paginationActions {
+        width: 100%;
+    }
+
+    .paginationButton {
+        flex: 1 1 0;
+    }
+}

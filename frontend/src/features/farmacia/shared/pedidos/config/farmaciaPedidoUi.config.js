@@ -5,6 +5,7 @@ export const FARMACIA_PEDIDO_UI = Object.freeze({
     refreshing: "A atualizar...",
 
     openPedido: "Abrir pedido",
+    consultPedido: "Consultar pedido",
 
     validate: "Validar pedido",
     validating: "A validar...",
@@ -59,6 +60,7 @@ export const FARMACIA_PEDIDO_UI = Object.freeze({
     searchPlaceholder: "Pesquisar por nome ou número do utente...",
 
     emptyTitle: "Nenhum utente corresponde à pesquisa.",
+
     emptyDescription:
       "Altera a pesquisa para encontrares outro utente deste pedido.",
 
@@ -74,11 +76,13 @@ export const FARMACIA_PEDIDO_UI = Object.freeze({
     pageSize: 10,
 
     searchLabel: "Pesquisar medicamentos",
+
     searchPlaceholder: "Pesquisar por medicamento, receita ou PIN...",
 
     filtersLabel: "Filtrar medicamentos por tipo",
 
     emptyTitle: "Nenhum medicamento corresponde à pesquisa.",
+
     emptyDescription:
       "Altera a pesquisa ou seleciona outro tipo de medicamento.",
 
@@ -126,6 +130,7 @@ export const FARMACIA_PEDIDO_UI = Object.freeze({
     pinOpcao: "PIN opção",
 
     semReceita: "Medicamentos não sujeitos a receita médica",
+
     extra: "Venda Suspensa",
 
     items: "Itens do pedido",

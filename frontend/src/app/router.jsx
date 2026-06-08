@@ -27,6 +27,7 @@ import FarmaciaDashboardPage from "../pages/farmacia/FarmaciaDashboardPage.jsx";
 import FarmaciaPedidosPage from "../pages/farmacia/FarmaciaPedidosPage.jsx";
 import FarmaciaPedidoDetailPage from "../pages/farmacia/FarmaciaPedidoDetailPage.jsx";
 import FarmaciaHistoricoPage from "../pages/farmacia/FarmaciaHistoricoPage.jsx";
+import FarmaciaHistoricoDetailPage from "../pages/farmacia/FarmaciaHistoricoDetailPage.jsx";
 import FarmaciaRegularizacoesPage from "../pages/farmacia/FarmaciaRegularizacoesPage.jsx";
 
 import SystemHomePage from "../pages/system/SystemHomePage.jsx";
@@ -124,6 +125,13 @@ export const router = createBrowserRouter([
       {
         path: "farmacia/historico",
         element: protectedElement(<FarmaciaHistoricoPage />, FARMACIA_ROLES),
+      },
+      {
+        path: "farmacia/historico/:pedidoId",
+        element: protectedElement(
+          <FarmaciaHistoricoDetailPage />,
+          FARMACIA_ROLES,
+        ),
       },
       {
         path: "farmacia/regularizacoes",
