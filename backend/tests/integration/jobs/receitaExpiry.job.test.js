@@ -81,6 +81,86 @@ async function createExpiredReceitaScenario() {
   };
 }
 
+
+async function createCurrentDayReceitaScenario() {
+  const timestamp = Date.now();
+
+  const utente = await prisma.utente.create({
+    data: {
+      numero9: makeNumero9(),
+      nome: `Teste Integration Expiry Hoje ${timestamp}`,
+    },
+    select: {
+      id: true,
+    },
+  });
+
+  const receita = await prisma.receita.create({
+    data: {
+      utenteId: utente.id,
+      numero19: makeNumero19(timestamp + 1),
+      pinAcesso6: "123456",
+      pinOpcao4: "1234",
+    },
+    select: {
+      id: true,
+    },
+  });
+
+  const now = new Date();
+  const validadeHoje = new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    now.getDate(),
+  );
+
+  const linha = await prisma.receitaLinha.create({
+    data: {
+      receitaId: receita.id,
+      nome: "Medicamento Validade Hoje Integration Test",
+      quantidade: 1,
+      quantidadeDispensada: 0,
+      validade: validadeHoje,
+      status: "ATIVA",
+    },
+    select: {
+      id: true,
+    },
+  });
+
+  const pedido = await prisma.pedido.create({
+    data: {
+      status: "PENDENTE",
+      itens: {
+        create: {
+          utenteId: utente.id,
+          tipo: "COM_RECEITA",
+          status: "PENDENTE",
+          medicamento: "Medicamento Validade Hoje Integration Test",
+          quantidade: 1,
+          receitaLinhaId: linha.id,
+        },
+      },
+    },
+    select: {
+      id: true,
+      itens: {
+        select: {
+          id: true,
+        },
+      },
+    },
+  });
+
+  return {
+    utenteId: utente.id,
+    receitaId: receita.id,
+    linhaId: linha.id,
+    pedidoId: pedido.id,
+    pedidoItemId: pedido.itens[0].id,
+  };
+}
+
 async function cleanupScenario(scenario) {
   if (!scenario) return;
 
@@ -203,4 +283,56 @@ describe("receitaExpiry.job integration", () => {
       await cleanupScenario(scenario);
     }
   });
+
+  it("não deve expirar linha com validade igual ao dia atual", async () => {
+    let scenario = null;
+
+    try {
+      scenario = await createCurrentDayReceitaScenario();
+
+      await runOnce();
+
+      const linha = await prisma.receitaLinha.findUnique({
+        where: {
+          id: scenario.linhaId,
+        },
+        select: {
+          status: true,
+        },
+      });
+
+      expect(linha).toEqual({
+        status: "ATIVA",
+      });
+
+      const item = await prisma.pedidoItem.findUnique({
+        where: {
+          id: scenario.pedidoItemId,
+        },
+        select: {
+          status: true,
+        },
+      });
+
+      expect(item).toEqual({
+        status: "PENDENTE",
+      });
+
+      const pedido = await prisma.pedido.findUnique({
+        where: {
+          id: scenario.pedidoId,
+        },
+        select: {
+          status: true,
+        },
+      });
+
+      expect(pedido).toEqual({
+        status: "PENDENTE",
+      });
+    } finally {
+      await cleanupScenario(scenario);
+    }
+  });
+
 });

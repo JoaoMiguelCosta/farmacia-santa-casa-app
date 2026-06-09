@@ -1,5 +1,6 @@
 // src/modules/pedidos/pedidos.repository.js
 const { prisma } = require("../../db/prisma");
+const { getStartOfDay } = require("../../shared/utils/date");
 
 const auditUserSelect = {
   id: true,
@@ -203,7 +204,7 @@ function findEarlierActiveReceitaLinhasByUtente({
       },
       status: "ATIVA",
       validade: {
-        gt: new Date(),
+        gte: getStartOfDay(),
         lt: beforeValidade,
       },
     },

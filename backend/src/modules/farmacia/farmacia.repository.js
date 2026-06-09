@@ -1,6 +1,7 @@
 // src/modules/farmacia/farmacia.repository.js
 const { prisma } = require("../../db/prisma");
 const { normalizeText } = require("../../shared/utils/normalize");
+const { isDateBeforeToday } = require("../../shared/utils/date");
 
 const { conflict, notFound } = require("../../shared/errors/AppError");
 
@@ -227,6 +228,30 @@ function ensurePedidoPending(pedido) {
   }
 }
 
+function ensurePedidoPending(pedido) {
+  if (pedido.status !== "PENDENTE") {
+    throw conflict("O pedido não está em estado PENDENTE.");
+  }
+}
+
+function findPedidoById(pedidoId) {
+  return prisma.pedido.findUnique({
+    where: {
+      id: pedidoId,
+    },
+    select: pedidoSelect,
+  });
+}
+
+function findPedidoActionById(client, pedidoId) {
+  return client.pedido.findUnique({
+    where: {
+      id: pedidoId,
+    },
+    select: pedidoActionSelect,
+  });
+}
+
 function findPedidoActionById(client, pedidoId) {
   return client.pedido.findUnique({
     where: {
@@ -241,7 +266,7 @@ function isReceitaLinhaExpired(linha, now) {
 
   if (linha.status === "EXPIRADA") return true;
 
-  return new Date(linha.validade) <= now;
+  return isDateBeforeToday(linha.validade, now);
 }
 
 function getPendingPedidoItems(pedido) {
@@ -315,7 +340,7 @@ function validateReceitaItem(item, now) {
     throw conflict(`Linha de receita "${linha.nome}" não está ativa.`);
   }
 
-  if (new Date(linha.validade) <= now) {
+  if (isDateBeforeToday(linha.validade, now)) {
     throw conflict(`Linha de receita "${linha.nome}" está expirada.`);
   }
 
@@ -603,15 +628,6 @@ function buildListPedidosWhere({ status, search, from, to }) {
   }
 
   return where;
-}
-
-function findPedidoById(pedidoId) {
-  return prisma.pedido.findUnique({
-    where: {
-      id: pedidoId,
-    },
-    select: pedidoSelect,
-  });
 }
 
 async function listPedidos({ status, search, from, to, skip, take }) {

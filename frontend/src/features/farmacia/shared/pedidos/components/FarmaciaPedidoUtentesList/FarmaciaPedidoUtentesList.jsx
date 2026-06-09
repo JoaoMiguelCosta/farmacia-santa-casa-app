@@ -13,7 +13,11 @@ function getSafeDomIdFragment(value) {
     .replace(/[^a-zA-Z0-9_-]/g, "-");
 }
 
-export default function FarmaciaPedidoUtentesList({ pedidoId, groups = [] }) {
+export default function FarmaciaPedidoUtentesList({
+  pedidoId,
+  groups = [],
+  variant = "pending",
+}) {
   const { labels, utentesList, actions } = FARMACIA_PEDIDO_UI;
 
   const {
@@ -90,6 +94,7 @@ export default function FarmaciaPedidoUtentesList({ pedidoId, groups = [] }) {
                 key={group.key}
                 group={group}
                 detailsId={detailsId}
+                variant={variant}
                 isExpanded={expandedGroupKey === group.key}
                 onToggle={() => {
                   toggleGroup(group.key);

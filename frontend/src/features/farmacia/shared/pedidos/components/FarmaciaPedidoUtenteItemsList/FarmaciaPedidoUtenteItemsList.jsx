@@ -27,6 +27,7 @@ function getItemKey(item, index) {
 export default function FarmaciaPedidoUtenteItemsList({
   items = [],
   groupKey,
+  variant = "pending",
 }) {
   const { itemsList, itemFilters, actions } = FARMACIA_PEDIDO_UI;
 
@@ -70,7 +71,9 @@ export default function FarmaciaPedidoUtenteItemsList({
             type="search"
             value={search}
             placeholder={itemsList.searchPlaceholder}
-            onChange={(event) => changeSearch(event.target.value)}
+            onChange={(event) => {
+              changeSearch(event.target.value);
+            }}
           />
         </label>
 
@@ -86,7 +89,9 @@ export default function FarmaciaPedidoUtenteItemsList({
               className={styles.filterButton}
               data-active={activeFilter === filterKey ? "true" : "false"}
               aria-pressed={activeFilter === filterKey}
-              onClick={() => changeFilter(filterKey)}
+              onClick={() => {
+                changeFilter(filterKey);
+              }}
             >
               <span>{itemFilters[filterKey]}</span>
 
@@ -108,17 +113,21 @@ export default function FarmaciaPedidoUtenteItemsList({
             {visibleItems.map((item, index) => {
               const itemKey = getItemKey(item, index);
 
-              const detailsId = `farmacia-utente-${safeGroupKey}-item-${getSafeDomIdFragment(
-                itemKey,
-              )}-details`;
+              const detailsId =
+                `farmacia-utente-${safeGroupKey}` +
+                `-item-${getSafeDomIdFragment(itemKey)}` +
+                "-details";
 
               return (
                 <FarmaciaPedidoItem
                   key={itemKey}
                   item={item}
+                  variant={variant}
                   detailsId={detailsId}
                   isExpanded={expandedItemKey === itemKey}
-                  onToggle={() => toggleItem(itemKey)}
+                  onToggle={() => {
+                    toggleItem(itemKey);
+                  }}
                 />
               );
             })}

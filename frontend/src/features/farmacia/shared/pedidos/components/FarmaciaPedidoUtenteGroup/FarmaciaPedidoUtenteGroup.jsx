@@ -14,6 +14,7 @@ function getItemsLabel(itemsCount) {
 export default function FarmaciaPedidoUtenteGroup({
   group,
   detailsId,
+  variant = "pending",
   isExpanded = false,
   onToggle,
 }) {
@@ -71,7 +72,11 @@ export default function FarmaciaPedidoUtenteGroup({
           className={styles.details}
           aria-label={`${FARMACIA_PEDIDO_UI.labels.items} — ${utente.nome}`}
         >
-          <FarmaciaPedidoUtenteItemsList items={items} groupKey={key} />
+          <FarmaciaPedidoUtenteItemsList
+            items={items}
+            groupKey={key}
+            variant={variant}
+          />
         </section>
       ) : null}
     </li>

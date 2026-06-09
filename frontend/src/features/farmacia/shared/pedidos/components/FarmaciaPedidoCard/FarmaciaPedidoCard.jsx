@@ -7,21 +7,15 @@ import {
   getPedidoClosedReasonLabel,
   getPedidoClosedReasonTitle,
   getPedidoNumberLabel,
-  getPedidoStatusLabel,
   hasPedidoClosedReason,
 } from "../../utils/farmaciaPedido.utils";
 
 import FarmaciaPedidoActions from "../FarmaciaPedidoActions/FarmaciaPedidoActions";
 import FarmaciaPedidoSummary from "../FarmaciaPedidoSummary/FarmaciaPedidoSummary";
 import FarmaciaPedidoUtentesList from "../FarmaciaPedidoUtentesList/FarmaciaPedidoUtentesList";
+import FarmaciaPedidoWarning from "../FarmaciaPedidoWarning/FarmaciaPedidoWarning";
 
 import styles from "./FarmaciaPedidoCard.module.css";
-
-function normalizeDataValue(value) {
-  return String(value || "")
-    .trim()
-    .toUpperCase();
-}
 
 export default function FarmaciaPedidoCard({
   pedido,
@@ -33,22 +27,32 @@ export default function FarmaciaPedidoCard({
 
   showUtentes = true,
 }) {
-  const { utenteGroups, auditInfo, dateLabel, dateValue } =
-    useFarmaciaPedidoCard({
-      pedido,
-      variant,
-    });
+  const {
+    utenteGroups,
+    operationalSummary,
+    visualStatus,
+    warning,
+
+    auditInfo,
+    dateLabel,
+    dateValue,
+  } = useFarmaciaPedidoCard({
+    pedido,
+    variant,
+  });
 
   if (!pedido) return null;
 
-  const pedidoStatus = normalizeDataValue(pedido.status);
   const cardTitleId = `farmacia-pedido-${pedido.id}-title`;
+
+  const isCompact = !showUtentes;
 
   return (
     <article
       className={styles.card}
-      data-status={pedidoStatus}
-      data-compact={showUtentes ? "false" : "true"}
+      data-status={visualStatus.status}
+      data-has-warning={visualStatus.hasWarning ? "true" : "false"}
+      data-compact={isCompact ? "true" : "false"}
       aria-labelledby={cardTitleId}
     >
       <header className={styles.header}>
@@ -62,18 +66,26 @@ export default function FarmaciaPedidoCard({
               {getPedidoNumberLabel(pedido)}
             </h3>
 
-            <span className={styles.status} data-status={pedidoStatus}>
-              {getPedidoStatusLabel(pedido.status)}
+            <span
+              className={styles.status}
+              data-status={visualStatus.status}
+              data-warning={visualStatus.hasWarning ? "true" : "false"}
+            >
+              {visualStatus.label}
             </span>
           </div>
         </div>
       </header>
 
+      <FarmaciaPedidoWarning warning={warning} isCompact={isCompact} />
+
       <FarmaciaPedidoSummary
         pedido={pedido}
+        operationalSummary={operationalSummary}
         dateLabel={dateLabel}
         dateValue={dateValue}
         auditInfo={auditInfo}
+        isCompact={isCompact}
       />
 
       {hasPedidoClosedReason(pedido) ? (
@@ -85,7 +97,11 @@ export default function FarmaciaPedidoCard({
       ) : null}
 
       {showUtentes ? (
-        <FarmaciaPedidoUtentesList pedidoId={pedido.id} groups={utenteGroups} />
+        <FarmaciaPedidoUtentesList
+          pedidoId={pedido.id}
+          groups={utenteGroups}
+          variant={variant}
+        />
       ) : null}
 
       <FarmaciaPedidoActions

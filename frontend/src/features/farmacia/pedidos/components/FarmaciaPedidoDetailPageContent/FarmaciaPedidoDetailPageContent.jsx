@@ -99,9 +99,17 @@ export default function FarmaciaPedidoDetailPageContent() {
 
   const showDecisionActions = Boolean(pedido) && isPedidoPending(pedido);
 
+  const pageClassName = [
+    styles.page,
+
+    showDecisionActions ? styles.pageWithDecisionBar : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
+
   return (
     <section
-      className={styles.page}
+      className={pageClassName}
       aria-labelledby="farmacia-pedido-detail-title"
     >
       <div className={styles.navigation}>

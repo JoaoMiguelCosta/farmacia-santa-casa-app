@@ -2,6 +2,7 @@
 const { prisma } = require("../../db/prisma");
 const regularizacoesRepository = require("../regularizacoes/regularizacoes.repository");
 const { normalizeText } = require("../../shared/utils/normalize");
+const { getStartOfDay } = require("../../shared/utils/date");
 
 const linhaSelect = Object.freeze({
   id: true,
@@ -150,12 +151,6 @@ function attachRegularizacaoQuantities(linhas = [], regularizacaoQuantityMap) {
   }));
 }
 
-function getStartOfToday() {
-  const now = new Date();
-
-  return new Date(now.getFullYear(), now.getMonth(), now.getDate());
-}
-
 async function findLinhasByUtente(utenteId) {
   const linhas = await prisma.receitaLinha.findMany({
     where: {
@@ -164,7 +159,7 @@ async function findLinhasByUtente(utenteId) {
       },
       status: "ATIVA",
       validade: {
-        gte: getStartOfToday(),
+        gte: getStartOfDay(),
       },
     },
     select: linhaSelect,

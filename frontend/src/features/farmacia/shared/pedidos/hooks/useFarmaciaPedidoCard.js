@@ -4,6 +4,12 @@ import { useMemo } from "react";
 import { FARMACIA_PEDIDO_UI } from "../config/farmaciaPedidoUi.config";
 
 import {
+  buildPedidoOperationalSummary,
+  getPedidoVisualStatus,
+  getPedidoWarning,
+} from "../utils/farmaciaPedidoOperational.utils";
+
+import {
   getPedidoClosedAtLabel,
   getPedidoCreatedAtLabel,
   getPedidoUtenteGroups,
@@ -42,6 +48,18 @@ export function useFarmaciaPedidoCard({ pedido, variant = "pending" }) {
     return getPedidoUtenteGroups(pedido);
   }, [pedido]);
 
+  const operationalSummary = useMemo(() => {
+    return buildPedidoOperationalSummary(pedido);
+  }, [pedido]);
+
+  const visualStatus = useMemo(() => {
+    return getPedidoVisualStatus(pedido, operationalSummary);
+  }, [operationalSummary, pedido]);
+
+  const warning = useMemo(() => {
+    return getPedidoWarning(pedido, operationalSummary);
+  }, [operationalSummary, pedido]);
+
   const auditInfo = isHistory ? getPedidoAuditInfo(pedido) : null;
 
   const dateLabel = isHistory
@@ -54,6 +72,10 @@ export function useFarmaciaPedidoCard({ pedido, variant = "pending" }) {
 
   return {
     utenteGroups,
+    operationalSummary,
+    visualStatus,
+    warning,
+
     auditInfo,
     dateLabel,
     dateValue,

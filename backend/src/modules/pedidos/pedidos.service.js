@@ -13,6 +13,7 @@ const { toPedidoDTO } = require("./pedidos.mappers");
 
 const { assertUtenteOperational } = require("../utentes/utentes.guards");
 const { normalizeText } = require("../../shared/utils/normalize");
+const { isDateBeforeToday } = require("../../shared/utils/date");
 
 const {
   conflict,
@@ -92,7 +93,7 @@ function validateReceitaLinhaAvailability(linha, quantidade) {
     throw conflict("Linha de receita não está ativa.");
   }
 
-  if (new Date(linha.validade) <= new Date()) {
+  if (isDateBeforeToday(linha.validade)) {
     throw conflict("Linha de receita expirada.");
   }
 

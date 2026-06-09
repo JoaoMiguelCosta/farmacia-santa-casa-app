@@ -27,13 +27,19 @@ export const FARMACIA_PEDIDOS_PAGE = Object.freeze({
     actionBar: {
       ariaLabel: "Ações do pedido",
       title: "Decisão do pedido",
+
       description:
-        "A validação ou rejeição aplica-se a todos os utentes e medicamentos deste pedido.",
+        "A validação ou rejeição aplica-se aos medicamentos ainda pendentes deste pedido.",
+
+      warningDescription:
+        "A decisão aplica-se apenas aos medicamentos ainda pendentes. Os medicamentos cancelados por expiração são mantidos para consulta e auditoria.",
 
       labels: {
         utentes: "Total de utentes",
-        items: "Medicamentos",
-        quantity: "Quantidade total",
+        validatableItems: "Medicamentos pendentes",
+        validatableQuantity: "Quantidade pendente",
+        expiredItems: "Cancelados por expiração",
+        expiredQuantity: "Quantidade cancelada",
       },
     },
   },
@@ -46,35 +52,6 @@ export const FARMACIA_PEDIDOS_PAGE = Object.freeze({
 
       countSingular: "pedido pendente",
       countPlural: "pedidos pendentes",
-
-      updatingLabel: "A atualizar os resultados...",
-
-      search: {
-        ariaLabel: "Pesquisar pedidos pendentes",
-        label: "Pesquisar pedidos",
-        placeholder:
-          "Pesquisar por número, utente, medicamento, receita ou PIN...",
-        submitLabel: "Pesquisar",
-        clearLabel: "Limpar",
-
-        emptyTitle: "Nenhum pedido corresponde à pesquisa.",
-        emptyDescription:
-          "Altera ou limpa a pesquisa para consultares os restantes pedidos pendentes.",
-      },
-
-      pagination: {
-        resultsPrefix: "A mostrar",
-        resultsSeparator: "de",
-
-        resultSingular: "pedido",
-        resultPlural: "pedidos",
-
-        pageLabel: "Página",
-        pageSeparator: "de",
-
-        previousLabel: "Anterior",
-        nextLabel: "Seguinte",
-      },
 
       emptyTitle: "Sem pedidos pendentes.",
       emptyDescription:
@@ -90,22 +67,45 @@ export const FARMACIA_PEDIDOS_PAGE = Object.freeze({
 
   decisionDialog: {
     eyebrow: "Confirmação necessária",
+    expiryWarningTitle: "Existem medicamentos cancelados por expiração",
 
     labels: {
       pedido: "Pedido",
       totalUtentes: "Total de utentes",
+
       totalItems: "Total de medicamentos",
       totalQuantity: "Quantidade total",
+
+      validatableItems: "Medicamentos a validar",
+      validatableQuantity: "Quantidade a validar",
+
+      rejectableItems: "Medicamentos a rejeitar",
+      rejectableQuantity: "Quantidade a rejeitar",
+
+      expiredItems: "Cancelados por expiração",
+      expiredQuantity: "Quantidade cancelada",
     },
   },
 
   validateDialog: {
     icon: "✓",
     title: "Validar pedido?",
+
     description:
       "As quantidades deste pedido serão registadas como dispensadas e serão criadas as regularizações aplicáveis às vendas suspensas.",
+
+    warningDescription:
+      "Apenas os medicamentos ainda pendentes serão validados. Os medicamentos cancelados por expiração não serão dispensados.",
+
     supportingText:
       "Confirma os medicamentos, as quantidades e os dados das receitas antes de validar.",
+
+    warningSupportingText:
+      "Confirma os medicamentos ainda pendentes. Os medicamentos expirados serão ignorados e mantidos no pedido para auditoria.",
+
+    expiryNotice:
+      "Os medicamentos cancelados por expiração não serão validados nem apagados. A quantidade, a validade e os códigos da receita permanecem disponíveis para consulta.",
+
     confirmLabel: "Validar pedido",
     cancelLabel: "Cancelar",
     successMessage: "Pedido validado com sucesso.",
@@ -114,10 +114,22 @@ export const FARMACIA_PEDIDOS_PAGE = Object.freeze({
   rejectDialog: {
     icon: "!",
     title: "Rejeitar pedido?",
+
     description:
       "Todos os itens pendentes deste pedido passam para o estado rejeitado e a decisão fica registada no histórico.",
+
+    warningDescription:
+      "A rejeição será aplicada apenas aos medicamentos ainda pendentes. Os medicamentos já cancelados por expiração mantêm o respetivo estado.",
+
     supportingText:
       "Confirma os dados do pedido e indica o motivo da rejeição quando for relevante.",
+
+    warningSupportingText:
+      "Confirma os medicamentos ainda pendentes. Os medicamentos expirados permanecem cancelados por expiração para auditoria.",
+
+    expiryNotice:
+      "Os medicamentos cancelados por expiração não serão alterados para rejeitados e continuam disponíveis para consulta.",
+
     confirmLabel: "Rejeitar pedido",
     cancelLabel: "Cancelar",
     successMessage: "Pedido rejeitado com sucesso.",

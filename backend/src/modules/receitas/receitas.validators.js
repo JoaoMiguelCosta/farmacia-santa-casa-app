@@ -1,6 +1,7 @@
 // src/modules/receitas/receitas.validators.js
 const { badRequest } = require("../../shared/errors/AppError");
 const { normalizeText } = require("../../shared/utils/normalize");
+const { isDateBeforeToday } = require("../../shared/utils/date");
 
 function assertDigits(value, length, fieldName) {
   const text = String(value || "").trim();
@@ -33,10 +34,6 @@ function getLinhaLabel(index) {
   return `Medicamento ${index + 1}`;
 }
 
-function getStartOfDay(date = new Date()) {
-  return new Date(date.getFullYear(), date.getMonth(), date.getDate());
-}
-
 function parseDateOnly(value) {
   const text = String(value || "").trim();
   const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(text);
@@ -65,10 +62,6 @@ function parseValidityDate(value) {
   return value ? new Date(value) : null;
 }
 
-function isBeforeToday(date) {
-  return getStartOfDay(date).getTime() < getStartOfDay().getTime();
-}
-
 function parseLinha(raw = {}, index) {
   const linhaLabel = getLinhaLabel(index);
 
@@ -88,7 +81,7 @@ function parseLinha(raw = {}, index) {
     throw badRequest(`${linhaLabel}: a validade é inválida.`);
   }
 
-  if (isBeforeToday(validade)) {
+  if (isDateBeforeToday(validade)) {
     throw badRequest(`${linhaLabel}: a validade deve ser hoje ou futura.`);
   }
 

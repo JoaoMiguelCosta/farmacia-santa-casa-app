@@ -1,34 +1,43 @@
 /* src/features/farmacia/shared/pedidos/components/FarmaciaPedidoSummary/FarmaciaPedidoSummary.module.css */
 
 .summary {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: stretch;
-    gap: 0;
+    display: grid;
+    grid-template-columns:
+        repeat(auto-fit,
+            minmax(9rem, 1fr));
+    gap: 0.45rem;
+
     margin: 0;
-    padding: 0.55rem 0.65rem;
+    padding: 0.55rem;
+
     border: 1px solid var(--clinic-border);
-    border-radius: var(--clinic-radius-md);
+    border-radius:
+        var(--clinic-radius-md);
+
     background: var(--clinic-mist);
 }
 
 .summaryItem {
     display: grid;
-    flex: 0 1 10rem;
     align-content: center;
     gap: 0.16rem;
+
     min-width: 0;
-    padding: 0.42rem 0.75rem;
-    border-inline-start: 1px solid var(--clinic-border);
+    min-height: 3.75rem;
+    padding: 0.5rem 0.65rem;
+
+    border: 1px solid transparent;
+    border-radius:
+        var(--clinic-radius-sm);
 }
 
 .dateItem {
-    flex: 1 1 16rem;
-    border-inline-start: 0;
+    grid-column: span 2;
 }
 
 .summaryItem dt {
     color: var(--clinic-muted);
+
     font-size: 0.7rem;
     font-weight: 750;
     letter-spacing: 0.035em;
@@ -39,8 +48,11 @@
 .summaryItem dd {
     min-width: 0;
     margin: 0;
+
     overflow-wrap: anywhere;
+
     color: var(--clinic-ink-soft);
+
     font-size: 0.88rem;
     font-weight: 800;
     line-height: 1.35;
@@ -51,34 +63,120 @@
     font-size: 0.93rem;
 }
 
-@media (max-width: 860px) {
-    .summary {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 0.45rem;
+.summaryItem[data-tone="success"] {
+    border-color:
+        rgba(37, 115, 90, 0.14);
+
+    background:
+        rgba(37, 115, 90, 0.045);
+}
+
+.summaryItem[data-tone="success"] dd {
+    color: var(--clinic-success);
+}
+
+.summaryItem[data-tone="danger"] {
+    border-color:
+        rgba(180, 35, 24, 0.14);
+
+    background:
+        rgba(180, 35, 24, 0.04);
+}
+
+.summaryItem[data-tone="danger"] dd {
+    color: var(--clinic-danger);
+}
+
+/* Lista compacta */
+
+.summary[data-layout="compact"] .dateItem,
+.summary[data-layout="compact-warning"] .dateItem {
+    grid-column: auto;
+}
+
+/* Detalhe pendente com avisos */
+
+.summary[data-layout="pending-warning"] {
+    grid-template-columns:
+        repeat(4, minmax(0, 1fr));
+}
+
+.summary[data-layout="pending-warning"] .summaryItem[data-slot="date"] {
+    grid-column: span 2;
+}
+
+.summary[data-layout="pending-warning"] .summaryItem[data-slot="validatable-items"],
+.summary[data-layout="pending-warning"] .summaryItem[data-slot="expired-items"],
+.summary[data-layout="pending-warning"] .summaryItem[data-slot="validatable-quantity"],
+.summary[data-layout="pending-warning"] .summaryItem[data-slot="canceled-quantity"] {
+    grid-column: span 2;
+}
+
+/* Histórico validado com avisos */
+
+.summary[data-layout="history-warning"] {
+    grid-template-columns:
+        repeat(4, minmax(0, 1fr));
+}
+
+.summary[data-layout="history-warning"] .summaryItem[data-slot="date"],
+.summary[data-layout="history-warning"] .summaryItem[data-slot="audit"],
+.summary[data-layout="history-warning"] .summaryItem[data-slot="validated-quantity"],
+.summary[data-layout="history-warning"] .summaryItem[data-slot="not-validated-quantity"] {
+    grid-column: span 2;
+}
+
+@media (max-width: 920px) {
+
+    .summary[data-layout="pending-warning"],
+    .summary[data-layout="history-warning"] {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
     }
 
-    .summaryItem,
-    .dateItem {
-        padding: 0.5rem 0.55rem;
-        border-inline-start: 0;
+    .summary[data-layout="pending-warning"] .summaryItem[data-slot="date"],
+    .summary[data-layout="history-warning"] .summaryItem[data-slot="date"],
+    .summary[data-layout="history-warning"] .summaryItem[data-slot="audit"] {
+        grid-column: 1 / -1;
+    }
+
+    .summary[data-layout="pending-warning"] .summaryItem[data-slot="validatable-items"],
+    .summary[data-layout="pending-warning"] .summaryItem[data-slot="expired-items"],
+    .summary[data-layout="pending-warning"] .summaryItem[data-slot="validatable-quantity"],
+    .summary[data-layout="pending-warning"] .summaryItem[data-slot="canceled-quantity"],
+    .summary[data-layout="history-warning"] .summaryItem[data-slot="validated-quantity"],
+    .summary[data-layout="history-warning"] .summaryItem[data-slot="not-validated-quantity"] {
+        grid-column: span 1;
     }
 }
 
-@media (max-width: 540px) {
-    .summary {
+@media (max-width: 720px) {
+    .summary:not([data-layout="pending-warning"]):not([data-layout="history-warning"]) {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+
+    .summary:not([data-layout="compact"]):not([data-layout="compact-warning"]) .dateItem {
+        grid-column: 1 / -1;
+    }
+}
+
+@media (max-width: 520px) {
+
+    .summary,
+    .summary[data-layout="pending-warning"],
+    .summary[data-layout="history-warning"] {
         grid-template-columns: 1fr;
-        gap: 0;
-        padding: 0.45rem 0.7rem;
     }
 
-    .summaryItem,
-    .dateItem {
-        padding: 0.62rem 0.2rem;
-        border-bottom: 1px solid var(--clinic-border);
+    .dateItem,
+    .summary[data-layout="pending-warning"] .summaryItem,
+    .summary[data-layout="history-warning"] .summaryItem {
+        grid-column: auto;
     }
 
-    .summaryItem:last-child {
-        border-bottom: 0;
+    .summaryItem {
+        min-height: 0;
+        padding: 0.62rem;
     }
 }

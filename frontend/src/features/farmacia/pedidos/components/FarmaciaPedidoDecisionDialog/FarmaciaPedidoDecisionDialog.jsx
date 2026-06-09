@@ -3,10 +3,10 @@ import { useEffect, useRef } from "react";
 
 import Button from "../../../../../shared/ui/Button/Button";
 
+import { buildPedidoOperationalSummary } from "../../../shared/pedidos/utils/farmaciaPedidoOperational.utils";
+
 import {
-  getPedidoItemsCount,
   getPedidoNumberLabel,
-  getPedidoTotalQuantity,
   getPedidoUtentesCount,
 } from "../../../shared/pedidos/utils/farmaciaPedido.utils";
 
@@ -46,6 +46,74 @@ function getFocusableElements(container) {
   });
 }
 
+function buildDefaultMetrics({ pedido, summary, labels }) {
+  return [
+    {
+      key: "pedido",
+      label: labels.pedido,
+      value: getPedidoNumberLabel(pedido),
+    },
+    {
+      key: "utentes",
+      label: labels.totalUtentes,
+      value: getPedidoUtentesCount(pedido),
+    },
+    {
+      key: "items",
+      label: labels.totalItems,
+      value: summary.totalItems,
+    },
+    {
+      key: "quantity",
+      label: labels.totalQuantity,
+      value: summary.totalQuantity,
+    },
+  ];
+}
+
+function buildWarningMetrics({ mode, pedido, summary, labels }) {
+  const isRejectMode = mode === DIALOG_MODES.REJECT;
+
+  return [
+    {
+      key: "pedido",
+      label: labels.pedido,
+      value: getPedidoNumberLabel(pedido),
+    },
+    {
+      key: "utentes",
+      label: labels.totalUtentes,
+      value: getPedidoUtentesCount(pedido),
+    },
+    {
+      key: "pending-items",
+      label: isRejectMode ? labels.rejectableItems : labels.validatableItems,
+      value: summary.validatableItems,
+      tone: "success",
+    },
+    {
+      key: "pending-quantity",
+      label: isRejectMode
+        ? labels.rejectableQuantity
+        : labels.validatableQuantity,
+      value: summary.validatableQuantity,
+      tone: "success",
+    },
+    {
+      key: "expired-items",
+      label: labels.expiredItems,
+      value: summary.expiredItems,
+      tone: "danger",
+    },
+    {
+      key: "expired-quantity",
+      label: labels.expiredQuantity,
+      value: summary.expiredQuantity,
+      tone: "danger",
+    },
+  ];
+}
+
 export default function FarmaciaPedidoDecisionDialog({
   mode = DIALOG_MODES.VALIDATE,
   pedido,
@@ -60,6 +128,7 @@ export default function FarmaciaPedidoDecisionDialog({
   const isRejectMode = mode === DIALOG_MODES.REJECT;
 
   const dialogConfig = getDialogConfig(mode);
+
   const { decisionDialog } = FARMACIA_PEDIDOS_PAGE;
 
   useEffect(() => {
@@ -137,9 +206,34 @@ export default function FarmaciaPedidoDecisionDialog({
 
   if (!pedido) return null;
 
+  const summary = buildPedidoOperationalSummary(pedido);
+
+  const hasExpiredItems = summary.hasExpiredItems;
+
   const titleId = `farmacia-pedido-${mode}-dialog-title`;
 
   const descriptionId = `farmacia-pedido-${mode}-dialog-description`;
+
+  const description = hasExpiredItems
+    ? dialogConfig.warningDescription
+    : dialogConfig.description;
+
+  const supportingText = hasExpiredItems
+    ? dialogConfig.warningSupportingText
+    : dialogConfig.supportingText;
+
+  const metrics = hasExpiredItems
+    ? buildWarningMetrics({
+        mode,
+        pedido,
+        summary,
+        labels: decisionDialog.labels,
+      })
+    : buildDefaultMetrics({
+        pedido,
+        summary,
+        labels: decisionDialog.labels,
+      });
 
   return (
     <div className={styles.overlay} role="presentation">
@@ -147,6 +241,7 @@ export default function FarmaciaPedidoDecisionDialog({
         ref={dialogRef}
         className={styles.dialog}
         data-tone={isRejectMode ? "danger" : "success"}
+        data-has-warning={hasExpiredItems ? "true" : "false"}
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
@@ -166,41 +261,34 @@ export default function FarmaciaPedidoDecisionDialog({
             </h2>
 
             <p id={descriptionId} className={styles.description}>
-              {dialogConfig.description}
+              {description}
             </p>
           </div>
         </header>
 
         <div className={styles.body}>
           <dl className={styles.summary}>
-            <div className={styles.summaryItem}>
-              <dt>{decisionDialog.labels.pedido}</dt>
-
-              <dd>{getPedidoNumberLabel(pedido)}</dd>
-            </div>
-
-            <div className={styles.summaryItem}>
-              <dt>{decisionDialog.labels.totalUtentes}</dt>
-
-              <dd>{getPedidoUtentesCount(pedido)}</dd>
-            </div>
-
-            <div className={styles.summaryItem}>
-              <dt>{decisionDialog.labels.totalItems}</dt>
-
-              <dd>{getPedidoItemsCount(pedido)}</dd>
-            </div>
-
-            <div className={styles.summaryItem}>
-              <dt>{decisionDialog.labels.totalQuantity}</dt>
-
-              <dd>{getPedidoTotalQuantity(pedido)}</dd>
-            </div>
+            {metrics.map((metric) => (
+              <div
+                key={metric.key}
+                className={styles.summaryItem}
+                data-tone={metric.tone || "default"}
+              >
+                <dt>{metric.label}</dt>
+                <dd>{metric.value}</dd>
+              </div>
+            ))}
           </dl>
 
-          <div className={styles.supportingText}>
-            {dialogConfig.supportingText}
-          </div>
+          {hasExpiredItems ? (
+            <div className={styles.expiryNotice} role="note">
+              <strong>{decisionDialog.expiryWarningTitle}</strong>
+
+              <span>{dialogConfig.expiryNotice}</span>
+            </div>
+          ) : null}
+
+          <div className={styles.supportingText}>{supportingText}</div>
 
           {isRejectMode ? (
             <label className={styles.reasonField}>

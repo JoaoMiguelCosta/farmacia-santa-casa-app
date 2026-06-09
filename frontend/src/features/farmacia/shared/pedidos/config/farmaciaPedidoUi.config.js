@@ -39,9 +39,65 @@ export const FARMACIA_PEDIDO_UI = Object.freeze({
     CANCELADO_POR_EXPIRACAO: "Cancelado por expiração",
   },
 
+  warnings: {
+    status: {
+      PENDENTE: "Pendente com avisos",
+      VALIDADO: "Validado com avisos",
+    },
+
+    pending: {
+      title: "Pedido com medicamentos expirados",
+
+      message:
+        "Este pedido contém medicamentos que já não podem ser validados porque a receita expirou. Os restantes medicamentos podem ser validados normalmente.",
+    },
+
+    validated: {
+      title: "Pedido validado com avisos",
+
+      message:
+        "Este pedido foi validado, mas alguns medicamentos não foram dispensados porque a receita expirou antes da validação.",
+    },
+  },
+
+  itemWarnings: {
+    expired: {
+      pending: {
+        title: "Medicamento não validável",
+
+        message:
+          "A receita deste medicamento expirou antes da validação da Farmácia.",
+      },
+
+      history: {
+        title: "Medicamento não dispensado",
+
+        message:
+          "Este medicamento não foi dispensado porque a receita expirou antes da validação da Farmácia.",
+      },
+    },
+  },
+
+  summary: {
+    validatableItems: "Itens validáveis",
+    validatedItems: "Itens validados",
+
+    expiredItems: "Cancelados por expiração",
+
+    validatableQuantity: "Quantidade validável",
+
+    validatedQuantity: "Quantidade validada",
+
+    canceledQuantity: "Quantidade cancelada",
+
+    notValidatedQuantity: "Quantidade não validada",
+  },
+
   itemTypes: {
     COM_RECEITA: "Com receita",
+
     SEM_RECEITA: "Medicamento não sujeito a receita médica",
+
     EXTRA: "Venda Suspensa",
   },
 
@@ -49,6 +105,7 @@ export const FARMACIA_PEDIDO_UI = Object.freeze({
     ALL: "Todos",
     COM_RECEITA: "Com receita",
     EXTRA: "Vendas Suspensas",
+
     SEM_RECEITA: "Não sujeitos a receita médica",
   },
 
@@ -57,6 +114,7 @@ export const FARMACIA_PEDIDO_UI = Object.freeze({
     searchMinItems: 6,
 
     searchLabel: "Pesquisar utentes",
+
     searchPlaceholder: "Pesquisar por nome ou número do utente...",
 
     emptyTitle: "Nenhum utente corresponde à pesquisa.",
@@ -116,7 +174,9 @@ export const FARMACIA_PEDIDO_UI = Object.freeze({
 
     medicamento: "Medicamento",
     quantidade: "Quantidade",
+
     requestedQuantity: "Quantidade solicitada",
+
     totalQuantity: "Quantidade total",
     validade: "Validade",
 

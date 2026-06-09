@@ -3,12 +3,22 @@
 .card {
     display: grid;
     gap: 0.8rem;
-    padding: clamp(0.9rem, 1.8vw, 1.1rem);
+
+    padding:
+        clamp(0.9rem, 1.8vw, 1.1rem);
+
     border: 1px solid var(--clinic-border);
+
     border-inline-start: 4px solid var(--clinic-border-strong);
-    border-radius: var(--clinic-radius-lg);
+
+    border-radius:
+        var(--clinic-radius-lg);
+
     background: var(--clinic-surface);
-    box-shadow: var(--clinic-shadow-soft);
+
+    box-shadow:
+        var(--clinic-shadow-soft);
+
     transition:
         border-color var(--clinic-transition),
         box-shadow var(--clinic-transition);
@@ -16,23 +26,34 @@
 
 .card[data-compact="true"] {
     gap: 0.7rem;
-    padding: clamp(0.85rem, 1.6vw, 1rem);
+
+    padding:
+        clamp(0.85rem, 1.6vw, 1rem);
 }
 
 .card[data-status="PENDENTE"] {
-    border-inline-start-color: var(--clinic-warning);
+    border-inline-start-color:
+        var(--clinic-warning);
 }
 
 .card[data-status="VALIDADO"] {
-    border-inline-start-color: var(--clinic-success);
+    border-inline-start-color:
+        var(--clinic-success);
 }
 
 .card[data-status="REJEITADO"] {
-    border-inline-start-color: var(--clinic-danger);
+    border-inline-start-color:
+        var(--clinic-danger);
+}
+
+.card[data-has-warning="true"] {
+    border-inline-start-color:
+        var(--clinic-warning);
 }
 
 .card:hover {
-    border-color: var(--clinic-border-strong);
+    border-color:
+        var(--clinic-border-strong);
 }
 
 .header {
@@ -66,50 +87,88 @@
 
 .title {
     margin: 0;
+
     color: var(--clinic-ink);
-    font-size: clamp(1.15rem, 1.8vw, 1.4rem);
-    line-height: var(--clinic-line-height-tight);
+
+    font-size:
+        clamp(1.15rem, 1.8vw, 1.4rem);
+
+    line-height:
+        var(--clinic-line-height-tight);
 }
 
 .status {
     display: inline-flex;
     align-items: center;
+
     min-height: 1.75rem;
     padding: 0.28rem 0.58rem;
+
     border: 1px solid var(--clinic-border);
+
     border-radius: 999px;
+
     background: var(--clinic-mist);
     color: var(--clinic-muted-strong);
+
     font-size: 0.72rem;
     font-weight: 800;
     line-height: 1;
 }
 
 .status[data-status="PENDENTE"] {
-    border-color: rgba(161, 92, 7, 0.24);
-    background: rgba(161, 92, 7, 0.09);
+    border-color:
+        rgba(161, 92, 7, 0.24);
+
+    background:
+        rgba(161, 92, 7, 0.09);
+
     color: var(--clinic-warning);
 }
 
 .status[data-status="VALIDADO"] {
-    border-color: rgba(37, 115, 90, 0.24);
-    background: rgba(37, 115, 90, 0.09);
+    border-color:
+        rgba(37, 115, 90, 0.24);
+
+    background:
+        rgba(37, 115, 90, 0.09);
+
     color: var(--clinic-success);
 }
 
 .status[data-status="REJEITADO"] {
-    border-color: rgba(180, 35, 24, 0.22);
-    background: rgba(180, 35, 24, 0.07);
+    border-color:
+        rgba(180, 35, 24, 0.22);
+
+    background:
+        rgba(180, 35, 24, 0.07);
+
     color: var(--clinic-danger);
+}
+
+.status[data-warning="true"] {
+    border-color:
+        rgba(161, 92, 7, 0.3);
+
+    background:
+        rgba(161, 92, 7, 0.09);
+
+    color: var(--clinic-warning);
 }
 
 .closedReason {
     display: grid;
     gap: 0.25rem;
+
     padding: 0.75rem 0.85rem;
+
     border: 1px solid rgba(180, 35, 24, 0.18);
-    border-radius: var(--clinic-radius-md);
-    background: rgba(180, 35, 24, 0.045);
+
+    border-radius:
+        var(--clinic-radius-md);
+
+    background:
+        rgba(180, 35, 24, 0.045);
 }
 
 .closedReason span {

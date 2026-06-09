@@ -3,17 +3,12 @@ const cron = require("node-cron");
 
 const { prisma } = require("../db/prisma");
 const { env } = require("../config/env");
+const { getStartOfDay } = require("../shared/utils/date");
 
 const CANCEL_REASON = "Cancelado automaticamente por expiração da receita.";
 
 function getUniqueValues(values = []) {
   return Array.from(new Set(values.filter(Boolean)));
-}
-
-function getStartOfDay(value = new Date()) {
-  const date = new Date(value);
-
-  return new Date(date.getFullYear(), date.getMonth(), date.getDate());
 }
 
 async function getExpiredActiveLineIds(client, now) {

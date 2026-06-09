@@ -85,6 +85,16 @@ function getToggleLabel(item, isExpanded) {
     : FARMACIA_PEDIDO_UI.actions.viewDetails;
 }
 
+function getExpiredWarning(variant) {
+  const expiredWarnings = FARMACIA_PEDIDO_UI.itemWarnings.expired;
+
+  if (variant === "history") {
+    return expiredWarnings.history;
+  }
+
+  return expiredWarnings.pending;
+}
+
 function FarmaciaPedidoReceitaBarcodes({ receita }) {
   if (!receita) return null;
 
@@ -133,6 +143,7 @@ function FarmaciaPedidoExtraInformation({ item }) {
 
 export default function FarmaciaPedidoItem({
   item,
+  variant = "pending",
   detailsId,
   isExpanded = false,
   onToggle,
@@ -140,17 +151,25 @@ export default function FarmaciaPedidoItem({
   if (!item) return null;
 
   const receita = getPedidoItemReceita(item);
+
   const canExpand = canExpandPedidoItem(item);
+
   const isComReceita = item.tipo === "COM_RECEITA";
 
   const itemType = normalizeDataValue(item.tipo);
+
   const itemStatus = normalizeDataValue(item.status);
+
+  const isExpired = itemStatus === "CANCELADO_POR_EXPIRACAO";
+
+  const expiredWarning = getExpiredWarning(variant);
 
   return (
     <li
       className={styles.item}
       data-type={itemType}
       data-status={itemStatus}
+      data-expired={isExpired ? "true" : "false"}
       data-expanded={isExpanded ? "true" : "false"}
     >
       <header className={styles.header}>
@@ -198,6 +217,20 @@ export default function FarmaciaPedidoItem({
           ) : null}
         </div>
       </header>
+
+      {isExpired ? (
+        <div className={styles.expiredNotice} role="note">
+          <span className={styles.expiredNoticeIcon} aria-hidden="true">
+            !
+          </span>
+
+          <div className={styles.expiredNoticeContent}>
+            <strong>{expiredWarning.title}</strong>
+
+            <p>{expiredWarning.message}</p>
+          </div>
+        </div>
+      ) : null}
 
       {canExpand && isExpanded ? (
         <section id={detailsId} className={styles.details}>
