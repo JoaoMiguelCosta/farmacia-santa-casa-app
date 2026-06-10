@@ -4,7 +4,6 @@ export const SANTACASA_HISTORICO_PAGE = Object.freeze({
   header: {
     eyebrow: "Santa Casa",
     title: "Histórico",
-
     description:
       "Consulta o resultado dos pedidos enviados à Farmácia, incluindo validações, rejeições e cancelamentos.",
   },
@@ -16,98 +15,97 @@ export const SANTACASA_HISTORICO_PAGE = Object.freeze({
     title: "Detalhe do histórico",
 
     description:
-      "Consulta a decisão final, a auditoria e os medicamentos incluídos neste pedido.",
+      "Consulta o resultado do pedido, os medicamentos envolvidos e o resumo operacional da decisão.",
 
     refreshLabel: "Atualizar pedido",
     refreshingLabel: "A atualizar...",
 
     loadingTitle: "A carregar pedido...",
+    loadingDescription:
+      "Aguarda enquanto os dados do pedido histórico são carregados.",
 
-    loadingDescription: "Aguarda enquanto os dados do pedido são carregados.",
-
-    errorTitle: "Não foi possível carregar o pedido do histórico.",
-
+    errorTitle: "Não foi possível carregar o pedido.",
     retryLabel: "Tentar novamente",
 
-    summaryTitle: "Resumo da decisão",
+    summaryTitle: "Resumo do pedido",
 
-    summaryDescription: "Informação final e registo de auditoria deste pedido.",
+    summaryDescription:
+      "Informação geral do pedido fechado no histórico da Santa Casa.",
 
     summary: {
-      ariaLabel: "Resumo da decisão do pedido",
+      ariaLabel: "Resumo do pedido histórico",
 
       labels: {
         pedido: "Pedido",
         status: "Estado",
+        closedAt: "Fechado em",
+        createdAt: "Criado em",
         utentes: "Utentes",
         totalItems: "Medicamentos",
-
         totalQuantity: "Quantidade total",
+
+        validatedItems: "Validados",
+        expiredCanceledItems: "Cancelados por expiração",
+        validatedQuantity: "Quantidade validada",
+        notValidatedQuantity: "Quantidade não validada",
       },
     },
 
     operational: {
       title: "Resumo operacional",
-
-      ariaLabel: "Resumo operacional do pedido",
+      ariaLabel: "Resumo operacional do pedido histórico",
 
       labels: {
+        utentes: "Utentes",
         totalItems: "Medicamentos",
-
         totalQuantity: "Quantidade total",
 
         validatedItems: "Validados",
-
         validatedQuantity: "Quantidade validada",
 
         rejectedItems: "Rejeitados",
-
         rejectedQuantity: "Quantidade rejeitada",
 
         canceledItems: "Cancelados",
+        canceledQuantity: "Quantidade cancelada",
 
         expiredItems: "Cancelados por expiração",
+        expiredQuantity: "Quantidade expirada",
 
-        expiredQuantity: "Quantidade não validada",
-
-        releasedQuantity: "Quantidade libertada",
+        pendingItems: "Pendentes",
+        pendingQuantity: "Quantidade pendente",
       },
     },
-
-    itemsTitle: "Medicamentos por utente",
-
-    itemsDescription:
-      "Medicamentos do pedido organizados pelos respetivos utentes, incluindo receitas, validade e quantidades.",
   },
 
   sections: {
     list: {
       title: "Histórico de pedidos",
-
       description:
         "Pedidos fechados, organizados por data de decisão ou cancelamento.",
 
       emptyTitle: "Sem pedidos no histórico.",
-
       emptyDescription:
         "Quando existirem pedidos validados, rejeitados ou cancelados, aparecem aqui.",
 
       loadingTitle: "A carregar histórico...",
-
       loadingDescription: "Aguarda enquanto os dados são carregados.",
 
       errorTitle: "Não foi possível carregar o histórico.",
     },
   },
 
+  details: {
+    itemCountSingular: "medicamento neste pedido.",
+    itemCountPlural: "medicamentos neste pedido.",
+  },
+
   filters: {
     ariaLabel: "Filtros do histórico",
-
     totalLabel: "Total Pedidos",
 
     statusLabel: "Estado",
     searchLabel: "Pesquisa",
-
     searchPlaceholder:
       "Pesquisar por Pedido, Utente, Medicamento ou Receita...",
 
@@ -116,6 +114,9 @@ export const SANTACASA_HISTORICO_PAGE = Object.freeze({
 
     submit: "Filtrar",
     clear: "Limpar",
+
+    itemSearchPlaceholder:
+      "Pesquisar por utente, medicamento, receita, PIN ou estado...",
 
     statusOptions: [
       {
@@ -139,7 +140,6 @@ export const SANTACASA_HISTORICO_PAGE = Object.freeze({
 
   pagination: {
     ariaLabel: "Paginação do histórico da Santa Casa",
-
     emptyLabel: "Sem resultados.",
 
     showingLabel: "A mostrar",
@@ -158,21 +158,45 @@ export const SANTACASA_HISTORICO_PAGE = Object.freeze({
     next: "Seguinte",
 
     viewPedido: "Consultar pedido",
+
+    viewDetails: "Ver detalhes",
+    hideDetails: "Ocultar detalhes",
+
+    showMoreItems: "Ver mais",
+    showAllItems: "Ver todos",
+    hideAllItems: "Ocultar lista inteira",
+    showInitialItems: "Mostrar",
+
+    hideItems: "Ocultar medicamentos",
   },
 
   status: {
     VALIDADO: "Validado",
-
     VALIDADO_COM_AVISOS: "Validado com avisos",
-
     REJEITADO: "Rejeitado",
     CANCELADO: "Cancelado",
   },
 
+  itemStatus: {
+    PENDENTE: "Pendente",
+    VALIDADO: "Validado",
+    REJEITADO: "Rejeitado",
+    CANCELADO: "Cancelado",
+    CANCELADO_POR_EXPIRACAO: "Cancelado por expiração",
+  },
+
+  itemTypes: {
+    COM_RECEITA: "Com receita",
+    SEM_RECEITA: "Medicamentos não sujeitos a receita médica",
+    EXTRA: "Venda Suspensa",
+  },
+
   labels: {
     pedido: "Pedido",
+    pedidoNumber: "N.º pedido",
     status: "Estado",
 
+    createdAt: "Criado em",
     validatedAt: "Validado em",
     rejectedAt: "Rejeitado em",
     canceledAt: "Cancelado em",
@@ -181,37 +205,75 @@ export const SANTACASA_HISTORICO_PAGE = Object.freeze({
     validatedBy: "Validado por",
     rejectedBy: "Rejeitado por",
     canceledBy: "Cancelado por",
-    closedBy: "Decidido por",
 
     closedReason: "Motivo",
-
     rejectionReason: "Motivo da rejeição",
-
     cancellationReason: "Motivo do cancelamento",
 
+    utente: "Utente",
     utentes: "Utentes",
+    unidentifiedUtente: "Utente não identificado",
+    utenteNumber: "N.º utente",
 
-    totalItems: "Total de itens",
+    medicamento: "Medicamento",
+    medicamentoSingular: "medicamento",
+    medicamentoPlural: "medicamentos",
 
-    totalQuantity: "Quantidade total",
+    quantidade: "Quantidade",
+    unidadeSingular: "unidade",
+    unidadePlural: "unidades",
 
     warningSingular: "aviso",
     warningPlural: "avisos",
 
+    tipo: "Tipo",
+
+    receita: "Receita",
+    receitaNumber: "N.º receita",
+    pinAcesso: "PIN de acesso",
+    pinOpcao: "PIN de opção",
+    validadeReceita: "Validade",
+    receitaBarcodesAriaLabel: "Códigos da receita",
+
+    semReceita: "Medicamento não sujeito a receita médica",
+
+    extra: "Venda Suspensa",
+    extraRequestedQuantity: "Solicitado",
+    extraRegularizedQuantity: "Regularizado",
+
+    items: "Itens do pedido",
+    totalItems: "Total de itens",
+    totalQuantity: "Quantidade total",
+
+    validatedItems: "Validados",
+    expiredCanceledItems: "Cancelados por expiração",
+    validatedQuantity: "Quantidade validada",
+    notValidatedQuantity: "Quantidade não validada",
+
+    cardStatsTitle: "Resumo operacional",
+    cardStatsAriaLabel: "Resumo operacional do pedido",
+
     statsValidated: "Validados",
     statsRejected: "Rejeitados",
     statsCanceled: "Cancelados",
-
     statsCanceledByExpiry: "Cancelados por expiração",
+    statsValidatedQuantity: "Quantidade validada",
+    statsNotValidatedQuantity: "Quantidade não validada",
+    statsReleasedQuantity: "Quantidade libertada",
+
+    showingItems: "A mostrar",
+    hiddenItems: "Lista de medicamentos ocultada.",
+    of: "de",
+
+    itemSearch: "Pesquisa no pedido",
+    itemSearchResults: "Resultado da pesquisa",
+    itemSearchEmpty: "Nenhum medicamento encontrado neste pedido.",
 
     automaticCancellationNoticeTitle: "Cancelamento automático",
-
     manualCancellationNoticeTitle: "Cancelamento pela Santa Casa",
-
     validatedWithWarningsNoticeTitle: "Pedido validado com avisos",
 
     systemAutomatic: "Sistema automático",
-
     emptyValue: "—",
   },
 
@@ -224,6 +286,9 @@ export const SANTACASA_HISTORICO_PAGE = Object.freeze({
 
     validatedWithWarningsNotice:
       "Confirma os detalhes do pedido. Os medicamentos assinalados como cancelados por expiração não foram dispensados nem incluídos na validação.",
+
+    itemCancelledByExpiry:
+      "Este medicamento não foi validado no pedido porque a receita expirou antes da Farmácia concluir a validação.",
 
     rejected:
       "Este pedido foi rejeitado pela Farmácia. Os itens deixaram de estar reservados.",

@@ -206,20 +206,7 @@ export default function SantaCasaHistoricoDetailPageContent() {
             </section>
           ) : null}
 
-          <section
-            className={styles.itemsSection}
-            aria-labelledby="santacasa-historico-items-title"
-          >
-            <header className={styles.sectionHeader}>
-              <div>
-                <h2 id="santacasa-historico-items-title">
-                  {detail.itemsTitle}
-                </h2>
-
-                <p>{detail.itemsDescription}</p>
-              </div>
-            </header>
-
+          <section className={styles.itemsSection}>
             <SantaCasaPedidoDetails
               key={pedido.id || pedidoId}
               id={detailsId}

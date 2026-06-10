@@ -1,6 +1,8 @@
+/* src/features/santacasa/historico/components/SantaCasaHistoricoList/SantaCasaHistoricoList.module.css */
+
 .section {
     display: grid;
-    gap: clamp(0.95rem, 2vw, 1.2rem);
+    gap: clamp(0.95rem, 2vw, 1.18rem);
 
     width: 100%;
     min-width: 0;
@@ -16,24 +18,37 @@
     gap: 1rem;
 
     min-width: 0;
-    padding: clamp(1rem, 2.4vw, 1.35rem);
+    padding: clamp(1rem, 2.4vw, 1.32rem);
 
     overflow: hidden;
 
-    border: 1px solid var(--clinic-border);
+    border: 1px solid color-mix(in srgb, var(--clinic-green-700) 13%, transparent);
     border-radius: var(--clinic-radius-xl);
 
     background:
-        radial-gradient(circle at 100% 0%,
-            color-mix(in srgb, var(--clinic-green-700) 6%, transparent),
-            transparent 14rem),
         linear-gradient(135deg,
-            color-mix(in srgb, var(--clinic-white) 97%, transparent),
-            color-mix(in srgb, var(--clinic-cream) 88%, transparent));
+            color-mix(in srgb, var(--clinic-white) 98%, transparent),
+            color-mix(in srgb, var(--clinic-cream) 90%, transparent));
 
     box-shadow:
         var(--clinic-shadow-soft),
-        inset 0 1px 0 color-mix(in srgb, var(--clinic-white) 88%, transparent);
+        inset 0 1px 0 color-mix(in srgb, var(--clinic-white) 90%, transparent);
+}
+
+.header::before {
+    content: "";
+
+    position: absolute;
+    inset-inline-start: 0;
+    inset-block: 1rem;
+    z-index: 1;
+
+    width: 4px;
+
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--clinic-green-700) 72%, transparent);
+
+    pointer-events: none;
 }
 
 .heading {
@@ -51,9 +66,9 @@
 
     color: var(--clinic-ink);
 
-    font-size: clamp(1.25rem, 2.2vw, 1.7rem);
+    font-size: clamp(1.22rem, 2.2vw, 1.62rem);
     font-weight: 950;
-    letter-spacing: -0.055em;
+    letter-spacing: -0.05em;
     line-height: var(--clinic-line-height-tight);
 }
 
@@ -70,20 +85,20 @@
 
 .refreshButton,
 .stateAction {
-    min-height: 2.55rem;
+    min-height: 2.52rem;
     padding: 0.72rem 1rem;
 
-    border: 1px solid color-mix(in srgb, var(--clinic-green-700) 18%, transparent);
+    border: 1px solid color-mix(in srgb, var(--clinic-green-700) 17%, transparent);
     border-radius: 999px;
 
     color: var(--clinic-green-800);
     background:
         linear-gradient(180deg,
             var(--clinic-white),
-            color-mix(in srgb, var(--clinic-cream) 88%, transparent));
+            color-mix(in srgb, var(--clinic-cream) 86%, transparent));
 
     box-shadow:
-        inset 0 1px 0 color-mix(in srgb, var(--clinic-white) 86%, transparent);
+        inset 0 1px 0 color-mix(in srgb, var(--clinic-white) 88%, transparent);
 
     font: inherit;
     font-size: var(--clinic-font-size-sm);
@@ -116,12 +131,12 @@
 
     box-shadow:
         var(--clinic-shadow-soft),
-        0 0 0 3px color-mix(in srgb, var(--clinic-green-700) 6%, transparent);
+        0 0 0 3px color-mix(in srgb, var(--clinic-green-700) 5%, transparent);
 }
 
 .refreshButton:focus-visible,
 .stateAction:focus-visible {
-    outline: 3px solid color-mix(in srgb, var(--clinic-green-700) 22%, transparent);
+    outline: 3px solid color-mix(in srgb, var(--clinic-green-700) 20%, transparent);
     outline-offset: 3px;
 }
 
@@ -135,7 +150,7 @@
 
 .list {
     display: grid;
-    gap: clamp(0.95rem, 2vw, 1.2rem);
+    gap: clamp(0.9rem, 1.8vw, 1.08rem);
 
     min-width: 0;
 }
@@ -149,24 +164,21 @@
     gap: 0.55rem;
 
     min-width: 0;
-    padding: clamp(1rem, 2.5vw, 1.4rem);
+    padding: clamp(1rem, 2.5vw, 1.38rem);
 
     overflow: hidden;
 
-    border: 1px solid var(--clinic-border);
+    border: 1px solid color-mix(in srgb, var(--clinic-green-700) 12%, transparent);
     border-radius: var(--clinic-radius-xl);
 
     background:
-        radial-gradient(circle at 100% 0%,
-            color-mix(in srgb, var(--clinic-green-700) 7%, transparent),
-            transparent 14rem),
         linear-gradient(135deg,
             var(--clinic-white),
-            var(--clinic-cream));
+            color-mix(in srgb, var(--clinic-cream) 90%, transparent));
 
     box-shadow:
         var(--clinic-shadow-soft),
-        inset 0 1px 0 color-mix(in srgb, var(--clinic-white) 88%, transparent);
+        inset 0 1px 0 color-mix(in srgb, var(--clinic-white) 90%, transparent);
 }
 
 .stateTitle {

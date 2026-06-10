@@ -1,35 +1,31 @@
+/* src/features/santacasa/historico/components/SantaCasaHistoricoFilters/SantaCasaHistoricoFilters.module.css */
+
 .toolbar {
     position: relative;
     isolation: isolate;
 
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
-    gap: clamp(0.8rem, 2vw, 1rem);
+    gap: clamp(0.85rem, 2vw, 1rem);
     align-items: end;
 
     width: 100%;
     min-width: 0;
-    padding: clamp(0.95rem, 2vw, 1.15rem);
+    padding: clamp(0.95rem, 2vw, 1.16rem);
 
     overflow: hidden;
 
-    border: 1px solid color-mix(in srgb, var(--clinic-green-700) 18%, transparent);
+    border: 1px solid color-mix(in srgb, var(--clinic-green-700) 16%, transparent);
     border-radius: var(--clinic-radius-xl);
 
     background:
-        radial-gradient(circle at 100% 0%,
-            color-mix(in srgb, var(--clinic-green-700) 8%, transparent),
-            transparent 14rem),
-        radial-gradient(circle at 0% 100%,
-            color-mix(in srgb, var(--clinic-gold-500) 6%, transparent),
-            transparent 13rem),
         linear-gradient(135deg,
-            color-mix(in srgb, var(--clinic-white) 97%, transparent),
-            color-mix(in srgb, var(--clinic-cream) 88%, transparent));
+            color-mix(in srgb, var(--clinic-white) 98%, transparent),
+            color-mix(in srgb, var(--clinic-cream) 90%, transparent));
 
     box-shadow:
         var(--clinic-shadow-soft),
-        inset 0 1px 0 color-mix(in srgb, var(--clinic-white) 88%, transparent);
+        inset 0 1px 0 color-mix(in srgb, var(--clinic-white) 90%, transparent);
 }
 
 .toolbar::before {
@@ -44,9 +40,9 @@
 
     background:
         linear-gradient(90deg,
-            var(--clinic-green-700),
-            color-mix(in srgb, var(--clinic-gold-500) 52%, transparent),
-            transparent 76%);
+            color-mix(in srgb, var(--clinic-green-700) 88%, transparent),
+            color-mix(in srgb, var(--clinic-gold-500) 42%, transparent),
+            transparent 78%);
 
     pointer-events: none;
 }
@@ -58,7 +54,8 @@
     display: grid;
     grid-template-columns:
         minmax(9.5rem, 0.75fr) minmax(17rem, 1.45fr) minmax(10rem, 0.8fr) minmax(10rem, 0.8fr) auto;
-    gap: 0.75rem;
+
+    gap: 0.72rem;
     align-items: end;
 
     min-width: 0;
@@ -76,7 +73,7 @@
 
     font-size: var(--clinic-font-size-xs);
     font-weight: 950;
-    letter-spacing: 0.085em;
+    letter-spacing: 0.08em;
     line-height: 1;
     text-transform: uppercase;
 }
@@ -84,25 +81,25 @@
 .filterField input,
 .filterField select {
     width: 100%;
-    min-height: 2.65rem;
+    min-height: 2.72rem;
     padding: 0.72rem 0.9rem;
 
-    border: 1px solid color-mix(in srgb, var(--clinic-green-700) 18%, transparent);
+    border: 1px solid color-mix(in srgb, var(--clinic-green-700) 17%, transparent);
     border-radius: var(--clinic-radius-md);
 
     color: var(--clinic-ink);
     background:
         linear-gradient(180deg,
             var(--clinic-white),
-            var(--clinic-cream));
+            color-mix(in srgb, var(--clinic-cream) 78%, var(--clinic-white)));
 
     box-shadow:
-        inset 0 1px 0 color-mix(in srgb, var(--clinic-white) 90%, transparent),
-        inset 0 -1px 0 color-mix(in srgb, var(--clinic-ink) 4%, transparent);
+        inset 0 1px 0 color-mix(in srgb, var(--clinic-white) 92%, transparent),
+        inset 0 -1px 0 color-mix(in srgb, var(--clinic-ink) 3%, transparent);
 
     font: inherit;
     font-size: var(--clinic-font-size-sm);
-    font-weight: 720;
+    font-weight: 730;
     line-height: 1.25;
 
     transition:
@@ -143,29 +140,29 @@
     border-color: var(--clinic-green-700);
 
     box-shadow:
-        0 0 0 3px color-mix(in srgb, var(--clinic-green-700) 13%, transparent),
+        0 0 0 3px color-mix(in srgb, var(--clinic-green-700) 12%, transparent),
         inset 0 1px 0 color-mix(in srgb, var(--clinic-white) 92%, transparent);
 }
 
 .filterField input:disabled,
 .filterField select:disabled {
     cursor: not-allowed;
-    opacity: 0.6;
+    opacity: 0.62;
 }
 
 .filterActions {
     display: flex;
     flex-wrap: wrap;
     justify-content: flex-end;
-    gap: 0.55rem;
+    gap: 0.52rem;
 
     min-width: 0;
 }
 
 .filterButton,
 .clearButton {
-    min-height: 2.65rem;
-    padding: 0.72rem 0.95rem;
+    min-height: 2.72rem;
+    padding: 0.74rem 0.96rem;
 
     border-radius: var(--clinic-radius-md);
 
@@ -192,14 +189,15 @@
     color: var(--clinic-white);
     background: var(--clinic-green-700);
 
-    box-shadow: 0 0.85rem 1.75rem color-mix(in srgb, var(--clinic-green-700) 18%, transparent);
+    box-shadow:
+        0 0.75rem 1.45rem color-mix(in srgb, var(--clinic-green-700) 16%, transparent);
 }
 
 .clearButton {
-    border: 1px solid color-mix(in srgb, var(--clinic-green-700) 18%, transparent);
+    border: 1px solid color-mix(in srgb, var(--clinic-green-700) 17%, transparent);
 
     color: var(--clinic-green-800);
-    background: color-mix(in srgb, var(--clinic-white) 86%, transparent);
+    background: color-mix(in srgb, var(--clinic-white) 88%, transparent);
 }
 
 .filterButton:hover:not(:disabled),
@@ -208,7 +206,7 @@
 
     box-shadow:
         var(--clinic-shadow-soft),
-        0 0 0 3px color-mix(in srgb, var(--clinic-green-700) 6%, transparent);
+        0 0 0 3px color-mix(in srgb, var(--clinic-green-700) 5%, transparent);
 }
 
 .filterButton:hover:not(:disabled) {
@@ -217,13 +215,13 @@
 }
 
 .clearButton:hover:not(:disabled) {
-    border-color: color-mix(in srgb, var(--clinic-green-700) 30%, transparent);
+    border-color: color-mix(in srgb, var(--clinic-green-700) 28%, transparent);
     background: var(--clinic-white);
 }
 
 .filterButton:focus-visible,
 .clearButton:focus-visible {
-    outline: 3px solid color-mix(in srgb, var(--clinic-green-700) 22%, transparent);
+    outline: 3px solid color-mix(in srgb, var(--clinic-green-700) 20%, transparent);
     outline-offset: 3px;
 }
 
@@ -241,23 +239,20 @@
 
     display: grid;
     justify-items: center;
-    gap: 0.22rem;
+    gap: 0.24rem;
 
-    min-width: 5.3rem;
-    padding: 0.68rem 0.9rem;
+    min-width: 5.4rem;
+    padding: 0.7rem 0.92rem;
 
     border: 1px solid color-mix(in srgb, var(--clinic-green-700) 15%, transparent);
     border-radius: var(--clinic-radius-md);
 
     color: var(--clinic-ink);
     background:
-        radial-gradient(circle at 100% 0%,
-            color-mix(in srgb, var(--clinic-green-700) 9%, transparent),
-            transparent 7rem),
-        color-mix(in srgb, var(--clinic-white) 78%, transparent);
+        color-mix(in srgb, var(--clinic-white) 82%, transparent);
 
     box-shadow:
-        inset 0 1px 0 color-mix(in srgb, var(--clinic-white) 82%, transparent);
+        inset 0 1px 0 color-mix(in srgb, var(--clinic-white) 86%, transparent);
 }
 
 .meta span {
@@ -271,7 +266,7 @@
 .meta strong {
     color: var(--clinic-green-900);
 
-    font-size: clamp(1.2rem, 2vw, 1.45rem);
+    font-size: clamp(1.2rem, 2vw, 1.46rem);
     font-weight: 950;
     letter-spacing: -0.04em;
     line-height: 1;

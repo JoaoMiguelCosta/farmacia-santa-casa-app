@@ -1,8 +1,11 @@
 /* src/features/santacasa/historico/components/SantaCasaHistoricoDetailPageContent/SantaCasaHistoricoDetailPageContent.module.css */
 
 .page {
+    position: relative;
+    isolation: isolate;
+
     display: grid;
-    gap: clamp(1rem, 2vw, 1.5rem);
+    gap: clamp(1rem, 2.2vw, 1.45rem);
 
     inline-size: min(100%, var(--clinic-page-max));
 
@@ -10,34 +13,71 @@
     padding-bottom: 1rem;
 }
 
+.page::before {
+    content: "";
+
+    position: absolute;
+    inset: -1.4rem -1rem auto;
+    z-index: -1;
+
+    height: clamp(12rem, 30vw, 20rem);
+
+    pointer-events: none;
+
+    background:
+        radial-gradient(circle at 10% 10%,
+            color-mix(in srgb, var(--clinic-green-700) 8%, transparent),
+            transparent 18rem),
+        radial-gradient(circle at 92% 2%,
+            color-mix(in srgb, var(--clinic-gold-500) 6%, transparent),
+            transparent 20rem);
+
+    opacity: 0.72;
+}
+
+.page>* {
+    min-width: 0;
+}
+
 .navigation {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 1rem;
+
+    min-width: 0;
 }
 
 .backLink,
 .refreshButton,
 .stateAction {
     min-height: 2.55rem;
-    padding: 0.68rem 0.9rem;
+    padding: 0.7rem 0.95rem;
 
-    border: 1px solid rgb(31 95 81 / 0.22);
+    border: 1px solid color-mix(in srgb, var(--clinic-green-700) 18%, transparent);
     border-radius: var(--clinic-radius-md);
 
-    color: var(--clinic-green-700);
-    background: var(--clinic-white);
+    color: var(--clinic-green-800);
+    background:
+        linear-gradient(180deg,
+            var(--clinic-white),
+            color-mix(in srgb, var(--clinic-cream) 86%, transparent));
+
+    box-shadow:
+        inset 0 1px 0 color-mix(in srgb, var(--clinic-white) 88%, transparent);
 
     font: inherit;
     font-size: var(--clinic-font-size-sm);
-    font-weight: 800;
+    font-weight: 850;
     line-height: 1;
+    text-decoration: none;
+
+    cursor: pointer;
 
     transition:
         transform var(--clinic-transition),
         border-color var(--clinic-transition),
-        background var(--clinic-transition),
+        background-color var(--clinic-transition),
         box-shadow var(--clinic-transition),
         opacity var(--clinic-transition);
 }
@@ -45,25 +85,28 @@
 .backLink {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
 
     width: fit-content;
 }
 
 .backLink:hover,
-.refreshButton:hover,
-.stateAction:hover {
+.refreshButton:hover:not(:disabled),
+.stateAction:hover:not(:disabled) {
     transform: translateY(-1px);
 
-    border-color: rgb(31 95 81 / 0.38);
+    border-color: color-mix(in srgb, var(--clinic-green-700) 30%, transparent);
+    background: var(--clinic-white);
 
-    background: var(--clinic-mist);
-    box-shadow: var(--clinic-shadow-soft);
+    box-shadow:
+        var(--clinic-shadow-soft),
+        0 0 0 3px color-mix(in srgb, var(--clinic-green-700) 5%, transparent);
 }
 
 .backLink:focus-visible,
 .refreshButton:focus-visible,
 .stateAction:focus-visible {
-    outline: 3px solid rgb(31 95 81 / 0.24);
+    outline: 3px solid color-mix(in srgb, var(--clinic-green-700) 20%, transparent);
     outline-offset: 3px;
 }
 
@@ -77,33 +120,49 @@
 }
 
 .state {
+    position: relative;
+    isolation: isolate;
+
     display: grid;
     justify-items: start;
-    gap: 0.5rem;
+    gap: 0.55rem;
 
-    padding: clamp(1rem, 2.5vw, 1.35rem);
+    min-width: 0;
+    padding: clamp(1rem, 2.5vw, 1.38rem);
 
-    border: 1px solid var(--clinic-border);
-    border-radius: var(--clinic-radius-lg);
+    overflow: hidden;
 
-    background: var(--clinic-surface);
-    box-shadow: var(--clinic-shadow-soft);
+    border: 1px solid color-mix(in srgb, var(--clinic-green-700) 12%, transparent);
+    border-radius: var(--clinic-radius-xl);
+
+    background:
+        linear-gradient(135deg,
+            var(--clinic-white),
+            color-mix(in srgb, var(--clinic-cream) 90%, transparent));
+
+    box-shadow:
+        var(--clinic-shadow-soft),
+        inset 0 1px 0 color-mix(in srgb, var(--clinic-white) 90%, transparent);
 }
 
 .stateTitle {
     color: var(--clinic-ink);
 
     font-size: clamp(1rem, 1.6vw, 1.15rem);
+    font-weight: 950;
+    letter-spacing: -0.03em;
+    line-height: var(--clinic-line-height-tight);
 }
 
 .stateDescription {
     max-width: 62ch;
     margin: 0;
 
-    color: var(--clinic-muted);
+    color: var(--clinic-muted-strong);
 
     font-size: var(--clinic-font-size-sm);
-    line-height: 1.5;
+    font-weight: 650;
+    line-height: var(--clinic-line-height-base);
 }
 
 .summaryCard {
@@ -113,28 +172,24 @@
     isolation: isolate;
 
     display: grid;
-    gap: 1rem;
+    gap: 0.95rem;
 
     min-width: 0;
-    padding: clamp(1rem, 2.4vw, 1.35rem);
+    padding: clamp(1rem, 2.4vw, 1.34rem);
 
     overflow: hidden;
 
-    border: 1px solid color-mix(in srgb, var(--detail-accent) 22%, transparent);
-
+    border: 1px solid color-mix(in srgb, var(--detail-accent) 20%, transparent);
     border-radius: var(--clinic-radius-xl);
 
     background:
-        radial-gradient(circle at 100% 0%,
-            color-mix(in srgb, var(--detail-accent) 8%, transparent),
-            transparent 15rem),
         linear-gradient(135deg,
-            var(--clinic-white),
-            var(--clinic-cream));
+            color-mix(in srgb, var(--clinic-white) 98%, transparent),
+            color-mix(in srgb, var(--clinic-cream) 88%, transparent));
 
     box-shadow:
         var(--clinic-shadow-card),
-        inset 0 1px 0 rgb(255 255 255 / 0.88);
+        inset 0 1px 0 color-mix(in srgb, var(--clinic-white) 90%, transparent);
 }
 
 .summaryCard[data-tone="success"] {
@@ -164,6 +219,8 @@
             var(--detail-accent),
             color-mix(in srgb, var(--detail-accent) 42%, transparent),
             transparent 80%);
+
+    pointer-events: none;
 }
 
 .summaryHeader {
@@ -190,12 +247,11 @@
     padding: 0.34rem 0.62rem;
 
     border: 1px solid color-mix(in srgb, var(--detail-accent) 20%, transparent);
-
     border-radius: 999px;
 
     color: var(--detail-accent);
     background:
-        color-mix(in srgb, var(--detail-accent) 8%, var(--clinic-white));
+        color-mix(in srgb, var(--detail-accent) 7%, var(--clinic-white));
 
     font-size: 0.68rem;
     font-weight: 950;
@@ -209,9 +265,9 @@
 
     color: var(--clinic-ink);
 
-    font-size: clamp(1.35rem, 2.4vw, 1.7rem);
+    font-size: clamp(1.32rem, 2.4vw, 1.68rem);
     font-weight: 950;
-    letter-spacing: -0.055em;
+    letter-spacing: -0.052em;
     line-height: 1.05;
 }
 
@@ -237,16 +293,17 @@
     padding: 0.42rem 0.76rem;
 
     border: 1px solid color-mix(in srgb, var(--detail-accent) 24%, transparent);
-
     border-radius: 999px;
 
     color: var(--detail-accent);
     background:
-        color-mix(in srgb, var(--detail-accent) 9%, var(--clinic-white));
+        color-mix(in srgb, var(--detail-accent) 8%, var(--clinic-white));
 
     font-size: 0.76rem;
     font-weight: 950;
+    letter-spacing: 0.04em;
     line-height: 1;
+    text-transform: uppercase;
     white-space: nowrap;
 }
 
@@ -257,12 +314,12 @@
     margin: 0;
     padding: 0.82rem 0.92rem;
 
-    border: 1px solid color-mix(in srgb, var(--detail-accent) 16%, transparent);
-
+    border: 1px solid color-mix(in srgb, var(--detail-accent) 15%, transparent);
     border-radius: var(--clinic-radius-md);
 
     color: var(--clinic-muted-strong);
-    background: rgb(255 255 255 / 0.72);
+    background:
+        color-mix(in srgb, var(--clinic-white) 76%, transparent);
 
     font-size: var(--clinic-font-size-sm);
     font-weight: 700;
@@ -284,15 +341,21 @@
 .summaryItem,
 .metric {
     display: grid;
+    align-content: center;
     gap: 0.24rem;
 
     min-width: 0;
+    min-height: 3.7rem;
     padding: 0.76rem;
 
     border: 1px solid var(--clinic-border);
     border-radius: var(--clinic-radius-md);
 
-    background: rgb(255 255 255 / 0.7);
+    background:
+        color-mix(in srgb, var(--clinic-white) 76%, transparent);
+
+    box-shadow:
+        inset 0 1px 0 color-mix(in srgb, var(--clinic-white) 84%, transparent);
 }
 
 .summaryItem dt,
@@ -329,18 +392,46 @@
 }
 
 .sectionHeader {
+    position: relative;
+    isolation: isolate;
+
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
     gap: 1rem;
 
+    min-width: 0;
     padding: clamp(0.95rem, 2vw, 1.15rem);
 
-    border: 1px solid var(--clinic-border);
+    overflow: hidden;
+
+    border: 1px solid color-mix(in srgb, var(--clinic-green-700) 13%, transparent);
     border-radius: var(--clinic-radius-xl);
 
-    background: var(--clinic-surface);
-    box-shadow: var(--clinic-shadow-soft);
+    background:
+        linear-gradient(135deg,
+            color-mix(in srgb, var(--clinic-white) 98%, transparent),
+            color-mix(in srgb, var(--clinic-cream) 90%, transparent));
+
+    box-shadow:
+        var(--clinic-shadow-soft),
+        inset 0 1px 0 color-mix(in srgb, var(--clinic-white) 90%, transparent);
+}
+
+.sectionHeader::before {
+    content: "";
+
+    position: absolute;
+    inset-inline-start: 0;
+    inset-block: 0.95rem;
+    z-index: 1;
+
+    width: 4px;
+
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--clinic-green-700) 72%, transparent);
+
+    pointer-events: none;
 }
 
 .sectionHeader>div,
@@ -348,12 +439,20 @@
     min-width: 0;
 }
 
+.sectionHeader>div {
+    position: relative;
+    z-index: 2;
+}
+
 .sectionHeader h2 {
+    position: relative;
+    z-index: 2;
+
     margin: 0;
 
     color: var(--clinic-ink);
 
-    font-size: clamp(1.1rem, 1.8vw, 1.4rem);
+    font-size: clamp(1.1rem, 1.8vw, 1.36rem);
     font-weight: 950;
     letter-spacing: -0.04em;
     line-height: 1.15;
@@ -380,8 +479,9 @@
 }
 
 .metric[data-tone="success"] {
-    border-color: rgb(37 115 90 / 0.18);
-    background: rgb(37 115 90 / 0.05);
+    border-color: color-mix(in srgb, var(--clinic-success) 18%, transparent);
+    background:
+        color-mix(in srgb, var(--clinic-success) 5%, var(--clinic-white));
 }
 
 .metric[data-tone="success"] dd {
@@ -389,8 +489,9 @@
 }
 
 .metric[data-tone="warning"] {
-    border-color: rgb(161 92 7 / 0.22);
-    background: rgb(161 92 7 / 0.06);
+    border-color: color-mix(in srgb, var(--clinic-warning) 22%, transparent);
+    background:
+        color-mix(in srgb, var(--clinic-warning) 6%, var(--clinic-white));
 }
 
 .metric[data-tone="warning"] dd {
@@ -398,8 +499,9 @@
 }
 
 .metric[data-tone="danger"] {
-    border-color: rgb(180 35 24 / 0.18);
-    background: rgb(180 35 24 / 0.05);
+    border-color: color-mix(in srgb, var(--clinic-danger) 18%, transparent);
+    background:
+        color-mix(in srgb, var(--clinic-danger) 5%, var(--clinic-white));
 }
 
 .metric[data-tone="danger"] dd {
@@ -409,7 +511,7 @@
 .notice,
 .reason {
     display: grid;
-    gap: 0.3rem;
+    gap: 0.32rem;
 
     padding: 0.88rem 0.98rem;
 
@@ -417,18 +519,20 @@
 }
 
 .notice[data-tone="warning"] {
-    border: 1px solid rgb(161 92 7 / 0.24);
+    border: 1px solid color-mix(in srgb, var(--clinic-warning) 24%, transparent);
     border-inline-start: 4px solid var(--clinic-warning);
 
-    background: rgb(161 92 7 / 0.06);
+    background:
+        color-mix(in srgb, var(--clinic-warning) 6%, var(--clinic-white));
 }
 
 .notice[data-tone="danger"],
 .reason {
-    border: 1px solid rgb(180 35 24 / 0.2);
+    border: 1px solid color-mix(in srgb, var(--clinic-danger) 20%, transparent);
     border-inline-start: 4px solid var(--clinic-danger);
 
-    background: rgb(180 35 24 / 0.05);
+    background:
+        color-mix(in srgb, var(--clinic-danger) 5%, var(--clinic-white));
 }
 
 .notice strong,
@@ -468,6 +572,7 @@
 
     .status {
         width: fit-content;
+        white-space: normal;
     }
 
     .summary,

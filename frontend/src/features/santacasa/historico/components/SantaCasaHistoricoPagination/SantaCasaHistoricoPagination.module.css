@@ -1,3 +1,5 @@
+/* src/features/santacasa/historico/components/SantaCasaHistoricoPagination/SantaCasaHistoricoPagination.module.css */
+
 .pagination {
     display: flex;
     align-items: center;
@@ -13,11 +15,11 @@
     background:
         linear-gradient(135deg,
             var(--clinic-white),
-            var(--clinic-cream));
+            color-mix(in srgb, var(--clinic-cream) 88%, transparent));
 
     box-shadow:
         var(--clinic-shadow-soft),
-        inset 0 1px 0 color-mix(in srgb, var(--clinic-white) 88%, transparent);
+        inset 0 1px 0 color-mix(in srgb, var(--clinic-white) 90%, transparent);
 }
 
 .paginationInfo {
@@ -42,17 +44,17 @@
     min-height: 2.45rem;
     padding: 0.68rem 0.92rem;
 
-    border: 1px solid color-mix(in srgb, var(--clinic-green-700) 18%, transparent);
+    border: 1px solid color-mix(in srgb, var(--clinic-green-700) 17%, transparent);
     border-radius: var(--clinic-radius-md);
 
     color: var(--clinic-green-800);
     background:
         linear-gradient(180deg,
             var(--clinic-white),
-            color-mix(in srgb, var(--clinic-cream) 88%, transparent));
+            color-mix(in srgb, var(--clinic-cream) 86%, transparent));
 
     box-shadow:
-        inset 0 1px 0 color-mix(in srgb, var(--clinic-white) 86%, transparent);
+        inset 0 1px 0 color-mix(in srgb, var(--clinic-white) 88%, transparent);
 
     font: inherit;
     font-size: var(--clinic-font-size-sm);
@@ -80,11 +82,11 @@
 
     box-shadow:
         var(--clinic-shadow-soft),
-        0 0 0 3px color-mix(in srgb, var(--clinic-green-700) 6%, transparent);
+        0 0 0 3px color-mix(in srgb, var(--clinic-green-700) 5%, transparent);
 }
 
 .paginationButton:focus-visible {
-    outline: 3px solid color-mix(in srgb, var(--clinic-green-700) 22%, transparent);
+    outline: 3px solid color-mix(in srgb, var(--clinic-green-700) 20%, transparent);
     outline-offset: 3px;
 }
 
