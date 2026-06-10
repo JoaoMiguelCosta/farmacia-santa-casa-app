@@ -1,6 +1,6 @@
 // src/features/santacasa/historico/utils/santaCasaHistoricoDetail.utils.js
 
-import { SANTACASA_HISTORICO_PAGE } from "../config/santaCasaHistoricoPage.config";
+import { SANTACASA_HISTORICO_PAGE } from "../../config/santaCasaHistoricoPage.config";
 
 import {
   getHistoricoPedidoCancellationNoticeTitle,
@@ -17,16 +17,16 @@ import {
   isHistoricoPedidoCanceladoPorExpiracao,
   isHistoricoPedidoValidadoComAvisos,
   shouldShowHistoricoPedidoReason,
-} from "./santaCasaHistorico.utils";
+} from "../../utils/santaCasaHistorico.utils";
 
 import {
   getSantaCasaPedidoOperationalSummary,
   getSantaCasaPedidoVisualStatus,
-} from "../../shared/pedidos/utils/santaCasaPedidoOperational.utils";
+} from "../../../shared/pedidos/utils/santaCasaPedidoOperational.utils";
 
-import { getSantaCasaPedidoUtentesCount } from "../../shared/pedidos/utils/santaCasaPedido.utils";
+import { getSantaCasaPedidoUtentesCount } from "../../../shared/pedidos/utils/santaCasaPedido.utils";
 
-import { SANTACASA_PEDIDO_VISUAL_STATUS } from "../../shared/pedidos/config/santaCasaPedidoUi.config";
+import { SANTACASA_PEDIDO_VISUAL_STATUS } from "../../../shared/pedidos/config/santaCasaPedidoUi.config";
 
 function getAuditUserLabel(user) {
   return (

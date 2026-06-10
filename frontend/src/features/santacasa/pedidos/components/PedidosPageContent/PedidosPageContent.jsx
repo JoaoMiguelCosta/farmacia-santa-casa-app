@@ -11,7 +11,7 @@ import { usePedidoDraft } from "../../state/usePedidoDraft";
 
 import PedidoGeralList from "../PedidoGeralList/PedidoGeralList";
 import PedidoPendingList from "../PedidoPendingList/PedidoPendingList";
-import SantaCasaPedidosDialogs from "../SantaCasaPedidosDialogs/SantaCasaPedidosDialogs";
+import SantaCasaPedidosDialogs from "./components/SantaCasaPedidosDialogs/SantaCasaPedidosDialogs";
 
 import styles from "./PedidosPageContent.module.css";
 

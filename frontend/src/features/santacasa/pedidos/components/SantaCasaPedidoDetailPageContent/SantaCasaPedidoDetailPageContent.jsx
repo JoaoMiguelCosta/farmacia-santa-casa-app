@@ -17,7 +17,7 @@ import { PEDIDOS_PAGE } from "../../config/pedidosPage.config";
 import { useSantaCasaPedidoDetail } from "../../hooks/useSantaCasaPedidoDetail";
 import { useSantaCasaPedidoDetailActions } from "../../hooks/useSantaCasaPedidoDetailActions";
 
-import SantaCasaPedidoDetailDialogs from "../SantaCasaPedidoDetailDialogs/SantaCasaPedidoDetailDialogs";
+import SantaCasaPedidoDetailDialogs from "./components/SantaCasaPedidoDetailDialogs/SantaCasaPedidoDetailDialogs";
 
 import styles from "./SantaCasaPedidoDetailPageContent.module.css";
 

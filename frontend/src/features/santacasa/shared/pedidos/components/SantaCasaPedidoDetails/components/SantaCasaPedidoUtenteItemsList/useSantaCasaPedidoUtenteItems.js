@@ -1,5 +1,3 @@
-// src/features/santacasa/shared/pedidos/hooks/useSantaCasaPedidoUtenteItems.js
-
 import { useCallback, useMemo, useState } from "react";
 
 import {
@@ -7,7 +5,7 @@ import {
   getSantaCasaPedidoItemReceita,
   getSantaCasaPedidoItemStatusLabel,
   getSantaCasaPedidoItemTypeLabel,
-} from "../utils/santaCasaPedido.utils";
+} from "../../../../utils/santaCasaPedido.utils";
 
 const ALL_FILTER = "ALL";
 

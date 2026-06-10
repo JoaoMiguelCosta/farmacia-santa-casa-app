@@ -1,11 +1,8 @@
-// src/features/santacasa/historico/hooks/useSantaCasaHistoricoDetail.js
-
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { useAuth } from "../../../auth/hooks/useAuth";
+import { useAuth } from "../../../../auth/hooks/useAuth";
 
-import { getSantaCasaHistoricoPedidoById } from "../api/santaCasaHistoricoApi";
-
+import { getSantaCasaHistoricoPedidoById } from "../../api/santaCasaHistoricoApi";
 const LOAD_ERROR_MESSAGE = "Não foi possível carregar o pedido do histórico.";
 
 function getErrorMessage(error, fallback) {

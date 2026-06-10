@@ -1,10 +1,9 @@
 // src/features/santacasa/shared/pedidos/components/SantaCasaPedidoCard/SantaCasaPedidoCard.jsx
-
 import { SANTACASA_PEDIDO_UI } from "../../config/santaCasaPedidoUi.config";
 
-import { useSantaCasaPedidoCard } from "../../hooks/useSantaCasaPedidoCard";
+import SantaCasaPedidoSummary from "./components/SantaCasaPedidoSummary/SantaCasaPedidoSummary";
 
-import SantaCasaPedidoSummary from "../SantaCasaPedidoSummary/SantaCasaPedidoSummary";
+import { useSantaCasaPedidoCard } from "./useSantaCasaPedidoCard";
 
 import styles from "./SantaCasaPedidoCard.module.css";
 

@@ -1,4 +1,3 @@
-// src/features/santacasa/pedidos/components/PedidoGeralList/PedidoGeralReceitaBarcodes.jsx
 import BarcodeValue from "../../../../../shared/ui/BarcodeValue/BarcodeValue";
 
 import {

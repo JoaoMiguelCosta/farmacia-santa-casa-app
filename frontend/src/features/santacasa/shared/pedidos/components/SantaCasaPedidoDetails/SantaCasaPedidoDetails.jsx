@@ -1,6 +1,4 @@
-// src/features/santacasa/shared/pedidos/components/SantaCasaPedidoDetails/SantaCasaPedidoDetails.jsx
-
-import SantaCasaPedidoUtentesList from "../SantaCasaPedidoUtentesList/SantaCasaPedidoUtentesList";
+import SantaCasaPedidoUtentesList from "./components/SantaCasaPedidoUtentesList/SantaCasaPedidoUtentesList";
 
 import { useSantaCasaPedidoDetails } from "./useSantaCasaPedidoDetails";
 

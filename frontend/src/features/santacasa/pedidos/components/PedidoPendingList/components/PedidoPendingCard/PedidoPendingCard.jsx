@@ -1,10 +1,8 @@
-// src/features/santacasa/pedidos/components/PedidoPendingList/PedidoPendingCard.jsx
-
 import { Link } from "react-router-dom";
 
-import { getSantaCasaPedidoDetailRoute } from "../../../shared/config/santaCasaRoutes.config";
+import { getSantaCasaPedidoDetailRoute } from "../../../../../shared/config/santaCasaRoutes.config";
 
-import { PEDIDOS_PAGE } from "../../config/pedidosPage.config";
+import { PEDIDOS_PAGE } from "../../../../config/pedidosPage.config";
 
 import { usePedidoPendingCard } from "./usePedidoPendingCard";
 

@@ -1,5 +1,3 @@
-// src/features/santacasa/pedidos/components/PedidoGeralList/PedidoGeralItem.jsx
-
 import { useState } from "react";
 
 import { PEDIDOS_PAGE } from "../../config/pedidosPage.config";

@@ -1,6 +1,6 @@
 import styles from "./SantaCasaHistoricoList.module.css";
 
-import SantaCasaHistoricoCard from "../SantaCasaHistoricoCard/SantaCasaHistoricoCard";
+import SantaCasaHistoricoCard from "./components/SantaCasaHistoricoCard/SantaCasaHistoricoCard";
 
 import { SANTACASA_HISTORICO_PAGE } from "../../config/santaCasaHistoricoPage.config";
 

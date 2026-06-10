@@ -1,4 +1,3 @@
-// src/features/santacasa/pedidos/components/PedidoGeralList/PedidoGeralTypeBadge.jsx
 import { getTypeLabel } from "./pedidoGeralList.utils";
 
 import styles from "./PedidoGeralItem.module.css";

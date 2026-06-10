@@ -1,8 +1,6 @@
-// src/features/santacasa/shared/pedidos/components/SantaCasaPedidoUtentesList/SantaCasaPedidoUtentesList.jsx
+import { SANTACASA_PEDIDO_DETAILS } from "../../../../config/santaCasaPedidoDetails.config";
 
-import { SANTACASA_PEDIDO_DETAILS } from "../../config/santaCasaPedidoDetails.config";
-
-import { useSantaCasaPedidoUtentes } from "../../hooks/useSantaCasaPedidoUtentes";
+import { useSantaCasaPedidoUtentes } from "./useSantaCasaPedidoUtentes";
 
 import SantaCasaPedidoUtenteGroup from "../SantaCasaPedidoUtenteGroup/SantaCasaPedidoUtenteGroup";
 

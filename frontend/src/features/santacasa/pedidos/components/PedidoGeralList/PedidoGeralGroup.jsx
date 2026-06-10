@@ -1,5 +1,3 @@
-// src/features/santacasa/pedidos/components/PedidoGeralList/PedidoGeralGroup.jsx
-
 import { PEDIDOS_PAGE } from "../../config/pedidosPage.config";
 
 import PedidoGeralItem from "./PedidoGeralItem";

@@ -1,9 +1,7 @@
-// src/features/santacasa/pedidos/components/SantaCasaPedidoDetailDialogs/SantaCasaPedidoDetailDialogs.jsx
+import ConfirmDialog from "../../../../../../../shared/ui/ConfirmDialog/ConfirmDialog";
+import FeedbackDialog from "../../../../../../../shared/ui/FeedbackDialog/FeedbackDialog";
 
-import ConfirmDialog from "../../../../../shared/ui/ConfirmDialog/ConfirmDialog";
-import FeedbackDialog from "../../../../../shared/ui/FeedbackDialog/FeedbackDialog";
-
-import { PEDIDOS_PAGE } from "../../config/pedidosPage.config";
+import { PEDIDOS_PAGE } from "../../../../config/pedidosPage.config";
 
 function getCancelDescription(pedido) {
   const pedidoNumber = Number(pedido?.numero);

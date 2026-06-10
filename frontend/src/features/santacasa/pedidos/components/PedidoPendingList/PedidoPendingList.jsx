@@ -6,7 +6,7 @@ import SurfaceCard from "../../../../../shared/ui/SurfaceCard/SurfaceCard";
 
 import { PEDIDOS_PAGE } from "../../config/pedidosPage.config";
 
-import PedidoPendingCard from "./PedidoPendingCard";
+import PedidoPendingCard from "./components/PedidoPendingCard/PedidoPendingCard";
 
 import { getPaginationLabel } from "./pedidoPendingList.utils";
 

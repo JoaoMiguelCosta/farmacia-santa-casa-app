@@ -1,21 +1,21 @@
-// src/features/santacasa/shared/pedidos/hooks/useSantaCasaPedidoCard.js
+
 
 import { useMemo } from "react";
 
-import { formatDateTime } from "../../../../../shared/utils/formatDate";
+import { formatDateTime } from "../../../../../../shared/utils/formatDate";
 
 import {
   SANTACASA_PEDIDO_STATUS,
   SANTACASA_PEDIDO_UI,
   SANTACASA_PEDIDO_VISUAL_STATUS,
-} from "../config/santaCasaPedidoUi.config";
+} from "../../config/santaCasaPedidoUi.config";
 
-import { getSantaCasaPedidoNumberLabel } from "../utils/santaCasaPedido.utils";
+import { getSantaCasaPedidoNumberLabel } from "../../utils/santaCasaPedido.utils";
 
 import {
   getSantaCasaPedidoOperationalSummary,
   getSantaCasaPedidoVisualStatus,
-} from "../utils/santaCasaPedidoOperational.utils";
+} from "../../utils/santaCasaPedidoOperational.utils";
 
 function normalizeStatus(value) {
   return String(value || "")

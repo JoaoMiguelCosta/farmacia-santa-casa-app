@@ -2,7 +2,7 @@
 
 import styles from "./SantaCasaHistoricoCard.module.css";
 
-import { SANTACASA_HISTORICO_PAGE } from "../../config/santaCasaHistoricoPage.config";
+import { SANTACASA_HISTORICO_PAGE } from "../../../../config/santaCasaHistoricoPage.config";
 
 import {
   getHistoricoPedidoClosedAtLabel,
@@ -13,14 +13,14 @@ import {
   isHistoricoPedidoCancelado,
   isHistoricoPedidoValidadoComAvisos,
   shouldShowHistoricoPedidoReason,
-} from "../../utils/santaCasaHistorico.utils";
+} from "../../../../utils/santaCasaHistorico.utils";
 
 import {
   getSantaCasaPedidoOperationalSummary,
   isSantaCasaPedidoCanceledByExpiration,
-} from "../../../shared/pedidos/utils/santaCasaPedidoOperational.utils";
+} from "../../../../../shared/pedidos/utils/santaCasaPedidoOperational.utils";
 
-import { getSantaCasaPedidoUtentesCount } from "../../../shared/pedidos/utils/santaCasaPedido.utils";
+import { getSantaCasaPedidoUtentesCount } from "../../../../../shared/pedidos/utils/santaCasaPedido.utils";
 
 function isHistoricoPedidoRejeitado(pedido) {
   return pedido?.status === "REJEITADO";

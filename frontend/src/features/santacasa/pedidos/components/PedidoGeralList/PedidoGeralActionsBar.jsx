@@ -1,5 +1,3 @@
-// src/features/santacasa/pedidos/components/PedidoGeralList/PedidoGeralActionsBar.jsx
-
 import Button from "../../../../../shared/ui/Button/Button";
 
 import { PEDIDOS_PAGE } from "../../config/pedidosPage.config";

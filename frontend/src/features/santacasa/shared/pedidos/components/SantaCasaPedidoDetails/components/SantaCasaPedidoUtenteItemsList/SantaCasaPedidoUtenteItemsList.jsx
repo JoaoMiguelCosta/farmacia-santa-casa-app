@@ -1,10 +1,8 @@
-// src/features/santacasa/shared/pedidos/components/SantaCasaPedidoUtenteItemsList/SantaCasaPedidoUtenteItemsList.jsx
+import { SANTACASA_PEDIDO_DETAILS } from "../../../../config/santaCasaPedidoDetails.config";
 
-import { SANTACASA_PEDIDO_DETAILS } from "../../config/santaCasaPedidoDetails.config";
+import { useSantaCasaPedidoUtenteItems } from "./useSantaCasaPedidoUtenteItems";
 
-import { useSantaCasaPedidoUtenteItems } from "../../hooks/useSantaCasaPedidoUtenteItems";
-
-import { getSantaCasaPedidoItemKey } from "../../utils/santaCasaPedido.utils";
+import { getSantaCasaPedidoItemKey } from "../../../../utils/santaCasaPedido.utils";
 
 import SantaCasaPedidoItem from "../SantaCasaPedidoItem/SantaCasaPedidoItem";
 

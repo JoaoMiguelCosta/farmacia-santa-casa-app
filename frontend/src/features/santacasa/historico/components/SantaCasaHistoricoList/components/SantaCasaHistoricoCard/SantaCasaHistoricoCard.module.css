@@ -1,5 +1,3 @@
-/* src/features/santacasa/historico/components/SantaCasaHistoricoCard/SantaCasaHistoricoCard.module.css */
-
 .card {
     --history-accent: var(--clinic-green-700);
     --history-accent-soft:

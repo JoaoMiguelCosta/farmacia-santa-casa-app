@@ -10,9 +10,9 @@ import SantaCasaPedidoDetails from "../../../shared/pedidos/components/SantaCasa
 
 import { SANTACASA_HISTORICO_PAGE } from "../../config/santaCasaHistoricoPage.config";
 
-import { useSantaCasaHistoricoDetail } from "../../hooks/useSantaCasaHistoricoDetail";
+import { useSantaCasaHistoricoDetail } from "./useSantaCasaHistoricoDetail";
 
-import { getSantaCasaHistoricoDetailViewModel } from "../../utils/santaCasaHistoricoDetail.utils";
+import { getSantaCasaHistoricoDetailViewModel } from "./santaCasaHistoricoDetail.utils";
 
 import styles from "./SantaCasaHistoricoDetailPageContent.module.css";
 

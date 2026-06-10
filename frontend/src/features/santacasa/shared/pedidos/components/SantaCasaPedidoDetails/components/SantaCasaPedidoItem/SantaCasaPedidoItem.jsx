@@ -1,10 +1,8 @@
-// src/features/santacasa/shared/pedidos/components/SantaCasaPedidoItem/SantaCasaPedidoItem.jsx
+import BarcodeValue from "../../../../../../../../shared/ui/BarcodeValue/BarcodeValue";
 
-import BarcodeValue from "../../../../../../shared/ui/BarcodeValue/BarcodeValue";
+import { SANTACASA_PEDIDO_DETAILS } from "../../../../config/santaCasaPedidoDetails.config";
 
-import { SANTACASA_PEDIDO_DETAILS } from "../../config/santaCasaPedidoDetails.config";
-
-import { getSantaCasaPedidoItemViewModel } from "../SantaCasaPedidoDetails/santaCasaPedidoDetails.utils";
+import { getSantaCasaPedidoItemViewModel } from "../../santaCasaPedidoDetails.utils";
 
 import styles from "./SantaCasaPedidoItem.module.css";
 

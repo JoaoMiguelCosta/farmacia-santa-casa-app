@@ -1,13 +1,11 @@
-// src/features/santacasa/shared/pedidos/components/SantaCasaPedidoSummary/SantaCasaPedidoSummary.jsx
-
 import {
   SANTACASA_PEDIDO_STATUS,
   SANTACASA_PEDIDO_UI,
-} from "../../config/santaCasaPedidoUi.config";
+} from "../../../../config/santaCasaPedidoUi.config";
 
-import { getSantaCasaPedidoUtentesCount } from "../../utils/santaCasaPedido.utils";
+import { getSantaCasaPedidoUtentesCount } from "../../../../utils/santaCasaPedido.utils";
 
-import { getSantaCasaPedidoOperationalSummary } from "../../utils/santaCasaPedidoOperational.utils";
+import { getSantaCasaPedidoOperationalSummary } from "../../../../utils/santaCasaPedidoOperational.utils";
 
 import styles from "./SantaCasaPedidoSummary.module.css";
 

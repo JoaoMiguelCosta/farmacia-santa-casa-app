@@ -1,6 +1,4 @@
-// src/features/santacasa/pedidos/components/PedidoPendingList/usePedidoPendingCard.js
-
-import { formatDateTime } from "../../../../../shared/utils/formatDate";
+import { formatDateTime } from "../../../../../../../shared/utils/formatDate";
 
 import {
   getExpiredMedicamentosCountLabel,
@@ -16,7 +14,7 @@ import {
   getUnidadesCountLabel,
   getUtentesCountLabel,
   hasPedidoExpirationWarnings,
-} from "./pedidoPendingList.utils";
+} from "../../pedidoPendingList.utils";
 
 export function usePedidoPendingCard(pedido) {
   const utentesCount = getPedidoUtentesCount(pedido);

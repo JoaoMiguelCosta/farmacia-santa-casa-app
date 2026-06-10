@@ -1,5 +1,3 @@
-// src/features/santacasa/pedidos/components/PedidoGeralList/PedidoGeralValidity.jsx
-
 import { PEDIDOS_PAGE } from "../../config/pedidosPage.config";
 
 import styles from "./PedidoGeralItem.module.css";
