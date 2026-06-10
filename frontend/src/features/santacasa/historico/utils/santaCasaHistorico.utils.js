@@ -2,41 +2,22 @@
 
 import { formatDateTime } from "../../../../shared/utils/formatDate";
 
-import { SANTACASA_HISTORICO_PAGE } from "../config/santaCasaHistoricoPage.config";
+import { SANTACASA_PEDIDO_VISUAL_STATUS } from "../../shared/pedidos/config/santaCasaPedidoUi.config";
+
+import { getSantaCasaPedidoNumberLabel } from "../../shared/pedidos/utils/santaCasaPedido.utils";
 
 import {
-  isHistoricoPedidoItemCanceladoPorExpiracao,
-  isHistoricoPedidoItemValidado,
-} from "./santaCasaHistoricoItems.utils";
+  getSantaCasaPedidoVisualStatus,
+  isSantaCasaPedidoCanceled,
+  isSantaCasaPedidoCanceledByExpiration,
+} from "../../shared/pedidos/utils/santaCasaPedidoOperational.utils";
+
+import { SANTACASA_HISTORICO_PAGE } from "../config/santaCasaHistoricoPage.config";
 
 const UNKNOWN_LABEL = SANTACASA_HISTORICO_PAGE.labels.emptyValue;
 
 function getHistoricoPedidoStatusLabel(status) {
   return SANTACASA_HISTORICO_PAGE.status[status] || status || UNKNOWN_LABEL;
-}
-
-function getHistoricoPedidoVisualStatus(pedido) {
-  if (isHistoricoPedidoValidadoComAvisos(pedido)) {
-    return "VALIDADO_COM_AVISOS";
-  }
-
-  return pedido?.status || "";
-}
-
-function getHistoricoPedidoItensValidados(pedido) {
-  return getHistoricoPedidoItems(pedido).filter(isHistoricoPedidoItemValidado);
-}
-
-function getHistoricoPedidoItensCanceladosPorExpiracao(pedido) {
-  return getHistoricoPedidoItems(pedido).filter(
-    isHistoricoPedidoItemCanceladoPorExpiracao,
-  );
-}
-
-function hasHistoricoPedidoItensCanceladosPorExpiracao(pedido) {
-  return getHistoricoPedidoItems(pedido).some(
-    isHistoricoPedidoItemCanceladoPorExpiracao,
-  );
 }
 
 function isHistoricoPedidoCanceladoManualmente(pedido) {
@@ -46,38 +27,20 @@ function isHistoricoPedidoCanceladoManualmente(pedido) {
   );
 }
 
-function getHistoricoPedidoUtentes(pedido) {
-  const utentesMap = new Map();
-
-  getHistoricoPedidoItems(pedido).forEach((item) => {
-    const utente = item?.utente;
-
-    if (!utente?.id) {
-      return;
-    }
-
-    utentesMap.set(utente.id, {
-      id: utente.id,
-      nome: utente.nome || UNKNOWN_LABEL,
-      numero9: utente.numero9 || UNKNOWN_LABEL,
-    });
-  });
-
-  return Array.from(utentesMap.values());
-}
-
 export function getHistoricoPedidoNumberLabel(pedido) {
-  const numero = Number(pedido?.numero);
-
-  if (!Number.isFinite(numero)) {
-    return UNKNOWN_LABEL;
-  }
-
-  return `#${numero}`;
+  return getSantaCasaPedidoNumberLabel(pedido, {
+    emptyValue: UNKNOWN_LABEL,
+  });
 }
 
 export function getHistoricoPedidoVisualStatusLabel(pedido) {
-  return getHistoricoPedidoStatusLabel(getHistoricoPedidoVisualStatus(pedido));
+  const visualStatus = getSantaCasaPedidoVisualStatus(pedido);
+
+  if (visualStatus === SANTACASA_PEDIDO_VISUAL_STATUS.automaticallyCanceled) {
+    return SANTACASA_HISTORICO_PAGE.status.CANCELADO;
+  }
+
+  return getHistoricoPedidoStatusLabel(visualStatus);
 }
 
 export function getHistoricoPedidoClosedAtLabel(pedido) {
@@ -91,67 +54,18 @@ export function getHistoricoPedidoClosedAtLabel(pedido) {
 }
 
 export function isHistoricoPedidoCancelado(pedido) {
-  return pedido?.status === "CANCELADO";
-}
-
-export function getHistoricoPedidoItems(pedido) {
-  if (Array.isArray(pedido?.itens)) {
-    return pedido.itens;
-  }
-
-  if (Array.isArray(pedido?.items)) {
-    return pedido.items;
-  }
-
-  return [];
-}
-
-export function getHistoricoPedidoValidatedItemsCount(pedido) {
-  return getHistoricoPedidoItensValidados(pedido).length;
-}
-
-export function getHistoricoPedidoExpiredCanceledItemsCount(pedido) {
-  return getHistoricoPedidoItensCanceladosPorExpiracao(pedido).length;
-}
-
-export function getHistoricoPedidoValidatedQuantity(pedido) {
-  return getHistoricoPedidoItensValidados(pedido).reduce((total, item) => {
-    return total + (Number(item?.quantidade) || 0);
-  }, 0);
-}
-
-export function getHistoricoPedidoExpiredCanceledQuantity(pedido) {
-  return getHistoricoPedidoItensCanceladosPorExpiracao(pedido).reduce(
-    (total, item) => {
-      return total + (Number(item?.quantidade) || 0);
-    },
-    0,
-  );
+  return isSantaCasaPedidoCanceled(pedido);
 }
 
 export function isHistoricoPedidoValidadoComAvisos(pedido) {
   return (
-    pedido?.status === "VALIDADO" &&
-    hasHistoricoPedidoItensCanceladosPorExpiracao(pedido)
+    getSantaCasaPedidoVisualStatus(pedido) ===
+    SANTACASA_PEDIDO_VISUAL_STATUS.validatedWithWarnings
   );
 }
 
 export function isHistoricoPedidoCanceladoPorExpiracao(pedido) {
-  if (!isHistoricoPedidoCancelado(pedido)) {
-    return false;
-  }
-
-  const reason = String(pedido?.closedReason || pedido?.cancelReason || "")
-    .trim()
-    .toLocaleLowerCase("pt-PT");
-
-  if (reason.includes("expiração") || reason.includes("expiracao")) {
-    return true;
-  }
-
-  return getHistoricoPedidoItems(pedido).some(
-    isHistoricoPedidoItemCanceladoPorExpiracao,
-  );
+  return isSantaCasaPedidoCanceledByExpiration(pedido);
 }
 
 export function getHistoricoPedidoMessage(pedido) {
@@ -232,26 +146,4 @@ export function getHistoricoPedidoClosedReasonLabel(pedido) {
 
 export function shouldShowHistoricoPedidoReason(pedido) {
   return ["REJEITADO", "CANCELADO"].includes(pedido?.status);
-}
-
-export function getHistoricoPedidoItemsCount(pedido) {
-  return getHistoricoPedidoItems(pedido).length;
-}
-
-export function getHistoricoPedidoTotalQuantity(pedido) {
-  return getHistoricoPedidoItems(pedido).reduce((total, item) => {
-    return total + (Number(item?.quantidade) || 0);
-  }, 0);
-}
-
-export function getHistoricoPedidoUtentesLabel(pedido) {
-  const utentes = getHistoricoPedidoUtentes(pedido);
-
-  if (utentes.length === 0) {
-    return UNKNOWN_LABEL;
-  }
-
-  return utentes
-    .map((utente) => `${utente.nome} · ${utente.numero9}`)
-    .join(", ");
 }

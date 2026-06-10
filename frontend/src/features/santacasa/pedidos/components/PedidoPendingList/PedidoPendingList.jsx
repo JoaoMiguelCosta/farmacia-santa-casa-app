@@ -1,4 +1,5 @@
 // src/features/santacasa/pedidos/components/PedidoPendingList/PedidoPendingList.jsx
+
 import Button from "../../../../../shared/ui/Button/Button";
 import DataState from "../../../../../shared/ui/DataState/DataState";
 import SurfaceCard from "../../../../../shared/ui/SurfaceCard/SurfaceCard";
@@ -11,33 +12,71 @@ import { getPaginationLabel } from "./pedidoPendingList.utils";
 
 import styles from "./PedidoPendingList.module.css";
 
+function getPendingPedidosTotal(meta, pedidos) {
+  const total = Number(meta?.total);
+
+  if (Number.isFinite(total) && total >= 0) {
+    return total;
+  }
+
+  return Array.isArray(pedidos) ? pedidos.length : 0;
+}
+
+function getPendingCountAriaLabel(total) {
+  return PEDIDOS_PAGE.sections.pending.countAriaLabel.replace("{count}", total);
+}
+
 export default function PedidoPendingList({
   pedidos = [],
   meta,
+
   searchInput = "",
+
   currentPage = 1,
   totalPages = 1,
+
   hasPreviousPage = false,
   hasNextPage = false,
+
   isLoading = false,
   isRefreshing = false,
-  isCanceling = false,
+
   error = null,
+
   onSearchChange,
   onApplyFilters,
   onClearFilters,
+
   onRefresh,
+
   onPreviousPage,
   onNextPage,
-  onCancelRequest,
 }) {
-  const isInteractionDisabled = isLoading || isRefreshing || isCanceling;
+  const isInteractionDisabled = isLoading || isRefreshing;
+
+  const pendingPedidosTotal = getPendingPedidosTotal(meta, pedidos);
 
   const paginationLabel = getPaginationLabel({
     meta,
     currentPage,
     totalPages,
   });
+
+  const sectionTitle = (
+    <span className={styles.sectionTitleRow}>
+      <span className={styles.sectionTitleText}>
+        {PEDIDOS_PAGE.sections.pending.title}
+      </span>
+
+      <span
+        className={styles.pendingCount}
+        aria-label={getPendingCountAriaLabel(pendingPedidosTotal)}
+        aria-live="polite"
+      >
+        {pendingPedidosTotal}
+      </span>
+    </span>
+  );
 
   function handleSubmit(event) {
     event.preventDefault();
@@ -46,7 +85,7 @@ export default function PedidoPendingList({
 
   return (
     <SurfaceCard
-      title={PEDIDOS_PAGE.sections.pending.title}
+      title={sectionTitle}
       description={PEDIDOS_PAGE.sections.pending.description}
       tone="strong"
     >
@@ -59,7 +98,9 @@ export default function PedidoPendingList({
             value={searchInput}
             placeholder={PEDIDOS_PAGE.filters.searchPlaceholder}
             disabled={isInteractionDisabled}
-            onChange={(event) => onSearchChange?.(event.target.value)}
+            onChange={(event) => {
+              onSearchChange?.(event.target.value);
+            }}
           />
         </label>
 
@@ -83,7 +124,7 @@ export default function PedidoPendingList({
             variant="ghost"
             size="sm"
             isLoading={isRefreshing}
-            disabled={isLoading || isCanceling}
+            disabled={isLoading}
             onClick={onRefresh}
           >
             {isRefreshing
@@ -97,7 +138,7 @@ export default function PedidoPendingList({
         <DataState
           type="loading"
           title={PEDIDOS_PAGE.sections.pending.loadingTitle}
-          description="Aguarda enquanto os pedidos pendentes são carregados."
+          description={PEDIDOS_PAGE.sections.pending.loadingDescription}
         />
       ) : null}
 
@@ -106,7 +147,7 @@ export default function PedidoPendingList({
           type="error"
           title={PEDIDOS_PAGE.sections.pending.errorTitle}
           description={error}
-          actionLabel="Tentar novamente"
+          actionLabel={PEDIDOS_PAGE.sections.pending.retryLabel}
           onAction={onRefresh}
         />
       ) : null}
@@ -122,19 +163,14 @@ export default function PedidoPendingList({
       {!isLoading && !error && pedidos.length > 0 ? (
         <div className={styles.list}>
           {pedidos.map((pedido) => (
-            <PedidoPendingCard
-              key={pedido.id}
-              pedido={pedido}
-              isCanceling={isCanceling}
-              onCancelRequest={onCancelRequest}
-            />
+            <PedidoPendingCard key={pedido.id} pedido={pedido} />
           ))}
         </div>
       ) : null}
 
       <section
         className={styles.pagination}
-        aria-label="Paginação de pedidos pendentes"
+        aria-label={PEDIDOS_PAGE.sections.pending.paginationAriaLabel}
       >
         <p>{paginationLabel}</p>
 
@@ -143,9 +179,7 @@ export default function PedidoPendingList({
             type="button"
             variant="secondary"
             size="sm"
-            disabled={
-              !hasPreviousPage || isLoading || isRefreshing || isCanceling
-            }
+            disabled={!hasPreviousPage || isLoading || isRefreshing}
             onClick={onPreviousPage}
           >
             {PEDIDOS_PAGE.actions.previous}
@@ -155,7 +189,7 @@ export default function PedidoPendingList({
             type="button"
             variant="secondary"
             size="sm"
-            disabled={!hasNextPage || isLoading || isRefreshing || isCanceling}
+            disabled={!hasNextPage || isLoading || isRefreshing}
             onClick={onNextPage}
           >
             {PEDIDOS_PAGE.actions.next}

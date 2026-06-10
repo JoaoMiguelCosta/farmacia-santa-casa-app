@@ -1,4 +1,5 @@
 // src/app/router.jsx
+
 import { Navigate, createBrowserRouter } from "react-router-dom";
 
 import AuthHomeRedirect from "../features/auth/components/AuthHomeRedirect";
@@ -19,8 +20,10 @@ import SantaCasaDashboardPage from "../pages/santacasa/SantaCasaDashboardPage.js
 import SantaCasaUtentesPage from "../pages/santacasa/SantaCasaUtentesPage.jsx";
 import SantaCasaOperacaoPage from "../pages/santacasa/SantaCasaOperacaoPage.jsx";
 import SantaCasaPedidosPage from "../pages/santacasa/SantaCasaPedidosPage.jsx";
+import SantaCasaPedidoDetailPage from "../pages/santacasa/SantaCasaPedidoDetailPage.jsx";
 import SantaCasaRegularizacoesPage from "../pages/santacasa/SantaCasaRegularizacoesPage.jsx";
 import SantaCasaHistoricoPage from "../pages/santacasa/SantaCasaHistoricoPage.jsx";
+import SantaCasaHistoricoDetailPage from "../pages/santacasa/SantaCasaHistoricoDetailPage.jsx";
 
 import FarmaciaHomePage from "../pages/farmacia/FarmaciaHomePage.jsx";
 import FarmaciaDashboardPage from "../pages/farmacia/FarmaciaDashboardPage.jsx";
@@ -52,6 +55,7 @@ export const router = createBrowserRouter([
   {
     path: "/",
     element: <AppShell />,
+
     children: [
       {
         index: true,
@@ -95,6 +99,13 @@ export const router = createBrowserRouter([
         element: protectedElement(<SantaCasaPedidosPage />, SANTACASA_ROLES),
       },
       {
+        path: SANTACASA_ROUTER_PATHS.pedidoDetail,
+        element: protectedElement(
+          <SantaCasaPedidoDetailPage />,
+          SANTACASA_ROLES,
+        ),
+      },
+      {
         path: SANTACASA_ROUTER_PATHS.regularizacoes,
         element: protectedElement(
           <SantaCasaRegularizacoesPage />,
@@ -104,6 +115,13 @@ export const router = createBrowserRouter([
       {
         path: SANTACASA_ROUTER_PATHS.historico,
         element: protectedElement(<SantaCasaHistoricoPage />, SANTACASA_ROLES),
+      },
+      {
+        path: SANTACASA_ROUTER_PATHS.historicoDetail,
+        element: protectedElement(
+          <SantaCasaHistoricoDetailPage />,
+          SANTACASA_ROLES,
+        ),
       },
 
       {

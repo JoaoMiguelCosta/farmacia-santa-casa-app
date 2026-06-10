@@ -1,8 +1,13 @@
 // src/features/santacasa/historico/utils/santaCasaHistoricoQuery.utils.js
 
-const DEFAULT_STATUS = "TODOS";
-const DEFAULT_SKIP = 0;
-const DEFAULT_TAKE = 50;
+export const SANTACASA_HISTORICO_DEFAULT_QUERY = Object.freeze({
+  status: "TODOS",
+  search: "",
+  from: "",
+  to: "",
+  page: 1,
+  take: 10,
+});
 
 const ALLOWED_STATUSES = new Set([
   "TODOS",
@@ -11,18 +16,48 @@ const ALLOWED_STATUSES = new Set([
   "CANCELADO",
 ]);
 
-function normalizeDateInput(value, mode = "start") {
-  const text = String(value || "").trim();
-
-  if (!text) return "";
-
-  const parts = text.split("-").map(Number);
-
-  if (parts.length !== 3 || parts.some((part) => !Number.isFinite(part))) {
-    return text;
+function getSafeSearchParams(searchParams) {
+  if (searchParams instanceof URLSearchParams) {
+    return searchParams;
   }
 
-  const [year, month, day] = parts;
+  return new URLSearchParams(searchParams);
+}
+
+function normalizeSearch(value) {
+  return String(value || "").trim();
+}
+
+function normalizeDateParam(value) {
+  const normalizedValue = String(value || "").trim();
+
+  if (!normalizedValue) {
+    return "";
+  }
+
+  const isValidDateFormat = /^\d{4}-\d{2}-\d{2}$/.test(normalizedValue);
+
+  return isValidDateFormat ? normalizedValue : "";
+}
+
+function normalizePositiveInteger(value, fallback) {
+  const numberValue = Number(value);
+
+  if (!Number.isFinite(numberValue)) {
+    return fallback;
+  }
+
+  return Math.max(1, Math.floor(numberValue));
+}
+
+function normalizeDateForRequest(value, mode = "start") {
+  const normalizedValue = normalizeDateParam(value);
+
+  if (!normalizedValue) {
+    return "";
+  }
+
+  const [year, month, day] = normalizedValue.split("-").map(Number);
 
   const date =
     mode === "end"
@@ -33,81 +68,130 @@ function normalizeDateInput(value, mode = "start") {
 }
 
 export function normalizeSantaCasaHistoricoStatus(status) {
-  const normalizedStatus = String(status || DEFAULT_STATUS)
+  const normalizedStatus = String(
+    status || SANTACASA_HISTORICO_DEFAULT_QUERY.status,
+  )
     .trim()
     .toUpperCase();
 
   if (!ALLOWED_STATUSES.has(normalizedStatus)) {
-    return DEFAULT_STATUS;
+    return SANTACASA_HISTORICO_DEFAULT_QUERY.status;
   }
 
   return normalizedStatus;
 }
 
-function normalizeSearch(search) {
-  return String(search || "").trim();
-}
+export function getSantaCasaHistoricoQueryFromSearchParams(searchParams) {
+  const safeSearchParams = getSafeSearchParams(searchParams);
 
-function normalizeSkip(skip) {
-  const normalizedSkip = Number(skip);
+  const status = normalizeSantaCasaHistoricoStatus(
+    safeSearchParams.get("status"),
+  );
 
-  if (!Number.isFinite(normalizedSkip)) {
-    return DEFAULT_SKIP;
-  }
+  const search = normalizeSearch(safeSearchParams.get("search"));
 
-  return Math.max(DEFAULT_SKIP, normalizedSkip);
-}
+  const from = normalizeDateParam(safeSearchParams.get("from"));
 
-function normalizeTake(take) {
-  const normalizedTake = Number(take);
+  const to = normalizeDateParam(safeSearchParams.get("to"));
 
-  if (!Number.isFinite(normalizedTake)) {
-    return DEFAULT_TAKE;
-  }
+  const page = normalizePositiveInteger(
+    safeSearchParams.get("page"),
+    SANTACASA_HISTORICO_DEFAULT_QUERY.page,
+  );
 
-  return Math.max(1, normalizedTake);
-}
+  const take = SANTACASA_HISTORICO_DEFAULT_QUERY.take;
 
-export function getSantaCasaHistoricoStatusFromSearchParams(searchParams) {
-  const safeSearchParams =
-    searchParams instanceof URLSearchParams
-      ? searchParams
-      : new URLSearchParams(searchParams);
+  return {
+    status,
+    search,
+    from,
+    to,
 
-  return normalizeSantaCasaHistoricoStatus(safeSearchParams.get("status"));
+    page,
+    take,
+    skip: (page - 1) * take,
+  };
 }
 
 export function buildSantaCasaHistoricoSearchParams({
   currentSearchParams,
-  status,
+
+  status = SANTACASA_HISTORICO_DEFAULT_QUERY.status,
+
+  search = SANTACASA_HISTORICO_DEFAULT_QUERY.search,
+
+  from = SANTACASA_HISTORICO_DEFAULT_QUERY.from,
+
+  to = SANTACASA_HISTORICO_DEFAULT_QUERY.to,
+
+  page = SANTACASA_HISTORICO_DEFAULT_QUERY.page,
 }) {
   const nextSearchParams = new URLSearchParams(currentSearchParams);
 
   const normalizedStatus = normalizeSantaCasaHistoricoStatus(status);
 
-  if (normalizedStatus === DEFAULT_STATUS) {
+  const normalizedSearch = normalizeSearch(search);
+
+  const normalizedFrom = normalizeDateParam(from);
+
+  const normalizedTo = normalizeDateParam(to);
+
+  const normalizedPage = normalizePositiveInteger(
+    page,
+    SANTACASA_HISTORICO_DEFAULT_QUERY.page,
+  );
+
+  if (normalizedStatus === SANTACASA_HISTORICO_DEFAULT_QUERY.status) {
     nextSearchParams.delete("status");
   } else {
     nextSearchParams.set("status", normalizedStatus);
   }
 
+  if (normalizedSearch) {
+    nextSearchParams.set("search", normalizedSearch);
+  } else {
+    nextSearchParams.delete("search");
+  }
+
+  if (normalizedFrom) {
+    nextSearchParams.set("from", normalizedFrom);
+  } else {
+    nextSearchParams.delete("from");
+  }
+
+  if (normalizedTo) {
+    nextSearchParams.set("to", normalizedTo);
+  } else {
+    nextSearchParams.delete("to");
+  }
+
+  if (normalizedPage > SANTACASA_HISTORICO_DEFAULT_QUERY.page) {
+    nextSearchParams.set("page", String(normalizedPage));
+  } else {
+    nextSearchParams.delete("page");
+  }
+
   return nextSearchParams;
 }
 
-export function buildSantaCasaHistoricoQuery({
-  status = DEFAULT_STATUS,
-  search = "",
-  from = "",
-  to = "",
-  skip = DEFAULT_SKIP,
-  take = DEFAULT_TAKE,
-} = {}) {
+export function buildSantaCasaHistoricoRequestQuery(query = {}) {
+  const page = normalizePositiveInteger(
+    query.page,
+    SANTACASA_HISTORICO_DEFAULT_QUERY.page,
+  );
+
+  const take = SANTACASA_HISTORICO_DEFAULT_QUERY.take;
+
   return {
-    status: normalizeSantaCasaHistoricoStatus(status),
-    search: normalizeSearch(search),
-    from: normalizeDateInput(from, "start"),
-    to: normalizeDateInput(to, "end"),
-    skip: normalizeSkip(skip),
-    take: normalizeTake(take),
+    status: normalizeSantaCasaHistoricoStatus(query.status),
+
+    search: normalizeSearch(query.search),
+
+    from: normalizeDateForRequest(query.from, "start"),
+
+    to: normalizeDateForRequest(query.to, "end"),
+
+    skip: (page - 1) * take,
+    take,
   };
 }

@@ -1,13 +1,15 @@
 // src/features/santacasa/pedidos/components/PedidoGeralList/PedidoGeralList.jsx
-import Button from "../../../../../shared/ui/Button/Button";
+
 import DataState from "../../../../../shared/ui/DataState/DataState";
 import SurfaceCard from "../../../../../shared/ui/SurfaceCard/SurfaceCard";
 
 import { PEDIDOS_PAGE } from "../../config/pedidosPage.config";
 
+import PedidoGeralActionsBar from "./PedidoGeralActionsBar";
 import PedidoGeralGroup from "./PedidoGeralGroup";
 
 import {
+  getItemsQuantityTotal,
   getValidPedidoGeralItems,
   groupByUtente,
 } from "./pedidoGeralList.utils";
@@ -22,8 +24,12 @@ export default function PedidoGeralList({
   onSubmit,
 }) {
   const validItems = getValidPedidoGeralItems(items);
+
   const groups = groupByUtente(validItems);
+
   const totalItems = validItems.length;
+
+  const totalQuantity = getItemsQuantityTotal(validItems);
 
   return (
     <SurfaceCard
@@ -51,26 +57,13 @@ export default function PedidoGeralList({
             ))}
           </div>
 
-          <footer className={styles.actions}>
-            <Button
-              type="button"
-              variant="danger"
-              disabled={isSubmitting}
-              onClick={onClearRequest}
-            >
-              {PEDIDOS_PAGE.actions.clearDraftGeneral}
-            </Button>
-
-            <Button
-              type="submit"
-              isLoading={isSubmitting}
-              disabled={isSubmitting}
-            >
-              {isSubmitting
-                ? PEDIDOS_PAGE.sections.draft.submittingLabel
-                : PEDIDOS_PAGE.sections.draft.submitLabel}
-            </Button>
-          </footer>
+          <PedidoGeralActionsBar
+            totalUtentes={groups.length}
+            totalItems={totalItems}
+            totalQuantity={totalQuantity}
+            isSubmitting={isSubmitting}
+            onClearRequest={onClearRequest}
+          />
         </form>
       )}
     </SurfaceCard>

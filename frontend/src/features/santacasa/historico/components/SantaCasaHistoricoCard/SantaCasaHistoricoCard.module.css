@@ -1,33 +1,50 @@
+/* src/features/santacasa/historico/components/SantaCasaHistoricoCard/SantaCasaHistoricoCard.module.css */
+
 .card {
     --history-accent: var(--clinic-green-700);
-    --history-accent-soft: color-mix(in srgb, var(--history-accent) 8%, transparent);
-    --history-accent-border: color-mix(in srgb, var(--history-accent) 22%, transparent);
+    --history-accent-soft:
+        color-mix(in srgb,
+            var(--history-accent) 8%,
+            transparent);
+
+    --history-accent-border:
+        color-mix(in srgb,
+            var(--history-accent) 22%,
+            transparent);
 
     position: relative;
     isolation: isolate;
 
     display: grid;
-    gap: clamp(0.9rem, 1.8vw, 1.08rem);
+    gap: 0.82rem;
 
     min-width: 0;
-    padding: clamp(1rem, 2.2vw, 1.25rem);
+    padding: clamp(0.95rem, 2vw, 1.15rem);
 
     overflow: hidden;
 
     border: 1px solid var(--history-accent-border);
-    border-radius: var(--clinic-radius-xl);
+    border-radius: var(--clinic-radius-lg);
 
     background:
         radial-gradient(circle at 100% 0%,
             var(--history-accent-soft),
-            transparent 16rem),
+            transparent 13rem),
         linear-gradient(135deg,
-            color-mix(in srgb, var(--clinic-white) 98%, transparent),
-            color-mix(in srgb, var(--clinic-cream) 84%, transparent));
+            color-mix(in srgb,
+                var(--clinic-white) 98%,
+                transparent),
+            color-mix(in srgb,
+                var(--clinic-cream) 86%,
+                transparent));
 
     box-shadow:
-        var(--clinic-shadow-card),
-        inset 0 1px 0 color-mix(in srgb, var(--clinic-white) 88%, transparent);
+        0 0.75rem 1.8rem color-mix(in srgb,
+            var(--history-accent) 5%,
+            transparent),
+        inset 0 1px 0 color-mix(in srgb,
+            var(--clinic-white) 88%,
+            transparent);
 
     transition:
         transform var(--clinic-transition),
@@ -48,7 +65,9 @@
     background:
         linear-gradient(90deg,
             var(--history-accent),
-            color-mix(in srgb, var(--history-accent) 44%, transparent),
+            color-mix(in srgb,
+                var(--history-accent) 44%,
+                transparent),
             transparent 82%);
 
     pointer-events: none;
@@ -57,12 +76,19 @@
 .card:hover {
     transform: translateY(-1px);
 
-    border-color: color-mix(in srgb, var(--history-accent) 30%, transparent);
+    border-color:
+        color-mix(in srgb,
+            var(--history-accent) 30%,
+            transparent);
 
     box-shadow:
         var(--clinic-shadow-hover),
-        0 0 0 3px color-mix(in srgb, var(--history-accent) 5%, transparent),
-        inset 0 1px 0 color-mix(in srgb, var(--clinic-white) 90%, transparent);
+        0 0 0 3px color-mix(in srgb,
+            var(--history-accent) 5%,
+            transparent),
+        inset 0 1px 0 color-mix(in srgb,
+            var(--clinic-white) 90%,
+            transparent);
 }
 
 .cardValidated {
@@ -78,85 +104,441 @@
     --history-accent: var(--clinic-danger);
 }
 
+.cardHeader {
+    position: relative;
+    z-index: 2;
+
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+
+    min-width: 0;
+}
+
+.identity {
+    display: grid;
+    gap: 0.26rem;
+
+    min-width: 0;
+}
+
+.eyebrow {
+    width: fit-content;
+    padding: 0.31rem 0.55rem;
+
+    border: 1px solid var(--history-accent-border);
+    border-radius: 999px;
+
+    color: var(--history-accent);
+    background:
+        color-mix(in srgb,
+            var(--history-accent) 8%,
+            var(--clinic-white));
+
+    font-size: 0.66rem;
+    font-weight: 950;
+    letter-spacing: 0.11em;
+    line-height: 1;
+    text-transform: uppercase;
+}
+
+.identity h3 {
+    margin: 0;
+
+    color: var(--clinic-ink);
+
+    font-size: clamp(1.2rem, 2vw, 1.48rem);
+    font-weight: 950;
+    letter-spacing: -0.05em;
+    line-height: 1.05;
+}
+
+.identity p {
+    margin: 0;
+
+    color: var(--clinic-muted-strong);
+
+    font-size: 0.78rem;
+    font-weight: 720;
+    line-height: 1.35;
+}
+
+.status {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    flex: 0 0 auto;
+
+    min-height: 2rem;
+    padding: 0.4rem 0.7rem;
+
+    border: 1px solid var(--history-accent-border);
+    border-radius: 999px;
+
+    color: var(--history-accent);
+    background:
+        color-mix(in srgb,
+            var(--history-accent) 9%,
+            var(--clinic-white));
+
+    font-size: 0.74rem;
+    font-weight: 950;
+    letter-spacing: 0.045em;
+    line-height: 1;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.message {
+    position: relative;
+    z-index: 2;
+
+    margin: 0;
+    padding: 0.72rem 0.8rem;
+
+    border: 1px solid color-mix(in srgb,
+            var(--history-accent) 14%,
+            transparent);
+
+    border-radius: var(--clinic-radius-md);
+
+    color: var(--clinic-muted-strong);
+    background:
+        color-mix(in srgb,
+            var(--clinic-white) 74%,
+            transparent);
+
+    font-size: 0.8rem;
+    font-weight: 680;
+    line-height: 1.45;
+}
+
+.summary {
+    position: relative;
+    z-index: 2;
+
+    display: grid;
+    grid-template-columns:
+        repeat(4, minmax(0, 1fr));
+
+    gap: 0.58rem;
+    margin: 0;
+}
+
+.summaryItem {
+    display: grid;
+    gap: 0.2rem;
+
+    min-width: 0;
+    min-height: 3.75rem;
+    padding: 0.65rem 0.7rem;
+
+    border: 1px solid var(--clinic-border);
+    border-radius: var(--clinic-radius-md);
+
+    background:
+        color-mix(in srgb,
+            var(--clinic-white) 72%,
+            transparent);
+
+    box-shadow:
+        inset 0 1px 0 color-mix(in srgb,
+            var(--clinic-white) 82%,
+            transparent);
+}
+
+.summaryItem[data-tone="success"] {
+    border-color:
+        color-mix(in srgb,
+            var(--clinic-success) 18%,
+            transparent);
+
+    background:
+        color-mix(in srgb,
+            var(--clinic-success) 5%,
+            var(--clinic-white));
+}
+
+.summaryItem[data-tone="danger"] {
+    border-color:
+        color-mix(in srgb,
+            var(--clinic-danger) 18%,
+            transparent);
+
+    background:
+        color-mix(in srgb,
+            var(--clinic-danger) 5%,
+            var(--clinic-white));
+}
+
+.summaryItem dt {
+    color: var(--clinic-muted-strong);
+
+    font-size: 0.65rem;
+    font-weight: 900;
+    letter-spacing: 0.065em;
+    line-height: 1.15;
+    text-transform: uppercase;
+}
+
+.summaryItem dd {
+    min-width: 0;
+    margin: 0;
+
+    overflow-wrap: anywhere;
+
+    color: var(--clinic-ink);
+
+    font-size: 0.95rem;
+    font-weight: 930;
+    line-height: 1.2;
+}
+
+.summaryItem[data-tone="success"] dd {
+    color: var(--clinic-success);
+}
+
+.summaryItem[data-tone="danger"] dd {
+    color: var(--clinic-danger);
+}
+
+.warning {
+    position: relative;
+    z-index: 2;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.85rem;
+
+    min-width: 0;
+    padding: 0.72rem 0.8rem;
+
+    border: 1px solid color-mix(in srgb,
+            var(--clinic-warning) 23%,
+            transparent);
+
+    border-inline-start:
+        4px solid var(--clinic-warning);
+
+    border-radius: var(--clinic-radius-md);
+
+    background:
+        color-mix(in srgb,
+            var(--clinic-warning) 6%,
+            var(--clinic-white));
+}
+
+.warning>div {
+    display: grid;
+    gap: 0.2rem;
+
+    min-width: 0;
+}
+
+.warning strong {
+    color: var(--clinic-warning);
+
+    font-size: 0.8rem;
+    font-weight: 950;
+    line-height: 1.25;
+}
+
+.warning p {
+    max-width: 72ch;
+    margin: 0;
+
+    color: var(--clinic-muted-strong);
+
+    font-size: 0.78rem;
+    font-weight: 680;
+    line-height: 1.4;
+}
+
+.warning span {
+    flex: 0 0 auto;
+
+    padding: 0.32rem 0.54rem;
+
+    border: 1px solid color-mix(in srgb,
+            var(--clinic-warning) 18%,
+            transparent);
+
+    border-radius: 999px;
+
+    color: var(--clinic-warning);
+    background:
+        color-mix(in srgb,
+            var(--clinic-white) 72%,
+            transparent);
+
+    font-size: 0.7rem;
+    font-weight: 900;
+    line-height: 1;
+    white-space: nowrap;
+}
+
+.reason {
+    position: relative;
+    z-index: 2;
+
+    display: grid;
+    gap: 0.2rem;
+
+    padding: 0.68rem 0.78rem;
+
+    border: 1px solid color-mix(in srgb,
+            var(--clinic-danger) 16%,
+            transparent);
+
+    border-radius: var(--clinic-radius-md);
+
+    background:
+        color-mix(in srgb,
+            var(--clinic-danger) 4%,
+            var(--clinic-white));
+}
+
+.reason strong {
+    color: var(--clinic-danger);
+
+    font-size: 0.7rem;
+    font-weight: 950;
+    letter-spacing: 0.065em;
+    line-height: 1.2;
+    text-transform: uppercase;
+}
+
+.reason p {
+    margin: 0;
+
+    color: var(--clinic-muted-strong);
+
+    font-size: 0.78rem;
+    font-weight: 680;
+    line-height: 1.4;
+}
+
 .actions {
     position: relative;
     z-index: 2;
 
     display: flex;
-    justify-content: flex-start;
+    justify-content: flex-end;
 
     min-width: 0;
 }
 
-.detailsButton {
-    min-height: 2.55rem;
-    padding: 0.72rem 1.05rem;
+.detailLink {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 
-    border: 1px solid color-mix(in srgb, var(--clinic-green-700) 18%, transparent);
-    border-radius: 999px;
+    min-height: 2.4rem;
+    padding: 0.65rem 0.9rem;
 
-    color: var(--clinic-green-800);
-    background:
-        linear-gradient(180deg,
-            var(--clinic-white),
-            color-mix(in srgb, var(--clinic-cream) 88%, transparent));
+    border: 1px solid var(--history-accent);
+    border-radius: var(--clinic-radius-md);
+
+    color: var(--clinic-white);
+    background: var(--history-accent);
 
     box-shadow:
-        inset 0 1px 0 color-mix(in srgb, var(--clinic-white) 86%, transparent);
+        0 0.5rem 1rem color-mix(in srgb,
+            var(--history-accent) 15%,
+            transparent);
 
-    font: inherit;
     font-size: var(--clinic-font-size-sm);
     font-weight: 850;
     line-height: 1;
-
-    cursor: pointer;
+    text-decoration: none;
+    white-space: nowrap;
 
     transition:
         transform var(--clinic-transition),
-        border-color var(--clinic-transition),
-        background-color var(--clinic-transition),
-        box-shadow var(--clinic-transition),
-        opacity var(--clinic-transition);
+        filter var(--clinic-transition),
+        box-shadow var(--clinic-transition);
 }
 
-.detailsButton:hover {
+.detailLink:hover {
     transform: translateY(-1px);
-
-    border-color: color-mix(in srgb, var(--clinic-green-700) 30%, transparent);
-    background: var(--clinic-white);
+    filter: brightness(0.92);
 
     box-shadow:
-        var(--clinic-shadow-soft),
-        0 0 0 3px color-mix(in srgb, var(--clinic-green-700) 6%, transparent);
+        0 0.75rem 1.4rem color-mix(in srgb,
+            var(--history-accent) 20%,
+            transparent);
 }
 
-.detailsButton:focus-visible {
-    outline: 3px solid color-mix(in srgb, var(--clinic-green-700) 22%, transparent);
+.detailLink:focus-visible {
+    outline: 3px solid color-mix(in srgb,
+            var(--history-accent) 24%,
+            transparent);
+
     outline-offset: 3px;
 }
 
+@media (max-width: 900px) {
+    .summary {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+}
+
 @media (max-width: 620px) {
-    .detailsButton {
+
+    .cardHeader,
+    .warning {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .status,
+    .warning span {
+        width: fit-content;
+        white-space: normal;
+    }
+
+    .summary {
+        grid-template-columns: 1fr;
+    }
+
+    .actions,
+    .detailLink {
         width: 100%;
     }
 }
 
 @media (max-width: 420px) {
     .card {
-        padding: 0.9rem;
-        border-radius: var(--clinic-radius-lg);
+        padding: 0.85rem;
+        border-radius: var(--clinic-radius-md);
+    }
+
+    .summaryItem {
+        padding: 0.66rem;
+    }
+
+    .identity h3 {
+        font-size: 1.14rem;
+    }
+
+    .summaryItem dt {
+        font-size: 0.62rem;
     }
 }
 
 @media (prefers-reduced-motion: reduce) {
 
     .card,
-    .detailsButton {
+    .detailLink {
         transition: none;
     }
 
     .card:hover,
-    .detailsButton:hover {
+    .detailLink:hover {
         transform: none;
     }
 }

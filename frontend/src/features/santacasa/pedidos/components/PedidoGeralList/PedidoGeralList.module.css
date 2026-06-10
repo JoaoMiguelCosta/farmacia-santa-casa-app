@@ -1,3 +1,5 @@
+/* src/features/santacasa/pedidos/components/PedidoGeralList/PedidoGeralList.module.css */
+
 .form {
     display: grid;
     gap: clamp(1rem, 2.4vw, 1.45rem);
@@ -8,31 +10,10 @@
 
 .groups {
     display: grid;
-    gap: clamp(1rem, 2.6vw, 1.55rem);
+    gap: clamp(0.75rem, 1.8vw, 1rem);
 
     width: 100%;
     min-width: 0;
-}
-
-.actions {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    gap: clamp(0.65rem, 1.6vw, 0.85rem);
-
-    min-width: 0;
-    padding-top: 0.25rem;
-}
-
-@media (max-width: 620px) {
-    .actions {
-        align-items: stretch;
-        flex-direction: column-reverse;
-    }
-
-    .actions>button {
-        width: 100%;
-    }
 }
 
 @media (max-width: 420px) {

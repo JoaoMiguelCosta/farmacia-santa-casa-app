@@ -1,4 +1,5 @@
 // src/features/santacasa/pedidos/components/PedidoGeralList/pedidoGeralList.utils.js
+
 import { PEDIDOS_PAGE } from "../../config/pedidosPage.config";
 
 const collator = new Intl.Collator("pt-PT", {
@@ -15,11 +16,19 @@ export function getValidPedidoGeralItems(items = []) {
 }
 
 export function getTypeLabel(tipo) {
-  if (tipo === "COM_RECEITA") return PEDIDOS_PAGE.labels.receita;
-  if (tipo === "SEM_RECEITA") return PEDIDOS_PAGE.labels.semReceita;
-  if (tipo === "EXTRA") return PEDIDOS_PAGE.labels.extra;
+  if (tipo === "COM_RECEITA") {
+    return PEDIDOS_PAGE.labels.receita;
+  }
 
-  return tipo || "—";
+  if (tipo === "SEM_RECEITA") {
+    return PEDIDOS_PAGE.labels.semReceita;
+  }
+
+  if (tipo === "EXTRA") {
+    return PEDIDOS_PAGE.labels.extra;
+  }
+
+  return tipo || PEDIDOS_PAGE.labels.emptyValue;
 }
 
 export function getQuantityInfo(item = {}) {
@@ -43,7 +52,9 @@ export function getQuantityInfo(item = {}) {
 }
 
 export function getSafeDetailsId(prefix, key) {
-  return `${prefix}-${String(key || "grupo").replace(/[^a-zA-Z0-9_-]/g, "-")}`;
+  const safeKey = String(key || "grupo").replace(/[^a-zA-Z0-9_-]/g, "-");
+
+  return `${prefix}-${safeKey}`;
 }
 
 function extractReceitaNumber(description) {
@@ -65,27 +76,33 @@ function extractPinOpcao(meta) {
 }
 
 export function getPedidoGeralReceita(item = {}) {
-  if (item?.tipo !== "COM_RECEITA") return null;
+  if (item?.tipo !== "COM_RECEITA") {
+    return null;
+  }
 
   const source = item?.source || {};
 
   return {
     id: source?.receita?.id || source?.id || item?.id,
+
     numero19:
       source?.receita?.numero19 ||
       source?.numero19 ||
       item?.numero19 ||
       extractReceitaNumber(item?.description),
+
     pinAcesso6:
       source?.receita?.pinAcesso6 ||
       source?.pinAcesso6 ||
       item?.pinAcesso6 ||
       extractPinAcesso(item?.meta),
+
     pinOpcao4:
       source?.receita?.pinOpcao4 ||
       source?.pinOpcao4 ||
       item?.pinOpcao4 ||
       extractPinOpcao(item?.meta),
+
     validade:
       source?.receitaLinha?.validade ||
       source?.receita?.validade ||
@@ -125,7 +142,9 @@ export function getReceitaBarcodeCodes(receita = {}) {
 }
 
 export function getReceitaValidityLabel(receita = {}) {
-  if (!receita?.validade) return "";
+  if (!receita?.validade) {
+    return "";
+  }
 
   const date = new Date(receita.validade);
 
@@ -142,6 +161,7 @@ export function getReceitaValidityLabel(receita = {}) {
 
 export function groupByUtente(items = []) {
   const groupsMap = new Map();
+
   const validItems = getValidPedidoGeralItems(items);
 
   validItems.forEach((item) => {
@@ -150,8 +170,11 @@ export function groupByUtente(items = []) {
     if (!groupsMap.has(groupKey)) {
       groupsMap.set(groupKey, {
         utenteId: item.utenteId,
+
         utenteNome: item.utenteNome || PEDIDOS_PAGE.labels.utenteFallback,
+
         utenteNumero9: item.utenteNumero9 || "",
+
         items: [],
       });
     }
@@ -162,21 +185,40 @@ export function groupByUtente(items = []) {
   return Array.from(groupsMap.values())
     .map((group) => ({
       ...group,
-      items: getValidPedidoGeralItems(group.items).sort((a, b) => {
-        const tipoCompare = collator.compare(a.tipo || "", b.tipo || "");
 
-        if (tipoCompare !== 0) return tipoCompare;
+      items: getValidPedidoGeralItems(group.items).sort(
+        (firstItem, secondItem) => {
+          const typeComparison = collator.compare(
+            firstItem.tipo || "",
+            secondItem.tipo || "",
+          );
 
-        return collator.compare(a.title || "", b.title || "");
-      }),
+          if (typeComparison !== 0) {
+            return typeComparison;
+          }
+
+          return collator.compare(
+            firstItem.title || "",
+            secondItem.title || "",
+          );
+        },
+      ),
     }))
     .filter((group) => group.items.length > 0)
-    .sort((a, b) => {
-      const nameCompare = collator.compare(a.utenteNome, b.utenteNome);
+    .sort((firstGroup, secondGroup) => {
+      const nameComparison = collator.compare(
+        firstGroup.utenteNome,
+        secondGroup.utenteNome,
+      );
 
-      if (nameCompare !== 0) return nameCompare;
+      if (nameComparison !== 0) {
+        return nameComparison;
+      }
 
-      return collator.compare(a.utenteNumero9, b.utenteNumero9);
+      return collator.compare(
+        firstGroup.utenteNumero9,
+        secondGroup.utenteNumero9,
+      );
     });
 }
 
@@ -193,7 +235,9 @@ export function getItemsCountLabel(count) {
 export function getMedicamentosCountLabel(count) {
   return `${count} ${getPluralLabel({
     amount: count,
+
     singular: PEDIDOS_PAGE.labels.itemSingular,
+
     plural: PEDIDOS_PAGE.labels.itemPlural,
   })}`;
 }
@@ -201,7 +245,9 @@ export function getMedicamentosCountLabel(count) {
 export function getUnidadesCountLabel(count) {
   return `${count} ${getPluralLabel({
     amount: count,
+
     singular: PEDIDOS_PAGE.labels.unidadeSingular,
+
     plural: PEDIDOS_PAGE.labels.unidadePlural,
   })}`;
 }
@@ -210,48 +256,4 @@ export function getItemsQuantityTotal(items = []) {
   return items.reduce((total, item) => {
     return total + (Number(item?.quantidade) || 0);
   }, 0);
-}
-
-export function getVisibleMedicamentosLabel({ visible, total }) {
-  return PEDIDOS_PAGE.sections.draft.visibleMedicamentosLabel
-    .replace("{visible}", visible)
-    .replace("{total}", total);
-}
-
-export function getViewMoreMedicamentosLabel(amount) {
-  return PEDIDOS_PAGE.actions.viewMoreMedicamentos.replace("{amount}", amount);
-}
-
-export function getRemainingMedicamentosCount({ visible, total, step }) {
-  const safeVisible = Math.max(0, Math.floor(Number(visible)) || 0);
-  const safeTotal = Math.max(0, Math.floor(Number(total)) || 0);
-  const safeStep = Math.max(1, Math.floor(Number(step)) || 1);
-
-  return Math.min(Math.max(0, safeTotal - safeVisible), safeStep);
-}
-
-export function getNextVisibleMedicamentosCount({
-  currentVisible,
-  total,
-  step,
-}) {
-  const safeCurrentVisible = Math.max(
-    0,
-    Math.floor(Number(currentVisible)) || 0,
-  );
-
-  const safeTotal = Math.max(0, Math.floor(Number(total)) || 0);
-  const safeStep = Math.max(1, Math.floor(Number(step)) || 1);
-
-  return Math.min(safeCurrentVisible + safeStep, safeTotal);
-}
-
-export function getLimitedPedidoItems(items = [], limit) {
-  const maxVisible = Math.floor(Number(limit));
-
-  if (!Number.isFinite(maxVisible) || maxVisible <= 0) {
-    return items;
-  }
-
-  return items.slice(0, maxVisible);
 }

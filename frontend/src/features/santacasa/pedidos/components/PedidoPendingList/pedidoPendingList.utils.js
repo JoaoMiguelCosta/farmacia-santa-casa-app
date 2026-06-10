@@ -1,122 +1,67 @@
 // src/features/santacasa/pedidos/components/PedidoPendingList/pedidoPendingList.utils.js
+
+import { SANTACASA_PEDIDO_VISUAL_STATUS } from "../../../shared/pedidos/config/santaCasaPedidoUi.config";
+
+import {
+  getSantaCasaPedidoItemsCount,
+  getSantaCasaPedidoNumberLabel,
+  getSantaCasaPedidoTotalQuantity,
+  getSantaCasaPedidoUtentesCount,
+} from "../../../shared/pedidos/utils/santaCasaPedido.utils";
+
+import {
+  getSantaCasaPedidoOperationalSummary,
+  getSantaCasaPedidoVisualStatus,
+  hasSantaCasaPedidoExpiredItems,
+} from "../../../shared/pedidos/utils/santaCasaPedidoOperational.utils";
+
 import { PEDIDOS_PAGE } from "../../config/pedidosPage.config";
 
-const collator = new Intl.Collator("pt-PT", {
-  sensitivity: "base",
-  numeric: true,
-});
-
-const PEDIDO_ITEM_STATUS = Object.freeze({
-  pending: "PENDENTE",
-  validated: "VALIDADO",
-  rejected: "REJEITADO",
-  canceled: "CANCELADO",
-  canceledByExpiration: "CANCELADO_POR_EXPIRACAO",
-});
-
-const PEDIDO_STATUS = Object.freeze({
-  pending: "PENDENTE",
-  validated: "VALIDADO",
-  rejected: "REJEITADO",
-  canceled: "CANCELADO",
-});
-
-function getStatusSortWeight(status) {
-  if (status === PEDIDO_ITEM_STATUS.pending) return 1;
-  if (status === PEDIDO_ITEM_STATUS.validated) return 2;
-  if (status === PEDIDO_ITEM_STATUS.rejected) return 3;
-  if (status === PEDIDO_ITEM_STATUS.canceledByExpiration) return 4;
-  if (status === PEDIDO_ITEM_STATUS.canceled) return 5;
-
-  return 9;
-}
-
 export function getPedidoNumberLabel(pedido) {
-  const numero = Number(pedido?.numero);
-
-  if (!Number.isFinite(numero)) {
-    return PEDIDOS_PAGE.labels.emptyValue;
-  }
-
-  return `#${numero}`;
-}
-
-export function getTypeLabel(tipo) {
-  if (tipo === "COM_RECEITA") return PEDIDOS_PAGE.labels.receita;
-  if (tipo === "SEM_RECEITA") return PEDIDOS_PAGE.labels.semReceita;
-  if (tipo === "EXTRA") return PEDIDOS_PAGE.labels.extra;
-
-  return tipo || PEDIDOS_PAGE.labels.emptyValue;
-}
-
-export function getPedidoItems(pedido) {
-  return Array.isArray(pedido?.itens) ? pedido.itens.filter(Boolean) : [];
-}
-
-export function getPedidoItemKey(item, index) {
-  return item?.id || `${item?.tipo || "item"}-${item?.medicamento || index}`;
-}
-
-export function isPedidoItemCanceledByExpiration(item) {
-  return item?.status === PEDIDO_ITEM_STATUS.canceledByExpiration;
-}
-
-export function getPedidoCanceledByExpirationItems(pedido) {
-  return getPedidoItems(pedido).filter(isPedidoItemCanceledByExpiration);
+  return getSantaCasaPedidoNumberLabel(pedido, {
+    emptyValue: PEDIDOS_PAGE.labels.emptyValue,
+  });
 }
 
 export function hasPedidoExpirationWarnings(pedido) {
-  return getPedidoCanceledByExpirationItems(pedido).length > 0;
+  return hasSantaCasaPedidoExpiredItems(pedido);
 }
 
 export function getPedidoExpirationWarningsCount(pedido) {
-  return getPedidoCanceledByExpirationItems(pedido).length;
-}
-
-export function isPedidoItemPending(item) {
-  return item?.status === PEDIDO_ITEM_STATUS.pending;
-}
-
-export function getPedidoPendingItems(pedido) {
-  return getPedidoItems(pedido).filter(isPedidoItemPending);
+  return getSantaCasaPedidoOperationalSummary(pedido).expiredItems;
 }
 
 export function getPedidoPendingMedicamentosCount(pedido) {
-  return getPedidoPendingItems(pedido).length;
-}
-
-export function getPedidoCanceledByExpirationQuantity(pedido) {
-  return getPedidoCanceledByExpirationItems(pedido).reduce((total, item) => {
-    return total + (Number(item?.quantidade) || 0);
-  }, 0);
+  return getSantaCasaPedidoOperationalSummary(pedido).pendingItems;
 }
 
 export function getPedidoPendingQuantity(pedido) {
-  return getPedidoPendingItems(pedido).reduce((total, item) => {
-    return total + (Number(item?.quantidade) || 0);
-  }, 0);
+  return getSantaCasaPedidoOperationalSummary(pedido).pendingQuantity;
 }
 
 export function getPedidoStatusLabel(pedido) {
-  const hasWarnings = hasPedidoExpirationWarnings(pedido);
+  const visualStatus = getSantaCasaPedidoVisualStatus(pedido);
 
-  if (pedido?.status === PEDIDO_STATUS.validated && hasWarnings) {
+  if (visualStatus === SANTACASA_PEDIDO_VISUAL_STATUS.validatedWithWarnings) {
     return PEDIDOS_PAGE.labels.validatedWithWarningsStatus;
   }
 
-  if (pedido?.status === PEDIDO_STATUS.pending && hasWarnings) {
+  if (visualStatus === SANTACASA_PEDIDO_VISUAL_STATUS.pendingWithWarnings) {
     return PEDIDOS_PAGE.labels.pendingWithWarningsStatus;
   }
 
-  if (pedido?.status === PEDIDO_STATUS.validated) {
+  if (visualStatus === SANTACASA_PEDIDO_VISUAL_STATUS.validated) {
     return PEDIDOS_PAGE.labels.validatedStatus;
   }
 
-  if (pedido?.status === PEDIDO_STATUS.rejected) {
+  if (visualStatus === SANTACASA_PEDIDO_VISUAL_STATUS.rejected) {
     return PEDIDOS_PAGE.labels.rejectedStatus;
   }
 
-  if (pedido?.status === PEDIDO_STATUS.canceled) {
+  if (
+    visualStatus === SANTACASA_PEDIDO_VISUAL_STATUS.canceled ||
+    visualStatus === SANTACASA_PEDIDO_VISUAL_STATUS.automaticallyCanceled
+  ) {
     return PEDIDOS_PAGE.labels.canceledStatus;
   }
 
@@ -124,29 +69,19 @@ export function getPedidoStatusLabel(pedido) {
 }
 
 export function getPedidoTotalQuantity(pedido) {
-  return getPedidoItems(pedido).reduce((total, item) => {
-    return total + (Number(item?.quantidade) || 0);
-  }, 0);
+  return getSantaCasaPedidoTotalQuantity(pedido);
 }
 
 export function getPedidoUtentesCount(pedido) {
-  const utentesIds = new Set();
-
-  getPedidoItems(pedido).forEach((item) => {
-    if (item?.utente?.id) {
-      utentesIds.add(item.utente.id);
-    }
-  });
-
-  return utentesIds.size;
+  return getSantaCasaPedidoUtentesCount(pedido);
 }
 
 export function getPedidoMedicamentosCount(pedido) {
-  return getPedidoItems(pedido).length;
+  return getSantaCasaPedidoItemsCount(pedido);
 }
 
 export function getPluralLabel({ amount, singular, plural }) {
-  return amount === 1 ? singular : plural;
+  return Number(amount) === 1 ? singular : plural;
 }
 
 export function getUtentesCountLabel(count) {
@@ -179,179 +114,6 @@ export function getUnidadesCountLabel(count) {
     singular: PEDIDOS_PAGE.labels.unidadeSingular,
     plural: PEDIDOS_PAGE.labels.unidadePlural,
   })}`;
-}
-
-export function getVisibleMedicamentosLabel({ visible, total }) {
-  return PEDIDOS_PAGE.sections.pending.visibleMedicamentosLabel
-    .replace("{visible}", visible)
-    .replace("{total}", total);
-}
-
-export function getViewMoreMedicamentosLabel(amount) {
-  return PEDIDOS_PAGE.actions.viewMoreMedicamentos.replace("{amount}", amount);
-}
-
-export function getRemainingMedicamentosCount({ visible, total, step }) {
-  const safeVisible = Math.max(0, Math.floor(Number(visible)) || 0);
-  const safeTotal = Math.max(0, Math.floor(Number(total)) || 0);
-  const safeStep = Math.max(1, Math.floor(Number(step)) || 1);
-
-  return Math.min(Math.max(0, safeTotal - safeVisible), safeStep);
-}
-
-export function getNextVisibleMedicamentosCount({
-  currentVisible,
-  total,
-  step,
-}) {
-  const safeCurrentVisible = Math.max(
-    0,
-    Math.floor(Number(currentVisible)) || 0,
-  );
-
-  const safeTotal = Math.max(0, Math.floor(Number(total)) || 0);
-  const safeStep = Math.max(1, Math.floor(Number(step)) || 1);
-
-  return Math.min(safeCurrentVisible + safeStep, safeTotal);
-}
-
-export function getPedidoItemReceita(item) {
-  if (item?.tipo !== "COM_RECEITA") return null;
-
-  if (item?.receitaLinha) {
-    return {
-      ...item.receitaLinha.receita,
-      validade: item.receitaLinha.validade,
-    };
-  }
-
-  if (item?.receita) {
-    return item.receita;
-  }
-
-  if (item?.numero19 || item?.pinAcesso6 || item?.pinOpcao4) {
-    return item;
-  }
-
-  return null;
-}
-
-export function hasReceitaBarcodeData(receita) {
-  return Boolean(
-    receita?.numero19 || receita?.pinAcesso6 || receita?.pinOpcao4,
-  );
-}
-
-export function getReceitaBarcodeCodes(receita = {}) {
-  return [
-    {
-      key: "numero19",
-      label: PEDIDOS_PAGE.labels.receitaNumber,
-      value: receita.numero19,
-      width: 0.72,
-    },
-    {
-      key: "pinAcesso6",
-      label: PEDIDOS_PAGE.labels.pinAcesso,
-      value: receita.pinAcesso6,
-      width: 1.08,
-    },
-    {
-      key: "pinOpcao4",
-      label: PEDIDOS_PAGE.labels.pinOpcao,
-      value: receita.pinOpcao4,
-      width: 1.16,
-    },
-  ].filter((code) => code.value);
-}
-
-export function getReceitaValidityLabel(receita = {}) {
-  if (!receita?.validade) return "";
-
-  const date = new Date(receita.validade);
-
-  if (Number.isNaN(date.getTime())) {
-    return String(receita.validade);
-  }
-
-  return new Intl.DateTimeFormat("pt-PT", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-  }).format(date);
-}
-
-export function groupPedidoItemsByUtente(items = []) {
-  const groupsMap = new Map();
-
-  items.filter(Boolean).forEach((item) => {
-    const utente = item?.utente;
-    const groupKey = utente?.id || "sem-utente";
-
-    if (!groupsMap.has(groupKey)) {
-      groupsMap.set(groupKey, {
-        utenteId: groupKey,
-        utenteNome: utente?.nome || PEDIDOS_PAGE.labels.utenteFallback,
-        utenteNumero9: utente?.numero9 || PEDIDOS_PAGE.labels.emptyValue,
-        items: [],
-      });
-    }
-
-    groupsMap.get(groupKey).items.push(item);
-  });
-
-  return Array.from(groupsMap.values())
-    .map((group) => ({
-      ...group,
-      items: [...group.items].sort((a, b) => {
-        const statusCompare =
-          getStatusSortWeight(a?.status) - getStatusSortWeight(b?.status);
-
-        if (statusCompare !== 0) return statusCompare;
-
-        const tipoCompare = collator.compare(a?.tipo || "", b?.tipo || "");
-
-        if (tipoCompare !== 0) return tipoCompare;
-
-        return collator.compare(a?.medicamento || "", b?.medicamento || "");
-      }),
-    }))
-    .sort((a, b) => {
-      const nameCompare = collator.compare(a.utenteNome, b.utenteNome);
-
-      if (nameCompare !== 0) return nameCompare;
-
-      return collator.compare(a.utenteNumero9, b.utenteNumero9);
-    });
-}
-
-export function getLimitedPedidoGroups(groups = [], limit) {
-  const maxVisible = Math.floor(Number(limit));
-
-  if (!Number.isFinite(maxVisible) || maxVisible <= 0) {
-    return groups;
-  }
-
-  let remaining = maxVisible;
-
-  return groups
-    .map((group) => {
-      if (remaining <= 0) {
-        return {
-          ...group,
-          items: [],
-        };
-      }
-
-      const visibleItems = group.items.slice(0, remaining);
-      remaining -= visibleItems.length;
-
-      return {
-        ...group,
-        items: visibleItems,
-      };
-    })
-    .filter((group) => group.items.length > 0);
 }
 
 export function getPaginationLabel({ meta, currentPage, totalPages }) {

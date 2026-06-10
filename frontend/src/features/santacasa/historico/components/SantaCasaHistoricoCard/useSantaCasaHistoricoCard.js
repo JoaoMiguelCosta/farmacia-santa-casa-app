@@ -1,14 +1,26 @@
 // src/features/santacasa/historico/components/SantaCasaHistoricoCard/useSantaCasaHistoricoCard.js
 
-import { useState } from "react";
-
 import styles from "./SantaCasaHistoricoCard.module.css";
 
+import { SANTACASA_HISTORICO_PAGE } from "../../config/santaCasaHistoricoPage.config";
+
 import {
-  getHistoricoPedidoItems,
+  getHistoricoPedidoClosedAtLabel,
+  getHistoricoPedidoClosedReasonLabel,
+  getHistoricoPedidoMessage,
+  getHistoricoPedidoNumberLabel,
+  getHistoricoPedidoVisualStatusLabel,
   isHistoricoPedidoCancelado,
   isHistoricoPedidoValidadoComAvisos,
+  shouldShowHistoricoPedidoReason,
 } from "../../utils/santaCasaHistorico.utils";
+
+import {
+  getSantaCasaPedidoOperationalSummary,
+  isSantaCasaPedidoCanceledByExpiration,
+} from "../../../shared/pedidos/utils/santaCasaPedidoOperational.utils";
+
+import { getSantaCasaPedidoUtentesCount } from "../../../shared/pedidos/utils/santaCasaPedido.utils";
 
 function isHistoricoPedidoRejeitado(pedido) {
   return pedido?.status === "REJEITADO";
@@ -17,29 +29,128 @@ function isHistoricoPedidoRejeitado(pedido) {
 function getHistoricoCardClassName(pedido) {
   return [
     styles.card,
+
     pedido?.status === "VALIDADO" ? styles.cardValidated : "",
+
     isHistoricoPedidoValidadoComAvisos(pedido) ? styles.cardWarning : "",
+
     isHistoricoPedidoRejeitado(pedido) ? styles.cardRejected : "",
+
     isHistoricoPedidoCancelado(pedido) ? styles.cardCancelled : "",
   ]
     .filter(Boolean)
     .join(" ");
 }
 
-export function useSantaCasaHistoricoCard(pedido) {
-  const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+function getResultMetric(pedido, summary) {
+  const labels = SANTACASA_HISTORICO_PAGE.labels;
 
-  const items = getHistoricoPedidoItems(pedido);
-  const cardClassName = getHistoricoCardClassName(pedido);
+  if (pedido?.status === "VALIDADO") {
+    return {
+      label: labels.statsValidated,
 
-  function handleToggleDetails() {
-    setIsDetailsOpen((currentValue) => !currentValue);
+      value: summary.validatedItems || summary.totalItems,
+
+      tone: "success",
+    };
+  }
+
+  if (pedido?.status === "REJEITADO") {
+    return {
+      label: labels.statsRejected,
+
+      value: summary.rejectedItems || summary.totalItems,
+
+      tone: "danger",
+    };
+  }
+
+  if (pedido?.status === "CANCELADO") {
+    return {
+      label: isSantaCasaPedidoCanceledByExpiration(pedido)
+        ? labels.statsCanceledByExpiry
+        : labels.statsCanceled,
+
+      value: summary.canceledItems + summary.expiredItems || summary.totalItems,
+
+      tone: "danger",
+    };
   }
 
   return {
-    items,
-    isDetailsOpen,
-    cardClassName,
-    handleToggleDetails,
+    label: labels.totalItems,
+    value: summary.totalItems,
+    tone: "neutral",
+  };
+}
+
+function getSummaryItems(pedido) {
+  const labels = SANTACASA_HISTORICO_PAGE.labels;
+
+  const summary = getSantaCasaPedidoOperationalSummary(pedido);
+
+  const resultMetric = getResultMetric(pedido, summary);
+
+  return [
+    {
+      key: "utentes",
+      label: labels.utentes,
+
+      value: getSantaCasaPedidoUtentesCount(pedido),
+
+      tone: "neutral",
+    },
+    {
+      key: "items",
+      label: labels.totalItems,
+      value: summary.totalItems,
+      tone: "neutral",
+    },
+    {
+      key: "quantity",
+      label: labels.totalQuantity,
+      value: summary.totalQuantity,
+      tone: "neutral",
+    },
+    {
+      key: "result",
+      ...resultMetric,
+    },
+  ];
+}
+
+export function useSantaCasaHistoricoCard(pedido) {
+  const operationalSummary = getSantaCasaPedidoOperationalSummary(pedido);
+
+  const hasExpirationWarning = operationalSummary.expiredItems > 0;
+
+  const showReason = shouldShowHistoricoPedidoReason(pedido);
+
+  return {
+    cardClassName: getHistoricoCardClassName(pedido),
+
+    pedidoNumberLabel: getHistoricoPedidoNumberLabel(pedido),
+
+    statusLabel: getHistoricoPedidoVisualStatusLabel(pedido),
+
+    closedAtLabel: getHistoricoPedidoClosedAtLabel(pedido),
+
+    message: getHistoricoPedidoMessage(pedido),
+
+    summaryItems: getSummaryItems(pedido),
+
+    hasExpirationWarning,
+
+    expirationWarningLabel: `${operationalSummary.expiredItems} ${
+      operationalSummary.expiredItems === 1
+        ? SANTACASA_HISTORICO_PAGE.labels.warningSingular
+        : SANTACASA_HISTORICO_PAGE.labels.warningPlural
+    }`,
+
+    showReason,
+
+    reasonTitle: showReason ? SANTACASA_HISTORICO_PAGE.labels.closedReason : "",
+
+    reasonValue: showReason ? getHistoricoPedidoClosedReasonLabel(pedido) : "",
   };
 }

@@ -1,3 +1,5 @@
+// src/features/santacasa/shared/config/santaCasaRoutes.config.js
+
 const SANTACASA_BASE_PATH = "santacasa";
 
 export const SANTACASA_ROUTER_PATHS = Object.freeze({
@@ -5,9 +7,14 @@ export const SANTACASA_ROUTER_PATHS = Object.freeze({
   dashboard: `${SANTACASA_BASE_PATH}/dashboard`,
   utentes: `${SANTACASA_BASE_PATH}/utentes`,
   operacao: `${SANTACASA_BASE_PATH}/operacao`,
+
   pedidos: `${SANTACASA_BASE_PATH}/pedidos`,
+  pedidoDetail: `${SANTACASA_BASE_PATH}/pedidos/:pedidoId`,
+
   regularizacoes: `${SANTACASA_BASE_PATH}/regularizacoes`,
+
   historico: `${SANTACASA_BASE_PATH}/historico`,
+  historicoDetail: `${SANTACASA_BASE_PATH}/historico/:pedidoId`,
 
   legacyReceitas: `${SANTACASA_BASE_PATH}/receitas`,
   legacySemReceita: `${SANTACASA_BASE_PATH}/sem-receita`,
@@ -22,3 +29,31 @@ export const SANTACASA_ROUTES = Object.freeze(
     ]),
   ),
 );
+
+function getSafeRouteId(value) {
+  return String(value || "").trim();
+}
+
+export function getSantaCasaPedidoDetailRoute(pedidoId) {
+  const normalizedPedidoId = getSafeRouteId(pedidoId);
+
+  if (!normalizedPedidoId) {
+    return SANTACASA_ROUTES.pedidos;
+  }
+
+  return `${SANTACASA_ROUTES.pedidos}/${encodeURIComponent(
+    normalizedPedidoId,
+  )}`;
+}
+
+export function getSantaCasaHistoricoDetailRoute(pedidoId) {
+  const normalizedPedidoId = getSafeRouteId(pedidoId);
+
+  if (!normalizedPedidoId) {
+    return SANTACASA_ROUTES.historico;
+  }
+
+  return `${SANTACASA_ROUTES.historico}/${encodeURIComponent(
+    normalizedPedidoId,
+  )}`;
+}
