@@ -8,43 +8,43 @@
 .detailsToggleButton {
     min-height: 2.5rem;
     padding: 0.68rem 1rem;
-    border: 1px solid rgba(39, 92, 72, 0.18);
+    border: 1px solid var(--clinic-border);
     border-radius: 999px;
-    background: rgba(255, 255, 255, 0.86);
-    color: #275c48;
+    background: var(--clinic-white);
+    color: var(--clinic-green-700);
     font: inherit;
-    font-size: 0.86rem;
+    font-size: var(--clinic-font-size-sm);
     font-weight: 850;
     cursor: pointer;
     transition:
-        transform 160ms ease,
-        border-color 160ms ease,
-        background 160ms ease,
-        box-shadow 160ms ease,
-        opacity 160ms ease;
+        transform var(--clinic-transition),
+        border-color var(--clinic-transition),
+        background var(--clinic-transition),
+        box-shadow var(--clinic-transition),
+        opacity var(--clinic-transition);
 }
 
 .detailsToggleButtonHistory {
     min-height: 2.22rem;
     padding: 0.54rem 0.82rem;
-    font-size: 0.78rem;
+    font-size: var(--clinic-font-size-xs);
 }
 
 .detailsToggleButton:hover {
     transform: translateY(-1px);
-    border-color: rgba(39, 92, 72, 0.28);
-    background: rgba(247, 251, 249, 0.96);
-    box-shadow: 0 12px 28px rgba(24, 43, 35, 0.08);
+    border-color: var(--clinic-border-strong);
+    background: var(--clinic-mist);
+    box-shadow: var(--clinic-shadow-soft);
 }
 
 .detailsToggleButton:focus-visible {
-    outline: 3px solid rgba(72, 128, 102, 0.28);
+    outline: 3px solid rgba(31, 95, 81, 0.24);
     outline-offset: 3px;
 }
 
 .detailsToggleButton:disabled {
     cursor: not-allowed;
-    opacity: 0.52;
+    opacity: 0.56;
     transform: none;
     box-shadow: none;
 }

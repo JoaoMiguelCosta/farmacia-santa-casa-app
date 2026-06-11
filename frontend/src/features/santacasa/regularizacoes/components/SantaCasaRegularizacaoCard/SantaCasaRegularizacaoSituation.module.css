@@ -4,31 +4,19 @@
     display: grid;
     gap: 0.32rem;
     padding: 0.86rem 0.96rem;
-    border-radius: 1rem;
+    border-radius: var(--clinic-radius-lg);
 }
 
 .situationPending {
-    border: 1px solid rgba(201, 149, 57, 0.24);
-    background:
-        linear-gradient(135deg,
-            rgba(255, 250, 240, 0.97),
-            rgba(255, 253, 248, 0.92)),
-        radial-gradient(circle at top left,
-            rgba(201, 149, 57, 0.1),
-            transparent 44%);
-    color: #77551d;
+    border: 1px solid var(--clinic-border-gold);
+    background: var(--clinic-gold-soft);
+    color: var(--clinic-warning);
 }
 
 .situationCompleted {
-    border: 1px solid rgba(39, 92, 72, 0.16);
-    background:
-        linear-gradient(135deg,
-            rgba(246, 252, 249, 0.97),
-            rgba(255, 255, 255, 0.92)),
-        radial-gradient(circle at top left,
-            rgba(93, 160, 126, 0.1),
-            transparent 44%);
-    color: #275c48;
+    border: 1px solid rgba(37, 115, 90, 0.22);
+    background: rgba(37, 115, 90, 0.08);
+    color: var(--clinic-success);
 }
 
 .situation strong {
@@ -39,14 +27,15 @@
 }
 
 .situationPending strong {
-    color: #604316;
+    color: var(--clinic-warning);
 }
 
 .situationCompleted strong {
-    color: #275c48;
+    color: var(--clinic-success);
 }
 
 .situation span {
-    font-size: 0.9rem;
-    line-height: 1.5;
+    color: inherit;
+    font-size: var(--clinic-font-size-sm);
+    line-height: var(--clinic-line-height-base);
 }

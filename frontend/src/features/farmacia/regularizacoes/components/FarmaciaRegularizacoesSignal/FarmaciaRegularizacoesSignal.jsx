@@ -1,4 +1,4 @@
-import styles from "./FarmaciaRegularizacoesSignal.module.css";
+import FarmaciaRegularizacoesState from "../FarmaciaRegularizacoesState/FarmaciaRegularizacoesState";
 
 import { FARMACIA_REGULARIZACOES_PAGE } from "../../config/farmaciaRegularizacoesPage.config";
 
@@ -8,28 +8,7 @@ import {
   getSignalTotalUnidades,
 } from "../../utils/farmaciaRegularizacoes.utils";
 
-function FarmaciaRegularizacoesSignalState({
-  title,
-  description,
-  actionLabel,
-  onAction,
-}) {
-  return (
-    <div className={styles.state}>
-      <strong className={styles.stateTitle}>{title}</strong>
-
-      {description ? (
-        <p className={styles.stateDescription}>{description}</p>
-      ) : null}
-
-      {actionLabel && onAction ? (
-        <button type="button" className={styles.stateAction} onClick={onAction}>
-          {actionLabel}
-        </button>
-      ) : null}
-    </div>
-  );
-}
+import styles from "./FarmaciaRegularizacoesSignal.module.css";
 
 export default function FarmaciaRegularizacoesSignal({
   signal = null,
@@ -38,12 +17,15 @@ export default function FarmaciaRegularizacoesSignal({
   isRefreshing = false,
   onRefresh,
 }) {
+  const sectionConfig = FARMACIA_REGULARIZACOES_PAGE.sections.signal;
+
   if (isLoading) {
     return (
       <section className={styles.section} aria-live="polite">
-        <FarmaciaRegularizacoesSignalState
-          title={FARMACIA_REGULARIZACOES_PAGE.sections.signal.loadingTitle}
-          description="Aguarda enquanto o resumo é carregado."
+        <FarmaciaRegularizacoesState
+          title={sectionConfig.loadingTitle}
+          description={sectionConfig.loadingDescription}
+          variant="embedded"
         />
       </section>
     );
@@ -52,10 +34,11 @@ export default function FarmaciaRegularizacoesSignal({
   if (error) {
     return (
       <section className={styles.section} aria-live="polite">
-        <FarmaciaRegularizacoesSignalState
-          title={FARMACIA_REGULARIZACOES_PAGE.sections.signal.errorTitle}
+        <FarmaciaRegularizacoesState
+          title={sectionConfig.errorTitle}
           description={error}
           actionLabel={FARMACIA_REGULARIZACOES_PAGE.actions.refresh}
+          variant="embedded"
           onAction={onRefresh}
         />
       </section>
@@ -73,12 +56,10 @@ export default function FarmaciaRegularizacoesSignal({
             id="farmacia-regularizacoes-signal-title"
             className={styles.title}
           >
-            {FARMACIA_REGULARIZACOES_PAGE.sections.signal.title}
+            {sectionConfig.title}
           </h2>
 
-          <p className={styles.description}>
-            {FARMACIA_REGULARIZACOES_PAGE.sections.signal.description}
-          </p>
+          <p className={styles.description}>{sectionConfig.description}</p>
         </div>
 
         <button

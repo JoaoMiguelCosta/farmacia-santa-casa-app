@@ -4,6 +4,7 @@ import { httpClient } from "../../../../shared/api/httpClient";
 const DEFAULT_REGULARIZACOES_QUERY = Object.freeze({
   search: "",
   medicamento: "",
+  utenteId: "",
   from: "",
   to: "",
   skip: 0,
@@ -16,6 +17,7 @@ function normalizeRegularizacoesQuery(query = {}) {
   return {
     search: String(query.search || "").trim(),
     medicamento: String(query.medicamento || "").trim(),
+    utenteId: String(query.utenteId || "").trim(),
     from: String(query.from || "").trim(),
     to: String(query.to || "").trim(),
     skip: Math.max(0, Number(query.skip ?? DEFAULT_REGULARIZACOES_QUERY.skip)),
@@ -40,6 +42,7 @@ function normalizeRegularizacoesResponse(
     params: {
       search: response?.params?.search ?? fallbackQuery.search,
       medicamento: response?.params?.medicamento ?? fallbackQuery.medicamento,
+      utenteId: response?.params?.utenteId ?? fallbackQuery.utenteId,
       from: response?.params?.from ?? fallbackQuery.from,
       to: response?.params?.to ?? fallbackQuery.to,
     },

@@ -34,7 +34,7 @@
     min-height: 2rem;
     padding: 0.42rem 0.72rem;
     border-radius: 999px;
-    font-size: 0.78rem;
+    font-size: var(--clinic-font-size-xs);
     font-weight: 850;
     line-height: 1;
 }
@@ -48,26 +48,26 @@
 }
 
 .statusPending {
-    border: 1px solid rgba(201, 149, 57, 0.24);
-    background: rgba(255, 247, 231, 0.92);
-    color: #6f4b12;
+    border: 1px solid var(--clinic-border-gold);
+    background: var(--clinic-gold-soft);
+    color: var(--clinic-warning);
 }
 
 .statusCompleted {
-    border: 1px solid rgba(39, 92, 72, 0.18);
-    background: rgba(229, 244, 237, 0.92);
-    color: #275c48;
+    border: 1px solid rgba(37, 115, 90, 0.24);
+    background: rgba(37, 115, 90, 0.1);
+    color: var(--clinic-success);
 }
 
 .pedidoPill,
 .datePill {
-    border: 1px solid rgba(39, 92, 72, 0.12);
-    background: rgba(255, 255, 255, 0.78);
-    color: #52786a;
+    border: 1px solid var(--clinic-border);
+    background: var(--clinic-white);
+    color: var(--clinic-muted-strong);
 }
 
 .datePill {
-    color: #60766d;
+    color: var(--clinic-muted);
 }
 
 .identityGrid {
@@ -93,10 +93,10 @@
 }
 
 .identityGrid dt {
-    color: #52786a;
-    font-size: 0.74rem;
+    color: var(--clinic-muted);
+    font-size: var(--clinic-font-size-xs);
     font-weight: 850;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.07em;
     line-height: 1.25;
     text-transform: uppercase;
 }
@@ -109,7 +109,7 @@
     min-width: 0;
     margin: 0;
     overflow-wrap: anywhere;
-    color: #16251f;
+    color: var(--clinic-ink);
     font-size: clamp(1rem, 1.45vw, 1.25rem);
     font-weight: 900;
     line-height: 1.15;

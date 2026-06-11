@@ -3,7 +3,7 @@
 .page {
     display: grid;
     gap: clamp(1.25rem, 2.5vw, 2rem);
-    inline-size: min(100%, 1180px);
+    inline-size: min(100%, var(--clinic-page-max));
     margin-inline: auto;
 }
 
@@ -11,16 +11,10 @@
     display: grid;
     gap: 0.9rem;
     padding: clamp(0.9rem, 2vw, 1.05rem);
-    border: 1px solid rgba(39, 92, 72, 0.12);
-    border-radius: 1.25rem;
-    background:
-        linear-gradient(135deg,
-            rgba(255, 255, 255, 0.95),
-            rgba(247, 251, 249, 0.9)),
-        radial-gradient(circle at top left,
-            rgba(93, 160, 126, 0.075),
-            transparent 42%);
-    box-shadow: 0 14px 36px rgba(24, 43, 35, 0.055);
+    border: 1px solid var(--clinic-border);
+    border-radius: var(--clinic-radius-xl);
+    background: var(--clinic-surface);
+    box-shadow: var(--clinic-shadow-soft);
 }
 
 .topBar {
@@ -36,9 +30,9 @@
     gap: 0.38rem;
     width: fit-content;
     padding: 0.28rem;
-    border: 1px solid rgba(39, 92, 72, 0.12);
+    border: 1px solid var(--clinic-border);
     border-radius: 999px;
-    background: rgba(255, 255, 255, 0.72);
+    background: var(--clinic-mist);
 }
 
 .tabButton,
@@ -48,29 +42,29 @@
     padding: 0.62rem 0.9rem;
     border-radius: 999px;
     font: inherit;
-    font-size: 0.84rem;
+    font-size: var(--clinic-font-size-sm);
     font-weight: 850;
     cursor: pointer;
     transition:
-        transform 160ms ease,
-        border-color 160ms ease,
-        background 160ms ease,
-        color 160ms ease,
-        box-shadow 160ms ease,
-        opacity 160ms ease;
+        transform var(--clinic-transition),
+        border-color var(--clinic-transition),
+        background var(--clinic-transition),
+        color var(--clinic-transition),
+        box-shadow var(--clinic-transition),
+        opacity var(--clinic-transition);
 }
 
 .tabButton {
     border: 1px solid transparent;
     background: transparent;
-    color: #275c48;
+    color: var(--clinic-green-700);
 }
 
 .tabButtonActive {
-    border-color: rgba(39, 92, 72, 0.26);
-    background: #275c48;
-    color: #ffffff;
-    box-shadow: 0 10px 24px rgba(39, 92, 72, 0.16);
+    border-color: var(--clinic-green-700);
+    background: var(--clinic-green-700);
+    color: var(--clinic-white);
+    box-shadow: var(--clinic-shadow-soft);
 }
 
 .meta {
@@ -79,20 +73,20 @@
     gap: 0.55rem;
     min-height: 2.35rem;
     padding: 0.55rem 0.8rem;
-    border: 1px solid rgba(39, 92, 72, 0.12);
+    border: 1px solid var(--clinic-border);
     border-radius: 999px;
-    background: rgba(255, 255, 255, 0.74);
+    background: var(--clinic-white);
 }
 
 .meta span {
-    color: #6d8279;
-    font-size: 0.76rem;
+    color: var(--clinic-muted);
+    font-size: var(--clinic-font-size-xs);
     font-weight: 800;
 }
 
 .meta strong {
-    color: #1d3028;
-    font-size: 1rem;
+    color: var(--clinic-ink-soft);
+    font-size: var(--clinic-font-size-md);
     font-weight: 950;
     line-height: 1;
 }
@@ -113,10 +107,10 @@
 }
 
 .filterField span {
-    color: #52786a;
-    font-size: 0.72rem;
-    font-weight: 900;
-    letter-spacing: 0.08em;
+    color: var(--clinic-muted);
+    font-size: var(--clinic-font-size-xs);
+    font-weight: 850;
+    letter-spacing: 0.06em;
     line-height: 1.25;
     text-transform: uppercase;
 }
@@ -126,23 +120,23 @@
     min-height: 2.38rem;
     inline-size: 100%;
     padding: 0.65rem 0.85rem;
-    border: 1px solid rgba(39, 92, 72, 0.14);
+    border: 1px solid var(--clinic-border);
     border-radius: 999px;
-    background: rgba(255, 255, 255, 0.86);
-    color: #16251f;
+    background: var(--clinic-white);
+    color: var(--clinic-ink);
     font: inherit;
-    font-size: 0.88rem;
+    font-size: var(--clinic-font-size-sm);
 }
 
 .filterField input::placeholder {
-    color: rgba(96, 118, 109, 0.68);
+    color: rgba(102, 115, 109, 0.72);
 }
 
 .filterField input:focus,
 .filterField select:focus {
     outline: none;
-    border-color: rgba(39, 92, 72, 0.36);
-    box-shadow: 0 0 0 3px rgba(72, 128, 102, 0.18);
+    border-color: var(--clinic-border-strong);
+    box-shadow: 0 0 0 3px rgba(31, 95, 81, 0.16);
 }
 
 .filterActions {
@@ -151,30 +145,44 @@
 }
 
 .filterButton {
-    border: 1px solid rgba(39, 92, 72, 0.28);
-    background: #275c48;
-    color: #ffffff;
-    box-shadow: 0 10px 24px rgba(39, 92, 72, 0.15);
+    border: 1px solid var(--clinic-green-700);
+    background: var(--clinic-green-700);
+    color: var(--clinic-white);
+    box-shadow: var(--clinic-shadow-soft);
 }
 
 .clearButton {
-    border: 1px solid rgba(39, 92, 72, 0.14);
-    background: rgba(255, 255, 255, 0.82);
-    color: #275c48;
+    border: 1px solid var(--clinic-border);
+    background: var(--clinic-white);
+    color: var(--clinic-green-700);
 }
 
 .tabButton:hover,
 .filterButton:hover,
 .clearButton:hover {
     transform: translateY(-1px);
-    border-color: rgba(39, 92, 72, 0.28);
-    box-shadow: 0 10px 24px rgba(24, 43, 35, 0.075);
+    border-color: var(--clinic-border-strong);
+    box-shadow: var(--clinic-shadow-soft);
+}
+
+.tabButton:hover {
+    background: var(--clinic-white);
+}
+
+.tabButtonActive:hover,
+.filterButton:hover {
+    background: var(--clinic-green-800);
+    color: var(--clinic-white);
+}
+
+.clearButton:hover {
+    background: var(--clinic-mist);
 }
 
 .tabButton:focus-visible,
 .filterButton:focus-visible,
 .clearButton:focus-visible {
-    outline: 3px solid rgba(72, 128, 102, 0.26);
+    outline: 3px solid rgba(31, 95, 81, 0.24);
     outline-offset: 3px;
 }
 
@@ -195,21 +203,18 @@
     justify-content: space-between;
     gap: 1rem;
     padding: clamp(0.9rem, 2vw, 1.05rem);
-    border: 1px solid rgba(39, 92, 72, 0.12);
-    border-radius: 1.25rem;
-    background:
-        linear-gradient(135deg,
-            rgba(255, 255, 255, 0.94),
-            rgba(247, 251, 249, 0.9));
-    box-shadow: 0 14px 36px rgba(24, 43, 35, 0.055);
+    border: 1px solid var(--clinic-border);
+    border-radius: var(--clinic-radius-xl);
+    background: var(--clinic-surface);
+    box-shadow: var(--clinic-shadow-soft);
 }
 
 .paginationInfo {
     margin: 0;
-    color: #60766d;
-    font-size: 0.88rem;
+    color: var(--clinic-muted);
+    font-size: var(--clinic-font-size-sm);
     font-weight: 750;
-    line-height: 1.45;
+    line-height: var(--clinic-line-height-base);
 }
 
 .paginationActions {
@@ -245,7 +250,7 @@
     .tabs {
         display: grid;
         grid-template-columns: repeat(2, minmax(0, 1fr));
-        border-radius: 1rem;
+        border-radius: var(--clinic-radius-lg);
     }
 
     .tabButton {
@@ -254,7 +259,7 @@
 
     .meta {
         justify-content: space-between;
-        border-radius: 1rem;
+        border-radius: var(--clinic-radius-lg);
     }
 
     .paginationActions {

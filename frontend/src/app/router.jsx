@@ -22,6 +22,8 @@ import SantaCasaOperacaoPage from "../pages/santacasa/SantaCasaOperacaoPage.jsx"
 import SantaCasaPedidosPage from "../pages/santacasa/SantaCasaPedidosPage.jsx";
 import SantaCasaPedidoDetailPage from "../pages/santacasa/SantaCasaPedidoDetailPage.jsx";
 import SantaCasaRegularizacoesPage from "../pages/santacasa/SantaCasaRegularizacoesPage.jsx";
+import SantaCasaRegularizacoesUtentePage from "../pages/santacasa/SantaCasaRegularizacoesUtentePage.jsx";
+import SantaCasaRegularizacoesHistoricoUtentePage from "../pages/santacasa/SantaCasaRegularizacoesHistoricoUtentePage.jsx";
 import SantaCasaHistoricoPage from "../pages/santacasa/SantaCasaHistoricoPage.jsx";
 import SantaCasaHistoricoDetailPage from "../pages/santacasa/SantaCasaHistoricoDetailPage.jsx";
 
@@ -32,6 +34,8 @@ import FarmaciaPedidoDetailPage from "../pages/farmacia/FarmaciaPedidoDetailPage
 import FarmaciaHistoricoPage from "../pages/farmacia/FarmaciaHistoricoPage.jsx";
 import FarmaciaHistoricoDetailPage from "../pages/farmacia/FarmaciaHistoricoDetailPage.jsx";
 import FarmaciaRegularizacoesPage from "../pages/farmacia/FarmaciaRegularizacoesPage.jsx";
+import FarmaciaRegularizacoesUtentePage from "../pages/farmacia/FarmaciaRegularizacoesUtentePage.jsx";
+import FarmaciaRegularizacoesHistoricoUtentePage from "../pages/farmacia/FarmaciaRegularizacoesHistoricoUtentePage.jsx";
 
 import SystemHomePage from "../pages/system/SystemHomePage.jsx";
 import SystemManutencaoPage from "../pages/system/SystemManutencaoPage.jsx";
@@ -113,6 +117,20 @@ export const router = createBrowserRouter([
         ),
       },
       {
+        path: "santacasa/regularizacoes/utente/:utenteId",
+        element: protectedElement(
+          <SantaCasaRegularizacoesUtentePage />,
+          SANTACASA_ROLES,
+        ),
+      },
+      {
+        path: "santacasa/regularizacoes/utente/:utenteId/historico",
+        element: protectedElement(
+          <SantaCasaRegularizacoesHistoricoUtentePage />,
+          SANTACASA_ROLES,
+        ),
+      },
+      {
         path: SANTACASA_ROUTER_PATHS.historico,
         element: protectedElement(<SantaCasaHistoricoPage />, SANTACASA_ROLES),
       },
@@ -155,6 +173,20 @@ export const router = createBrowserRouter([
         path: "farmacia/regularizacoes",
         element: protectedElement(
           <FarmaciaRegularizacoesPage />,
+          FARMACIA_ROLES,
+        ),
+      },
+      {
+        path: "farmacia/regularizacoes/utente/:utenteId",
+        element: protectedElement(
+          <FarmaciaRegularizacoesUtentePage />,
+          FARMACIA_ROLES,
+        ),
+      },
+      {
+        path: "farmacia/regularizacoes/utente/:utenteId/historico",
+        element: protectedElement(
+          <FarmaciaRegularizacoesHistoricoUtentePage />,
           FARMACIA_ROLES,
         ),
       },

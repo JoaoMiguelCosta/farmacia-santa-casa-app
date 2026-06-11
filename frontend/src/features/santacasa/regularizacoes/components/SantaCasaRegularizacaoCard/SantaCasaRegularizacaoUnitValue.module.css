@@ -5,7 +5,7 @@
     align-items: baseline;
     gap: 0.3rem;
     min-width: 0;
-    color: #1d3028;
+    color: var(--clinic-ink-soft);
     font-weight: 900;
     line-height: 1;
     text-transform: none;
@@ -29,7 +29,7 @@
 
 .unitValueFeatured {
     gap: 0.42rem;
-    color: #604316;
+    color: var(--clinic-warning);
 }
 
 .unitValueFeatured strong {
@@ -38,7 +38,7 @@
 }
 
 .unitValueFeatured span {
-    color: #74521b;
+    color: var(--clinic-warning);
     font-size: clamp(0.88rem, 1.25vw, 1rem);
     font-weight: 850;
     letter-spacing: -0.01em;
@@ -46,9 +46,9 @@
 }
 
 .unitValueSuccess {
-    color: #275c48;
+    color: var(--clinic-success);
 }
 
 .unitValueSuccess span {
-    color: #275c48;
+    color: var(--clinic-success);
 }

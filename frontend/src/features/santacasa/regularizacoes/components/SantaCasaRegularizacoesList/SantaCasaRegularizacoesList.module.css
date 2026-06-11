@@ -12,12 +12,10 @@
     justify-content: space-between;
     gap: 1rem;
     padding: clamp(1rem, 2.4vw, 1.35rem);
-    border: 1px solid rgba(39, 92, 72, 0.14);
-    border-radius: 1.35rem;
-    background:
-        linear-gradient(135deg, rgba(255, 255, 255, 0.97), rgba(247, 251, 249, 0.92)),
-        radial-gradient(circle at top left, rgba(93, 160, 126, 0.08), transparent 42%);
-    box-shadow: 0 16px 42px rgba(24, 43, 35, 0.065);
+    border: 1px solid var(--clinic-border);
+    border-radius: var(--clinic-radius-2xl);
+    background: var(--clinic-surface);
+    box-shadow: var(--clinic-shadow-soft);
 }
 
 .heading {
@@ -50,32 +48,32 @@
 .groupSecondaryButton {
     min-height: 2.55rem;
     padding: 0.72rem 1rem;
-    border: 1px solid rgba(39, 92, 72, 0.18);
+    border: 1px solid var(--clinic-border);
     border-radius: 999px;
-    background: rgba(255, 255, 255, 0.86);
-    color: #275c48;
+    background: var(--clinic-white);
+    color: var(--clinic-green-700);
     font: inherit;
-    font-size: 0.88rem;
+    font-size: var(--clinic-font-size-sm);
     font-weight: 850;
     cursor: pointer;
     transition:
-        transform 160ms ease,
-        border-color 160ms ease,
-        background 160ms ease,
-        box-shadow 160ms ease,
-        opacity 160ms ease;
+        transform var(--clinic-transition),
+        border-color var(--clinic-transition),
+        background var(--clinic-transition),
+        box-shadow var(--clinic-transition),
+        opacity var(--clinic-transition);
 }
 
 .refreshButton,
 .groupButton {
     flex: 0 0 auto;
-    box-shadow: 0 10px 24px rgba(24, 43, 35, 0.055);
+    box-shadow: var(--clinic-shadow-soft);
 }
 
 .groupSecondaryButton {
     min-height: 2.35rem;
     padding: 0.62rem 0.9rem;
-    font-size: 0.84rem;
+    font-size: var(--clinic-font-size-sm);
 }
 
 .refreshButton:hover,
@@ -83,16 +81,16 @@
 .groupButton:hover,
 .groupSecondaryButton:hover {
     transform: translateY(-1px);
-    border-color: rgba(39, 92, 72, 0.28);
-    background: rgba(247, 251, 249, 0.96);
-    box-shadow: 0 12px 28px rgba(24, 43, 35, 0.08);
+    border-color: var(--clinic-border-strong);
+    background: var(--clinic-mist);
+    box-shadow: var(--clinic-shadow-card);
 }
 
 .refreshButton:focus-visible,
 .stateAction:focus-visible,
 .groupButton:focus-visible,
 .groupSecondaryButton:focus-visible {
-    outline: 3px solid rgba(72, 128, 102, 0.28);
+    outline: 3px solid rgba(31, 95, 81, 0.24);
     outline-offset: 3px;
 }
 
@@ -119,12 +117,10 @@
     display: grid;
     gap: clamp(0.9rem, 2vw, 1.15rem);
     padding: clamp(1rem, 2vw, 1.2rem);
-    border: 1px solid rgba(39, 92, 72, 0.14);
-    border-radius: 1.35rem;
-    background:
-        linear-gradient(135deg, rgba(255, 255, 255, 0.96), rgba(247, 251, 249, 0.91)),
-        radial-gradient(circle at top left, rgba(93, 160, 126, 0.08), transparent 42%);
-    box-shadow: 0 16px 42px rgba(24, 43, 35, 0.065);
+    border: 1px solid var(--clinic-border);
+    border-radius: var(--clinic-radius-2xl);
+    background: var(--clinic-surface);
+    box-shadow: var(--clinic-shadow-soft);
 }
 
 .historyGroup {
@@ -149,10 +145,10 @@
 }
 
 .groupEyebrow {
-    color: #52786a;
-    font-size: 0.72rem;
-    font-weight: 900;
-    letter-spacing: 0.08em;
+    color: var(--clinic-muted);
+    font-size: var(--clinic-font-size-xs);
+    font-weight: 850;
+    letter-spacing: 0.07em;
     line-height: 1.2;
     text-transform: uppercase;
 }
@@ -167,8 +163,8 @@
 }
 
 .groupDescription {
-    color: #60766d;
-    font-size: 0.9rem;
+    color: var(--clinic-muted);
+    font-size: var(--clinic-font-size-sm);
     font-weight: 750;
     line-height: 1.35;
 }
@@ -193,9 +189,9 @@
     gap: 0.18rem;
     min-width: 0;
     padding: 0.65rem 0.75rem;
-    border: 1px solid rgba(39, 92, 72, 0.1);
-    border-radius: 1rem;
-    background: rgba(255, 255, 255, 0.72);
+    border: 1px solid var(--clinic-border);
+    border-radius: var(--clinic-radius-lg);
+    background: var(--clinic-mist);
 }
 
 .groupStatsWide div {
@@ -205,9 +201,9 @@
 }
 
 .groupStats dt {
-    color: #6d8279;
-    font-size: 0.72rem;
-    font-weight: 850;
+    color: var(--clinic-muted);
+    font-size: var(--clinic-font-size-xs);
+    font-weight: 800;
     line-height: 1.25;
 }
 
@@ -220,7 +216,7 @@
 .groupStats dd {
     margin: 0;
     overflow-wrap: anywhere;
-    color: #1d3028;
+    color: var(--clinic-ink-soft);
     font-size: 0.95rem;
     font-weight: 900;
     line-height: 1.2;
@@ -244,17 +240,16 @@
     justify-content: space-between;
     gap: 1rem;
     padding: 0.85rem 0.95rem;
-    border: 1px solid rgba(39, 92, 72, 0.1);
-    border-radius: 1rem;
-    background:
-        linear-gradient(135deg, rgba(255, 255, 255, 0.82), rgba(247, 251, 249, 0.9));
+    border: 1px solid var(--clinic-border);
+    border-radius: var(--clinic-radius-lg);
+    background: var(--clinic-mist);
 }
 
 .groupPaginationInfo {
-    color: #60766d;
-    font-size: 0.88rem;
+    color: var(--clinic-muted);
+    font-size: var(--clinic-font-size-sm);
     font-weight: 760;
-    line-height: 1.4;
+    line-height: var(--clinic-line-height-base);
 }
 
 .groupPaginationActions {
@@ -269,12 +264,10 @@
     justify-items: start;
     gap: 0.55rem;
     padding: clamp(1rem, 2.5vw, 1.45rem);
-    border: 1px solid rgba(39, 92, 72, 0.14);
-    border-radius: 1.35rem;
-    background:
-        linear-gradient(135deg, rgba(255, 255, 255, 0.94), rgba(247, 251, 249, 0.9)),
-        radial-gradient(circle at top left, rgba(93, 160, 126, 0.1), transparent 44%);
-    box-shadow: 0 18px 50px rgba(24, 43, 35, 0.07);
+    border: 1px solid var(--clinic-border);
+    border-radius: var(--clinic-radius-2xl);
+    background: var(--clinic-surface);
+    box-shadow: var(--clinic-shadow-soft);
 }
 
 .stateTitle {

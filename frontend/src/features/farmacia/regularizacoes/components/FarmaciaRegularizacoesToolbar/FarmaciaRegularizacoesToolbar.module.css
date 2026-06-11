@@ -1,0 +1,210 @@
+.toolbar {
+    display: grid;
+    gap: 1rem;
+    padding: clamp(1rem, 2vw, 1.2rem);
+    border: 1px solid var(--clinic-border);
+    border-radius: var(--clinic-radius-xl);
+    background: var(--clinic-surface);
+    box-shadow: var(--clinic-shadow-soft);
+}
+
+.topBar {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+}
+
+.tabButton,
+.filterButton,
+.clearButton {
+    min-height: 2.45rem;
+    padding: 0.65rem 0.95rem;
+    border-radius: 999px;
+    font: inherit;
+    font-size: var(--clinic-font-size-sm);
+    font-weight: 800;
+    cursor: pointer;
+    transition:
+        transform var(--clinic-transition),
+        border-color var(--clinic-transition),
+        background var(--clinic-transition),
+        color var(--clinic-transition),
+        box-shadow var(--clinic-transition),
+        opacity var(--clinic-transition);
+}
+
+.tabButton {
+    border: 1px solid var(--clinic-border);
+    background: var(--clinic-mist);
+    color: var(--clinic-green-700);
+}
+
+.tabButtonActive {
+    border-color: rgba(31, 95, 81, 0.34);
+    background: var(--clinic-green-700);
+    color: var(--clinic-white);
+    box-shadow: 0 10px 24px rgba(31, 95, 81, 0.18);
+}
+
+.filters {
+    display: grid;
+    grid-template-columns:
+        minmax(14rem, 1.2fr) minmax(12rem, 0.9fr) minmax(9rem, 0.7fr) minmax(9rem, 0.7fr) auto;
+    align-items: end;
+    gap: 0.75rem;
+    min-width: 0;
+}
+
+.filterField {
+    display: grid;
+    gap: 0.42rem;
+    min-width: 0;
+}
+
+.filterField span {
+    color: var(--clinic-muted-strong);
+    font-size: var(--clinic-font-size-xs);
+    font-weight: 800;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+}
+
+.filterField input {
+    min-height: 2.55rem;
+    inline-size: 100%;
+    padding: 0.7rem 0.9rem;
+    border: 1px solid var(--clinic-border);
+    border-radius: 999px;
+    background: var(--clinic-white);
+    color: var(--clinic-ink);
+    font: inherit;
+    font-size: var(--clinic-font-size-sm);
+    transition:
+        border-color var(--clinic-transition),
+        box-shadow var(--clinic-transition),
+        background var(--clinic-transition);
+}
+
+.filterField input::placeholder {
+    color: rgba(102, 115, 109, 0.72);
+}
+
+.filterField input:focus {
+    outline: none;
+    border-color: rgba(31, 95, 81, 0.36);
+    background: var(--clinic-white);
+    box-shadow: 0 0 0 3px rgba(31, 95, 81, 0.14);
+}
+
+.filterActions {
+    display: flex;
+    gap: 0.55rem;
+}
+
+.filterButton {
+    border: 1px solid rgba(31, 95, 81, 0.32);
+    background: var(--clinic-green-700);
+    color: var(--clinic-white);
+    box-shadow: 0 10px 24px rgba(31, 95, 81, 0.18);
+}
+
+.clearButton {
+    border: 1px solid var(--clinic-border);
+    background: var(--clinic-white);
+    color: var(--clinic-green-700);
+}
+
+.tabButton:hover,
+.filterButton:hover,
+.clearButton:hover {
+    transform: translateY(-1px);
+    border-color: var(--clinic-border-strong);
+    box-shadow: var(--clinic-shadow-soft);
+}
+
+.tabButton:focus-visible,
+.filterButton:focus-visible,
+.clearButton:focus-visible {
+    outline: 3px solid rgba(31, 95, 81, 0.24);
+    outline-offset: 3px;
+}
+
+.tabButton:disabled,
+.filterButton:disabled,
+.clearButton:disabled,
+.filterField input:disabled {
+    cursor: not-allowed;
+    opacity: 0.58;
+    transform: none;
+    box-shadow: none;
+}
+
+.meta {
+    display: grid;
+    justify-items: end;
+    gap: 0.2rem;
+    min-width: 5rem;
+    padding: 0.65rem 0.85rem;
+    border: 1px solid var(--clinic-border);
+    border-radius: var(--clinic-radius-lg);
+    background: var(--clinic-mist);
+}
+
+.meta span {
+    color: var(--clinic-muted);
+    font-size: var(--clinic-font-size-xs);
+    font-weight: 750;
+}
+
+.meta strong {
+    color: var(--clinic-ink);
+    font-size: var(--clinic-font-size-lg);
+    line-height: 1;
+}
+
+@media (max-width: 1080px) {
+    .filters {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .filterActions {
+        grid-column: 1 / -1;
+    }
+}
+
+@media (max-width: 760px) {
+    .topBar {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .meta {
+        justify-items: start;
+    }
+}
+
+@media (max-width: 640px) {
+
+    .tabs,
+    .filterActions {
+        display: grid;
+        grid-template-columns: 1fr;
+    }
+
+    .tabButton,
+    .filterButton,
+    .clearButton {
+        width: 100%;
+    }
+
+    .filters {
+        grid-template-columns: 1fr;
+    }
+}

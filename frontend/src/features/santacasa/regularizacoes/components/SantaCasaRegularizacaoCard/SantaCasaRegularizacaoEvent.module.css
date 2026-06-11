@@ -5,15 +5,9 @@
     gap: 0.72rem;
     min-width: 0;
     padding: 0.88rem;
-    border: 1px solid rgba(39, 92, 72, 0.12);
-    border-radius: 1.1rem;
-    background:
-        linear-gradient(135deg,
-            rgba(255, 255, 255, 0.9),
-            rgba(246, 250, 248, 0.93)),
-        radial-gradient(circle at top right,
-            rgba(93, 160, 126, 0.07),
-            transparent 38%);
+    border: 1px solid var(--clinic-border);
+    border-radius: var(--clinic-radius-xl);
+    background: var(--clinic-white);
 }
 
 .eventHeader {
@@ -23,7 +17,7 @@
 }
 
 .eventEyebrow {
-    color: #52786a;
+    color: var(--clinic-muted-strong);
     font-size: 0.72rem;
     font-weight: 900;
     letter-spacing: 0.08em;
@@ -33,10 +27,10 @@
 
 .eventTitle {
     overflow-wrap: anywhere;
-    color: #16251f;
-    font-size: 1rem;
+    color: var(--clinic-ink);
+    font-size: var(--clinic-font-size-md);
     font-weight: 900;
-    line-height: 1.15;
+    line-height: var(--clinic-line-height-tight);
 }
 
 .eventDataList {
@@ -54,13 +48,13 @@
     gap: 0.16rem;
     min-width: 0;
     padding: 0.58rem 0.62rem;
-    border: 1px solid rgba(39, 92, 72, 0.1);
-    border-radius: 0.85rem;
-    background: rgba(255, 255, 255, 0.7);
+    border: 1px solid var(--clinic-border);
+    border-radius: var(--clinic-radius-md);
+    background: var(--clinic-mist);
 }
 
 .eventDataList dt {
-    color: #6d8279;
+    color: var(--clinic-muted);
     font-size: 0.68rem;
     font-weight: 850;
     line-height: 1.2;
@@ -70,27 +64,24 @@
     min-width: 0;
     margin: 0;
     overflow-wrap: anywhere;
-    color: #1d3028;
+    color: var(--clinic-ink-soft);
     font-size: 0.82rem;
     font-weight: 900;
     line-height: 1.25;
 }
 
 .eventMetaHighlight {
-    border-color: rgba(39, 92, 72, 0.16) !important;
-    background:
-        linear-gradient(135deg,
-            rgba(246, 252, 249, 0.96),
-            rgba(255, 255, 255, 0.9)) !important;
+    border-color: rgba(37, 115, 90, 0.22) !important;
+    background: rgba(37, 115, 90, 0.08) !important;
 }
 
-.eventMetaHighlight dd,
-.eventMetaHighlight :global(.unitValue) {
-    color: #275c48;
+.eventMetaHighlight dd {
+    color: var(--clinic-success);
 }
 
 .eventCodeCell {
     padding: 0.48rem 0.52rem !important;
+    background: var(--clinic-white) !important;
 }
 
 .eventCodeCell dd {

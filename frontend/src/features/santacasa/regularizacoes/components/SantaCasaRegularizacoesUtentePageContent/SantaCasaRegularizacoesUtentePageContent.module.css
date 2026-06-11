@@ -1,0 +1,375 @@
+.page {
+    display: grid;
+    gap: clamp(1.25rem, 2.5vw, 2rem);
+    inline-size: min(100%, var(--clinic-page-max));
+    margin-inline: auto;
+}
+
+.backLink {
+    width: fit-content;
+    min-height: 2.45rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.65rem 0.95rem;
+    border: 1px solid var(--clinic-border);
+    border-radius: 999px;
+    background: var(--clinic-white);
+    color: var(--clinic-green-700);
+    font-size: var(--clinic-font-size-sm);
+    font-weight: 850;
+    box-shadow: var(--clinic-shadow-soft);
+    transition:
+        transform var(--clinic-transition),
+        border-color var(--clinic-transition),
+        background var(--clinic-transition),
+        box-shadow var(--clinic-transition);
+}
+
+.backLink:hover {
+    transform: translateY(-1px);
+    border-color: var(--clinic-border-strong);
+    background: var(--clinic-mist);
+    box-shadow: var(--clinic-shadow-card);
+}
+
+.backLink:focus-visible {
+    outline: 3px solid rgba(31, 95, 81, 0.24);
+    outline-offset: 3px;
+}
+
+.summary,
+.medicamentos {
+    display: grid;
+    gap: 1rem;
+    padding: clamp(1rem, 2vw, 1.25rem);
+    border: 1px solid var(--clinic-border);
+    border-radius: var(--clinic-radius-2xl);
+    background: var(--clinic-surface);
+    box-shadow: var(--clinic-shadow-soft);
+}
+
+.summary {
+    grid-template-columns: minmax(12rem, 0.32fr) minmax(0, 1fr);
+    align-items: stretch;
+}
+
+.summaryFocus {
+    display: grid;
+    align-content: center;
+    gap: 0.35rem;
+    min-width: 0;
+    padding: clamp(1rem, 2vw, 1.25rem);
+    border: 1px solid rgba(169, 120, 45, 0.28);
+    border-radius: var(--clinic-radius-xl);
+    background: var(--clinic-gold-soft);
+}
+
+.summaryFocus span {
+    color: var(--clinic-warning);
+    font-size: var(--clinic-font-size-xs);
+    font-weight: 850;
+    letter-spacing: 0.06em;
+    line-height: 1.25;
+    text-transform: uppercase;
+}
+
+.summaryFocus strong {
+    color: var(--clinic-warning);
+    font-size: clamp(2.25rem, 5vw, 3.25rem);
+    font-weight: 950;
+    letter-spacing: -0.06em;
+    line-height: 0.95;
+}
+
+.summaryGrid {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 0.75rem;
+    margin: 0;
+}
+
+.summaryItem {
+    display: grid;
+    align-content: center;
+    gap: 0.25rem;
+    min-width: 0;
+    padding: 0.85rem;
+    border: 1px solid var(--clinic-border);
+    border-radius: var(--clinic-radius-lg);
+    background: var(--clinic-mist);
+}
+
+.summaryItem dt {
+    color: var(--clinic-muted);
+    font-size: var(--clinic-font-size-xs);
+    font-weight: 800;
+    line-height: 1.25;
+}
+
+.summaryItem dd {
+    min-width: 0;
+    margin: 0;
+    overflow-wrap: anywhere;
+    color: var(--clinic-green-700);
+    font-size: var(--clinic-font-size-lg);
+    font-weight: 950;
+    line-height: 1;
+}
+
+.pedidos {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.75rem 0.9rem;
+    border: 1px solid var(--clinic-border);
+    border-radius: var(--clinic-radius-lg);
+    background: var(--clinic-white);
+}
+
+.pedidos span {
+    color: var(--clinic-muted);
+    font-size: var(--clinic-font-size-xs);
+    font-weight: 850;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.pedidos strong {
+    overflow-wrap: anywhere;
+    color: var(--clinic-ink-soft);
+    font-size: var(--clinic-font-size-sm);
+    font-weight: 850;
+}
+
+.sectionHeader {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.heading {
+    display: grid;
+    gap: 0.35rem;
+    min-width: 0;
+}
+
+.sectionTitle {
+    margin: 0;
+    color: var(--clinic-ink);
+    font-size: clamp(1.25rem, 2.2vw, 1.65rem);
+    line-height: var(--clinic-line-height-tight);
+}
+
+.sectionDescription {
+    max-width: 70ch;
+    margin: 0;
+    color: var(--clinic-muted);
+    font-size: var(--clinic-font-size-sm);
+    line-height: var(--clinic-line-height-base);
+}
+
+.refreshButton,
+.clearButton,
+.listButton {
+    min-height: 2.45rem;
+    padding: 0.65rem 0.95rem;
+    border: 1px solid var(--clinic-border);
+    border-radius: 999px;
+    background: var(--clinic-white);
+    color: var(--clinic-green-700);
+    font: inherit;
+    font-size: var(--clinic-font-size-sm);
+    font-weight: 850;
+    cursor: pointer;
+    transition:
+        transform var(--clinic-transition),
+        border-color var(--clinic-transition),
+        background var(--clinic-transition),
+        box-shadow var(--clinic-transition),
+        opacity var(--clinic-transition);
+}
+
+.refreshButton:hover,
+.clearButton:hover,
+.listButton:hover {
+    transform: translateY(-1px);
+    border-color: var(--clinic-border-strong);
+    background: var(--clinic-mist);
+    box-shadow: var(--clinic-shadow-soft);
+}
+
+.refreshButton:focus-visible,
+.clearButton:focus-visible,
+.listButton:focus-visible {
+    outline: 3px solid rgba(31, 95, 81, 0.24);
+    outline-offset: 3px;
+}
+
+.refreshButton:disabled,
+.clearButton:disabled,
+.listButton:disabled {
+    cursor: not-allowed;
+    opacity: 0.56;
+    transform: none;
+    box-shadow: none;
+}
+
+.controls {
+    display: grid;
+    grid-template-columns: minmax(16rem, 1fr) minmax(10rem, 0.32fr) auto;
+    align-items: end;
+    gap: 0.75rem;
+    padding: 0.9rem;
+    border: 1px solid var(--clinic-border);
+    border-radius: var(--clinic-radius-xl);
+    background: var(--clinic-mist);
+}
+
+.controlField {
+    display: grid;
+    gap: 0.35rem;
+    min-width: 0;
+}
+
+.controlField span {
+    color: var(--clinic-muted);
+    font-size: var(--clinic-font-size-xs);
+    font-weight: 850;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.controlField input,
+.controlField select {
+    min-height: 2.45rem;
+    width: 100%;
+    padding: 0.65rem 0.85rem;
+    border: 1px solid var(--clinic-border);
+    border-radius: 999px;
+    background: var(--clinic-white);
+    color: var(--clinic-ink);
+    font: inherit;
+    font-size: var(--clinic-font-size-sm);
+}
+
+.controlField input:focus,
+.controlField select:focus {
+    outline: none;
+    border-color: var(--clinic-border-strong);
+    box-shadow: 0 0 0 3px rgba(31, 95, 81, 0.16);
+}
+
+.clearButton {
+    white-space: nowrap;
+}
+
+.resultsMeta {
+    grid-column: 1 / -1;
+    margin: 0;
+    color: var(--clinic-muted);
+    font-size: var(--clinic-font-size-sm);
+    font-weight: 750;
+}
+
+.cards {
+    display: grid;
+    gap: 0.85rem;
+}
+
+.listActions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 0.85rem 0.95rem;
+    border: 1px solid var(--clinic-border);
+    border-radius: var(--clinic-radius-xl);
+    background: var(--clinic-mist);
+}
+
+.hiddenMeta {
+    flex: 1 1 14rem;
+    color: var(--clinic-muted);
+    font-size: var(--clinic-font-size-sm);
+    font-weight: 750;
+    line-height: var(--clinic-line-height-base);
+}
+
+.emptyResults {
+    display: grid;
+    gap: 0.3rem;
+    padding: 1rem;
+    border: 1px solid var(--clinic-border);
+    border-radius: var(--clinic-radius-xl);
+    background: var(--clinic-white);
+}
+
+.emptyResults strong {
+    color: var(--clinic-ink);
+    font-size: var(--clinic-font-size-md);
+}
+
+.emptyResults span {
+    color: var(--clinic-muted);
+    font-size: var(--clinic-font-size-sm);
+    line-height: var(--clinic-line-height-base);
+}
+
+@media (max-width: 1100px) {
+    .summary {
+        grid-template-columns: 1fr;
+    }
+
+    .summaryGrid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .controls {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .clearButton {
+        width: fit-content;
+    }
+}
+
+@media (max-width: 780px) {
+    .summaryGrid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .sectionHeader {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .controls {
+        grid-template-columns: 1fr;
+    }
+
+    .refreshButton,
+    .clearButton,
+    .listButton,
+    .backLink {
+        width: 100%;
+    }
+
+    .listActions {
+        display: grid;
+        grid-template-columns: 1fr;
+    }
+
+    .hiddenMeta {
+        flex: initial;
+    }
+}
+
+@media (max-width: 560px) {
+    .summaryGrid {
+        grid-template-columns: 1fr;
+    }
+}

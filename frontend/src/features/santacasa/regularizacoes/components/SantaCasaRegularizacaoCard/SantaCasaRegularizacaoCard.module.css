@@ -4,32 +4,20 @@
     display: grid;
     gap: clamp(0.95rem, 2vw, 1.2rem);
     padding: clamp(1rem, 2vw, 1.35rem);
-    border: 1px solid rgba(39, 92, 72, 0.16);
-    border-radius: 1.35rem;
-    background:
-        linear-gradient(135deg,
-            rgba(255, 255, 255, 0.97),
-            rgba(247, 251, 249, 0.93)),
-        radial-gradient(circle at top left,
-            rgba(93, 160, 126, 0.08),
-            transparent 42%);
-    box-shadow: 0 18px 50px rgba(24, 43, 35, 0.08);
+    border: 1px solid var(--clinic-border);
+    border-radius: var(--clinic-radius-2xl);
+    background: var(--clinic-surface);
+    box-shadow: var(--clinic-shadow-soft);
 }
 
 .cardCompleted {
-    border-color: rgba(39, 92, 72, 0.18);
-    background:
-        linear-gradient(135deg,
-            rgba(255, 255, 255, 0.97),
-            rgba(246, 251, 248, 0.94)),
-        radial-gradient(circle at top left,
-            rgba(93, 160, 126, 0.11),
-            transparent 42%);
+    border-color: rgba(37, 115, 90, 0.24);
+    background: var(--clinic-surface-strong);
 }
 
 .cardHistory {
     gap: clamp(0.72rem, 1.4vw, 0.95rem);
     padding: clamp(0.85rem, 1.7vw, 1.05rem);
-    border-radius: 1.15rem;
-    box-shadow: 0 12px 34px rgba(24, 43, 35, 0.055);
+    border-radius: var(--clinic-radius-xl);
+    box-shadow: var(--clinic-shadow-soft);
 }

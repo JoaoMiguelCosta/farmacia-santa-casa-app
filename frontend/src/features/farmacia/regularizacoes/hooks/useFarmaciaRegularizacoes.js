@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { useAuth } from "../../../auth/hooks/useAuth";
 
@@ -24,6 +24,10 @@ const DEFAULT_QUERY = Object.freeze({
   take: 50,
 });
 
+const LOAD_SIGNAL_ERROR_MESSAGE = "Não foi possível carregar o resumo.";
+const LOAD_REGULARIZACOES_ERROR_MESSAGE =
+  "Não foi possível carregar as regularizações.";
+
 function getErrorMessage(error, fallback) {
   return error?.message || fallback;
 }
@@ -44,8 +48,26 @@ function getInitialMeta() {
   };
 }
 
+function getPageState(meta) {
+  const total = Number(meta.total) || 0;
+  const skip = Number(meta.skip) || 0;
+  const take = Number(meta.take) || DEFAULT_QUERY.take;
+
+  const totalPages = Math.max(1, Math.ceil(total / take));
+  const currentPage = Math.min(totalPages, Math.floor(skip / take) + 1);
+
+  return {
+    totalPages,
+    currentPage,
+    hasPreviousPage: skip > 0,
+    hasNextPage: skip + take < total,
+  };
+}
+
 export function useFarmaciaRegularizacoes() {
   const { handleAuthError } = useAuth();
+
+  const isMountedRef = useRef(false);
 
   const [activeTab, setActiveTab] = useState(TABS.pending);
 
@@ -74,14 +96,10 @@ export function useFarmaciaRegularizacoes() {
     return buildRegularizacoesQuery(query);
   }, [query]);
 
-  const totalPages = Math.max(1, Math.ceil(meta.total / meta.take));
-  const currentPage = Math.min(
-    totalPages,
-    Math.floor(meta.skip / meta.take) + 1,
-  );
-
-  const hasPreviousPage = meta.skip > 0;
-  const hasNextPage = meta.skip + meta.take < meta.total;
+  const { totalPages, currentPage, hasPreviousPage, hasNextPage } =
+    useMemo(() => {
+      return getPageState(meta);
+    }, [meta]);
 
   const loadSignal = useCallback(async () => {
     setIsLoadingSignal(true);
@@ -90,15 +108,20 @@ export function useFarmaciaRegularizacoes() {
     try {
       const data = await getFarmaciaRegularizacoesSignal();
 
+      if (!isMountedRef.current) return;
+
       setSignal(data);
     } catch (signalLoadError) {
+      if (!isMountedRef.current) return;
       if (handleAuthError(signalLoadError)) return;
 
       setSignalError(
-        getErrorMessage(signalLoadError, "Não foi possível carregar o resumo."),
+        getErrorMessage(signalLoadError, LOAD_SIGNAL_ERROR_MESSAGE),
       );
     } finally {
-      setIsLoadingSignal(false);
+      if (isMountedRef.current) {
+        setIsLoadingSignal(false);
+      }
     }
   }, [handleAuthError]);
 
@@ -117,20 +140,20 @@ export function useFarmaciaRegularizacoes() {
       try {
         const result = await loader(currentQuery);
 
+        if (!isMountedRef.current) return;
+
         setRegularizacoes(result.data);
         setMeta(result.meta);
       } catch (loadError) {
+        if (!isMountedRef.current) return;
         if (handleAuthError(loadError)) return;
 
-        setError(
-          getErrorMessage(
-            loadError,
-            "Não foi possível carregar as regularizações.",
-          ),
-        );
+        setError(getErrorMessage(loadError, LOAD_REGULARIZACOES_ERROR_MESSAGE));
       } finally {
-        setIsLoading(false);
-        setIsRefreshing(false);
+        if (isMountedRef.current) {
+          setIsLoading(false);
+          setIsRefreshing(false);
+        }
       }
     },
     [activeTab, currentQuery, handleAuthError],
@@ -225,81 +248,32 @@ export function useFarmaciaRegularizacoes() {
   }, [meta.total]);
 
   useEffect(() => {
-    let isMounted = true;
-
-    async function loadInitialSignal() {
-      setIsLoadingSignal(true);
-      setSignalError(null);
-
-      try {
-        const data = await getFarmaciaRegularizacoesSignal();
-
-        if (!isMounted) return;
-
-        setSignal(data);
-      } catch (signalLoadError) {
-        if (!isMounted) return;
-        if (handleAuthError(signalLoadError)) return;
-
-        setSignalError(
-          getErrorMessage(
-            signalLoadError,
-            "Não foi possível carregar o resumo.",
-          ),
-        );
-      } finally {
-        if (isMounted) {
-          setIsLoadingSignal(false);
-        }
-      }
-    }
-
-    loadInitialSignal();
+    isMountedRef.current = true;
 
     return () => {
-      isMounted = false;
+      isMountedRef.current = false;
     };
-  }, [handleAuthError]);
+  }, []);
 
   useEffect(() => {
-    let isMounted = true;
-
-    async function loadInitialRegularizacoes() {
-      const loader = getLoaderByTab(activeTab);
-
-      setIsLoading(true);
-      setError(null);
-
-      try {
-        const result = await loader(currentQuery);
-
-        if (!isMounted) return;
-
-        setRegularizacoes(result.data);
-        setMeta(result.meta);
-      } catch (loadError) {
-        if (!isMounted) return;
-        if (handleAuthError(loadError)) return;
-
-        setError(
-          getErrorMessage(
-            loadError,
-            "Não foi possível carregar as regularizações.",
-          ),
-        );
-      } finally {
-        if (isMounted) {
-          setIsLoading(false);
-        }
-      }
-    }
-
-    loadInitialRegularizacoes();
+    const timeoutId = setTimeout(() => {
+      loadSignal();
+    }, 0);
 
     return () => {
-      isMounted = false;
+      clearTimeout(timeoutId);
     };
-  }, [activeTab, currentQuery, handleAuthError]);
+  }, [loadSignal]);
+
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      loadRegularizacoes();
+    }, 0);
+
+    return () => {
+      clearTimeout(timeoutId);
+    };
+  }, [loadRegularizacoes]);
 
   return {
     tabs: TABS,

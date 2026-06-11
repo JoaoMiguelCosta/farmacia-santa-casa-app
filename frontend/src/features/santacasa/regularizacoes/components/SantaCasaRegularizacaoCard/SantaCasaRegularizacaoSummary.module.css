@@ -17,31 +17,19 @@
     gap: 0.42rem;
     min-width: 0;
     padding: clamp(0.95rem, 2vw, 1.15rem);
-    border: 1px solid rgba(201, 149, 57, 0.26);
-    border-radius: 1.15rem;
-    background:
-        linear-gradient(135deg,
-            rgba(255, 250, 240, 0.98),
-            rgba(255, 253, 248, 0.92)),
-        radial-gradient(circle at top left,
-            rgba(201, 149, 57, 0.12),
-            transparent 45%);
+    border: 1px solid var(--clinic-border-gold);
+    border-radius: var(--clinic-radius-xl);
+    background: var(--clinic-gold-soft);
 }
 
 .focusMetricCompleted {
-    border-color: rgba(39, 92, 72, 0.18);
-    background:
-        linear-gradient(135deg,
-            rgba(246, 252, 249, 0.98),
-            rgba(255, 255, 255, 0.92)),
-        radial-gradient(circle at top left,
-            rgba(93, 160, 126, 0.12),
-            transparent 45%);
+    border-color: rgba(37, 115, 90, 0.24);
+    background: rgba(37, 115, 90, 0.1);
 }
 
 .focusMetricLabel {
-    color: #74521b;
-    font-size: 0.78rem;
+    color: var(--clinic-warning);
+    font-size: var(--clinic-font-size-xs);
     font-weight: 900;
     letter-spacing: 0.06em;
     line-height: 1.25;
@@ -49,7 +37,7 @@
 }
 
 .focusMetricCompleted .focusMetricLabel {
-    color: #275c48;
+    color: var(--clinic-success);
 }
 
 .contextList {
@@ -69,19 +57,19 @@
     gap: 0.28rem;
     min-width: 0;
     padding: 0.82rem;
-    border: 1px solid rgba(39, 92, 72, 0.12);
-    border-radius: 1rem;
-    background: rgba(255, 255, 255, 0.72);
+    border: 1px solid var(--clinic-border);
+    border-radius: var(--clinic-radius-lg);
+    background: var(--clinic-mist);
 }
 
 .contextListHistory div {
     padding: 0.62rem 0.72rem;
-    border-radius: 0.85rem;
+    border-radius: var(--clinic-radius-md);
 }
 
 .contextList dt {
-    color: #6d8279;
-    font-size: 0.74rem;
+    color: var(--clinic-muted);
+    font-size: var(--clinic-font-size-xs);
     font-weight: 780;
     line-height: 1.25;
 }
@@ -94,7 +82,7 @@
     min-width: 0;
     margin: 0;
     overflow-wrap: anywhere;
-    color: #1d3028;
+    color: var(--clinic-ink-soft);
     font-size: 0.98rem;
     font-weight: 900;
     line-height: 1.25;
@@ -105,15 +93,12 @@
 }
 
 .contextMetricRegularized {
-    border-color: rgba(39, 92, 72, 0.16) !important;
-    background:
-        linear-gradient(135deg,
-            rgba(246, 252, 249, 0.96),
-            rgba(255, 255, 255, 0.9)) !important;
+    border-color: rgba(37, 115, 90, 0.22) !important;
+    background: rgba(37, 115, 90, 0.08) !important;
 }
 
 .contextMetricRegularized dd {
-    color: #275c48;
+    color: var(--clinic-success);
 }
 
 @media (max-width: 1080px) {

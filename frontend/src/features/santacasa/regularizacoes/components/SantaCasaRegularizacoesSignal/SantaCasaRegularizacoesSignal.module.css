@@ -5,16 +5,10 @@
     gap: clamp(1rem, 2vw, 1.25rem);
     inline-size: 100%;
     padding: clamp(1rem, 2.5vw, 1.35rem);
-    border: 1px solid rgba(39, 92, 72, 0.14);
-    border-radius: 1.35rem;
-    background:
-        linear-gradient(135deg,
-            rgba(255, 255, 255, 0.96),
-            rgba(247, 251, 249, 0.92)),
-        radial-gradient(circle at top left,
-            rgba(93, 160, 126, 0.08),
-            transparent 42%);
-    box-shadow: 0 16px 42px rgba(24, 43, 35, 0.065);
+    border: 1px solid var(--clinic-border);
+    border-radius: var(--clinic-radius-2xl);
+    background: var(--clinic-surface);
+    box-shadow: var(--clinic-shadow-soft);
 }
 
 .header {
@@ -32,10 +26,10 @@
 
 .eyebrow {
     width: fit-content;
-    color: #52786a;
-    font-size: 0.72rem;
-    font-weight: 900;
-    letter-spacing: 0.09em;
+    color: var(--clinic-muted);
+    font-size: var(--clinic-font-size-xs);
+    font-weight: 850;
+    letter-spacing: 0.08em;
     line-height: 1.25;
     text-transform: uppercase;
 }
@@ -62,33 +56,33 @@
 .stateAction {
     min-height: 2.5rem;
     padding: 0.68rem 1rem;
-    border: 1px solid rgba(39, 92, 72, 0.18);
+    border: 1px solid var(--clinic-border);
     border-radius: 999px;
-    background: rgba(255, 255, 255, 0.86);
-    color: #275c48;
+    background: var(--clinic-white);
+    color: var(--clinic-green-700);
     font: inherit;
-    font-size: 0.86rem;
+    font-size: var(--clinic-font-size-sm);
     font-weight: 850;
     cursor: pointer;
     transition:
-        transform 160ms ease,
-        border-color 160ms ease,
-        background 160ms ease,
-        box-shadow 160ms ease,
-        opacity 160ms ease;
+        transform var(--clinic-transition),
+        border-color var(--clinic-transition),
+        background var(--clinic-transition),
+        box-shadow var(--clinic-transition),
+        opacity var(--clinic-transition);
 }
 
 .refreshButton:hover,
 .stateAction:hover {
     transform: translateY(-1px);
-    border-color: rgba(39, 92, 72, 0.28);
-    background: rgba(247, 251, 249, 0.96);
-    box-shadow: 0 12px 28px rgba(24, 43, 35, 0.08);
+    border-color: var(--clinic-border-strong);
+    background: var(--clinic-mist);
+    box-shadow: var(--clinic-shadow-soft);
 }
 
 .refreshButton:focus-visible,
 .stateAction:focus-visible {
-    outline: 3px solid rgba(72, 128, 102, 0.28);
+    outline: 3px solid rgba(31, 95, 81, 0.24);
     outline-offset: 3px;
 }
 
@@ -113,45 +107,36 @@
     min-width: 0;
     min-height: 6.4rem;
     padding: clamp(0.9rem, 2vw, 1rem);
-    border: 1px solid rgba(39, 92, 72, 0.12);
-    border-radius: 1.1rem;
-    background:
-        linear-gradient(135deg,
-            rgba(255, 255, 255, 0.86),
-            rgba(246, 250, 248, 0.94));
+    border: 1px solid var(--clinic-border);
+    border-radius: var(--clinic-radius-xl);
+    background: var(--clinic-mist);
 }
 
 .metricPrimary {
-    border-color: rgba(39, 92, 72, 0.15);
+    border-color: rgba(31, 95, 81, 0.2);
 }
 
 .metricSuccess {
-    border-color: rgba(39, 92, 72, 0.17);
-    background:
-        linear-gradient(135deg,
-            rgba(246, 252, 249, 0.96),
-            rgba(255, 255, 255, 0.92)),
-        radial-gradient(circle at top right,
-            rgba(93, 160, 126, 0.1),
-            transparent 44%);
+    border-color: rgba(37, 115, 90, 0.24);
+    background: rgba(37, 115, 90, 0.08);
 }
 
 .metricDate {
-    border-color: rgba(39, 92, 72, 0.1);
-    background: rgba(255, 255, 255, 0.74);
+    border-color: var(--clinic-border);
+    background: var(--clinic-white);
 }
 
-.metric > span {
-    color: #6d8279;
-    font-size: 0.76rem;
-    font-weight: 820;
+.metric>span {
+    color: var(--clinic-muted);
+    font-size: var(--clinic-font-size-xs);
+    font-weight: 800;
     line-height: 1.25;
 }
 
-.metricPrimary > span,
-.metricSuccess > span {
-    color: #52786a;
-    font-weight: 950;
+.metricPrimary>span,
+.metricSuccess>span {
+    color: var(--clinic-muted-strong);
+    font-weight: 850;
 }
 
 .metricValue {
@@ -161,11 +146,11 @@
     gap: 0.34rem;
     min-width: 0;
     overflow-wrap: anywhere;
-    color: #275c48;
+    color: var(--clinic-green-700);
     line-height: 1;
 }
 
-.metricValue > span {
+.metricValue>span {
     color: inherit;
     font-size: clamp(1.45rem, 2.4vw, 1.9rem);
     font-weight: 950;
@@ -174,18 +159,18 @@
 }
 
 .metricValue small {
-    color: #52786a;
-    font-size: 0.82rem;
+    color: var(--clinic-muted-strong);
+    font-size: var(--clinic-font-size-sm);
     font-weight: 850;
     letter-spacing: -0.01em;
     line-height: 1;
 }
 
 .metricValueMuted {
-    color: #1d3028;
+    color: var(--clinic-ink-soft);
 }
 
-.metricValueMuted > span {
+.metricValueMuted>span {
     font-size: clamp(1rem, 1.5vw, 1.18rem);
     font-weight: 900;
     letter-spacing: -0.02em;
