@@ -19,28 +19,17 @@ export const APP_SHELL_CONFIG = Object.freeze({
 
 export const APP_AREA_NAV_ITEMS = Object.freeze({
   [AUTH_ROLES.SANTACASA]: Object.freeze({
-    eyebrow: "Área atual",
     label: "Santa Casa",
     to: "/santacasa",
-    presentation: "area",
   }),
 
   [AUTH_ROLES.FARMACIA]: Object.freeze({
-    eyebrow: "Área atual",
     label: "Farmácia",
     to: "/farmacia",
-    presentation: "area",
   }),
 });
 
 export const APP_NAV_ITEMS = Object.freeze([
-  Object.freeze({
-    label: "Início",
-    to: "/",
-    end: true,
-    allowedRoles: [AUTH_ROLES.ADMIN],
-  }),
-
   Object.freeze({
     label: "Santa Casa",
     to: "/santacasa",
