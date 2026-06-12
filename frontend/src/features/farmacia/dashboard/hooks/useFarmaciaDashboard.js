@@ -3,9 +3,14 @@ import { useCallback, useEffect, useState } from "react";
 import { useAuth } from "../../../auth/hooks/useAuth";
 
 import { getFarmaciaDashboard } from "../api/farmaciaDashboardApi";
+import { FARMACIA_DASHBOARD_PAGE } from "../config/farmaciaDashboardPage.config";
 
 function getErrorMessage(error, fallback) {
   return error?.message || fallback;
+}
+
+function canAlwaysUpdateState() {
+  return true;
 }
 
 export function useFarmaciaDashboard() {
@@ -19,7 +24,14 @@ export function useFarmaciaDashboard() {
   const [error, setError] = useState(null);
 
   const loadDashboard = useCallback(
-    async ({ showRefreshing = false } = {}) => {
+    async ({
+      showRefreshing = false,
+      canUpdateState = canAlwaysUpdateState,
+    } = {}) => {
+      if (!canUpdateState()) {
+        return null;
+      }
+
       if (showRefreshing) {
         setIsRefreshing(true);
       } else {
@@ -31,64 +43,63 @@ export function useFarmaciaDashboard() {
       try {
         const data = await getFarmaciaDashboard();
 
+        if (!canUpdateState()) {
+          return null;
+        }
+
         setDashboard(data);
+
+        return data;
       } catch (loadError) {
-        if (handleAuthError(loadError)) return;
+        if (!canUpdateState()) {
+          return null;
+        }
+
+        if (handleAuthError(loadError)) {
+          return null;
+        }
 
         setError(
           getErrorMessage(
             loadError,
-            "Não foi possível carregar o dashboard da Farmácia.",
+            FARMACIA_DASHBOARD_PAGE.sections.signals.errorTitle,
           ),
         );
+
+        return null;
       } finally {
-        setIsLoading(false);
-        setIsRefreshing(false);
+        if (canUpdateState()) {
+          if (showRefreshing) {
+            setIsRefreshing(false);
+          } else {
+            setIsLoading(false);
+          }
+        }
       }
     },
     [handleAuthError],
   );
 
   const refreshDashboard = useCallback(async () => {
-    await loadDashboard({ showRefreshing: true });
+    return loadDashboard({
+      showRefreshing: true,
+    });
   }, [loadDashboard]);
 
   useEffect(() => {
     let isMounted = true;
 
-    async function loadInitialDashboard() {
-      setIsLoading(true);
-      setError(null);
-
-      try {
-        const data = await getFarmaciaDashboard();
-
-        if (!isMounted) return;
-
-        setDashboard(data);
-      } catch (loadError) {
-        if (!isMounted) return;
-        if (handleAuthError(loadError)) return;
-
-        setError(
-          getErrorMessage(
-            loadError,
-            "Não foi possível carregar o dashboard da Farmácia.",
-          ),
-        );
-      } finally {
-        if (isMounted) {
-          setIsLoading(false);
-        }
-      }
-    }
-
-    loadInitialDashboard();
+    const initialLoadTimerId = window.setTimeout(() => {
+      void loadDashboard({
+        canUpdateState: () => isMounted,
+      });
+    }, 0);
 
     return () => {
       isMounted = false;
+      window.clearTimeout(initialLoadTimerId);
     };
-  }, [handleAuthError]);
+  }, [loadDashboard]);
 
   return {
     dashboard,

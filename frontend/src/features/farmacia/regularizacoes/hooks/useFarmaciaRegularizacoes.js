@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
+import { useSearchParams } from "react-router-dom";
+
 import { useAuth } from "../../../auth/hooks/useAuth";
 
 import {
@@ -14,6 +16,8 @@ const TABS = Object.freeze({
   pending: "pending",
   history: "history",
 });
+
+const VIEW_SEARCH_PARAM = "view";
 
 const DEFAULT_QUERY = Object.freeze({
   search: "",
@@ -64,12 +68,48 @@ function getPageState(meta) {
   };
 }
 
+function getTabFromSearchParams(searchParams) {
+  const view = searchParams.get(VIEW_SEARCH_PARAM);
+
+  if (view === TABS.history) {
+    return TABS.history;
+  }
+
+  return TABS.pending;
+}
+
+function isValidTab(tab) {
+  return Object.values(TABS).includes(tab);
+}
+
+function getSearchParamsForTab(currentSearchParams, nextTab) {
+  const nextSearchParams = new URLSearchParams(currentSearchParams);
+
+  if (nextTab === TABS.history) {
+    nextSearchParams.set(VIEW_SEARCH_PARAM, TABS.history);
+  } else {
+    nextSearchParams.delete(VIEW_SEARCH_PARAM);
+  }
+
+  return nextSearchParams;
+}
+
+function resetQueryPagination(currentQueryValue) {
+  return {
+    ...currentQueryValue,
+    skip: 0,
+  };
+}
+
 export function useFarmaciaRegularizacoes() {
   const { handleAuthError } = useAuth();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const isMountedRef = useRef(false);
 
-  const [activeTab, setActiveTab] = useState(TABS.pending);
+  const activeTab = useMemo(() => {
+    return getTabFromSearchParams(searchParams);
+  }, [searchParams]);
 
   const [regularizacoes, setRegularizacoes] = useState([]);
   const [meta, setMeta] = useState(getInitialMeta);
@@ -166,15 +206,23 @@ export function useFarmaciaRegularizacoes() {
     ]);
   }, [loadRegularizacoes, loadSignal]);
 
-  const updateTab = useCallback((nextTab) => {
-    if (!Object.values(TABS).includes(nextTab)) return;
+  const updateTab = useCallback(
+    (nextTab) => {
+      if (!isValidTab(nextTab)) return;
 
-    setActiveTab(nextTab);
-    setQuery((currentQueryValue) => ({
-      ...currentQueryValue,
-      skip: 0,
-    }));
-  }, []);
+      setQuery(resetQueryPagination);
+
+      setSearchParams(
+        (currentSearchParams) => {
+          return getSearchParamsForTab(currentSearchParams, nextTab);
+        },
+        {
+          replace: true,
+        },
+      );
+    },
+    [setSearchParams],
+  );
 
   const updateSearchInput = useCallback((value) => {
     setSearchInput(value);
