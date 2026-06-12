@@ -13,7 +13,7 @@ const FEATURED_ACTIONS = Object.freeze([
     eyebrow: "Gestão de acessos",
     title: "Utilizadores",
     description:
-      "Cria, edita, ativa ou desativa contas da Santa Casa, Farmácia e Administração.",
+      "Cria, edita, ativa ou desativa contas com acesso à Santa Casa, Farmácia e Administração.",
     actionLabel: "Gerir utilizadores",
     to: SYSTEM_ROUTES.users,
     variant: "primary",
@@ -22,10 +22,10 @@ const FEATURED_ACTIONS = Object.freeze([
 
   Object.freeze({
     id: "manutencao",
-    eyebrow: "Operações técnicas",
+    eyebrow: "Operações protegidas",
     title: "Manutenção",
     description:
-      "Executa jobs técnicos com pré-visualização obrigatória, confirmação e controlo de risco.",
+      "Executa tarefas de manutenção com pré-visualização obrigatória, confirmação e controlo de risco.",
     actionLabel: "Abrir manutenção",
     to: SYSTEM_ROUTES.manutencao,
     variant: "secondary",
@@ -35,10 +35,10 @@ const FEATURED_ACTIONS = Object.freeze([
   Object.freeze({
     id: "health",
     eyebrow: "Diagnóstico",
-    title: "Estado dos serviços",
+    title: "Estado da plataforma",
     description:
-      "Confirma se a API Geral, Santa Casa e Farmácia estão a responder corretamente.",
-    actionLabel: "Ver estado dos serviços",
+      "Confirma se os serviços principais da Santa Casa e da Farmácia estão a responder corretamente.",
+    actionLabel: "Ver estado da plataforma",
     to: SYSTEM_ROUTES.health,
     variant: "secondary",
     tone: "blue",
@@ -47,14 +47,14 @@ const FEATURED_ACTIONS = Object.freeze([
 
 export const SYSTEM_HOME_PAGE = Object.freeze({
   header: Object.freeze({
-    eyebrow: "Sistema",
-    title: "Gestão técnica e administrativa",
+    eyebrow: "Administração",
+    title: "Gestão da plataforma",
     description:
-      "Controla acessos, acompanha o estado dos serviços e executa operações técnicas protegidas.",
+      "Gere acessos, acompanha o estado da plataforma e executa operações protegidas da Farmácia Santa Casa.",
   }),
 
   featured: Object.freeze({
-    ariaLabel: "Áreas principais do Sistema",
+    ariaLabel: "Áreas principais da Administração",
     actions: FEATURED_ACTIONS,
   }),
 });

@@ -1,4 +1,5 @@
 // src/features/system/users/config/systemUsersPage.config.js
+
 export const SYSTEM_USERS_ROLES = Object.freeze({
   SANTACASA: "SANTACASA",
   FARMACIA: "FARMACIA",
@@ -7,22 +8,22 @@ export const SYSTEM_USERS_ROLES = Object.freeze({
 
 export const SYSTEM_USERS_PAGE = Object.freeze({
   header: {
-    eyebrow: "Sistema/Admin",
-    title: "Utilizadores",
+    eyebrow: "Administração",
+    title: "Gestão de acessos",
     description:
-      "Gestão de acessos ao sistema. Cria, edita, ativa ou desativa contas da Santa Casa, Farmácia e Administração.",
+      "Cria e gere contas com acesso à Santa Casa, Farmácia e área administrativa.",
   },
 
   sections: {
     filters: {
       title: "Filtros",
-      description: "Pesquisa utilizadores por nome, email, role ou estado.",
+      description: "Pesquisa contas por nome, email, perfil ou estado.",
     },
 
     list: {
       title: "Contas de utilizador",
       description:
-        "Utilizadores com acesso ao sistema interno da Farmácia Santa Casa.",
+        "Pessoas com acesso autorizado às áreas da Farmácia Santa Casa.",
       loadingTitle: "A carregar utilizadores...",
       errorTitle: "Não foi possível carregar os utilizadores.",
       emptyTitle: "Sem utilizadores encontrados.",
@@ -40,7 +41,7 @@ export const SYSTEM_USERS_PAGE = Object.freeze({
   roles: {
     SANTACASA: "Santa Casa",
     FARMACIA: "Farmácia",
-    ADMIN: "Sistema/Admin",
+    ADMIN: "Administrador",
   },
 
   status: {
@@ -115,6 +116,7 @@ export const SYSTEM_USERS_PAGE = Object.freeze({
     clear: "Limpar",
     close: "Fechar",
   },
+
   feedback: {
     genericError: "Ocorreu um erro inesperado.",
     createSuccess: "Utilizador criado com sucesso.",
