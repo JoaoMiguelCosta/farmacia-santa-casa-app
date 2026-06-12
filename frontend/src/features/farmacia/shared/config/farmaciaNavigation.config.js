@@ -1,13 +1,10 @@
 // src/features/farmacia/shared/config/farmaciaNavigation.config.js
+
 export const FARMACIA_NAV_ITEMS = Object.freeze([
   {
     label: "Visão geral",
     to: "/farmacia",
     end: true,
-  },
-  {
-    label: "Dashboard",
-    to: "/farmacia/dashboard",
   },
   {
     label: "Pedidos",
@@ -20,5 +17,10 @@ export const FARMACIA_NAV_ITEMS = Object.freeze([
   {
     label: "Histórico",
     to: "/farmacia/historico",
+  },
+  {
+    label: "Dashboard",
+    to: "/farmacia/dashboard",
+    placement: "end",
   },
 ]);
