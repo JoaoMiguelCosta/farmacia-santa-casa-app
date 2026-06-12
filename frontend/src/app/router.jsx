@@ -37,6 +37,7 @@ import FarmaciaRegularizacoesPage from "../pages/farmacia/FarmaciaRegularizacoes
 import FarmaciaRegularizacoesUtentePage from "../pages/farmacia/FarmaciaRegularizacoesUtentePage.jsx";
 import FarmaciaRegularizacoesHistoricoUtentePage from "../pages/farmacia/FarmaciaRegularizacoesHistoricoUtentePage.jsx";
 
+import SystemHealthPage from "../pages/system/SystemHealthPage.jsx";
 import SystemHomePage from "../pages/system/SystemHomePage.jsx";
 import SystemManutencaoPage from "../pages/system/SystemManutencaoPage.jsx";
 import SystemUsersPage from "../pages/system/SystemUsersPage.jsx";
@@ -200,8 +201,20 @@ export const router = createBrowserRouter([
         element: protectedElement(<SystemUsersPage />, ADMIN_ROLES),
       },
       {
+        path: "sistema/users",
+        element: <Navigate to="/sistema/utilizadores" replace />,
+      },
+      {
         path: "sistema/manutencao",
         element: protectedElement(<SystemManutencaoPage />, ADMIN_ROLES),
+      },
+      {
+        path: "sistema/estado-servicos",
+        element: protectedElement(<SystemHealthPage />, ADMIN_ROLES),
+      },
+      {
+        path: "sistema/health",
+        element: <Navigate to="/sistema/estado-servicos" replace />,
       },
 
       {

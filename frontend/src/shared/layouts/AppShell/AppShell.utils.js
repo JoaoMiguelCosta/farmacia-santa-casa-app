@@ -51,6 +51,10 @@ export function isFarmaciaPath(pathname = "") {
   return pathname === "/farmacia" || pathname.startsWith("/farmacia/");
 }
 
+export function isSystemPath(pathname = "") {
+  return pathname === "/sistema" || pathname.startsWith("/sistema/");
+}
+
 export function canSeeSantaCasaSectionNav({ isAuthenticated, role }) {
   return (
     isAuthenticated && [AUTH_ROLES.SANTACASA, AUTH_ROLES.ADMIN].includes(role)
@@ -61,6 +65,10 @@ export function canSeeFarmaciaSectionNav({ isAuthenticated, role }) {
   return (
     isAuthenticated && [AUTH_ROLES.FARMACIA, AUTH_ROLES.ADMIN].includes(role)
   );
+}
+
+export function canSeeSystemSectionNav({ isAuthenticated, role }) {
+  return isAuthenticated && role === AUTH_ROLES.ADMIN;
 }
 
 export function canSeeFarmaciaAlertas({ isAuthenticated, role }) {

@@ -1,16 +1,26 @@
-import styles from "./SystemHealthPanel.module.css";
+// src/features/system/health/components/SystemHealthPanel/SystemHealthPanel.jsx
+
+import { formatDateTime } from "../../../../../shared/utils/formatDate";
 
 import { SYSTEM_HEALTH_CONFIG } from "../../config/systemHealth.config";
 import { useSystemHealth } from "../../hooks/useSystemHealth";
 
+import styles from "./SystemHealthPanel.module.css";
+
 function formatPayload(payload) {
-  if (!payload) return "—";
+  if (!payload) return SYSTEM_HEALTH_CONFIG.labels.unavailable;
 
   return JSON.stringify(payload, null, 2);
 }
 
 function getStatusLabel(status) {
   return SYSTEM_HEALTH_CONFIG.status[status] || status;
+}
+
+function getCheckedAtLabel(value) {
+  if (!value) return SYSTEM_HEALTH_CONFIG.labels.unavailable;
+
+  return formatDateTime(value);
 }
 
 function SystemHealthState({ title, description }) {
@@ -27,36 +37,66 @@ function SystemHealthState({ title, description }) {
 
 function SystemHealthCard({ service }) {
   const isOnline = service.status === "online";
+  const payload = isOnline
+    ? service.data
+    : {
+        error: service.error,
+        checkedAt: service.checkedAt,
+      };
+
+  const cardClassName = [
+    styles.card,
+    isOnline ? styles.onlineCard : styles.offlineCard,
+  ]
+    .filter(Boolean)
+    .join(" ");
 
   return (
-    <article className={styles.card}>
-      <div className={styles.cardStatus}>
+    <article className={cardClassName}>
+      <div className={styles.cardHeader}>
         <span
           className={
-            isOnline ? styles.statusDotOnline : styles.statusDotOffline
+            isOnline ? styles.statusBadgeOnline : styles.statusBadgeOffline
           }
-          aria-hidden="true"
-        />
+        >
+          <span
+            className={
+              isOnline ? styles.statusDotOnline : styles.statusDotOffline
+            }
+            aria-hidden="true"
+          />
 
-        <span className={styles.statusLabel}>
           {getStatusLabel(service.status)}
         </span>
       </div>
 
-      <h3 className={styles.cardTitle}>{service.title}</h3>
+      <div className={styles.cardBody}>
+        <h3 className={styles.cardTitle}>{service.title}</h3>
 
-      <p className={styles.cardDescription}>{service.description}</p>
+        <p className={styles.cardDescription}>{service.description}</p>
+      </div>
 
-      <pre className={styles.payload}>
-        <code>
-          {isOnline
-            ? formatPayload(service.data)
-            : formatPayload({
-                error: service.error,
-                checkedAt: service.checkedAt,
-              })}
-        </code>
-      </pre>
+      <dl className={styles.metaList}>
+        <div className={styles.metaItem}>
+          <dt>{SYSTEM_HEALTH_CONFIG.labels.checkedAt}</dt>
+          <dd>{getCheckedAtLabel(service.checkedAt)}</dd>
+        </div>
+
+        {!isOnline ? (
+          <div className={styles.metaItem}>
+            <dt>{SYSTEM_HEALTH_CONFIG.labels.error}</dt>
+            <dd>{service.error || SYSTEM_HEALTH_CONFIG.labels.unavailable}</dd>
+          </div>
+        ) : null}
+      </dl>
+
+      <details className={styles.payloadDetails}>
+        <summary>{SYSTEM_HEALTH_CONFIG.labels.technicalDetails}</summary>
+
+        <pre className={styles.payload}>
+          <code>{formatPayload(payload)}</code>
+        </pre>
+      </details>
     </article>
   );
 }

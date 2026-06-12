@@ -1,0 +1,160 @@
+.card {
+    --card-accent: var(--clinic-green-700);
+    --card-accent-soft: rgba(31, 95, 81, 0.08);
+    --card-border: var(--clinic-border);
+
+    display: grid;
+    align-content: space-between;
+    gap: clamp(1rem, 2vw, 1.25rem);
+
+    min-width: 0;
+    min-height: 13rem;
+    padding: clamp(1.05rem, 2vw, 1.35rem);
+
+    border: 1px solid var(--card-border);
+    border-block-start: 4px solid var(--card-accent);
+    border-radius: var(--clinic-radius-xl);
+
+    color: var(--clinic-ink);
+    background: var(--clinic-surface);
+
+    box-shadow: var(--clinic-shadow-soft);
+
+    text-decoration: none;
+
+    transition:
+        transform var(--clinic-transition),
+        border-color var(--clinic-transition),
+        box-shadow var(--clinic-transition),
+        background-color var(--clinic-transition);
+}
+
+.card:hover {
+    border-color: var(--clinic-border-strong);
+    background-color: var(--clinic-white);
+
+    box-shadow: var(--clinic-shadow-hover);
+
+    transform: translateY(-2px);
+}
+
+.card:active {
+    transform: translateY(0);
+}
+
+.card:focus-visible {
+    outline: 3px solid rgba(31, 95, 81, 0.28);
+    outline-offset: 4px;
+}
+
+.staticCard:hover {
+    transform: none;
+}
+
+.primary {
+    min-height: 15rem;
+}
+
+.secondary {
+    min-height: 13rem;
+}
+
+.green {
+    --card-accent: var(--clinic-green-700);
+    --card-accent-soft: rgba(31, 95, 81, 0.08);
+    --card-border: rgba(31, 95, 81, 0.18);
+}
+
+.gold {
+    --card-accent: var(--clinic-warning);
+    --card-accent-soft: rgba(161, 92, 7, 0.08);
+    --card-border: rgba(161, 92, 7, 0.2);
+}
+
+.blue {
+    --card-accent: var(--clinic-blue-700);
+    --card-accent-soft: rgba(57, 127, 150, 0.1);
+    --card-border: rgba(35, 93, 115, 0.2);
+}
+
+.content {
+    display: grid;
+    gap: 0.55rem;
+
+    min-width: 0;
+}
+
+.eyebrow {
+    width: fit-content;
+    max-width: 100%;
+    padding: 0.34rem 0.64rem;
+
+    border: 1px solid var(--card-border);
+    border-radius: 999px;
+
+    color: var(--card-accent);
+    background: var(--card-accent-soft);
+
+    font-size: 0.68rem;
+    font-weight: 850;
+    letter-spacing: 0.1em;
+    line-height: 1;
+    text-transform: uppercase;
+}
+
+.title {
+    margin: 0;
+
+    color: var(--clinic-ink);
+
+    font-size: clamp(1.25rem, 2.4vw, 1.65rem);
+    font-weight: 850;
+    letter-spacing: -0.035em;
+    line-height: 1.08;
+}
+
+.description {
+    margin: 0;
+
+    color: var(--clinic-muted-strong);
+
+    font-size: var(--clinic-font-size-sm);
+    font-weight: 550;
+    line-height: var(--clinic-line-height-base);
+}
+
+.action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.38rem;
+
+    width: fit-content;
+    max-width: 100%;
+    min-height: 2.45rem;
+    padding: 0.66rem 0.9rem;
+
+    border: 1px solid var(--card-border);
+    border-radius: 999px;
+
+    color: var(--card-accent);
+    background: var(--card-accent-soft);
+
+    font-size: var(--clinic-font-size-sm);
+    font-weight: 850;
+    line-height: 1;
+}
+
+.arrow {
+    font-size: 1rem;
+    line-height: 1;
+}
+
+@media (max-width: 760px) {
+
+    .card,
+    .primary,
+    .secondary {
+        min-height: auto;
+    }
+}

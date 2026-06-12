@@ -14,6 +14,7 @@ export const APP_SHELL_CONFIG = Object.freeze({
   sectionNavLabels: Object.freeze({
     santacasa: "Navegação interna da Santa Casa",
     farmacia: "Navegação interna da Farmácia",
+    system: "Navegação interna do Sistema",
   }),
 });
 

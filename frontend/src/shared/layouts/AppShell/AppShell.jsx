@@ -11,6 +11,8 @@ import { FARMACIA_NAV_ITEMS } from "../../../features/farmacia/shared/config/far
 
 import { SANTACASA_NAV_ITEMS } from "../../../features/santacasa/shared/config/santaCasaNavigation.config";
 
+import { SYSTEM_NAV_ITEMS } from "../../../features/system/shared/config/systemNavigation.config";
+
 import AppHeader from "./components/AppHeader/AppHeader";
 import AppSectionNav from "./components/AppSectionNav/AppSectionNav";
 
@@ -24,9 +26,11 @@ import {
   canSeeFarmaciaAlertas,
   canSeeFarmaciaSectionNav,
   canSeeSantaCasaSectionNav,
+  canSeeSystemSectionNav,
   getPrimaryNavItems,
   isFarmaciaPath,
   isSantaCasaPath,
+  isSystemPath,
 } from "./AppShell.utils";
 
 import styles from "./AppShell.module.css";
@@ -56,6 +60,13 @@ export default function AppShell() {
       role,
     });
 
+  const shouldShowSystemSectionNav =
+    isSystemPath(pathname) &&
+    canSeeSystemSectionNav({
+      isAuthenticated,
+      role,
+    });
+
   const shouldShowFarmaciaAlertas =
     isFarmaciaPath(pathname) &&
     canSeeFarmaciaAlertas({
@@ -72,6 +83,11 @@ export default function AppShell() {
     <AppSectionNav
       items={FARMACIA_NAV_ITEMS}
       ariaLabel={APP_SHELL_CONFIG.sectionNavLabels.farmacia}
+    />
+  ) : shouldShowSystemSectionNav ? (
+    <AppSectionNav
+      items={SYSTEM_NAV_ITEMS}
+      ariaLabel={APP_SHELL_CONFIG.sectionNavLabels.system}
     />
   ) : null;
 

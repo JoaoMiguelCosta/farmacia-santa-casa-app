@@ -1,7 +1,9 @@
 .section {
     display: grid;
     gap: clamp(1rem, 2vw, 1.35rem);
-    inline-size: 100%;
+
+    width: 100%;
+    min-width: 0;
 }
 
 .header {
@@ -9,62 +11,92 @@
     align-items: flex-start;
     justify-content: space-between;
     gap: 1rem;
+
+    min-width: 0;
+    padding: clamp(1rem, 2vw, 1.2rem);
+
+    border: 1px solid var(--clinic-border);
+    border-radius: var(--clinic-radius-xl);
+
+    background: var(--clinic-surface);
+
+    box-shadow: var(--clinic-shadow-soft);
 }
 
 .heading {
     display: grid;
-    gap: 0.35rem;
+    gap: 0.38rem;
+
     min-width: 0;
 }
 
 .title {
     margin: 0;
-    color: #16251f;
+
+    color: var(--clinic-ink);
+
     font-size: clamp(1.35rem, 2.4vw, 1.85rem);
-    line-height: 1.1;
+    font-weight: 850;
+    letter-spacing: -0.04em;
+    line-height: 1.08;
 }
 
 .description {
-    max-width: 68ch;
+    max-width: 72ch;
     margin: 0;
-    color: #60766d;
-    font-size: 0.96rem;
-    line-height: 1.6;
+
+    color: var(--clinic-muted-strong);
+
+    font-size: var(--clinic-font-size-sm);
+    font-weight: 550;
+    line-height: var(--clinic-line-height-base);
 }
 
 .refreshButton,
 .stateAction,
 .previewButton,
 .runButton {
-    min-height: 2.55rem;
-    padding: 0.72rem 1rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 2.45rem;
+    padding: 0.64rem 0.95rem;
+
     border-radius: 999px;
+
     font: inherit;
-    font-size: 0.86rem;
+    font-size: 0.84rem;
     font-weight: 850;
+    line-height: 1;
+    white-space: nowrap;
+
     cursor: pointer;
+
     transition:
-        transform 160ms ease,
-        border-color 160ms ease,
-        background 160ms ease,
-        color 160ms ease,
-        box-shadow 160ms ease,
-        opacity 160ms ease;
+        transform var(--clinic-transition),
+        border-color var(--clinic-transition),
+        background-color var(--clinic-transition),
+        box-shadow var(--clinic-transition),
+        opacity var(--clinic-transition);
 }
 
 .refreshButton,
 .stateAction,
 .previewButton {
-    border: 1px solid rgba(39, 92, 72, 0.18);
-    background: rgba(255, 255, 255, 0.86);
-    color: #275c48;
+    border: 1px solid var(--clinic-border);
+
+    color: var(--clinic-green-800);
+    background: var(--clinic-white);
 }
 
 .runButton {
-    border: 1px solid rgba(150, 61, 61, 0.22);
-    background: #8a2f2f;
-    color: #ffffff;
-    box-shadow: 0 14px 32px rgba(150, 61, 61, 0.16);
+    border: 1px solid rgba(180, 35, 24, 0.22);
+
+    color: var(--clinic-white);
+    background: var(--clinic-danger);
+
+    box-shadow: 0 12px 28px rgba(180, 35, 24, 0.14);
 }
 
 .refreshButton:hover,
@@ -72,20 +104,37 @@
 .previewButton:hover,
 .runButton:hover {
     transform: translateY(-1px);
-    border-color: rgba(39, 92, 72, 0.32);
-    box-shadow: 0 12px 28px rgba(24, 43, 35, 0.08);
+}
+
+.refreshButton:hover,
+.stateAction:hover,
+.previewButton:hover {
+    border-color: var(--clinic-border-strong);
+    background: var(--clinic-mist);
 }
 
 .runButton:hover {
-    border-color: rgba(150, 61, 61, 0.34);
-    box-shadow: 0 12px 28px rgba(150, 61, 61, 0.14);
+    background: #961b12;
+
+    box-shadow: 0 16px 34px rgba(180, 35, 24, 0.2);
+}
+
+.refreshButton:active,
+.stateAction:active,
+.previewButton:active,
+.runButton:active {
+    transform: translateY(0);
 }
 
 .refreshButton:focus-visible,
 .stateAction:focus-visible,
-.previewButton:focus-visible,
+.previewButton:focus-visible {
+    outline: 3px solid rgba(31, 95, 81, 0.26);
+    outline-offset: 3px;
+}
+
 .runButton:focus-visible {
-    outline: 3px solid rgba(72, 128, 102, 0.26);
+    outline: 3px solid rgba(180, 35, 24, 0.24);
     outline-offset: 3px;
 }
 
@@ -94,30 +143,39 @@
 .previewButton:disabled,
 .runButton:disabled {
     cursor: not-allowed;
-    opacity: 0.55;
+    opacity: 0.5;
     transform: none;
     box-shadow: none;
 }
 
+.runButton:disabled {
+    border-color: rgba(180, 35, 24, 0.14);
+
+    color: rgba(255, 255, 255, 0.78);
+    background: rgba(180, 35, 24, 0.46);
+}
+
 .list {
     display: grid;
-    gap: clamp(1rem, 2vw, 1.25rem);
+    gap: clamp(0.95rem, 2vw, 1.15rem);
+
+    min-width: 0;
 }
 
 .job {
     display: grid;
-    gap: 1rem;
-    padding: clamp(1rem, 2vw, 1.35rem);
-    border: 1px solid rgba(39, 92, 72, 0.16);
-    border-radius: 1.35rem;
-    background:
-        linear-gradient(135deg,
-            rgba(255, 255, 255, 0.96),
-            rgba(247, 251, 249, 0.92)),
-        radial-gradient(circle at top left,
-            rgba(93, 160, 126, 0.1),
-            transparent 42%);
-    box-shadow: 0 18px 50px rgba(24, 43, 35, 0.08);
+    gap: 0.95rem;
+
+    min-width: 0;
+    padding: clamp(1rem, 2vw, 1.25rem);
+
+    border: 1px solid var(--clinic-border);
+    border-inline-start: 4px solid var(--clinic-warning);
+    border-radius: var(--clinic-radius-xl);
+
+    background: var(--clinic-surface);
+
+    box-shadow: var(--clinic-shadow-soft);
 }
 
 .jobHeader {
@@ -125,111 +183,167 @@
     align-items: flex-start;
     justify-content: space-between;
     gap: 1rem;
+
+    min-width: 0;
 }
 
 .jobIdentity {
     display: grid;
-    gap: 0.32rem;
+    gap: 0.34rem;
+
     min-width: 0;
 }
 
 .jobEyebrow {
-    color: #52786a;
-    font-size: 0.74rem;
+    color: var(--clinic-green-700);
+
+    font-size: 0.72rem;
     font-weight: 850;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.09em;
+    line-height: 1;
     text-transform: uppercase;
 }
 
 .jobTitle {
     margin: 0;
-    color: #16251f;
+
+    color: var(--clinic-ink);
+
     font-size: clamp(1.15rem, 2vw, 1.45rem);
+    font-weight: 850;
+    letter-spacing: -0.035em;
     line-height: 1.12;
 }
 
 .jobDescription {
-    max-width: 72ch;
+    max-width: 76ch;
     margin: 0;
-    color: #60766d;
-    font-size: 0.94rem;
-    line-height: 1.55;
+
+    color: var(--clinic-muted-strong);
+
+    font-size: var(--clinic-font-size-sm);
+    font-weight: 550;
+    line-height: var(--clinic-line-height-base);
 }
 
 .risk {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
     flex: 0 0 auto;
-    padding: 0.42rem 0.72rem;
-    border: 1px solid rgba(131, 97, 35, 0.2);
+
+    min-height: 2rem;
+    padding: 0.42rem 0.68rem;
+
+    border: 1px solid rgba(161, 92, 7, 0.22);
     border-radius: 999px;
-    background: rgba(255, 248, 231, 0.88);
-    color: #80612a;
+
+    color: var(--clinic-warning);
+    background: rgba(161, 92, 7, 0.08);
+
     font-size: 0.78rem;
     font-weight: 850;
+    line-height: 1;
+    white-space: nowrap;
 }
 
 .warning {
     margin: 0;
-    padding: 0.85rem 0.95rem;
-    border: 1px solid rgba(150, 61, 61, 0.18);
-    border-radius: 1rem;
-    background:
-        linear-gradient(135deg,
-            rgba(255, 247, 247, 0.96),
-            rgba(255, 252, 252, 0.9)),
-        radial-gradient(circle at top left,
-            rgba(150, 61, 61, 0.08),
-            transparent 44%);
-    color: #8a2f2f;
-    font-size: 0.9rem;
-    line-height: 1.5;
+    padding: 0.82rem 0.95rem;
+
+    border: 1px solid rgba(180, 35, 24, 0.16);
+    border-radius: var(--clinic-radius-lg);
+
+    color: var(--clinic-danger);
+    background: rgba(180, 35, 24, 0.06);
+
+    font-size: var(--clinic-font-size-sm);
+    font-weight: 550;
+    line-height: var(--clinic-line-height-base);
+}
+
+.warning strong {
+    font-weight: 850;
 }
 
 .options {
     display: grid;
-    gap: 0.8rem;
+    gap: 0.85rem;
+
+    min-width: 0;
     padding: 0.9rem;
-    border: 1px solid rgba(39, 92, 72, 0.12);
-    border-radius: 1rem;
-    background: rgba(255, 255, 255, 0.68);
+
+    border: 1px solid var(--clinic-border);
+    border-radius: var(--clinic-radius-lg);
+
+    background: var(--clinic-mist);
 }
 
 .optionField {
     display: grid;
-    gap: 0.38rem;
+    gap: 0.42rem;
+
     min-width: 0;
 }
 
 .optionField span {
-    color: #52786a;
-    font-size: 0.76rem;
+    color: var(--clinic-green-700);
+
+    font-size: 0.72rem;
     font-weight: 850;
     letter-spacing: 0.08em;
+    line-height: 1;
     text-transform: uppercase;
 }
 
 .optionField input {
-    min-height: 2.55rem;
-    inline-size: min(100%, 16rem);
-    padding: 0.7rem 0.9rem;
-    border: 1px solid rgba(39, 92, 72, 0.16);
+    width: min(100%, 16rem);
+    min-height: 2.65rem;
+    padding: 0.72rem 0.95rem;
+
+    border: 1px solid var(--clinic-border);
     border-radius: 999px;
-    background: rgba(255, 255, 255, 0.86);
-    color: #16251f;
+
+    color: var(--clinic-ink);
+    background: var(--clinic-white);
+
     font: inherit;
-    font-size: 0.9rem;
+    font-size: var(--clinic-font-size-sm);
+    font-weight: 650;
+
+    transition:
+        border-color var(--clinic-transition),
+        background-color var(--clinic-transition),
+        box-shadow var(--clinic-transition),
+        opacity var(--clinic-transition);
+}
+
+.optionField input::placeholder {
+    color: rgba(102, 115, 109, 0.78);
 }
 
 .optionField input:focus {
     outline: none;
-    border-color: rgba(39, 92, 72, 0.36);
-    box-shadow: 0 0 0 3px rgba(72, 128, 102, 0.18);
+
+    border-color: rgba(31, 95, 81, 0.36);
+    background: var(--clinic-surface);
+
+    box-shadow: 0 0 0 3px rgba(31, 95, 81, 0.14);
+}
+
+.optionField input:disabled {
+    cursor: not-allowed;
+    opacity: 0.58;
 }
 
 .optionField small,
 .checkboxField small,
 .runHint {
-    color: #6d8279;
+    color: var(--clinic-muted);
+
     font-size: 0.82rem;
+    font-weight: 500;
     line-height: 1.45;
 }
 
@@ -237,30 +351,40 @@
     display: flex;
     align-items: flex-start;
     gap: 0.65rem;
-    color: #1d3028;
+
+    color: var(--clinic-ink-soft);
 }
 
 .checkboxField input {
+    flex: 0 0 auto;
+
     width: 1rem;
     height: 1rem;
-    margin-top: 0.15rem;
-    accent-color: #275c48;
+    margin-top: 0.2rem;
+
+    accent-color: var(--clinic-green-700);
 }
 
 .checkboxField span {
     display: grid;
     gap: 0.2rem;
+
+    min-width: 0;
 }
 
 .checkboxField strong {
-    color: #1d3028;
-    font-size: 0.9rem;
+    color: var(--clinic-ink);
+
+    font-size: var(--clinic-font-size-sm);
+    font-weight: 800;
 }
 
 .jobActions {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.65rem;
+    gap: 0.6rem;
+
+    min-width: 0;
 }
 
 .runHint {
@@ -271,30 +395,33 @@
     display: grid;
     justify-items: start;
     gap: 0.55rem;
-    padding: clamp(1rem, 2.5vw, 1.45rem);
-    border: 1px solid rgba(39, 92, 72, 0.14);
-    border-radius: 1.35rem;
-    background:
-        linear-gradient(135deg,
-            rgba(255, 255, 255, 0.94),
-            rgba(247, 251, 249, 0.9)),
-        radial-gradient(circle at top left,
-            rgba(93, 160, 126, 0.1),
-            transparent 44%);
-    box-shadow: 0 18px 50px rgba(24, 43, 35, 0.07);
+
+    min-width: 0;
+    padding: clamp(1rem, 2vw, 1.25rem);
+
+    border: 1px solid var(--clinic-border);
+    border-radius: var(--clinic-radius-xl);
+
+    background: var(--clinic-surface);
+
+    box-shadow: var(--clinic-shadow-soft);
 }
 
 .stateTitle {
-    color: #16251f;
-    font-size: clamp(1rem, 1.6vw, 1.2rem);
+    color: var(--clinic-ink);
+
+    font-size: clamp(1rem, 1.8vw, 1.18rem);
+    font-weight: 850;
 }
 
 .stateDescription {
     max-width: 62ch;
     margin: 0;
-    color: #60766d;
-    font-size: 0.94rem;
-    line-height: 1.55;
+
+    color: var(--clinic-muted-strong);
+
+    font-size: var(--clinic-font-size-sm);
+    line-height: var(--clinic-line-height-base);
 }
 
 @media (max-width: 760px) {
@@ -317,6 +444,23 @@
     }
 
     .optionField input {
-        inline-size: 100%;
+        width: 100%;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .refreshButton,
+    .stateAction,
+    .previewButton,
+    .runButton {
+        transition: none;
+    }
+
+    .refreshButton:hover,
+    .stateAction:hover,
+    .previewButton:hover,
+    .runButton:hover {
+        transform: none;
     }
 }
