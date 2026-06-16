@@ -2,12 +2,12 @@
 
 import { SANTACASA_REGULARIZACOES_PAGE } from "../../config/santaCasaRegularizacoesPage.config";
 
+import { classNames } from "../../../../../shared/utils/classNames";
+
 import styles from "./SantaCasaRegularizacaoDetailsToggle.module.css";
 
 function getButtonClassName(isHistory) {
-  return isHistory
-    ? `${styles.detailsToggleButton} ${styles.detailsToggleButtonHistory}`
-    : styles.detailsToggleButton;
+  return classNames(styles.detailsToggleButton, isHistory && styles.detailsToggleButtonHistory);
 }
 
 export default function SantaCasaRegularizacaoDetailsToggle({

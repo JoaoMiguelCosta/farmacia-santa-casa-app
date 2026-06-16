@@ -4,6 +4,8 @@ import { mergeAriaIds } from "../../utils/aria";
 
 import { FORM_FIELD_CONFIG } from "./FormField.config";
 
+import { classNames } from "../../utils/classNames";
+
 import styles from "./FormField.module.css";
 
 export default function FormField({
@@ -18,9 +20,7 @@ export default function FormField({
   const errorId = error ? `${id}-error` : undefined;
   const describedBy = mergeAriaIds(hintId, errorId);
 
-  const fieldClassName = error
-    ? `${styles.field} ${styles.hasError}`
-    : styles.field;
+  const fieldClassName = classNames(styles.field, error && styles.hasError);
 
   const enhancedChildren =
     Children.count(children) === 1 && isValidElement(children)

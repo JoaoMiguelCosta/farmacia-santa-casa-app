@@ -1,3 +1,5 @@
+import Button from "../../../../../shared/ui/Button/Button";
+
 import styles from "./SystemManutencaoJobs.module.css";
 
 import { SYSTEM_MANUTENCAO_PAGE } from "../../config/systemManutencaoPage.config";
@@ -24,9 +26,9 @@ function SystemManutencaoJobsState({
       ) : null}
 
       {actionLabel && onAction ? (
-        <button type="button" className={styles.stateAction} onClick={onAction}>
+        <Button variant="secondary" size="sm" onClick={onAction}>
           {actionLabel}
-        </button>
+        </Button>
       ) : null}
     </div>
   );
@@ -109,12 +111,12 @@ function SystemManutencaoJobCard({
           <p className={styles.jobDescription}>{job.description}</p>
         </div>
 
-        <span className={styles.risk}>Risco: {risk}</span>
+        <span className={styles.risk}>{SYSTEM_MANUTENCAO_PAGE.labels.riskPrefix}: {risk}</span>
       </header>
 
       {warning ? (
         <p className={styles.warning}>
-          <strong>Atenção:</strong> {warning}
+          <strong>{SYSTEM_MANUTENCAO_PAGE.labels.warningPrefix}:</strong> {warning}
         </p>
       ) : null}
 
@@ -126,32 +128,32 @@ function SystemManutencaoJobCard({
       />
 
       <footer className={styles.jobActions}>
-        <button
-          type="button"
-          className={styles.previewButton}
+        <Button
+          variant="secondary"
+          size="sm"
           disabled={isDisabled}
           onClick={() => onPreview?.(job.key)}
         >
           {isPreviewing
             ? SYSTEM_MANUTENCAO_PAGE.actions.previewing
             : SYSTEM_MANUTENCAO_PAGE.actions.preview}
-        </button>
+        </Button>
 
-        <button
-          type="button"
-          className={styles.runButton}
+        <Button
+          variant="danger"
+          size="sm"
           disabled={isDisabled || !canRun || isCurrentJobBusy}
           onClick={() => onRun?.(job.key)}
         >
           {isRunning
             ? SYSTEM_MANUTENCAO_PAGE.actions.running
             : SYSTEM_MANUTENCAO_PAGE.actions.run}
-        </button>
+        </Button>
       </footer>
 
       {!canRun ? (
         <p className={styles.runHint}>
-          Faz uma pré-visualização deste job antes de executar.
+          {SYSTEM_MANUTENCAO_PAGE.labels.runHint}
         </p>
       ) : null}
     </article>
@@ -181,7 +183,7 @@ export default function SystemManutencaoJobs({
       <section className={styles.section} aria-live="polite">
         <SystemManutencaoJobsState
           title={sectionConfig.loadingTitle}
-          description="Aguarda enquanto os jobs são carregados."
+          description={sectionConfig.loadingDescription}
         />
       </section>
     );
@@ -214,16 +216,16 @@ export default function SystemManutencaoJobs({
           <p className={styles.description}>{sectionConfig.description}</p>
         </div>
 
-        <button
-          type="button"
-          className={styles.refreshButton}
+        <Button
+          variant="secondary"
+          size="sm"
           disabled={isRefreshing || isBusy}
           onClick={onRefresh}
         >
           {isRefreshing
             ? SYSTEM_MANUTENCAO_PAGE.actions.refreshing
             : SYSTEM_MANUTENCAO_PAGE.actions.refresh}
-        </button>
+        </Button>
       </header>
 
       {!hasJobs ? (

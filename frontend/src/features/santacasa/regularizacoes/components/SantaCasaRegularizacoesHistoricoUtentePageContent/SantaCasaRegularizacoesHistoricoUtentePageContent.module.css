@@ -172,7 +172,6 @@
     line-height: var(--clinic-line-height-base);
 }
 
-.refreshButton,
 .clearButton,
 .listButton {
     min-height: 2.45rem;
@@ -193,7 +192,6 @@
         opacity var(--clinic-transition);
 }
 
-.refreshButton:hover,
 .clearButton:hover,
 .listButton:hover {
     transform: translateY(-1px);
@@ -202,14 +200,12 @@
     box-shadow: var(--clinic-shadow-soft);
 }
 
-.refreshButton:focus-visible,
 .clearButton:focus-visible,
 .listButton:focus-visible {
     outline: 3px solid rgba(31, 95, 81, 0.24);
     outline-offset: 3px;
 }
 
-.refreshButton:disabled,
 .clearButton:disabled,
 .listButton:disabled {
     cursor: not-allowed;
@@ -424,10 +420,13 @@
         flex-direction: column;
     }
 
-    .refreshButton,
     .clearButton,
     .listButton,
     .backLink {
+        width: 100%;
+    }
+
+    .sectionHeader > button {
         width: 100%;
     }
 

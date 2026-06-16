@@ -1,33 +1,32 @@
-// src/features/santacasa/operacao/components/OperacaoSemReceitaSection/OperacaoSemReceitaSection.jsx
-import SemReceitaCreateForm from "../../../sem-receita/components/SemReceitaCreateForm/SemReceitaCreateForm";
-import SemReceitaList from "../../../sem-receita/components/SemReceitaList/SemReceitaList";
+import SemReceitaCreateForm from "../../../semReceita/components/SemReceitaCreateForm/SemReceitaCreateForm";
+import SemReceitaList from "../../../semReceita/components/SemReceitaList/SemReceitaList";
 
 import { OPERACAO_PAGE } from "../../config/operacaoPage.config";
+import { useOperacaoContext } from "../../context/OperacaoContext";
 
 import OperationSection from "../OperationSection/OperationSection";
 
 export default function OperacaoSemReceitaSection({
-  selectedUtenteId,
-  selectedUtente,
-
   items,
-  isLoading,
-  error,
-
   isCreating,
-  medicacaoHabitualOptions,
-
   deletingItemId,
-  pedidoQuantities,
-  pedidoItemsQuantities,
-
   onCreateSemReceita,
-  onPedidoQuantityChange,
-  onAddToPedido,
-  onRetry,
-  onBlockedDelete,
   onRequestDelete,
 }) {
+  const {
+    selectedUtenteId,
+    selectedUtente,
+    isLoading,
+    error,
+    medicacaoHabitualOptions,
+    pedidoQuantities,
+    pedidoItemsQuantities,
+    onPedidoQuantityChange,
+    onAddToPedido,
+    onRetry,
+    onBlockedDelete,
+  } = useOperacaoContext();
+
   const section = OPERACAO_PAGE.sections.semReceita;
 
   return (

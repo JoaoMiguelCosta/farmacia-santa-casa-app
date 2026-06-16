@@ -82,10 +82,6 @@ export default function PedidosPageContent() {
     onPedidoCreated: refreshPendentes,
   });
 
-  function handleCloseFeedback() {
-    setFeedback(null);
-  }
-
   return (
     <section className={styles.page} aria-labelledby="santacasa-pedidos-title">
       <PageHeader
@@ -127,7 +123,7 @@ export default function PedidosPageContent() {
         activeFeedback={feedback}
         onConfirmClearDraft={handleConfirmClearDraft}
         onCancelClearDraft={handleCancelClearDraft}
-        onCloseFeedback={handleCloseFeedback}
+        onCloseFeedback={() => setFeedback(null)}
       />
     </section>
   );

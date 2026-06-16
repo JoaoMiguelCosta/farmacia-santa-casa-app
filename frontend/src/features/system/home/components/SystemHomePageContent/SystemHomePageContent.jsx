@@ -2,7 +2,7 @@
 
 import { SYSTEM_HOME_PAGE } from "../../config/systemHomePage.config";
 
-import SystemHomeActionCard from "../SystemHomeActionCard/SystemHomeActionCard";
+import HomeActionCard from "../../../../../shared/ui/HomeActionCard/HomeActionCard";
 
 import styles from "./SystemHomePageContent.module.css";
 
@@ -23,7 +23,7 @@ export default function SystemHomePageContent() {
 
       <section className={styles.featured} aria-label={featured.ariaLabel}>
         {featured.actions.map((action) => (
-          <SystemHomeActionCard key={action.id} {...action} />
+          <HomeActionCard key={action.id} {...action} />
         ))}
       </section>
     </section>

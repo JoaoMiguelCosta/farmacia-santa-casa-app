@@ -1,6 +1,6 @@
 import { FARMACIA_HOME_PAGE } from "../../config/farmaciaHomePage.config";
 
-import FarmaciaHomeActionCard from "../FarmaciaHomeActionCard/FarmaciaHomeActionCard";
+import HomeActionCard from "../../../../../shared/ui/HomeActionCard/HomeActionCard";
 
 import styles from "./FarmaciaHomePageContent.module.css";
 
@@ -20,9 +20,9 @@ export default function FarmaciaHomePageContent() {
       </header>
 
       <section className={styles.featured} aria-label={featured.ariaLabel}>
-        <FarmaciaHomeActionCard {...featured.pedidos} />
+        <HomeActionCard {...featured.pedidos} />
 
-        <FarmaciaHomeActionCard {...featured.dashboard} />
+        <HomeActionCard {...featured.dashboard} />
       </section>
 
       <section
@@ -44,7 +44,7 @@ export default function FarmaciaHomePageContent() {
 
         <div className={styles.quickAccessGrid}>
           {quickAccess.actions.map((action) => (
-            <FarmaciaHomeActionCard key={action.id} {...action} />
+            <HomeActionCard key={action.id} {...action} />
           ))}
         </div>
       </section>

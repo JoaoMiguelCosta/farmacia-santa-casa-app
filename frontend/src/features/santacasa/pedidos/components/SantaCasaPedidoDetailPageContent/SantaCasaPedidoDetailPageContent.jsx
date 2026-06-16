@@ -1,5 +1,3 @@
-// src/features/santacasa/pedidos/components/SantaCasaPedidoDetailPageContent/SantaCasaPedidoDetailPageContent.jsx
-
 import { Link, useParams } from "react-router-dom";
 
 import Button from "../../../../../shared/ui/Button/Button";
@@ -13,54 +11,17 @@ import SantaCasaPedidoDetails from "../../../shared/pedidos/components/SantaCasa
 import { getSantaCasaPedidoOperationalSummary } from "../../../shared/pedidos/utils/santaCasaPedidoOperational.utils";
 
 import { PEDIDOS_PAGE } from "../../config/pedidosPage.config";
-
 import { useSantaCasaPedidoDetail } from "../../hooks/useSantaCasaPedidoDetail";
 import { useSantaCasaPedidoDetailActions } from "../../hooks/useSantaCasaPedidoDetailActions";
+import {
+  canCancelPedido,
+  getSafeDomId,
+} from "../../utils/santaCasaPedidoDetail.utils";
 
 import SantaCasaPedidoDetailDialogs from "./components/SantaCasaPedidoDetailDialogs/SantaCasaPedidoDetailDialogs";
+import OperationalDetailState from "../../../../../shared/ui/OperationalDetailState/OperationalDetailState";
 
 import styles from "./SantaCasaPedidoDetailPageContent.module.css";
-
-function PedidoDetailState({
-  title,
-  description,
-  actionLabel,
-  isActionLoading = false,
-  onAction,
-}) {
-  return (
-    <div className={styles.state} role="status">
-      <strong className={styles.stateTitle}>{title}</strong>
-
-      {description ? (
-        <p className={styles.stateDescription}>{description}</p>
-      ) : null}
-
-      {actionLabel && onAction ? (
-        <button
-          type="button"
-          className={styles.stateAction}
-          disabled={isActionLoading}
-          onClick={onAction}
-        >
-          {actionLabel}
-        </button>
-      ) : null}
-    </div>
-  );
-}
-
-function canCancelPedido(pedido, operationalSummary) {
-  return Boolean(
-    pedido?.status === "PENDENTE" && operationalSummary?.pendingItems > 0,
-  );
-}
-
-function getSafeDomId(value) {
-  return String(value || "")
-    .trim()
-    .replace(/[^a-zA-Z0-9_-]/g, "-");
-}
 
 export default function SantaCasaPedidoDetailPageContent() {
   const { pedidoId } = useParams();
@@ -113,14 +74,14 @@ export default function SantaCasaPedidoDetailPageContent() {
         </Link>
 
         {!isLoading && pedido ? (
-          <button
-            type="button"
-            className={styles.refreshButton}
+          <Button
+            variant="secondary"
+            size="sm"
             disabled={isRefreshing || isCanceling}
             onClick={refreshPedido}
           >
             {isRefreshing ? detail.refreshingLabel : detail.refreshLabel}
-          </button>
+          </Button>
         ) : null}
       </div>
 
@@ -132,14 +93,14 @@ export default function SantaCasaPedidoDetailPageContent() {
       />
 
       {isLoading ? (
-        <PedidoDetailState
+        <OperationalDetailState
           title={detail.loadingTitle}
           description={detail.loadingDescription}
         />
       ) : null}
 
       {!isLoading && error ? (
-        <PedidoDetailState
+        <OperationalDetailState
           title={detail.errorTitle}
           description={error}
           actionLabel={

@@ -1,3 +1,5 @@
+import { FARMACIA_ROUTES } from "../../shared/config/farmaciaRoutes.config";
+
 export const FARMACIA_DASHBOARD_PAGE = Object.freeze({
   header: Object.freeze({
     eyebrow: "Farmácia",
@@ -98,16 +100,16 @@ export const FARMACIA_DASHBOARD_PAGE = Object.freeze({
 
   cards: Object.freeze({
     pedidosPendentes: Object.freeze({
-      to: "/farmacia/pedidos",
+      to: FARMACIA_ROUTES.pedidos,
       actionLabel: "Ver pedidos",
     }),
 
     historico: Object.freeze({
-      to: "/farmacia/historico",
+      to: FARMACIA_ROUTES.historico,
     }),
 
     regularizacoes: Object.freeze({
-      to: "/farmacia/regularizacoes",
+      to: FARMACIA_ROUTES.regularizacoes,
       actionLabel: "Ver regularizações",
     }),
   }),

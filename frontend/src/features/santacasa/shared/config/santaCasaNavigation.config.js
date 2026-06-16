@@ -7,15 +7,18 @@ export const SANTACASA_NAV_ITEMS = Object.freeze([
     end: true,
   }),
 
+
+    Object.freeze({
+    label: "Utentes",
+    to: SANTACASA_ROUTES.utentes,
+  }),
+
   Object.freeze({
     label: "Operação",
     to: SANTACASA_ROUTES.operacao,
   }),
 
-  Object.freeze({
-    label: "Utentes",
-    to: SANTACASA_ROUTES.utentes,
-  }),
+
 
   Object.freeze({
     label: "Pedidos",

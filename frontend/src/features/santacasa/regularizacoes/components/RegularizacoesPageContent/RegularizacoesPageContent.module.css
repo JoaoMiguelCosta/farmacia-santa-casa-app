@@ -1,200 +1,8 @@
-/* src/features/santacasa/regularizacoes/components/RegularizacoesPageContent/RegularizacoesPageContent.module.css */
-
 .page {
     display: grid;
     gap: clamp(1.25rem, 2.5vw, 2rem);
     inline-size: min(100%, var(--clinic-page-max));
     margin-inline: auto;
-}
-
-.toolbar {
-    display: grid;
-    gap: 0.9rem;
-    padding: clamp(0.9rem, 2vw, 1.05rem);
-    border: 1px solid var(--clinic-border);
-    border-radius: var(--clinic-radius-xl);
-    background: var(--clinic-surface);
-    box-shadow: var(--clinic-shadow-soft);
-}
-
-.topBar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-}
-
-.tabs {
-    display: inline-flex;
-    flex-wrap: wrap;
-    gap: 0.38rem;
-    width: fit-content;
-    padding: 0.28rem;
-    border: 1px solid var(--clinic-border);
-    border-radius: 999px;
-    background: var(--clinic-mist);
-}
-
-.tabButton,
-.filterButton,
-.clearButton {
-    min-height: 2.35rem;
-    padding: 0.62rem 0.9rem;
-    border-radius: 999px;
-    font: inherit;
-    font-size: var(--clinic-font-size-sm);
-    font-weight: 850;
-    cursor: pointer;
-    transition:
-        transform var(--clinic-transition),
-        border-color var(--clinic-transition),
-        background var(--clinic-transition),
-        color var(--clinic-transition),
-        box-shadow var(--clinic-transition),
-        opacity var(--clinic-transition);
-}
-
-.tabButton {
-    border: 1px solid transparent;
-    background: transparent;
-    color: var(--clinic-green-700);
-}
-
-.tabButtonActive {
-    border-color: var(--clinic-green-700);
-    background: var(--clinic-green-700);
-    color: var(--clinic-white);
-    box-shadow: var(--clinic-shadow-soft);
-}
-
-.meta {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.55rem;
-    min-height: 2.35rem;
-    padding: 0.55rem 0.8rem;
-    border: 1px solid var(--clinic-border);
-    border-radius: 999px;
-    background: var(--clinic-white);
-}
-
-.meta span {
-    color: var(--clinic-muted);
-    font-size: var(--clinic-font-size-xs);
-    font-weight: 800;
-}
-
-.meta strong {
-    color: var(--clinic-ink-soft);
-    font-size: var(--clinic-font-size-md);
-    font-weight: 950;
-    line-height: 1;
-}
-
-.filters {
-    display: grid;
-    grid-template-columns:
-        minmax(18rem, 1fr) minmax(9rem, 0.46fr) minmax(9rem, 0.46fr) auto;
-    align-items: end;
-    gap: 0.68rem;
-    min-width: 0;
-}
-
-.filterField {
-    display: grid;
-    gap: 0.36rem;
-    min-width: 0;
-}
-
-.filterField span {
-    color: var(--clinic-muted);
-    font-size: var(--clinic-font-size-xs);
-    font-weight: 850;
-    letter-spacing: 0.06em;
-    line-height: 1.25;
-    text-transform: uppercase;
-}
-
-.filterField input,
-.filterField select {
-    min-height: 2.38rem;
-    inline-size: 100%;
-    padding: 0.65rem 0.85rem;
-    border: 1px solid var(--clinic-border);
-    border-radius: 999px;
-    background: var(--clinic-white);
-    color: var(--clinic-ink);
-    font: inherit;
-    font-size: var(--clinic-font-size-sm);
-}
-
-.filterField input::placeholder {
-    color: rgba(102, 115, 109, 0.72);
-}
-
-.filterField input:focus,
-.filterField select:focus {
-    outline: none;
-    border-color: var(--clinic-border-strong);
-    box-shadow: 0 0 0 3px rgba(31, 95, 81, 0.16);
-}
-
-.filterActions {
-    display: flex;
-    gap: 0.5rem;
-}
-
-.filterButton {
-    border: 1px solid var(--clinic-green-700);
-    background: var(--clinic-green-700);
-    color: var(--clinic-white);
-    box-shadow: var(--clinic-shadow-soft);
-}
-
-.clearButton {
-    border: 1px solid var(--clinic-border);
-    background: var(--clinic-white);
-    color: var(--clinic-green-700);
-}
-
-.tabButton:hover,
-.filterButton:hover,
-.clearButton:hover {
-    transform: translateY(-1px);
-    border-color: var(--clinic-border-strong);
-    box-shadow: var(--clinic-shadow-soft);
-}
-
-.tabButton:hover {
-    background: var(--clinic-white);
-}
-
-.tabButtonActive:hover,
-.filterButton:hover {
-    background: var(--clinic-green-800);
-    color: var(--clinic-white);
-}
-
-.clearButton:hover {
-    background: var(--clinic-mist);
-}
-
-.tabButton:focus-visible,
-.filterButton:focus-visible,
-.clearButton:focus-visible {
-    outline: 3px solid rgba(31, 95, 81, 0.24);
-    outline-offset: 3px;
-}
-
-.tabButton:disabled,
-.filterButton:disabled,
-.clearButton:disabled,
-.filterField input:disabled,
-.filterField select:disabled {
-    cursor: not-allowed;
-    opacity: 0.58;
-    transform: none;
-    box-shadow: none;
 }
 
 .pagination {
@@ -224,66 +32,66 @@
     gap: 0.5rem;
 }
 
-@media (max-width: 1120px) {
-    .filters {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
+.paginationButton {
+    min-height: 2.35rem;
+    padding: 0.62rem 0.9rem;
+    border: 1px solid var(--clinic-border);
+    border-radius: 999px;
+    background: var(--clinic-white);
+    color: var(--clinic-green-700);
+    font: inherit;
+    font-size: var(--clinic-font-size-sm);
+    font-weight: 850;
+    cursor: pointer;
+    transition:
+        transform var(--clinic-transition),
+        border-color var(--clinic-transition),
+        background var(--clinic-transition),
+        box-shadow var(--clinic-transition),
+        opacity var(--clinic-transition);
+}
 
-    .filterActions {
-        grid-column: 1 / -1;
-    }
+.paginationButton:hover {
+    transform: translateY(-1px);
+    border-color: var(--clinic-border-strong);
+    background: var(--clinic-mist);
+    box-shadow: var(--clinic-shadow-soft);
+}
+
+.paginationButton:focus-visible {
+    outline: 3px solid rgba(31, 95, 81, 0.24);
+    outline-offset: 3px;
+}
+
+.paginationButton:disabled {
+    cursor: not-allowed;
+    opacity: 0.58;
+    transform: none;
+    box-shadow: none;
 }
 
 @media (max-width: 760px) {
-
-    .topBar,
     .pagination {
         align-items: stretch;
         flex-direction: column;
-    }
-
-    .tabs,
-    .meta {
-        width: 100%;
-    }
-
-    .tabs {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        border-radius: var(--clinic-radius-lg);
-    }
-
-    .tabButton {
-        width: 100%;
-    }
-
-    .meta {
-        justify-content: space-between;
-        border-radius: var(--clinic-radius-lg);
     }
 
     .paginationActions {
         justify-content: stretch;
     }
 
-    .paginationActions>* {
+    .paginationActions > * {
         flex: 1;
     }
 }
 
 @media (max-width: 640px) {
-    .filters {
-        grid-template-columns: 1fr;
-    }
-
-    .filterActions,
     .paginationActions {
         display: grid;
         grid-template-columns: 1fr;
     }
 
-    .filterButton,
-    .clearButton {
+    .paginationButton {
         width: 100%;
     }
 }

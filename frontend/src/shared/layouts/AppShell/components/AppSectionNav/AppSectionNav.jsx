@@ -2,18 +2,16 @@
 
 import { NavLink } from "react-router-dom";
 
+import { classNames } from "../../../../utils/classNames";
+
 import styles from "./AppSectionNav.module.css";
 
 function getNavLinkClassName({ isActive }) {
-  return isActive ? `${styles.link} ${styles.active}` : styles.link;
+  return classNames(styles.link, isActive && styles.active);
 }
 
 function getNavItemClassName(item) {
-  if (item.placement === "end") {
-    return `${styles.item} ${styles.endItem}`;
-  }
-
-  return styles.item;
+  return classNames(styles.item, item.placement === "end" && styles.endItem);
 }
 
 export default function AppSectionNav({ items = [], ariaLabel }) {

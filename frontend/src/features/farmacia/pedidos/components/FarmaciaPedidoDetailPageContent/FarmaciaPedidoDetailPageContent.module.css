@@ -23,9 +23,7 @@
     gap: 1rem;
 }
 
-.backLink,
-.refreshButton,
-.stateAction {
+.backLink {
     min-height: 2.55rem;
     padding: 0.68rem 0.9rem;
 
@@ -59,9 +57,7 @@
     width: fit-content;
 }
 
-.backLink:hover,
-.refreshButton:hover,
-.stateAction:hover {
+.backLink:hover {
     transform: translateY(-1px);
 
     border-color:
@@ -71,21 +67,12 @@
     box-shadow: var(--clinic-shadow-soft);
 }
 
-.backLink:focus-visible,
-.refreshButton:focus-visible,
-.stateAction:focus-visible {
+.backLink:focus-visible {
     outline: 3px solid rgba(31, 95, 81, 0.24);
 
     outline-offset: 3px;
 }
 
-.refreshButton:disabled,
-.stateAction:disabled {
-    cursor: not-allowed;
-    opacity: 0.56;
-    transform: none;
-    box-shadow: none;
-}
 
 .actionError {
     display: grid;
@@ -116,41 +103,6 @@
     line-height: 1.5;
 }
 
-.state {
-    display: grid;
-    justify-items: start;
-    gap: 0.5rem;
-
-    padding:
-        clamp(1rem, 2.5vw, 1.35rem);
-
-    border: 1px solid var(--clinic-border);
-
-    border-radius:
-        var(--clinic-radius-lg);
-
-    background: var(--clinic-surface);
-    box-shadow: var(--clinic-shadow-soft);
-}
-
-.stateTitle {
-    color: var(--clinic-ink);
-
-    font-size:
-        clamp(1rem, 1.6vw, 1.15rem);
-}
-
-.stateDescription {
-    max-width: 62ch;
-    margin: 0;
-
-    color: var(--clinic-muted);
-
-    font-size:
-        var(--clinic-font-size-sm);
-
-    line-height: 1.5;
-}
 
 @media (max-width: 1180px) {
     .pageWithDecisionBar {
@@ -176,8 +128,7 @@
         flex-direction: column;
     }
 
-    .backLink,
-    .refreshButton {
+    .backLink {
         justify-content: center;
         width: 100%;
     }

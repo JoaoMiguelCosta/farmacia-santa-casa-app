@@ -1,3 +1,5 @@
+import { classNames } from "../../../../../shared/utils/classNames";
+
 import styles from "./FarmaciaAlertasState.module.css";
 
 export default function FarmaciaAlertasState({
@@ -5,7 +7,7 @@ export default function FarmaciaAlertasState({
   tone = "notice",
   role,
 }) {
-  const className = [styles.state, styles[tone]].filter(Boolean).join(" ");
+  const className = classNames(styles.state, styles[tone]);
 
   return (
     <p className={className} role={role}>

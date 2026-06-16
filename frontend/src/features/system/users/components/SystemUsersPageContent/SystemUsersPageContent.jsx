@@ -1,61 +1,33 @@
-// src/features/system/users/components/SystemUsersPageContent/SystemUsersPageContent.jsx
-
-import { useState } from "react";
-
 import PageHeader from "../../../../../shared/ui/PageHeader/PageHeader";
 
+import SystemUsersDialogs from "../SystemUsersDialogs/SystemUsersDialogs";
 import SystemUserForm from "../SystemUserForm/SystemUserForm";
 import SystemUsersFilters from "../SystemUsersFilters/SystemUsersFilters";
 import SystemUsersList from "../SystemUsersList/SystemUsersList";
 
 import { SYSTEM_USERS_PAGE } from "../../config/systemUsersPage.config";
 import { useSystemUsers } from "../../hooks/useSystemUsers";
+import { useSystemUsersDialogs } from "../../hooks/useSystemUsersDialogs";
 
 import styles from "./SystemUsersPageContent.module.css";
-
-function getStatusActionLabel(user) {
-  if (!user) return "";
-
-  return user.isActive
-    ? SYSTEM_USERS_PAGE.actions.deactivate
-    : SYSTEM_USERS_PAGE.actions.activate;
-}
-
-function getStatusConfirmDescription(user) {
-  if (!user) return "";
-
-  if (user.isActive) {
-    return "Esta conta ficará inativa e deixará de conseguir iniciar sessão no sistema.";
-  }
-
-  return "Esta conta voltará a ficar ativa e poderá iniciar sessão no sistema.";
-}
-
-function getDeleteConfirmDescription(user) {
-  if (!user) return "";
-
-  return "Esta ação só será permitida se a conta estiver desativada e não tiver histórico associado. Caso tenha histórico de validações ou rejeições, o sistema vai bloquear a remoção.";
-}
 
 function getPaginationLabel({ meta, currentPage, totalPages }) {
   const total = Number(meta?.total) || 0;
   const skip = Number(meta?.skip) || 0;
   const take = Number(meta?.take) || 0;
 
-  if (total === 0) {
-    return "Sem resultados.";
-  }
+  if (total === 0) return SYSTEM_USERS_PAGE.pagination.noResults;
 
-  const start = skip + 1;
-  const end = Math.min(skip + take, total);
-
-  return `A mostrar ${start}-${end} de ${total} utilizador(es). Página ${currentPage} de ${totalPages}.`;
+  return SYSTEM_USERS_PAGE.pagination.getPaginationLabel({
+    start: skip + 1,
+    end: Math.min(skip + take, total),
+    total,
+    currentPage,
+    totalPages,
+  });
 }
 
 export default function SystemUsersPageContent() {
-  const [pendingStatusUser, setPendingStatusUser] = useState(null);
-  const [pendingDeleteUser, setPendingDeleteUser] = useState(null);
-
   const {
     users,
     meta,
@@ -103,47 +75,22 @@ export default function SystemUsersPageContent() {
     deleteUser,
   } = useSystemUsers();
 
-  const isStatusDialogOpen = Boolean(pendingStatusUser);
-  const isDeleteDialogOpen = Boolean(pendingDeleteUser);
-  const pendingStatusActionLabel = getStatusActionLabel(pendingStatusUser);
+  const {
+    pendingStatusUser,
+    pendingDeleteUser,
+    handleRequestToggleStatus,
+    handleCancelToggleStatus,
+    handleConfirmToggleStatus,
+    handleRequestDelete,
+    handleCancelDelete,
+    handleConfirmDelete,
+  } = useSystemUsersDialogs({ toggleUserStatus, deleteUser });
 
   const paginationLabel = getPaginationLabel({
     meta,
     currentPage,
     totalPages,
   });
-
-  function handleRequestToggleStatus(user) {
-    setPendingDeleteUser(null);
-    setPendingStatusUser(user);
-  }
-
-  function handleCancelToggleStatus() {
-    setPendingStatusUser(null);
-  }
-
-  async function handleConfirmToggleStatus() {
-    if (!pendingStatusUser) return;
-
-    await toggleUserStatus(pendingStatusUser);
-    setPendingStatusUser(null);
-  }
-
-  function handleRequestDelete(user) {
-    setPendingStatusUser(null);
-    setPendingDeleteUser(user);
-  }
-
-  function handleCancelDelete() {
-    setPendingDeleteUser(null);
-  }
-
-  async function handleConfirmDelete() {
-    if (!pendingDeleteUser) return;
-
-    await deleteUser(pendingDeleteUser);
-    setPendingDeleteUser(null);
-  }
 
   return (
     <section className={styles.page} aria-labelledby="system-users-title">
@@ -208,14 +155,14 @@ export default function SystemUsersPageContent() {
 
       <section
         className={styles.pagination}
-        aria-label="Paginação de utilizadores do sistema"
+        aria-label={SYSTEM_USERS_PAGE.pagination.ariaLabel}
       >
         <p className={styles.paginationInfo}>{paginationLabel}</p>
 
         <div className={styles.paginationActions}>
           <button
             type="button"
-            className={styles.cancelButton}
+            className={styles.paginationButton}
             disabled={!hasPreviousPage || isLoading || isRefreshing || isBusy}
             onClick={goToPreviousPage}
           >
@@ -224,7 +171,7 @@ export default function SystemUsersPageContent() {
 
           <button
             type="button"
-            className={styles.cancelButton}
+            className={styles.paginationButton}
             disabled={!hasNextPage || isLoading || isRefreshing || isBusy}
             onClick={goToNextPage}
           >
@@ -233,147 +180,16 @@ export default function SystemUsersPageContent() {
         </div>
       </section>
 
-      {isStatusDialogOpen ? (
-        <div className={styles.dialogBackdrop} role="presentation">
-          <section
-            className={styles.dialog}
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="system-users-status-confirm-title"
-            aria-describedby="system-users-status-confirm-description"
-          >
-            <div className={styles.dialogContent}>
-              <p className={styles.dialogEyebrow}>Confirmação necessária</p>
-
-              <h2
-                id="system-users-status-confirm-title"
-                className={styles.dialogTitle}
-              >
-                {pendingStatusActionLabel} utilizador?
-              </h2>
-
-              <p
-                id="system-users-status-confirm-description"
-                className={styles.dialogDescription}
-              >
-                {getStatusConfirmDescription(pendingStatusUser)}
-              </p>
-
-              <dl className={styles.dialogUser}>
-                <div>
-                  <dt>Nome</dt>
-                  <dd>{pendingStatusUser?.name}</dd>
-                </div>
-
-                <div>
-                  <dt>Email</dt>
-                  <dd>{pendingStatusUser?.email}</dd>
-                </div>
-
-                <div>
-                  <dt>Estado atual</dt>
-                  <dd>{pendingStatusUser?.statusLabel}</dd>
-                </div>
-              </dl>
-            </div>
-
-            <div className={styles.dialogActions}>
-              <button
-                type="button"
-                className={styles.cancelButton}
-                disabled={Boolean(statusChangingUserId)}
-                onClick={handleCancelToggleStatus}
-              >
-                {SYSTEM_USERS_PAGE.actions.cancel}
-              </button>
-
-              <button
-                type="button"
-                className={
-                  pendingStatusUser?.isActive
-                    ? styles.dangerButton
-                    : styles.confirmButton
-                }
-                disabled={Boolean(statusChangingUserId)}
-                onClick={handleConfirmToggleStatus}
-              >
-                {statusChangingUserId
-                  ? SYSTEM_USERS_PAGE.actions.saving
-                  : pendingStatusActionLabel}
-              </button>
-            </div>
-          </section>
-        </div>
-      ) : null}
-
-      {isDeleteDialogOpen ? (
-        <div className={styles.dialogBackdrop} role="presentation">
-          <section
-            className={styles.dialog}
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="system-users-delete-confirm-title"
-            aria-describedby="system-users-delete-confirm-description"
-          >
-            <div className={styles.dialogContent}>
-              <p className={styles.dialogEyebrow}>Remoção segura</p>
-
-              <h2
-                id="system-users-delete-confirm-title"
-                className={styles.dialogTitle}
-              >
-                Remover utilizador?
-              </h2>
-
-              <p
-                id="system-users-delete-confirm-description"
-                className={styles.dialogDescription}
-              >
-                {getDeleteConfirmDescription(pendingDeleteUser)}
-              </p>
-
-              <dl className={styles.dialogUser}>
-                <div>
-                  <dt>Nome</dt>
-                  <dd>{pendingDeleteUser?.name}</dd>
-                </div>
-
-                <div>
-                  <dt>Email</dt>
-                  <dd>{pendingDeleteUser?.email}</dd>
-                </div>
-
-                <div>
-                  <dt>Estado atual</dt>
-                  <dd>{pendingDeleteUser?.statusLabel}</dd>
-                </div>
-              </dl>
-            </div>
-
-            <div className={styles.dialogActions}>
-              <button
-                type="button"
-                className={styles.cancelButton}
-                disabled={Boolean(deletingUserId)}
-                onClick={handleCancelDelete}
-              >
-                {SYSTEM_USERS_PAGE.actions.cancel}
-              </button>
-
-              <button
-                type="button"
-                className={styles.dangerButton}
-                disabled={Boolean(deletingUserId)}
-                onClick={handleConfirmDelete}
-              >
-                {deletingUserId
-                  ? SYSTEM_USERS_PAGE.actions.removing
-                  : SYSTEM_USERS_PAGE.actions.remove}
-              </button>
-            </div>
-          </section>
-        </div>
-      ) : null}
+      <SystemUsersDialogs
+        pendingStatusUser={pendingStatusUser}
+        pendingDeleteUser={pendingDeleteUser}
+        statusChangingUserId={statusChangingUserId}
+        deletingUserId={deletingUserId}
+        onConfirmStatus={handleConfirmToggleStatus}
+        onCancelStatus={handleCancelToggleStatus}
+        onConfirmDelete={handleConfirmDelete}
+        onCancelDelete={handleCancelDelete}
+      />
     </section>
   );
 }

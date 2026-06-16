@@ -5,12 +5,15 @@ import {
   getRegularizacaoSituationTitle,
 } from "../../utils/santaCasaRegularizacoes.utils";
 
+import { classNames } from "../../../../../shared/utils/classNames";
+
 import styles from "./SantaCasaRegularizacaoSituation.module.css";
 
 function getSituationClassName(isCompleted) {
-  return isCompleted
-    ? `${styles.situation} ${styles.situationCompleted}`
-    : `${styles.situation} ${styles.situationPending}`;
+  return classNames(
+    styles.situation,
+    isCompleted ? styles.situationCompleted : styles.situationPending,
+  );
 }
 
 export default function SantaCasaRegularizacaoSituation({

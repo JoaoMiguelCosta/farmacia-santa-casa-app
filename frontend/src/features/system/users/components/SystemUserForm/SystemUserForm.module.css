@@ -156,90 +156,6 @@
     padding-top: 0.25rem;
 }
 
-.primaryButton,
-.secondaryButton,
-.closeButton {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-
-    min-height: 2.45rem;
-    padding: 0.64rem 0.95rem;
-
-    border-radius: 999px;
-
-    font: inherit;
-    font-size: 0.84rem;
-    font-weight: 850;
-    line-height: 1;
-
-    cursor: pointer;
-
-    transition:
-        transform var(--clinic-transition),
-        border-color var(--clinic-transition),
-        background-color var(--clinic-transition),
-        box-shadow var(--clinic-transition),
-        opacity var(--clinic-transition);
-}
-
-.primaryButton {
-    border: 1px solid rgba(31, 95, 81, 0.28);
-
-    color: var(--clinic-white);
-    background: var(--clinic-green-700);
-
-    box-shadow: 0 12px 28px rgba(31, 95, 81, 0.16);
-}
-
-.secondaryButton,
-.closeButton {
-    border: 1px solid var(--clinic-border);
-
-    color: var(--clinic-green-800);
-    background: var(--clinic-white);
-}
-
-.primaryButton:hover,
-.secondaryButton:hover,
-.closeButton:hover {
-    transform: translateY(-1px);
-}
-
-.primaryButton:hover {
-    background: var(--clinic-green-800);
-
-    box-shadow: 0 16px 34px rgba(31, 95, 81, 0.2);
-}
-
-.secondaryButton:hover,
-.closeButton:hover {
-    border-color: var(--clinic-border-strong);
-    background: var(--clinic-mist);
-}
-
-.primaryButton:active,
-.secondaryButton:active,
-.closeButton:active {
-    transform: translateY(0);
-}
-
-.primaryButton:focus-visible,
-.secondaryButton:focus-visible,
-.closeButton:focus-visible {
-    outline: 3px solid rgba(31, 95, 81, 0.26);
-    outline-offset: 3px;
-}
-
-.primaryButton:disabled,
-.secondaryButton:disabled,
-.closeButton:disabled {
-    cursor: not-allowed;
-    opacity: 0.58;
-    transform: none;
-    box-shadow: none;
-}
-
 .feedbackSuccess,
 .feedbackError {
     margin: 0;
@@ -272,7 +188,7 @@
         flex-direction: column;
     }
 
-    .closeButton {
+    .header > button {
         width: 100%;
     }
 
@@ -280,23 +196,7 @@
         flex-direction: column-reverse;
     }
 
-    .primaryButton,
-    .secondaryButton {
+    .actions > * {
         width: 100%;
-    }
-}
-
-@media (prefers-reduced-motion: reduce) {
-
-    .primaryButton,
-    .secondaryButton,
-    .closeButton {
-        transition: none;
-    }
-
-    .primaryButton:hover,
-    .secondaryButton:hover,
-    .closeButton:hover {
-        transform: none;
     }
 }

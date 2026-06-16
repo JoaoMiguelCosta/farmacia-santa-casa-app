@@ -165,6 +165,8 @@ export const SANTACASA_REGULARIZACOES_PAGE = Object.freeze({
   },
 
   labels: {
+    summaryAriaLabel: "Resumo da regularização",
+
     regularizacao: "Regularização",
     pedido: "Pedido",
     pedidoNumber: "N.º pedido",
@@ -233,6 +235,22 @@ export const SANTACASA_REGULARIZACOES_PAGE = Object.freeze({
     title: "Regularização concluída",
     description:
       "Este medicamento já foi compensado por uma ou mais receitas futuras.",
+  },
+
+  toolbar: {
+    ariaLabel: "Controlos da página",
+    tabsAriaLabel: "Regularizações",
+    totalLabel: "Total",
+  },
+
+  pagination: {
+    ariaLabel: "Paginação das regularizações da Santa Casa",
+    previousLabel: "Anterior",
+    nextLabel: "Seguinte",
+    noResults: "Sem resultados.",
+    getPaginationLabel({ start, end, total, currentPage, totalPages }) {
+      return `A mostrar ${start}-${end} de ${total} regularização(ões). Página ${currentPage} de ${totalPages}.`;
+    },
   },
 
   filters: {

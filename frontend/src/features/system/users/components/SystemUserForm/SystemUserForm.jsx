@@ -1,3 +1,5 @@
+import Button from "../../../../../shared/ui/Button/Button";
+
 import styles from "./SystemUserForm.module.css";
 
 import { SYSTEM_USERS_PAGE } from "../../config/systemUsersPage.config";
@@ -88,14 +90,14 @@ export default function SystemUserForm({
           )}
         </div>
 
-        <button
-          type="button"
-          className={styles.closeButton}
+        <Button
+          variant="secondary"
+          size="sm"
           disabled={isSubmitting}
           onClick={onCancel}
         >
           {SYSTEM_USERS_PAGE.actions.close}
-        </button>
+        </Button>
       </header>
 
       <form className={styles.form} onSubmit={handleSubmit}>
@@ -182,18 +184,19 @@ export default function SystemUserForm({
         ) : null}
 
         <div className={styles.actions}>
-          <button
-            type="button"
-            className={styles.secondaryButton}
+          <Button
+            variant="secondary"
+            size="sm"
             disabled={isSubmitting}
             onClick={onCancel}
           >
             {SYSTEM_USERS_PAGE.actions.cancel}
-          </button>
+          </Button>
 
-          <button
+          <Button
             type="submit"
-            className={styles.primaryButton}
+            variant="primary"
+            size="sm"
             disabled={isSubmitting}
           >
             {getSubmitLabel({
@@ -202,7 +205,7 @@ export default function SystemUserForm({
               isPasswordMode,
               isSubmitting,
             })}
-          </button>
+          </Button>
         </div>
       </form>
     </section>

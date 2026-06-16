@@ -1,3 +1,4 @@
+import Button from "../../../../../shared/ui/Button/Button";
 import styles from "./FarmaciaDashboardState.module.css";
 
 export default function FarmaciaDashboardState({
@@ -13,9 +14,7 @@ export default function FarmaciaDashboardState({
       {description ? <p className={styles.description}>{description}</p> : null}
 
       {actionLabel && onAction ? (
-        <button type="button" className={styles.action} onClick={onAction}>
-          {actionLabel}
-        </button>
+        <Button onClick={onAction}>{actionLabel}</Button>
       ) : null}
     </div>
   );

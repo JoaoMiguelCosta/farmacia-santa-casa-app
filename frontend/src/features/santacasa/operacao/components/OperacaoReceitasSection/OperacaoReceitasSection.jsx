@@ -1,35 +1,34 @@
-// src/features/santacasa/operacao/components/OperacaoReceitasSection/OperacaoReceitasSection.jsx
 import ReceitaCreateForm from "../../../receitas/components/ReceitaCreateForm/ReceitaCreateForm";
 import ReceitasList from "../../../receitas/components/ReceitasList/ReceitasList";
 
 import { OPERACAO_PAGE } from "../../config/operacaoPage.config";
+import { useOperacaoContext } from "../../context/OperacaoContext";
 
 import OperationSection from "../OperationSection/OperationSection";
 
 export default function OperacaoReceitasSection({
-  selectedUtenteId,
-  selectedUtente,
-
   receitas,
-  isLoading,
-  error,
-
   isReceitaBusy,
   receitaFormResetKey,
-  medicacaoHabitualOptions,
-
   deletingLinhaId,
-  pedidoQuantities,
-  pedidoItemsQuantities,
-
   onCreateReceita,
-  onPedidoQuantityChange,
-  onAddToPedido,
-  onRetry,
-  onBlockedDelete,
   onRequestDelete,
   onQuantityBackToList,
 }) {
+  const {
+    selectedUtenteId,
+    selectedUtente,
+    isLoading,
+    error,
+    medicacaoHabitualOptions,
+    pedidoQuantities,
+    pedidoItemsQuantities,
+    onPedidoQuantityChange,
+    onAddToPedido,
+    onRetry,
+    onBlockedDelete,
+  } = useOperacaoContext();
+
   const section = OPERACAO_PAGE.sections.receitas;
 
   return (

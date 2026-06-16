@@ -1,5 +1,5 @@
 // src/features/santacasa/operacao/components/OperacaoMedicacaoHabitualSection/OperacaoMedicacaoHabitualSection.jsx
-import MedicacaoHabitualManager from "../../../medicacao-habitual/components/MedicacaoHabitualManager/MedicacaoHabitualManager";
+import MedicacaoHabitualManager from "../../../medicacaoHabitual/components/MedicacaoHabitualManager/MedicacaoHabitualManager";
 
 import { OPERACAO_PAGE } from "../../config/operacaoPage.config";
 

@@ -2,6 +2,8 @@
 
 import { SANTACASA_REGULARIZACOES_PAGE } from "../../config/santaCasaRegularizacoesPage.config";
 
+import { classNames } from "../../../../../shared/utils/classNames";
+
 import {
   getRegularizacaoEventosCount,
   getRegularizacaoQuantidadeRegularizada,
@@ -14,21 +16,15 @@ import SantaCasaRegularizacaoUnitValue from "./SantaCasaRegularizacaoUnitValue";
 import styles from "./SantaCasaRegularizacaoSummary.module.css";
 
 function getOperationalSummaryClassName(isHistory) {
-  return isHistory
-    ? `${styles.operationalSummary} ${styles.operationalSummaryHistory}`
-    : styles.operationalSummary;
+  return classNames(styles.operationalSummary, isHistory && styles.operationalSummaryHistory);
 }
 
 function getFocusMetricClassName(isCompleted) {
-  return isCompleted
-    ? `${styles.focusMetric} ${styles.focusMetricCompleted}`
-    : styles.focusMetric;
+  return classNames(styles.focusMetric, isCompleted && styles.focusMetricCompleted);
 }
 
 function getContextListClassName(isHistory) {
-  return isHistory
-    ? `${styles.contextList} ${styles.contextListHistory}`
-    : styles.contextList;
+  return classNames(styles.contextList, isHistory && styles.contextListHistory);
 }
 
 export default function SantaCasaRegularizacaoSummary({
@@ -46,7 +42,7 @@ export default function SantaCasaRegularizacaoSummary({
   return (
     <section
       className={getOperationalSummaryClassName(isHistory)}
-      aria-label="Resumo da regularização"
+      aria-label={SANTACASA_REGULARIZACOES_PAGE.labels.summaryAriaLabel}
     >
       {!isHistory ? (
         <div className={getFocusMetricClassName(isCompleted)}>

@@ -265,124 +265,6 @@
     min-width: 0;
 }
 
-.primaryButton,
-.secondaryButton,
-.dangerButton,
-.removeButton {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-
-    min-height: 2.35rem;
-    padding: 0.58rem 0.84rem;
-
-    border-radius: 999px;
-
-    font: inherit;
-    font-size: 0.8rem;
-    font-weight: 850;
-    line-height: 1;
-    white-space: nowrap;
-
-    cursor: pointer;
-
-    transition:
-        transform var(--clinic-transition),
-        border-color var(--clinic-transition),
-        background-color var(--clinic-transition),
-        box-shadow var(--clinic-transition),
-        opacity var(--clinic-transition);
-}
-
-.primaryButton {
-    border: 1px solid rgba(31, 95, 81, 0.28);
-
-    color: var(--clinic-white);
-    background: var(--clinic-green-700);
-
-    box-shadow: 0 10px 24px rgba(31, 95, 81, 0.14);
-}
-
-.secondaryButton {
-    border: 1px solid var(--clinic-border);
-
-    color: var(--clinic-green-800);
-    background: var(--clinic-white);
-}
-
-.dangerButton {
-    border: 1px solid rgba(180, 35, 24, 0.18);
-
-    color: var(--clinic-danger);
-    background: rgba(180, 35, 24, 0.06);
-}
-
-.removeButton {
-    border: 1px solid rgba(180, 35, 24, 0.22);
-
-    color: var(--clinic-white);
-    background: var(--clinic-danger);
-
-    box-shadow: 0 10px 24px rgba(180, 35, 24, 0.14);
-}
-
-.primaryButton:hover,
-.secondaryButton:hover,
-.dangerButton:hover,
-.removeButton:hover {
-    transform: translateY(-1px);
-}
-
-.primaryButton:hover {
-    background: var(--clinic-green-800);
-    box-shadow: 0 14px 30px rgba(31, 95, 81, 0.2);
-}
-
-.secondaryButton:hover {
-    border-color: var(--clinic-border-strong);
-    background: var(--clinic-mist);
-}
-
-.dangerButton:hover {
-    border-color: rgba(180, 35, 24, 0.28);
-    background: rgba(180, 35, 24, 0.09);
-}
-
-.removeButton:hover {
-    background: #961b12;
-    box-shadow: 0 14px 30px rgba(180, 35, 24, 0.2);
-}
-
-.primaryButton:active,
-.secondaryButton:active,
-.dangerButton:active,
-.removeButton:active {
-    transform: translateY(0);
-}
-
-.primaryButton:focus-visible,
-.secondaryButton:focus-visible,
-.dangerButton:focus-visible,
-.removeButton:focus-visible {
-    outline: 3px solid rgba(31, 95, 81, 0.26);
-    outline-offset: 3px;
-}
-
-.dangerButton:focus-visible,
-.removeButton:focus-visible {
-    outline-color: rgba(180, 35, 24, 0.24);
-}
-
-.primaryButton:disabled,
-.secondaryButton:disabled,
-.dangerButton:disabled,
-.removeButton:disabled {
-    cursor: not-allowed;
-    opacity: 0.52;
-    transform: none;
-    box-shadow: none;
-}
-
 .state {
     display: grid;
     justify-items: start;
@@ -416,32 +298,6 @@
     line-height: var(--clinic-line-height-base);
 }
 
-.stateAction {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-
-    min-height: 2.35rem;
-    padding: 0.58rem 0.84rem;
-
-    border: 1px solid var(--clinic-border);
-    border-radius: 999px;
-
-    color: var(--clinic-green-800);
-    background: var(--clinic-white);
-
-    font: inherit;
-    font-size: 0.82rem;
-    font-weight: 850;
-
-    cursor: pointer;
-}
-
-.stateAction:hover {
-    border-color: var(--clinic-border-strong);
-    background: var(--clinic-mist);
-}
-
 @media (max-width: 980px) {
     .metaGrid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -468,10 +324,7 @@
         justify-content: stretch;
     }
 
-    .primaryButton,
-    .secondaryButton,
-    .dangerButton,
-    .removeButton {
+    .actions > * {
         flex: 1;
     }
 }
@@ -481,27 +334,8 @@
         flex-direction: column;
     }
 
-    .primaryButton,
-    .secondaryButton,
-    .dangerButton,
-    .removeButton {
+    .actions > * {
         width: 100%;
-    }
-}
-
-@media (prefers-reduced-motion: reduce) {
-
-    .primaryButton,
-    .secondaryButton,
-    .dangerButton,
-    .removeButton {
-        transition: none;
-    }
-
-    .primaryButton:hover,
-    .secondaryButton:hover,
-    .dangerButton:hover,
-    .removeButton:hover {
-        transform: none;
+        flex: none;
     }
 }

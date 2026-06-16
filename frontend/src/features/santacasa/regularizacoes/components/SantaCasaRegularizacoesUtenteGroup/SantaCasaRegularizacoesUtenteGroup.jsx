@@ -2,6 +2,8 @@ import { Link } from "react-router-dom";
 
 import { SANTACASA_REGULARIZACOES_PAGE } from "../../config/santaCasaRegularizacoesPage.config";
 
+import { classNames } from "../../../../../shared/utils/classNames";
+
 import styles from "./SantaCasaRegularizacoesUtenteGroup.module.css";
 
 const UNKNOWN_LABEL = "—";
@@ -68,7 +70,7 @@ export default function SantaCasaRegularizacoesUtenteGroup({ group }) {
           <dd>{group.totalPedidos}</dd>
         </div>
 
-        <div className={`${styles.metric} ${styles.metricFocus}`}>
+        <div className={classNames(styles.metric, styles.metricFocus)}>
           <dt>{SANTACASA_REGULARIZACOES_PAGE.labels.unidadesRestantes}</dt>
           <dd>{group.totalRestante}</dd>
         </div>

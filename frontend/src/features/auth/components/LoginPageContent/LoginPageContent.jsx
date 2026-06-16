@@ -3,6 +3,8 @@ import { Navigate } from "react-router-dom";
 import { LOGIN_PAGE_CONFIG } from "../../config/loginPage.config";
 import { useLoginPage } from "../../hooks/useLoginPage";
 
+import { classNames } from "../../../../shared/utils/classNames";
+
 import styles from "./LoginPageContent.module.css";
 
 export default function LoginPageContent() {
@@ -37,7 +39,7 @@ export default function LoginPageContent() {
     return (
       <section className={styles.page}>
         <div
-          className={`${styles.card} ${styles.loadingCard}`}
+          className={classNames(styles.card, styles.loadingCard)}
           role="status"
           aria-live="polite"
         >
@@ -122,7 +124,7 @@ export default function LoginPageContent() {
               <input
                 ref={passwordInputRef}
                 id={LOGIN_PAGE_CONFIG.aria.passwordId}
-                className={`${styles.input} ${styles.passwordInput}`}
+                className={classNames(styles.input, styles.passwordInput)}
                 type={isPasswordVisible ? "text" : "password"}
                 value={password}
                 placeholder={LOGIN_PAGE_CONFIG.fields.password.placeholder}

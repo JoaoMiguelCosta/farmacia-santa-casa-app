@@ -1,3 +1,5 @@
+import { classNames } from "../../utils/classNames";
+
 import styles from "./PageHeader.module.css";
 
 export default function PageHeader({
@@ -11,7 +13,7 @@ export default function PageHeader({
   const alignClassName = styles[align] || "";
 
   return (
-    <header className={`${styles.header} ${alignClassName}`}>
+    <header className={classNames(styles.header, alignClassName)}>
       <div className={styles.content}>
         {eyebrow ? <p className={styles.eyebrow}>{eyebrow}</p> : null}
 

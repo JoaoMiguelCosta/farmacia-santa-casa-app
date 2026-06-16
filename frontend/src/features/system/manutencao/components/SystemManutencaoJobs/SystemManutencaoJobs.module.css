@@ -52,109 +52,6 @@
     line-height: var(--clinic-line-height-base);
 }
 
-.refreshButton,
-.stateAction,
-.previewButton,
-.runButton {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-
-    min-height: 2.45rem;
-    padding: 0.64rem 0.95rem;
-
-    border-radius: 999px;
-
-    font: inherit;
-    font-size: 0.84rem;
-    font-weight: 850;
-    line-height: 1;
-    white-space: nowrap;
-
-    cursor: pointer;
-
-    transition:
-        transform var(--clinic-transition),
-        border-color var(--clinic-transition),
-        background-color var(--clinic-transition),
-        box-shadow var(--clinic-transition),
-        opacity var(--clinic-transition);
-}
-
-.refreshButton,
-.stateAction,
-.previewButton {
-    border: 1px solid var(--clinic-border);
-
-    color: var(--clinic-green-800);
-    background: var(--clinic-white);
-}
-
-.runButton {
-    border: 1px solid rgba(180, 35, 24, 0.22);
-
-    color: var(--clinic-white);
-    background: var(--clinic-danger);
-
-    box-shadow: 0 12px 28px rgba(180, 35, 24, 0.14);
-}
-
-.refreshButton:hover,
-.stateAction:hover,
-.previewButton:hover,
-.runButton:hover {
-    transform: translateY(-1px);
-}
-
-.refreshButton:hover,
-.stateAction:hover,
-.previewButton:hover {
-    border-color: var(--clinic-border-strong);
-    background: var(--clinic-mist);
-}
-
-.runButton:hover {
-    background: #961b12;
-
-    box-shadow: 0 16px 34px rgba(180, 35, 24, 0.2);
-}
-
-.refreshButton:active,
-.stateAction:active,
-.previewButton:active,
-.runButton:active {
-    transform: translateY(0);
-}
-
-.refreshButton:focus-visible,
-.stateAction:focus-visible,
-.previewButton:focus-visible {
-    outline: 3px solid rgba(31, 95, 81, 0.26);
-    outline-offset: 3px;
-}
-
-.runButton:focus-visible {
-    outline: 3px solid rgba(180, 35, 24, 0.24);
-    outline-offset: 3px;
-}
-
-.refreshButton:disabled,
-.stateAction:disabled,
-.previewButton:disabled,
-.runButton:disabled {
-    cursor: not-allowed;
-    opacity: 0.5;
-    transform: none;
-    box-shadow: none;
-}
-
-.runButton:disabled {
-    border-color: rgba(180, 35, 24, 0.14);
-
-    color: rgba(255, 255, 255, 0.78);
-    background: rgba(180, 35, 24, 0.46);
-}
-
 .list {
     display: grid;
     gap: clamp(0.95rem, 2vw, 1.15rem);
@@ -432,9 +329,7 @@
         flex-direction: column;
     }
 
-    .refreshButton,
-    .previewButton,
-    .runButton {
+    .header > button {
         width: 100%;
     }
 
@@ -445,22 +340,5 @@
 
     .optionField input {
         width: 100%;
-    }
-}
-
-@media (prefers-reduced-motion: reduce) {
-
-    .refreshButton,
-    .stateAction,
-    .previewButton,
-    .runButton {
-        transition: none;
-    }
-
-    .refreshButton:hover,
-    .stateAction:hover,
-    .previewButton:hover,
-    .runButton:hover {
-        transform: none;
     }
 }

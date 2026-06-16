@@ -9,8 +9,8 @@ import { sortUtentesByName } from "../../utentes/utils/sortUtentes";
 import { getReceitasByUtente } from "../../receitas/api/receitasApi";
 import { sortReceitasByMedicamento } from "../../receitas/utils/sortReceitas";
 
-import { getSemReceitaByUtente } from "../../sem-receita/api/semReceitaApi";
-import { sortSemReceitaByMedicamento } from "../../sem-receita/utils/sortSemReceita";
+import { getSemReceitaByUtente } from "../../semReceita/api/semReceitaApi";
+import { sortSemReceitaByMedicamento } from "../../semReceita/utils/sortSemReceita";
 
 import { getExtrasByUtente } from "../../extras/api/extrasApi";
 import { sortExtrasByMedicamento } from "../../extras/utils/sortExtras";

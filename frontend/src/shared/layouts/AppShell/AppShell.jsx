@@ -1,5 +1,6 @@
 // src/shared/layouts/AppShell/AppShell.jsx
 
+import { Suspense } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 
 import AuthSessionBar from "../../../features/auth/components/AuthSessionBar/AuthSessionBar";
@@ -110,7 +111,9 @@ export default function AppShell() {
       <FarmaciaAlertasTray enabled={shouldShowFarmaciaAlertas} />
 
       <main id={APP_SHELL_CONFIG.mainContentId} className={styles.main}>
-        <Outlet />
+        <Suspense fallback={null}>
+          <Outlet />
+        </Suspense>
       </main>
 
       <IdleSessionWarning />

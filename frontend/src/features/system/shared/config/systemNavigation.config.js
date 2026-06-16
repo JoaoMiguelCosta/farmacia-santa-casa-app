@@ -1,21 +1,24 @@
-// src/features/system/shared/config/systemNavigation.config.js
+import { SYSTEM_ROUTES } from "./systemRoutes.config";
 
 export const SYSTEM_NAV_ITEMS = Object.freeze([
-  {
+  Object.freeze({
     label: "Visão geral",
-    to: "/sistema",
+    to: SYSTEM_ROUTES.home,
     end: true,
-  },
-  {
+  }),
+
+  Object.freeze({
     label: "Utilizadores",
-    to: "/sistema/utilizadores",
-  },
-  {
+    to: SYSTEM_ROUTES.utilizadores,
+  }),
+
+  Object.freeze({
     label: "Manutenção",
-    to: "/sistema/manutencao",
-  },
-  {
+    to: SYSTEM_ROUTES.manutencao,
+  }),
+
+  Object.freeze({
     label: "Estado dos serviços",
-    to: "/sistema/estado-servicos",
-  },
+    to: SYSTEM_ROUTES.estadoServicos,
+  }),
 ]);

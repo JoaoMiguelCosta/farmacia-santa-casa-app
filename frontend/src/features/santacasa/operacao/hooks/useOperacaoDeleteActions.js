@@ -2,7 +2,7 @@
 import { useState } from "react";
 
 import { deleteReceitaLinha } from "../../receitas/api/receitasApi";
-import { deleteSemReceita } from "../../sem-receita/api/semReceitaApi";
+import { deleteSemReceita } from "../../semReceita/api/semReceitaApi";
 import { deleteExtra } from "../../extras/api/extrasApi";
 
 import {

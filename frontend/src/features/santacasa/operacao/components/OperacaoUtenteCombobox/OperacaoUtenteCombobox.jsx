@@ -1,4 +1,6 @@
 // src/features/santacasa/operacao/components/OperacaoUtenteCombobox/OperacaoUtenteCombobox.jsx
+import { OPERACAO_UTENTE_SELECTOR } from "../../config/operacaoUtenteSelector.config";
+
 import { getOptionClassName } from "./operacaoUtenteCombobox.utils";
 import { useOperacaoUtenteCombobox } from "./useOperacaoUtenteCombobox";
 
@@ -10,9 +12,9 @@ export default function OperacaoUtenteCombobox({
   value = "",
   onChange,
   disabled = false,
-  placeholder = "Seleciona um utente",
-  searchPlaceholder = "Pesquisar...",
-  noResultsLabel = "Nenhum resultado encontrado.",
+  placeholder = OPERACAO_UTENTE_SELECTOR.field.placeholder,
+  searchPlaceholder = OPERACAO_UTENTE_SELECTOR.field.searchPlaceholder,
+  noResultsLabel = OPERACAO_UTENTE_SELECTOR.field.noResultsLabel,
 }) {
   const {
     wrapperRef,
@@ -112,7 +114,7 @@ export default function OperacaoUtenteCombobox({
                     <span className={styles.optionName}>{utente.nome}</span>
 
                     <span className={styles.optionNumber}>
-                      N.º utente {utente.numero9}
+                      {OPERACAO_UTENTE_SELECTOR.field.optionNumberPrefix} {utente.numero9}
                     </span>
                   </button>
                 );

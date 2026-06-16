@@ -12,6 +12,8 @@ import {
   groupRegularizacoesByUtente,
 } from "../../utils/farmaciaRegularizacoes.utils";
 
+import Button from "../../../../../shared/ui/Button/Button";
+
 import styles from "./FarmaciaRegularizacoesList.module.css";
 
 function getSectionConfig(variant) {
@@ -86,16 +88,16 @@ export default function FarmaciaRegularizacoesList({
           <p className={styles.description}>{sectionConfig.description}</p>
         </div>
 
-        <button
-          type="button"
-          className={styles.refreshButton}
+        <Button
+          variant="secondary"
+          size="sm"
           disabled={isRefreshing}
           onClick={onRefresh}
         >
           {isRefreshing
             ? FARMACIA_REGULARIZACOES_PAGE.actions.refreshing
             : FARMACIA_REGULARIZACOES_PAGE.actions.refresh}
-        </button>
+        </Button>
       </header>
 
       {!hasRegularizacoes ? (

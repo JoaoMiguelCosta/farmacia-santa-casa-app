@@ -1,3 +1,5 @@
+import { classNames } from "../../../../../shared/utils/classNames";
+
 import { FARMACIA_ALERTAS_CONFIG } from "../../config/farmaciaAlertas.config";
 import { useFarmaciaAlertas } from "../../hooks/useFarmaciaAlertas";
 
@@ -37,7 +39,7 @@ export default function FarmaciaAlertasTray({
     return null;
   }
 
-  const rootClassName = [styles.root, className].filter(Boolean).join(" ");
+  const rootClassName = classNames(styles.root, className);
 
   return (
     <section

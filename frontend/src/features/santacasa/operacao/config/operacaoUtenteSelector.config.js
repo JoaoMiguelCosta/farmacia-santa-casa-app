@@ -15,5 +15,6 @@ export const OPERACAO_UTENTE_SELECTOR = Object.freeze({
     emptyPlaceholder: "Nenhum utente disponível",
     searchPlaceholder: "Pesquisar por nome ou n.º de utente...",
     noResultsLabel: "Nenhum utente encontrado.",
+    optionNumberPrefix: "N.º utente",
   },
 });

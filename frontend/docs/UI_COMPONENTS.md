@@ -4,8 +4,7 @@ Documentação dos componentes de UI do frontend **Farmácia Santa Casa**.
 
 Este documento descreve os componentes partilhados, layouts reutilizáveis, padrões de composição, CSS Modules, estados visuais, acessibilidade e regras para criar novos componentes.
 
-> Estado atual: projeto em desenvolvimento.
-> A base de componentes já existe, mas ainda pode evoluir conforme a UI estabilizar.
+> Estado atual: projeto fechado — componentes shared estabilizados.
 
 ---
 
@@ -39,17 +38,22 @@ Estrutura atual:
 
 ```txt
 src/shared/
-├── components/
-│   └── BrandMark/
 ├── layouts/
 │   ├── AppShell/
 │   └── AreaLanding/
 └── ui/
+    ├── BarcodeValue/
+    ├── BrandMark/
     ├── Button/
     ├── ConfirmDialog/
+    ├── DashboardMetricCard/
+    ├── DashboardMetricGroup/
+    ├── DashboardPriorityCard/
     ├── DataState/
     ├── FeedbackDialog/
     ├── FormField/
+    ├── HomeActionCard/
+    ├── OperationalDetailState/
     ├── PageHeader/
     └── SurfaceCard/
 ```
@@ -92,16 +96,6 @@ Exemplos:
 - estados de dados;
 - diálogos;
 - headers de página.
-
-### `shared/components`
-
-Para componentes globais que não são necessariamente primitivos de UI.
-
-Exemplo:
-
-```txt
-BrandMark
-```
 
 ### `shared/layouts`
 
@@ -361,7 +355,7 @@ Boas práticas:
 Local:
 
 ```txt
-src/shared/components/BrandMark/
+src/shared/ui/BrandMark/
 ```
 
 Responsabilidade:
@@ -1171,15 +1165,10 @@ Confirmar:
 Prioridade futura:
 
 ```txt
-1. Rever consistência visual dos shared/ui
-2. Criar documentação visual com screenshots quando a UI estabilizar
-3. Adicionar testes para Button, FormField, DataState e ConfirmDialog
-4. Rever acessibilidade de diálogos
-5. Criar Error Boundary visual
-6. Avaliar Storybook apenas se o projeto crescer muito
+1. Adicionar testes para Button, FormField, DataState e ConfirmDialog
+2. Rever acessibilidade de diálogos
+3. Criar Error Boundary visual
 ```
-
-Não recomendo Storybook nesta fase. Seria peso extra antes da UI estar fechada.
 
 ---
 
@@ -1198,11 +1187,9 @@ Pontos fortes:
 
 Pontos a vigiar:
 
-- evitar componentes demasiado grandes;
-- evitar colocar tudo em `shared/`;
+- não colocar componentes com lógica de domínio em `shared/`;
 - manter acessibilidade;
-- reduzir duplicação visual;
-- criar testes de componentes mais tarde.
+- criar testes de componentes quando possível.
 
 Regra final:
 

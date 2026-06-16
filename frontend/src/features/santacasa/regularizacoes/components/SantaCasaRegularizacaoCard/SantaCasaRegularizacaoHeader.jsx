@@ -2,6 +2,8 @@
 
 import { SANTACASA_REGULARIZACOES_PAGE } from "../../config/santaCasaRegularizacoesPage.config";
 
+import { classNames } from "../../../../../shared/utils/classNames";
+
 import {
   getRegularizacaoMedicamentoLabel,
   getRegularizacaoPedidoLabel,
@@ -15,17 +17,15 @@ import { getStatusClassName } from "./santaCasaRegularizacaoCard.utils";
 import styles from "./SantaCasaRegularizacaoHeader.module.css";
 
 function getHeaderClassName(isHistory) {
-  return isHistory ? `${styles.header} ${styles.headerHistory}` : styles.header;
+  return classNames(styles.header, isHistory && styles.headerHistory);
 }
 
 function getIdentityGridClassName({ isGrouped, isHistory }) {
-  return [
+  return classNames(
     styles.identityGrid,
-    isGrouped ? styles.identityGridGrouped : "",
-    isHistory ? styles.identityGridHistory : "",
-  ]
-    .filter(Boolean)
-    .join(" ");
+    isGrouped && styles.identityGridGrouped,
+    isHistory && styles.identityGridHistory,
+  );
 }
 
 export default function SantaCasaRegularizacaoHeader({

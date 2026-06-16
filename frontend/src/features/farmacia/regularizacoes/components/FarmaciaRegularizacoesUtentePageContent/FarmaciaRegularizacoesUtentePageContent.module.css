@@ -38,7 +38,6 @@
     outline-offset: 3px;
 }
 
-.summary,
 .medicamentos {
     display: grid;
     gap: 1rem;
@@ -47,101 +46,6 @@
     border-radius: var(--clinic-radius-2xl);
     background: var(--clinic-surface);
     box-shadow: var(--clinic-shadow-soft);
-}
-
-.summary {
-    grid-template-columns: minmax(12rem, 0.32fr) minmax(0, 1fr);
-    align-items: stretch;
-}
-
-.summaryFocus {
-    display: grid;
-    align-content: center;
-    gap: 0.35rem;
-    min-width: 0;
-    padding: clamp(1rem, 2vw, 1.25rem);
-    border: 1px solid rgba(169, 120, 45, 0.28);
-    border-radius: var(--clinic-radius-xl);
-    background: var(--clinic-gold-soft);
-}
-
-.summaryFocus span {
-    color: var(--clinic-warning);
-    font-size: var(--clinic-font-size-xs);
-    font-weight: 850;
-    letter-spacing: 0.06em;
-    line-height: 1.25;
-    text-transform: uppercase;
-}
-
-.summaryFocus strong {
-    color: var(--clinic-warning);
-    font-size: clamp(2.25rem, 5vw, 3.25rem);
-    font-weight: 950;
-    letter-spacing: -0.06em;
-    line-height: 0.95;
-}
-
-.summaryGrid {
-    display: grid;
-    grid-template-columns: repeat(5, minmax(0, 1fr));
-    gap: 0.75rem;
-    margin: 0;
-}
-
-.summaryItem {
-    display: grid;
-    align-content: center;
-    gap: 0.25rem;
-    min-width: 0;
-    padding: 0.85rem;
-    border: 1px solid var(--clinic-border);
-    border-radius: var(--clinic-radius-lg);
-    background: var(--clinic-mist);
-}
-
-.summaryItem dt {
-    color: var(--clinic-muted);
-    font-size: var(--clinic-font-size-xs);
-    font-weight: 800;
-    line-height: 1.25;
-}
-
-.summaryItem dd {
-    min-width: 0;
-    margin: 0;
-    overflow-wrap: anywhere;
-    color: var(--clinic-green-700);
-    font-size: var(--clinic-font-size-lg);
-    font-weight: 950;
-    line-height: 1;
-}
-
-.pedidos {
-    grid-column: 1 / -1;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.45rem;
-    padding: 0.75rem 0.9rem;
-    border: 1px solid var(--clinic-border);
-    border-radius: var(--clinic-radius-lg);
-    background: var(--clinic-white);
-}
-
-.pedidos span {
-    color: var(--clinic-muted);
-    font-size: var(--clinic-font-size-xs);
-    font-weight: 850;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-}
-
-.pedidos strong {
-    overflow-wrap: anywhere;
-    color: var(--clinic-ink-soft);
-    font-size: var(--clinic-font-size-sm);
-    font-weight: 850;
 }
 
 .sectionHeader {
@@ -172,7 +76,6 @@
     line-height: var(--clinic-line-height-base);
 }
 
-.refreshButton,
 .clearButton,
 .listButton {
     min-height: 2.45rem;
@@ -193,7 +96,6 @@
         opacity var(--clinic-transition);
 }
 
-.refreshButton:hover,
 .clearButton:hover,
 .listButton:hover {
     transform: translateY(-1px);
@@ -202,14 +104,12 @@
     box-shadow: var(--clinic-shadow-soft);
 }
 
-.refreshButton:focus-visible,
 .clearButton:focus-visible,
 .listButton:focus-visible {
     outline: 3px solid rgba(31, 95, 81, 0.24);
     outline-offset: 3px;
 }
 
-.refreshButton:disabled,
 .clearButton:disabled,
 .listButton:disabled {
     cursor: not-allowed;
@@ -319,21 +219,7 @@
     line-height: var(--clinic-line-height-base);
 }
 
-@media (max-width: 1100px) {
-    .summary {
-        grid-template-columns: 1fr;
-    }
-
-    .summaryGrid {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
-}
-
 @media (max-width: 780px) {
-    .summaryGrid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
     .sectionHeader {
         align-items: stretch;
         flex-direction: column;
@@ -343,10 +229,13 @@
         grid-template-columns: 1fr;
     }
 
-    .refreshButton,
     .clearButton,
     .listButton,
     .backLink {
+        width: 100%;
+    }
+
+    .sectionHeader > button {
         width: 100%;
     }
 
@@ -357,11 +246,5 @@
 
     .hiddenMeta {
         flex: initial;
-    }
-}
-
-@media (max-width: 560px) {
-    .summaryGrid {
-        grid-template-columns: 1fr;
     }
 }

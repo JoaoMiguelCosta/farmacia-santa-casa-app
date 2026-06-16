@@ -1,7 +1,7 @@
 // src/shared/layouts/AppShell/components/AppHeader/AppHeader.jsx
 import { NavLink } from "react-router-dom";
 
-import BrandMark from "../../../../components/BrandMark/BrandMark.jsx";
+import BrandMark from "../../../../ui/BrandMark/BrandMark";
 
 import AppPrimaryNav from "../AppPrimaryNav/AppPrimaryNav";
 

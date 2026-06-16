@@ -1,5 +1,9 @@
 // src/features/santacasa/regularizacoes/components/SantaCasaRegularizacoesSignal/SantaCasaRegularizacoesSignal.jsx
 
+import { classNames } from "../../../../../shared/utils/classNames";
+
+import Button from "../../../../../shared/ui/Button/Button";
+
 import styles from "./SantaCasaRegularizacoesSignal.module.css";
 
 import { SANTACASA_REGULARIZACOES_PAGE } from "../../config/santaCasaRegularizacoesPage.config";
@@ -23,9 +27,7 @@ function getUnidadesLabel(value) {
 }
 
 function SignalValue({ value, suffix, muted = false }) {
-  const className = muted
-    ? `${styles.metricValue} ${styles.metricValueMuted}`
-    : styles.metricValue;
+  const className = classNames(styles.metricValue, muted && styles.metricValueMuted);
 
   return (
     <strong className={className}>
@@ -51,13 +53,13 @@ function SantaCasaRegularizacoesSignalState({
         ) : null}
 
         {actionLabel && onAction ? (
-          <button
-            type="button"
-            className={styles.stateAction}
+          <Button
+            variant="secondary"
+            size="sm"
             onClick={onAction}
           >
             {actionLabel}
-          </button>
+          </Button>
         ) : null}
       </div>
     </section>
@@ -116,20 +118,20 @@ export default function SantaCasaRegularizacoesSignal({
           </p>
         </div>
 
-        <button
-          type="button"
-          className={styles.refreshButton}
+        <Button
+          variant="secondary"
+          size="sm"
           disabled={isRefreshing}
           onClick={onRefresh}
         >
           {isRefreshing
             ? SANTACASA_REGULARIZACOES_PAGE.actions.refreshing
             : SANTACASA_REGULARIZACOES_PAGE.actions.refresh}
-        </button>
+        </Button>
       </header>
 
       <div className={styles.grid}>
-        <article className={`${styles.metric} ${styles.metricPrimary}`}>
+        <article className={classNames(styles.metric, styles.metricPrimary)}>
           <span>{SANTACASA_REGULARIZACOES_PAGE.labels.totalEventos}</span>
 
           <SignalValue
@@ -138,7 +140,7 @@ export default function SantaCasaRegularizacoesSignal({
           />
         </article>
 
-        <article className={`${styles.metric} ${styles.metricSuccess}`}>
+        <article className={classNames(styles.metric, styles.metricSuccess)}>
           <span>{SANTACASA_REGULARIZACOES_PAGE.labels.totalUnidades}</span>
 
           <SignalValue
@@ -147,7 +149,7 @@ export default function SantaCasaRegularizacoesSignal({
           />
         </article>
 
-        <article className={`${styles.metric} ${styles.metricDate}`}>
+        <article className={classNames(styles.metric, styles.metricDate)}>
           <span>{SANTACASA_REGULARIZACOES_PAGE.labels.latestEventoAt}</span>
 
           <SignalValue value={latestEventoAt} muted />

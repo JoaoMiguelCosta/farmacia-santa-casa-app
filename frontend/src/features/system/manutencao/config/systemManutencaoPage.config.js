@@ -14,6 +14,7 @@ export const SYSTEM_MANUTENCAO_PAGE = Object.freeze({
       description:
         "Operações protegidas disponíveis para administradores responsáveis pela Santa Casa e Farmácia.",
       loadingTitle: "A carregar tarefas...",
+      loadingDescription: "Aguarda enquanto os jobs são carregados.",
       errorTitle: "Não foi possível carregar as tarefas de manutenção.",
       emptyTitle: "Sem tarefas disponíveis.",
       emptyDescription: "Quando existirem tarefas configuradas, aparecem aqui.",
@@ -62,6 +63,12 @@ export const SYSTEM_MANUTENCAO_PAGE = Object.freeze({
       warning:
         "Ação destrutiva. Pode apagar histórico antigo. Nunca executes sem confirmar a pré-visualização.",
     },
+  },
+
+  labels: {
+    riskPrefix: "Risco",
+    warningPrefix: "Atenção",
+    runHint: "Faz uma pré-visualização deste job antes de executar.",
   },
 
   jobOrder: ["receita-expiry", "higiene", "purge-history"],

@@ -1,6 +1,6 @@
 // src/features/santacasa/operacao/utils/operacaoDelete.utils.js
 import { RECEITAS_PAGE } from "../../receitas/config/receitasPage.config";
-import { SEM_RECEITA_PAGE } from "../../sem-receita/config/semReceitaPage.config";
+import { SEM_RECEITA_PAGE } from "../../semReceita/config/semReceitaPage.config";
 import { EXTRAS_PAGE } from "../../extras/config/extrasPage.config";
 
 export function getDeleteTargetKey(target) {

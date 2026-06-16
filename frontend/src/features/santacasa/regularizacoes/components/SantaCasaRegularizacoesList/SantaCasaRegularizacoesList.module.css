@@ -42,8 +42,6 @@
     line-height: var(--clinic-line-height-base);
 }
 
-.refreshButton,
-.stateAction,
 .groupButton,
 .groupSecondaryButton {
     min-height: 2.55rem;
@@ -64,7 +62,6 @@
         opacity var(--clinic-transition);
 }
 
-.refreshButton,
 .groupButton {
     flex: 0 0 auto;
     box-shadow: var(--clinic-shadow-soft);
@@ -76,8 +73,6 @@
     font-size: var(--clinic-font-size-sm);
 }
 
-.refreshButton:hover,
-.stateAction:hover,
 .groupButton:hover,
 .groupSecondaryButton:hover {
     transform: translateY(-1px);
@@ -86,16 +81,12 @@
     box-shadow: var(--clinic-shadow-card);
 }
 
-.refreshButton:focus-visible,
-.stateAction:focus-visible,
 .groupButton:focus-visible,
 .groupSecondaryButton:focus-visible {
     outline: 3px solid rgba(31, 95, 81, 0.24);
     outline-offset: 3px;
 }
 
-.refreshButton:disabled,
-.stateAction:disabled,
 .groupButton:disabled,
 .groupSecondaryButton:disabled {
     cursor: not-allowed;
@@ -259,34 +250,6 @@
     gap: 0.5rem;
 }
 
-.state {
-    display: grid;
-    justify-items: start;
-    gap: 0.55rem;
-    padding: clamp(1rem, 2.5vw, 1.45rem);
-    border: 1px solid var(--clinic-border);
-    border-radius: var(--clinic-radius-2xl);
-    background: var(--clinic-surface);
-    box-shadow: var(--clinic-shadow-soft);
-}
-
-.stateTitle {
-    color: var(--clinic-ink);
-    font-size: clamp(1.45rem, 2vw, 1.85rem);
-    font-weight: 900;
-    letter-spacing: -0.025em;
-    line-height: var(--clinic-line-height-tight);
-}
-
-.stateDescription {
-    max-width: 70ch;
-    margin: 0;
-    color: var(--clinic-muted-strong);
-    font-size: var(--clinic-font-size-md);
-    font-weight: 500;
-    line-height: var(--clinic-line-height-base);
-}
-
 @media (max-width: 1280px) {
 
     .groupHeader,
@@ -312,8 +275,11 @@
         flex-direction: column;
     }
 
-    .refreshButton,
     .groupButton {
+        width: 100%;
+    }
+
+    .header > button {
         width: 100%;
     }
 

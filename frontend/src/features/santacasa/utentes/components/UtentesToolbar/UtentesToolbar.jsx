@@ -3,6 +3,8 @@ import Button from "../../../../../shared/ui/Button/Button";
 
 import { UTENTES_PAGE } from "../../config/utentesPage.config";
 
+import { classNames } from "../../../../../shared/utils/classNames";
+
 import styles from "./UtentesToolbar.module.css";
 
 export default function UtentesToolbar({
@@ -41,11 +43,7 @@ export default function UtentesToolbar({
               <button
                 key={option.value}
                 type="button"
-                className={
-                  isActive
-                    ? `${styles.filterButton} ${styles.filterButtonActive}`
-                    : styles.filterButton
-                }
+                className={classNames(styles.filterButton, isActive && styles.filterButtonActive)}
                 disabled={isDisabled}
                 aria-pressed={isActive}
                 onClick={() => updateStatusFilter(option.value)}

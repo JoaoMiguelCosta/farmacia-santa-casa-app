@@ -1,56 +1,30 @@
-// src/features/farmacia/historico/components/FarmaciaHistoricoDetailPageContent/FarmaciaHistoricoDetailPageContent.jsx
 import { Link, useLocation, useParams } from "react-router-dom";
 
 import PageHeader from "../../../../../shared/ui/PageHeader/PageHeader";
+import Button from "../../../../../shared/ui/Button/Button";
 
 import FarmaciaPedidoCard from "../../../shared/pedidos/components/FarmaciaPedidoCard/FarmaciaPedidoCard";
 
-import { FARMACIA_HISTORICO_PAGE } from "../../config/farmaciaHistoricoPage.config";
+import { FARMACIA_ROUTES } from "../../../shared/config/farmaciaRoutes.config";
 
+import { FARMACIA_HISTORICO_PAGE } from "../../config/farmaciaHistoricoPage.config";
 import { useFarmaciaHistoricoDetail } from "../../hooks/useFarmaciaHistoricoDetail";
 
+import OperationalDetailState from "../../../../../shared/ui/OperationalDetailState/OperationalDetailState";
+
 import styles from "./FarmaciaHistoricoDetailPageContent.module.css";
-
-function HistoricoDetailState({
-  title,
-  description,
-  actionLabel,
-  isActionLoading = false,
-  onAction,
-}) {
-  return (
-    <div className={styles.state} role="status">
-      <strong className={styles.stateTitle}>{title}</strong>
-
-      {description ? (
-        <p className={styles.stateDescription}>{description}</p>
-      ) : null}
-
-      {actionLabel && onAction ? (
-        <button
-          type="button"
-          className={styles.stateAction}
-          disabled={isActionLoading}
-          onClick={onAction}
-        >
-          {actionLabel}
-        </button>
-      ) : null}
-    </div>
-  );
-}
 
 function getBackPath(location) {
   const previousPath = location.state?.from;
 
   if (
     typeof previousPath === "string" &&
-    previousPath.startsWith("/farmacia/historico")
+    previousPath.startsWith(FARMACIA_ROUTES.historico)
   ) {
     return previousPath;
   }
 
-  return "/farmacia/historico";
+  return FARMACIA_ROUTES.historico;
 }
 
 export default function FarmaciaHistoricoDetailPageContent() {
@@ -82,14 +56,14 @@ export default function FarmaciaHistoricoDetailPageContent() {
         </Link>
 
         {!isLoading && pedido ? (
-          <button
-            type="button"
-            className={styles.refreshButton}
+          <Button
+            variant="secondary"
+            size="sm"
             disabled={isRefreshing}
             onClick={refreshPedido}
           >
             {isRefreshing ? detail.refreshingLabel : detail.refreshLabel}
-          </button>
+          </Button>
         ) : null}
       </div>
 
@@ -101,14 +75,14 @@ export default function FarmaciaHistoricoDetailPageContent() {
       />
 
       {isLoading ? (
-        <HistoricoDetailState
+        <OperationalDetailState
           title={detail.loadingTitle}
           description={detail.loadingDescription}
         />
       ) : null}
 
       {!isLoading && error ? (
-        <HistoricoDetailState
+        <OperationalDetailState
           title={detail.errorTitle}
           description={error}
           actionLabel={

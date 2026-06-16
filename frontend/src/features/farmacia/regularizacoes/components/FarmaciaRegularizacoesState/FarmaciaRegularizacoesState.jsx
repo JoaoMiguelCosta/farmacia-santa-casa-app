@@ -1,3 +1,7 @@
+import { classNames } from "../../../../../shared/utils/classNames";
+
+import Button from "../../../../../shared/ui/Button/Button";
+
 import styles from "./FarmaciaRegularizacoesState.module.css";
 
 export default function FarmaciaRegularizacoesState({
@@ -7,10 +11,7 @@ export default function FarmaciaRegularizacoesState({
   variant = "standalone",
   onAction,
 }) {
-  const stateClassName =
-    variant === "embedded"
-      ? `${styles.state} ${styles.stateEmbedded}`
-      : styles.state;
+  const stateClassName = classNames(styles.state, variant === "embedded" && styles.stateEmbedded);
 
   return (
     <div className={stateClassName}>
@@ -21,9 +22,9 @@ export default function FarmaciaRegularizacoesState({
       ) : null}
 
       {actionLabel && onAction ? (
-        <button type="button" className={styles.stateAction} onClick={onAction}>
+        <Button variant="secondary" size="sm" onClick={onAction}>
           {actionLabel}
-        </button>
+        </Button>
       ) : null}
     </div>
   );

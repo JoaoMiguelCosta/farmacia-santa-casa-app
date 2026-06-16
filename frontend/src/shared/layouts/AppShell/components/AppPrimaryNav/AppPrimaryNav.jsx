@@ -2,6 +2,8 @@
 
 import { NavLink } from "react-router-dom";
 
+import { classNames } from "../../../../utils/classNames";
+
 import styles from "./AppPrimaryNav.module.css";
 
 function hasAreaPresentation(items) {
@@ -9,21 +11,16 @@ function hasAreaPresentation(items) {
 }
 
 function getNavClassName(items) {
-  return hasAreaPresentation(items)
-    ? `${styles.nav} ${styles.areaNav}`
-    : styles.nav;
+  return classNames(styles.nav, hasAreaPresentation(items) && styles.areaNav);
 }
 
 function getNavLinkClassName(item) {
-  return ({ isActive }) => {
-    return [
+  return ({ isActive }) =>
+    classNames(
       styles.link,
-      item.presentation === "area" ? styles.areaLink : "",
-      isActive ? styles.active : "",
-    ]
-      .filter(Boolean)
-      .join(" ");
-  };
+      item.presentation === "area" && styles.areaLink,
+      isActive && styles.active,
+    );
 }
 
 export default function AppPrimaryNav({ items = [], ariaLabel }) {

@@ -1,4 +1,6 @@
 // src/features/santacasa/receitas/components/ReceitasList/ReceitaRow.jsx
+import { classNames } from "../../../../../shared/utils/classNames";
+
 import { RECEITAS_PAGE } from "../../config/receitasPage.config";
 
 import ReceitaActionsCell from "./ReceitaActionsCell";
@@ -66,9 +68,7 @@ export default function ReceitaRow({
 
   return (
     <article
-      className={
-        isBlockedByFefo ? `${styles.row} ${styles.fefoBlockedRow}` : styles.row
-      }
+      className={classNames(styles.row, isBlockedByFefo && styles.fefoBlockedRow)}
       role="listitem"
       aria-labelledby={titleId}
     >

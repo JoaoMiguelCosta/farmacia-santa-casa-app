@@ -1,9 +1,8 @@
-// src/features/santacasa/regularizacoes/components/RegularizacoesPageContent/RegularizacoesPageContent.jsx
-
 import PageHeader from "../../../../../shared/ui/PageHeader/PageHeader";
 
 import SantaCasaRegularizacoesList from "../SantaCasaRegularizacoesList/SantaCasaRegularizacoesList";
 import SantaCasaRegularizacoesSignal from "../SantaCasaRegularizacoesSignal/SantaCasaRegularizacoesSignal";
+import SantaCasaRegularizacoesToolbar from "../SantaCasaRegularizacoesToolbar/SantaCasaRegularizacoesToolbar";
 
 import { SANTACASA_REGULARIZACOES_PAGE } from "../../config/santaCasaRegularizacoesPage.config";
 import { useSantaCasaRegularizacoes } from "../../hooks/useSantaCasaRegularizacoes";
@@ -15,14 +14,15 @@ function getPaginationLabel({ meta, currentPage, totalPages }) {
   const skip = Number(meta?.skip) || 0;
   const take = Number(meta?.take) || 0;
 
-  if (total === 0) {
-    return "Sem resultados.";
-  }
+  if (total === 0) return SANTACASA_REGULARIZACOES_PAGE.pagination.noResults;
 
-  const start = skip + 1;
-  const end = Math.min(skip + take, total);
-
-  return `A mostrar ${start}-${end} de ${total} regularização(ões). Página ${currentPage} de ${totalPages}.`;
+  return SANTACASA_REGULARIZACOES_PAGE.pagination.getPaginationLabel({
+    start: skip + 1,
+    end: Math.min(skip + take, total),
+    total,
+    currentPage,
+    totalPages,
+  });
 }
 
 export default function RegularizacoesPageContent() {
@@ -89,107 +89,22 @@ export default function RegularizacoesPageContent() {
         description={SANTACASA_REGULARIZACOES_PAGE.header.description}
       />
 
-      <section className={styles.toolbar} aria-label="Controlos da página">
-        <div className={styles.topBar}>
-          <div
-            className={styles.tabs}
-            role="tablist"
-            aria-label="Regularizações"
-          >
-            <button
-              type="button"
-              role="tab"
-              aria-selected={activeTab === tabs.pending}
-              className={
-                activeTab === tabs.pending
-                  ? `${styles.tabButton} ${styles.tabButtonActive}`
-                  : styles.tabButton
-              }
-              disabled={isLoading || isRefreshing}
-              onClick={() => updateTab(tabs.pending)}
-            >
-              {SANTACASA_REGULARIZACOES_PAGE.tabs.pending}
-            </button>
-
-            <button
-              type="button"
-              role="tab"
-              aria-selected={activeTab === tabs.history}
-              className={
-                activeTab === tabs.history
-                  ? `${styles.tabButton} ${styles.tabButtonActive}`
-                  : styles.tabButton
-              }
-              disabled={isLoading || isRefreshing}
-              onClick={() => updateTab(tabs.history)}
-            >
-              {SANTACASA_REGULARIZACOES_PAGE.tabs.history}
-            </button>
-          </div>
-
-          <div className={styles.meta}>
-            <span>Total</span>
-            <strong>{meta.total}</strong>
-          </div>
-        </div>
-
-        <form className={styles.filters} onSubmit={handleSubmit}>
-          <label className={styles.filterField}>
-            <span>{SANTACASA_REGULARIZACOES_PAGE.filters.searchLabel}</span>
-
-            <input
-              type="search"
-              value={searchInput}
-              placeholder={
-                SANTACASA_REGULARIZACOES_PAGE.filters.searchPlaceholder
-              }
-              disabled={isLoading || isRefreshing}
-              onChange={(event) => updateSearchInput(event.target.value)}
-            />
-          </label>
-
-          <label className={styles.filterField}>
-            <span>{SANTACASA_REGULARIZACOES_PAGE.filters.fromLabel}</span>
-
-            <input
-              type="date"
-              value={fromInput}
-              disabled={isLoading || isRefreshing}
-              onChange={(event) => updateFromInput(event.target.value)}
-            />
-          </label>
-
-          <label className={styles.filterField}>
-            <span>{SANTACASA_REGULARIZACOES_PAGE.filters.toLabel}</span>
-
-            <input
-              type="date"
-              value={toInput}
-              disabled={isLoading || isRefreshing}
-              onChange={(event) => updateToInput(event.target.value)}
-            />
-          </label>
-
-          <div className={styles.filterActions}>
-            <button
-              type="submit"
-              className={styles.filterButton}
-              disabled={isLoading || isRefreshing}
-            >
-              {SANTACASA_REGULARIZACOES_PAGE.filters.submit}
-            </button>
-
-            <button
-              type="button"
-              className={styles.clearButton}
-              disabled={isLoading || isRefreshing}
-              onClick={clearFilters}
-            >
-              {SANTACASA_REGULARIZACOES_PAGE.filters.clear}
-            </button>
-          </div>
-        </form>
-      </section>
+      <SantaCasaRegularizacoesToolbar
+        tabs={tabs}
+        activeTab={activeTab}
+        total={meta.total}
+        searchInput={searchInput}
+        fromInput={fromInput}
+        toInput={toInput}
+        isLoading={isLoading}
+        isRefreshing={isRefreshing}
+        onUpdateTab={updateTab}
+        onUpdateSearchInput={updateSearchInput}
+        onUpdateFromInput={updateFromInput}
+        onUpdateToInput={updateToInput}
+        onSubmit={handleSubmit}
+        onClear={clearFilters}
+      />
 
       <SantaCasaRegularizacoesList
         regularizacoes={regularizacoes}
@@ -202,27 +117,27 @@ export default function RegularizacoesPageContent() {
 
       <section
         className={styles.pagination}
-        aria-label="Paginação das regularizações da Santa Casa"
+        aria-label={SANTACASA_REGULARIZACOES_PAGE.pagination.ariaLabel}
       >
         <p className={styles.paginationInfo}>{paginationLabel}</p>
 
         <div className={styles.paginationActions}>
           <button
             type="button"
-            className={styles.clearButton}
+            className={styles.paginationButton}
             disabled={!hasPreviousPage || isLoading || isRefreshing}
             onClick={goToPreviousPage}
           >
-            Anterior
+            {SANTACASA_REGULARIZACOES_PAGE.pagination.previousLabel}
           </button>
 
           <button
             type="button"
-            className={styles.clearButton}
+            className={styles.paginationButton}
             disabled={!hasNextPage || isLoading || isRefreshing}
             onClick={goToNextPage}
           >
-            Seguinte
+            {SANTACASA_REGULARIZACOES_PAGE.pagination.nextLabel}
           </button>
         </div>
       </section>

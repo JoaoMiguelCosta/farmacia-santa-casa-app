@@ -5,10 +5,13 @@ import {
   buildDashboardPriorityMetrics,
 } from "../../utils/farmaciaDashboard.utils";
 
+import DashboardMetricGroup from "../../../../../shared/ui/DashboardMetricGroup/DashboardMetricGroup";
+import DashboardPriorityCard from "../../../../../shared/ui/DashboardPriorityCard/DashboardPriorityCard";
+
 import FarmaciaDashboardLatestPedido from "../FarmaciaDashboardLatestPedido/FarmaciaDashboardLatestPedido";
-import FarmaciaDashboardMetricGroup from "../FarmaciaDashboardMetricGroup/FarmaciaDashboardMetricGroup";
-import FarmaciaDashboardPriorityCard from "../FarmaciaDashboardPriorityCard/FarmaciaDashboardPriorityCard";
 import FarmaciaDashboardState from "../FarmaciaDashboardState/FarmaciaDashboardState";
+
+import Button from "../../../../../shared/ui/Button/Button";
 
 import styles from "./FarmaciaDashboardSignals.module.css";
 
@@ -63,16 +66,16 @@ export default function FarmaciaDashboardSignals({
           </p>
         </div>
 
-        <button
-          type="button"
-          className={styles.refreshButton}
+        <Button
+          variant="secondary"
+          size="sm"
           disabled={isRefreshing}
           onClick={onRefresh}
         >
           {isRefreshing
             ? FARMACIA_DASHBOARD_PAGE.actions.refreshing
             : FARMACIA_DASHBOARD_PAGE.actions.refresh}
-        </button>
+        </Button>
       </header>
 
       <section
@@ -81,7 +84,7 @@ export default function FarmaciaDashboardSignals({
       >
         <div className={styles.priorityGrid}>
           {priorities.map((priority) => (
-            <FarmaciaDashboardPriorityCard key={priority.key} {...priority} />
+            <DashboardPriorityCard key={priority.key} {...priority} />
           ))}
         </div>
 
@@ -109,7 +112,7 @@ export default function FarmaciaDashboardSignals({
 
         <div className={styles.groupGrid}>
           {metricGroups.map((group) => (
-            <FarmaciaDashboardMetricGroup
+            <DashboardMetricGroup
               key={group.key}
               title={group.title}
               description={group.description}

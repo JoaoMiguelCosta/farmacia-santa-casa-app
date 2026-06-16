@@ -1,3 +1,5 @@
+import { FARMACIA_ROUTES } from "../../shared/config/farmaciaRoutes.config";
+
 export const FARMACIA_ALERTAS_CONFIG = Object.freeze({
   pollingIntervalMs: 30000,
   maxVisibleAlertas: 5,
@@ -36,9 +38,9 @@ export const FARMACIA_ALERTAS_CONFIG = Object.freeze({
   }),
 
   routes: Object.freeze({
-    pedidos: "/farmacia/pedidos",
-    regularizacoes: "/farmacia/regularizacoes",
-    regularizacoesHistorico: "/farmacia/regularizacoes?view=history",
+    pedidos: FARMACIA_ROUTES.pedidos,
+    regularizacoes: FARMACIA_ROUTES.regularizacoes,
+    regularizacoesHistorico: FARMACIA_ROUTES.regularizacoesHistorico,
   }),
 
   types: Object.freeze({
@@ -46,21 +48,21 @@ export const FARMACIA_ALERTAS_CONFIG = Object.freeze({
       label: "Novo pedido recebido",
       tone: "pedido",
       actionLabel: "Abrir pedidos",
-      to: "/farmacia/pedidos",
+      to: FARMACIA_ROUTES.pedidos,
     }),
 
     REGULARIZACAO_PARCIAL: Object.freeze({
       label: "Regularização parcial",
       tone: "regularizacaoParcial",
       actionLabel: "Ver regularizações",
-      to: "/farmacia/regularizacoes",
+      to: FARMACIA_ROUTES.regularizacoes,
     }),
 
     REGULARIZACAO_TOTAL: Object.freeze({
       label: "Regularização concluída",
       tone: "regularizacaoTotal",
       actionLabel: "Ver histórico",
-      to: "/farmacia/regularizacoes?view=history",
+      to: FARMACIA_ROUTES.regularizacoesHistorico,
     }),
   }),
 

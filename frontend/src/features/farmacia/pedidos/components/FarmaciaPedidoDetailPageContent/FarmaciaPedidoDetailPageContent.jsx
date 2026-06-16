@@ -1,12 +1,14 @@
-// src/features/farmacia/pedidos/components/FarmaciaPedidoDetailPageContent/FarmaciaPedidoDetailPageContent.jsx
 import { Link, useParams } from "react-router-dom";
 
 import FeedbackDialog from "../../../../../shared/ui/FeedbackDialog/FeedbackDialog";
 import PageHeader from "../../../../../shared/ui/PageHeader/PageHeader";
+import Button from "../../../../../shared/ui/Button/Button";
 
 import FarmaciaPedidoCard from "../../../shared/pedidos/components/FarmaciaPedidoCard/FarmaciaPedidoCard";
 
 import { isPedidoPending } from "../../../shared/pedidos/utils/farmaciaPedido.utils";
+
+import { FARMACIA_ROUTES } from "../../../shared/config/farmaciaRoutes.config";
 
 import { FARMACIA_PEDIDOS_PAGE } from "../../config/farmaciaPedidosPage.config";
 import { useFarmaciaPedidoDetail } from "../../hooks/useFarmaciaPedidoDetail";
@@ -14,37 +16,9 @@ import { useFarmaciaPedidosPageActions } from "../../hooks/useFarmaciaPedidosPag
 
 import FarmaciaPedidoDecisionDialog from "../FarmaciaPedidoDecisionDialog/FarmaciaPedidoDecisionDialog";
 import FarmaciaPedidoDetailActionsBar from "../FarmaciaPedidoDetailActionsBar/FarmaciaPedidoDetailActionsBar";
+import OperationalDetailState from "../../../../../shared/ui/OperationalDetailState/OperationalDetailState";
 
 import styles from "./FarmaciaPedidoDetailPageContent.module.css";
-
-function PedidoDetailState({
-  title,
-  description,
-  actionLabel,
-  isActionLoading = false,
-  onAction,
-}) {
-  return (
-    <div className={styles.state} role="status">
-      <strong className={styles.stateTitle}>{title}</strong>
-
-      {description ? (
-        <p className={styles.stateDescription}>{description}</p>
-      ) : null}
-
-      {actionLabel && onAction ? (
-        <button
-          type="button"
-          className={styles.stateAction}
-          disabled={isActionLoading}
-          onClick={onAction}
-        >
-          {actionLabel}
-        </button>
-      ) : null}
-    </div>
-  );
-}
 
 export default function FarmaciaPedidoDetailPageContent() {
   const { pedidoId } = useParams();
@@ -113,19 +87,19 @@ export default function FarmaciaPedidoDetailPageContent() {
       aria-labelledby="farmacia-pedido-detail-title"
     >
       <div className={styles.navigation}>
-        <Link to="/farmacia/pedidos" className={styles.backLink}>
+        <Link to={FARMACIA_ROUTES.pedidos} className={styles.backLink}>
           ← {detail.backLabel}
         </Link>
 
         {!isLoading && pedido ? (
-          <button
-            type="button"
-            className={styles.refreshButton}
+          <Button
+            variant="secondary"
+            size="sm"
             disabled={isRefreshing || isActionRunning}
             onClick={refreshPedido}
           >
             {isRefreshing ? detail.refreshingLabel : detail.refreshLabel}
-          </button>
+          </Button>
         ) : null}
       </div>
 
@@ -145,14 +119,14 @@ export default function FarmaciaPedidoDetailPageContent() {
       ) : null}
 
       {isLoading ? (
-        <PedidoDetailState
+        <OperationalDetailState
           title={detail.loadingTitle}
           description={detail.loadingDescription}
         />
       ) : null}
 
       {!isLoading && error ? (
-        <PedidoDetailState
+        <OperationalDetailState
           title={detail.errorTitle}
           description={error}
           actionLabel={

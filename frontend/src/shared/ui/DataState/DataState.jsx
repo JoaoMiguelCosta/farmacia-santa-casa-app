@@ -5,6 +5,8 @@ import {
   getSafeDataStateType,
 } from "./DataState.utils";
 
+import { classNames } from "../../utils/classNames";
+
 import styles from "./DataState.module.css";
 
 export default function DataState({
@@ -22,7 +24,7 @@ export default function DataState({
 
   return (
     <div
-      className={`${styles.state} ${styles[stateType]}`}
+      className={classNames(styles.state, styles[stateType])}
       role={isError ? "alert" : "status"}
       aria-live={isError ? "assertive" : "polite"}
       aria-busy={isLoading || undefined}

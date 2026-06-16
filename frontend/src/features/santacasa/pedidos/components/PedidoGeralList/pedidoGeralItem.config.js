@@ -5,7 +5,7 @@ export const PEDIDO_GERAL_ITEM = Object.freeze({
     viewReceita: "Ver receita",
     hideReceita: "Ocultar receita",
 
-    removeItem: "Remover",
+    removeItem: "Retirar do Pedido",
   }),
 
   labels: Object.freeze({

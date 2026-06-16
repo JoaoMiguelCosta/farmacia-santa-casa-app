@@ -1,3 +1,4 @@
+import Button from "../../../../../shared/ui/Button/Button";
 import { formatDateTime } from "../../../../../shared/utils/formatDate";
 
 import styles from "./SystemUsersList.module.css";
@@ -15,9 +16,9 @@ function SystemUsersListState({ title, description, actionLabel, onAction }) {
       ) : null}
 
       {actionLabel && onAction ? (
-        <button type="button" className={styles.stateAction} onClick={onAction}>
+        <Button variant="secondary" size="sm" onClick={onAction}>
           {actionLabel}
-        </button>
+        </Button>
       ) : null}
     </div>
   );
@@ -65,48 +66,48 @@ function SystemUserCard({
 
       <dl className={styles.metaGrid}>
         <div>
-          <dt>Perfil</dt>
+          <dt>{SYSTEM_USERS_PAGE.labels.profile}</dt>
           <dd>{user.roleLabel}</dd>
         </div>
 
         <div>
-          <dt>Criado em</dt>
+          <dt>{SYSTEM_USERS_PAGE.labels.createdAt}</dt>
           <dd>{formatDateTime(user.createdAt)}</dd>
         </div>
 
         <div>
-          <dt>Atualizado em</dt>
+          <dt>{SYSTEM_USERS_PAGE.labels.updatedAt}</dt>
           <dd>{formatDateTime(user.updatedAt)}</dd>
         </div>
 
         <div>
-          <dt>Conta atual</dt>
-          <dd>{isCurrentUser ? "Sim" : "Não"}</dd>
+          <dt>{SYSTEM_USERS_PAGE.labels.isCurrentUser}</dt>
+          <dd>{isCurrentUser ? SYSTEM_USERS_PAGE.labels.yes : SYSTEM_USERS_PAGE.labels.no}</dd>
         </div>
       </dl>
 
       <footer className={styles.actions}>
-        <button
-          type="button"
-          className={styles.secondaryButton}
+        <Button
+          variant="secondary"
+          size="sm"
           disabled={isDeleting}
           onClick={() => onEdit?.(user)}
         >
           {SYSTEM_USERS_PAGE.actions.edit}
-        </button>
+        </Button>
 
-        <button
-          type="button"
-          className={styles.secondaryButton}
+        <Button
+          variant="secondary"
+          size="sm"
           disabled={isDeleting}
           onClick={() => onPassword?.(user)}
         >
           {SYSTEM_USERS_PAGE.actions.changePassword}
-        </button>
+        </Button>
 
-        <button
-          type="button"
-          className={user.isActive ? styles.dangerButton : styles.primaryButton}
+        <Button
+          variant={user.isActive ? "danger" : "primary"}
+          size="sm"
           disabled={!canToggle || isChangingStatus || isDeleting}
           title={
             canToggle
@@ -120,12 +121,12 @@ function SystemUserCard({
             : user.isActive
               ? SYSTEM_USERS_PAGE.actions.deactivate
               : SYSTEM_USERS_PAGE.actions.activate}
-        </button>
+        </Button>
 
         {!user.isActive ? (
-          <button
-            type="button"
-            className={styles.removeButton}
+          <Button
+            variant="danger"
+            size="sm"
             disabled={!canDelete || isDeleting || isChangingStatus}
             title={
               canDelete
@@ -137,7 +138,7 @@ function SystemUserCard({
             {isDeleting
               ? SYSTEM_USERS_PAGE.actions.removing
               : SYSTEM_USERS_PAGE.actions.remove}
-          </button>
+          </Button>
         ) : null}
       </footer>
     </article>
@@ -166,7 +167,7 @@ export default function SystemUsersList({
       <section className={styles.section} aria-live="polite">
         <SystemUsersListState
           title={sectionConfig.loadingTitle}
-          description="Aguarda enquanto os utilizadores são carregados."
+          description={sectionConfig.loadingDescription}
         />
       </section>
     );
@@ -200,7 +201,8 @@ export default function SystemUsersList({
         </div>
 
         <span className={styles.total}>
-          Total: <strong>{meta.total ?? users.length}</strong>
+          {SYSTEM_USERS_PAGE.labels.total}:{" "}
+          <strong>{meta.total ?? users.length}</strong>
         </span>
       </header>
 

@@ -1,3 +1,5 @@
+import Button from "../../../../../shared/ui/Button/Button";
+
 import styles from "./SantaCasaHistoricoList.module.css";
 
 import SantaCasaHistoricoCard from "./components/SantaCasaHistoricoCard/SantaCasaHistoricoCard";
@@ -19,9 +21,9 @@ function SantaCasaHistoricoState({
       ) : null}
 
       {actionLabel && onAction ? (
-        <button type="button" className={styles.stateAction} onClick={onAction}>
+        <Button variant="secondary" size="sm" onClick={onAction}>
           {actionLabel}
-        </button>
+        </Button>
       ) : null}
     </div>
   );
@@ -75,16 +77,16 @@ export default function SantaCasaHistoricoList({
           <p className={styles.description}>{sectionConfig.description}</p>
         </div>
 
-        <button
-          type="button"
-          className={styles.refreshButton}
+        <Button
+          variant="secondary"
+          size="sm"
           disabled={isRefreshing}
           onClick={onRefresh}
         >
           {isRefreshing
             ? SANTACASA_HISTORICO_PAGE.actions.refreshing
             : SANTACASA_HISTORICO_PAGE.actions.refresh}
-        </button>
+        </Button>
       </header>
 
       {!hasPedidos ? (

@@ -2,7 +2,7 @@ import { useId } from "react";
 
 import { SANTACASA_HOME_PAGE } from "../../config/santaCasaHomePage.config";
 
-import SantaCasaHomeActionCard from "../SantaCasaHomeActionCard/SantaCasaHomeActionCard";
+import HomeActionCard from "../../../../../shared/ui/HomeActionCard/HomeActionCard";
 
 import styles from "./SantaCasaHomePageContent.module.css";
 
@@ -25,9 +25,9 @@ export default function SantaCasaHomePageContent() {
       </header>
 
       <section className={styles.featured} aria-label={featured.ariaLabel}>
-        <SantaCasaHomeActionCard {...featured.operation} />
+        <HomeActionCard {...featured.operation} />
 
-        <SantaCasaHomeActionCard {...featured.dashboard} />
+        <HomeActionCard {...featured.dashboard} />
       </section>
 
       <section
@@ -46,7 +46,7 @@ export default function SantaCasaHomePageContent() {
 
         <div className={styles.quickAccessGrid}>
           {quickAccess.actions.map((action) => (
-            <SantaCasaHomeActionCard key={action.id} {...action} />
+            <HomeActionCard key={action.id} {...action} />
           ))}
         </div>
       </section>

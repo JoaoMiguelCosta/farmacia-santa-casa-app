@@ -1,33 +1,32 @@
-// src/features/santacasa/operacao/components/OperacaoExtrasSection/OperacaoExtrasSection.jsx
 import ExtraCreateForm from "../../../extras/components/ExtraCreateForm/ExtraCreateForm";
 import ExtrasList from "../../../extras/components/ExtrasList/ExtrasList";
 
 import { OPERACAO_PAGE } from "../../config/operacaoPage.config";
+import { useOperacaoContext } from "../../context/OperacaoContext";
 
 import OperationSection from "../OperationSection/OperationSection";
 
 export default function OperacaoExtrasSection({
-  selectedUtenteId,
-  selectedUtente,
-
   items,
-  isLoading,
-  error,
-
   isCreating,
-  medicacaoHabitualOptions,
-
   deletingItemId,
-  pedidoQuantities,
-  pedidoItemsQuantities,
-
   onCreateExtra,
-  onPedidoQuantityChange,
-  onAddToPedido,
-  onRetry,
-  onBlockedDelete,
   onRequestDelete,
 }) {
+  const {
+    selectedUtenteId,
+    selectedUtente,
+    isLoading,
+    error,
+    medicacaoHabitualOptions,
+    pedidoQuantities,
+    pedidoItemsQuantities,
+    onPedidoQuantityChange,
+    onAddToPedido,
+    onRetry,
+    onBlockedDelete,
+  } = useOperacaoContext();
+
   const section = OPERACAO_PAGE.sections.extras;
 
   return (

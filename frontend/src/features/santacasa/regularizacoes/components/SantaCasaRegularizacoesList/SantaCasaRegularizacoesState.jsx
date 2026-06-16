@@ -1,6 +1,8 @@
 // src/features/santacasa/regularizacoes/components/SantaCasaRegularizacoesList/SantaCasaRegularizacoesState.jsx
 
-import styles from "./SantaCasaRegularizacoesList.module.css";
+import Button from "../../../../../shared/ui/Button/Button";
+
+import styles from "./SantaCasaRegularizacoesState.module.css";
 
 export default function SantaCasaRegularizacoesState({
   title,
@@ -17,9 +19,9 @@ export default function SantaCasaRegularizacoesState({
       ) : null}
 
       {actionLabel && onAction ? (
-        <button type="button" className={styles.stateAction} onClick={onAction}>
+        <Button variant="secondary" size="sm" onClick={onAction}>
           {actionLabel}
-        </button>
+        </Button>
       ) : null}
     </div>
   );

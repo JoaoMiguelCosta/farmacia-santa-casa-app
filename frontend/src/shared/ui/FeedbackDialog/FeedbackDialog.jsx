@@ -8,6 +8,8 @@ import {
   getSafeFeedbackDialogType,
 } from "./FeedbackDialog.utils";
 
+import { classNames } from "../../utils/classNames";
+
 import styles from "./FeedbackDialog.module.css";
 
 export default function FeedbackDialog({
@@ -32,7 +34,7 @@ export default function FeedbackDialog({
   return (
     <div className={styles.overlay} role="presentation">
       <section
-        className={`${styles.dialog} ${styles[dialogType]}`}
+        className={classNames(styles.dialog, styles[dialogType])}
         role={isError ? "alertdialog" : "dialog"}
         aria-modal="true"
         aria-labelledby={FEEDBACK_DIALOG_CONFIG.ids.title}

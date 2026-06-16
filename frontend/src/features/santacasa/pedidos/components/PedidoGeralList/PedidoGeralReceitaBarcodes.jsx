@@ -1,5 +1,7 @@
 import BarcodeValue from "../../../../../shared/ui/BarcodeValue/BarcodeValue";
 
+import { PEDIDO_GERAL_ITEM } from "./pedidoGeralItem.config";
+
 import {
   getReceitaBarcodeCodes,
   hasReceitaBarcodeData,
@@ -13,7 +15,7 @@ export default function PedidoGeralReceitaBarcodes({ receita }) {
   const codes = getReceitaBarcodeCodes(receita);
 
   return (
-    <div className={styles.barcodePanel} aria-label="Códigos da receita">
+    <div className={styles.barcodePanel} aria-label={PEDIDO_GERAL_ITEM.labels.receitaCodesAriaLabel}>
       {codes.map((code) => (
         <BarcodeValue
           key={code.key}

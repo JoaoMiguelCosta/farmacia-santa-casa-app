@@ -14,6 +14,8 @@ import { useSantaCasaHistoricoDetail } from "./useSantaCasaHistoricoDetail";
 
 import { getSantaCasaHistoricoDetailViewModel } from "./santaCasaHistoricoDetail.utils";
 
+import Button from "../../../../../shared/ui/Button/Button";
+
 import styles from "./SantaCasaHistoricoDetailPageContent.module.css";
 
 function HistoricoDetailState({
@@ -32,14 +34,14 @@ function HistoricoDetailState({
       ) : null}
 
       {actionLabel && onAction ? (
-        <button
-          type="button"
-          className={styles.stateAction}
+        <Button
+          variant="secondary"
+          size="sm"
           disabled={isActionLoading}
           onClick={onAction}
         >
           {actionLabel}
-        </button>
+        </Button>
       ) : null}
     </div>
   );
@@ -86,14 +88,14 @@ export default function SantaCasaHistoricoDetailPageContent() {
         </Link>
 
         {!isLoading && pedido ? (
-          <button
-            type="button"
-            className={styles.refreshButton}
+          <Button
+            variant="secondary"
+            size="sm"
             disabled={isRefreshing}
             onClick={refreshPedido}
           >
             {isRefreshing ? detail.refreshingLabel : detail.refreshLabel}
-          </button>
+          </Button>
         ) : null}
       </div>
 

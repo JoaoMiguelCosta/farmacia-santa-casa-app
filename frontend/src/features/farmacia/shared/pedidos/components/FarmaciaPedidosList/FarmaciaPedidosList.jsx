@@ -1,195 +1,21 @@
-// src/features/farmacia/shared/pedidos/components/FarmaciaPedidosList/FarmaciaPedidosList.jsx
 import { useLocation } from "react-router-dom";
 
 import { FARMACIA_PEDIDO_UI } from "../../config/farmaciaPedidoUi.config";
+import {
+  getDefaultSectionConfig,
+  getSafeTotalPedidos,
+  getPedidosCountLabel,
+  getPedidoDetailsConfig,
+} from "../../utils/farmaciaPedidosList.utils";
 
 import FarmaciaPedidoCard from "../FarmaciaPedidoCard/FarmaciaPedidoCard";
+import FarmaciaPedidosState from "../FarmaciaPedidosState/FarmaciaPedidosState";
+import FarmaciaPedidosSearch from "../FarmaciaPedidosSearch/FarmaciaPedidosSearch";
+import FarmaciaPedidosPagination from "../FarmaciaPedidosPagination/FarmaciaPedidosPagination";
+
+import Button from "../../../../../../shared/ui/Button/Button";
 
 import styles from "./FarmaciaPedidosList.module.css";
-
-function FarmaciaPedidosState({ title, description, actionLabel, onAction }) {
-  return (
-    <div className={styles.state}>
-      <strong className={styles.stateTitle}>{title}</strong>
-
-      {description ? (
-        <p className={styles.stateDescription}>{description}</p>
-      ) : null}
-
-      {actionLabel && onAction ? (
-        <button type="button" className={styles.stateAction} onClick={onAction}>
-          {actionLabel}
-        </button>
-      ) : null}
-    </div>
-  );
-}
-
-function FarmaciaPedidosSearch({
-  config,
-  searchValue,
-  isDisabled = false,
-  onSearch,
-  onClear,
-}) {
-  if (!config || !onSearch) {
-    return null;
-  }
-
-  function handleSubmit(event) {
-    event.preventDefault();
-
-    const formData = new FormData(event.currentTarget);
-
-    onSearch(formData.get("search"));
-  }
-
-  const hasActiveSearch = Boolean(String(searchValue || "").trim());
-
-  return (
-    <form
-      className={styles.searchForm}
-      aria-label={config.ariaLabel}
-      onSubmit={handleSubmit}
-    >
-      <label className={styles.searchField}>
-        <span>{config.label}</span>
-
-        <input
-          key={searchValue}
-          type="search"
-          name="search"
-          defaultValue={searchValue}
-          placeholder={config.placeholder}
-          disabled={isDisabled}
-        />
-      </label>
-
-      <div className={styles.searchActions}>
-        {hasActiveSearch ? (
-          <button
-            type="button"
-            className={styles.clearButton}
-            disabled={isDisabled}
-            onClick={onClear}
-          >
-            {config.clearLabel}
-          </button>
-        ) : null}
-
-        <button
-          type="submit"
-          className={styles.searchButton}
-          disabled={isDisabled}
-        >
-          {config.submitLabel}
-        </button>
-      </div>
-    </form>
-  );
-}
-
-function FarmaciaPedidosPagination({
-  config,
-  pagination,
-  totalPedidos,
-  isDisabled = false,
-  onPreviousPage,
-  onNextPage,
-}) {
-  if (!config || !pagination || totalPedidos <= 0) {
-    return null;
-  }
-
-  const resultLabel =
-    totalPedidos === 1 ? config.resultSingular : config.resultPlural;
-
-  return (
-    <footer className={styles.pagination}>
-      <div className={styles.paginationInfo}>
-        <span>
-          {config.resultsPrefix}{" "}
-          <strong>
-            {pagination.rangeStart}–{pagination.rangeEnd}
-          </strong>{" "}
-          {config.resultsSeparator} <strong>{totalPedidos}</strong>{" "}
-          {resultLabel}
-        </span>
-
-        <span>
-          {config.pageLabel} <strong>{pagination.currentPage}</strong>{" "}
-          {config.pageSeparator} <strong>{pagination.totalPages}</strong>
-        </span>
-      </div>
-
-      <div className={styles.paginationActions}>
-        <button
-          type="button"
-          disabled={isDisabled || !pagination.hasPreviousPage}
-          onClick={onPreviousPage}
-        >
-          {config.previousLabel}
-        </button>
-
-        <button
-          type="button"
-          disabled={isDisabled || !pagination.hasNextPage}
-          onClick={onNextPage}
-        >
-          {config.nextLabel}
-        </button>
-      </div>
-    </footer>
-  );
-}
-
-function getDefaultSectionConfig(variant) {
-  if (variant === "history") {
-    return FARMACIA_PEDIDO_UI.sections.history;
-  }
-
-  return FARMACIA_PEDIDO_UI.sections.list;
-}
-
-function getSafeTotalPedidos(totalPedidos, pedidos) {
-  const parsedTotal = Number(totalPedidos);
-
-  if (Number.isFinite(parsedTotal) && parsedTotal >= 0) {
-    return parsedTotal;
-  }
-
-  return pedidos.length;
-}
-
-function getPedidosCountLabel(sectionConfig, totalPedidos) {
-  if (totalPedidos === 1) {
-    return sectionConfig.countSingular;
-  }
-
-  return sectionConfig.countPlural;
-}
-
-function getPedidoDetailsConfig({ pedidoId, variant, currentLocation }) {
-  if (variant === "history") {
-    return {
-      detailsTo: `/farmacia/historico/${pedidoId}`,
-
-      detailsLabel: FARMACIA_PEDIDO_UI.actions.consultPedido,
-
-      detailsNavigationState: {
-        from: currentLocation,
-      },
-    };
-  }
-
-  return {
-    detailsTo: `/farmacia/pedidos/${pedidoId}`,
-
-    detailsLabel: FARMACIA_PEDIDO_UI.actions.openPedido,
-
-    detailsNavigationState: null,
-  };
-}
 
 export default function FarmaciaPedidosList({
   pedidos = [],
@@ -301,16 +127,16 @@ export default function FarmaciaPedidosList({
             </div>
           ) : null}
 
-          <button
-            type="button"
-            className={styles.refreshButton}
+          <Button
+            variant="secondary"
+            size="sm"
             disabled={isControlsDisabled}
             onClick={onRefresh}
           >
             {isRefreshing
               ? FARMACIA_PEDIDO_UI.actions.refreshing
               : FARMACIA_PEDIDO_UI.actions.refresh}
-          </button>
+          </Button>
         </div>
       </header>
 

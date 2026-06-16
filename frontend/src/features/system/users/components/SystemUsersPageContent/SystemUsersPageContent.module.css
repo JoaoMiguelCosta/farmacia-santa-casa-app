@@ -66,136 +66,7 @@
     gap: 0.55rem;
 }
 
-.dialogBackdrop {
-    position: fixed;
-    inset: 0;
-    z-index: 80;
-
-    display: grid;
-    place-items: center;
-
-    padding: clamp(1rem, 4vw, 2rem);
-
-    background: rgba(10, 24, 20, 0.42);
-
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-}
-
-.dialog {
-    display: grid;
-    gap: clamp(1rem, 2vw, 1.25rem);
-
-    width: min(100%, 34rem);
-    padding: clamp(1.15rem, 3vw, 1.5rem);
-
-    border: 1px solid var(--clinic-border);
-    border-block-start: 4px solid var(--clinic-green-700);
-    border-radius: var(--clinic-radius-xl);
-
-    background: var(--clinic-surface);
-
-    box-shadow: 0 28px 90px rgba(10, 24, 20, 0.22);
-}
-
-.dialogContent {
-    display: grid;
-    gap: 0.65rem;
-
-    min-width: 0;
-}
-
-.dialogEyebrow {
-    width: fit-content;
-    margin: 0;
-    padding: 0.34rem 0.7rem;
-
-    border: 1px solid rgba(31, 95, 81, 0.16);
-    border-radius: 999px;
-
-    color: var(--clinic-green-700);
-    background: var(--clinic-mist);
-
-    font-size: 0.7rem;
-    font-weight: 850;
-    letter-spacing: 0.1em;
-    line-height: 1;
-    text-transform: uppercase;
-}
-
-.dialogTitle {
-    margin: 0;
-
-    color: var(--clinic-ink);
-
-    font-size: clamp(1.35rem, 3vw, 1.85rem);
-    font-weight: 850;
-    letter-spacing: -0.04em;
-    line-height: 1.08;
-}
-
-.dialogDescription {
-    margin: 0;
-
-    color: var(--clinic-muted-strong);
-
-    font-size: var(--clinic-font-size-sm);
-    font-weight: 550;
-    line-height: var(--clinic-line-height-base);
-}
-
-.dialogUser {
-    display: grid;
-    gap: 0.6rem;
-
-    margin: 0.2rem 0 0;
-    padding: 0.85rem;
-
-    border: 1px solid var(--clinic-border);
-    border-radius: var(--clinic-radius-lg);
-
-    background: var(--clinic-mist);
-}
-
-.dialogUser div {
-    display: grid;
-    gap: 0.16rem;
-
-    min-width: 0;
-}
-
-.dialogUser dt {
-    color: var(--clinic-muted);
-
-    font-size: 0.68rem;
-    font-weight: 850;
-    letter-spacing: 0.08em;
-    line-height: 1;
-    text-transform: uppercase;
-}
-
-.dialogUser dd {
-    margin: 0;
-
-    overflow-wrap: anywhere;
-
-    color: var(--clinic-ink);
-
-    font-size: var(--clinic-font-size-sm);
-    font-weight: 700;
-    line-height: 1.35;
-}
-
-.dialogActions {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: flex-end;
-    gap: 0.55rem;
-}
-
-.cancelButton,
-.confirmButton,
-.dangerButton {
+.paginationButton {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -203,7 +74,11 @@
     min-height: 2.5rem;
     padding: 0.66rem 0.95rem;
 
+    border: 1px solid var(--clinic-border);
     border-radius: 999px;
+
+    color: var(--clinic-green-800);
+    background: var(--clinic-white);
 
     font: inherit;
     font-size: 0.84rem;
@@ -215,81 +90,28 @@
     transition:
         transform var(--clinic-transition),
         border-color var(--clinic-transition),
-        background-color var(--clinic-transition),
-        box-shadow var(--clinic-transition),
-        opacity var(--clinic-transition);
+        background-color var(--clinic-transition);
 }
 
-.cancelButton {
-    border: 1px solid var(--clinic-border);
-
-    color: var(--clinic-green-800);
-    background: var(--clinic-white);
-}
-
-.confirmButton {
-    border: 1px solid rgba(31, 95, 81, 0.28);
-
-    color: var(--clinic-white);
-    background: var(--clinic-green-700);
-
-    box-shadow: 0 12px 28px rgba(31, 95, 81, 0.16);
-}
-
-.dangerButton {
-    border: 1px solid rgba(180, 35, 24, 0.2);
-
-    color: var(--clinic-white);
-    background: var(--clinic-danger);
-
-    box-shadow: 0 12px 28px rgba(180, 35, 24, 0.16);
-}
-
-.cancelButton:hover,
-.confirmButton:hover,
-.dangerButton:hover {
+.paginationButton:hover {
+    border-color: var(--clinic-border-strong);
+    background: var(--clinic-mist);
     transform: translateY(-1px);
 }
 
-.cancelButton:hover {
-    border-color: var(--clinic-border-strong);
-    background: var(--clinic-mist);
-}
-
-.confirmButton:hover {
-    background: var(--clinic-green-800);
-    box-shadow: 0 16px 34px rgba(31, 95, 81, 0.2);
-}
-
-.dangerButton:hover {
-    background: #961b12;
-    box-shadow: 0 16px 34px rgba(180, 35, 24, 0.2);
-}
-
-.cancelButton:active,
-.confirmButton:active,
-.dangerButton:active {
+.paginationButton:active {
     transform: translateY(0);
 }
 
-.cancelButton:focus-visible,
-.confirmButton:focus-visible,
-.dangerButton:focus-visible {
+.paginationButton:focus-visible {
     outline: 3px solid rgba(31, 95, 81, 0.26);
     outline-offset: 3px;
 }
 
-.dangerButton:focus-visible {
-    outline-color: rgba(180, 35, 24, 0.24);
-}
-
-.cancelButton:disabled,
-.confirmButton:disabled,
-.dangerButton:disabled {
+.paginationButton:disabled {
     cursor: not-allowed;
     opacity: 0.58;
     transform: none;
-    box-shadow: none;
 }
 
 @media (max-width: 760px) {
@@ -302,22 +124,12 @@
         justify-content: stretch;
     }
 
-    .paginationActions>* {
+    .paginationActions > * {
         flex: 1;
     }
 }
 
 @media (max-width: 520px) {
-    .dialogActions {
-        flex-direction: column-reverse;
-    }
-
-    .cancelButton,
-    .confirmButton,
-    .dangerButton {
-        width: 100%;
-    }
-
     .paginationActions {
         display: grid;
         grid-template-columns: 1fr;
@@ -325,16 +137,11 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-
-    .cancelButton,
-    .confirmButton,
-    .dangerButton {
+    .paginationButton {
         transition: none;
     }
 
-    .cancelButton:hover,
-    .confirmButton:hover,
-    .dangerButton:hover {
+    .paginationButton:hover {
         transform: none;
     }
 }

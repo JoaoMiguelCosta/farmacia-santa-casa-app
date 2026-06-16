@@ -1,9 +1,7 @@
 // src/features/santacasa/operacao/components/OperationSection/OperationSection.jsx
-import styles from "./OperationSection.module.css";
+import { classNames } from "../../../../../shared/utils/classNames";
 
-function joinClassNames(...classes) {
-  return classes.filter(Boolean).join(" ");
-}
+import styles from "./OperationSection.module.css";
 
 export default function OperationSection({
   id,
@@ -16,7 +14,7 @@ export default function OperationSection({
   return (
     <section
       id={id}
-      className={joinClassNames(styles.section, styles[tone])}
+      className={classNames(styles.section, styles[tone])}
       aria-labelledby={`${id}-title`}
     >
       <header className={styles.header}>

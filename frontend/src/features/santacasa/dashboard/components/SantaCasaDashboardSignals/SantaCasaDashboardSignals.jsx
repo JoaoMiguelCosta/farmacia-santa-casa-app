@@ -5,10 +5,13 @@ import {
   buildDashboardPriorityMetrics,
 } from "../../utils/santaCasaDashboard.utils";
 
+import DashboardMetricGroup from "../../../../../shared/ui/DashboardMetricGroup/DashboardMetricGroup";
+import DashboardPriorityCard from "../../../../../shared/ui/DashboardPriorityCard/DashboardPriorityCard";
+
 import SantaCasaDashboardLatestPedido from "../SantaCasaDashboardLatestPedido/SantaCasaDashboardLatestPedido";
-import SantaCasaDashboardMetricGroup from "../SantaCasaDashboardMetricGroup/SantaCasaDashboardMetricGroup";
-import SantaCasaDashboardPriorityCard from "../SantaCasaDashboardPriorityCard/SantaCasaDashboardPriorityCard";
 import SantaCasaDashboardState from "../SantaCasaDashboardState/SantaCasaDashboardState";
+
+import Button from "../../../../../shared/ui/Button/Button";
 
 import styles from "./SantaCasaDashboardSignals.module.css";
 
@@ -63,16 +66,16 @@ export default function SantaCasaDashboardSignals({
           </p>
         </div>
 
-        <button
-          type="button"
-          className={styles.refreshButton}
+        <Button
+          variant="secondary"
+          size="sm"
           disabled={isRefreshing}
           onClick={onRefresh}
         >
           {isRefreshing
             ? SANTACASA_DASHBOARD_PAGE.actions.refreshing
             : SANTACASA_DASHBOARD_PAGE.actions.refresh}
-        </button>
+        </Button>
       </header>
 
       <section
@@ -81,7 +84,7 @@ export default function SantaCasaDashboardSignals({
       >
         <div className={styles.priorityGrid}>
           {priorities.map((priority) => (
-            <SantaCasaDashboardPriorityCard key={priority.key} {...priority} />
+            <DashboardPriorityCard key={priority.key} {...priority} />
           ))}
         </div>
 
@@ -109,7 +112,7 @@ export default function SantaCasaDashboardSignals({
 
         <div className={styles.groupGrid}>
           {metricGroups.map((group) => (
-            <SantaCasaDashboardMetricGroup
+            <DashboardMetricGroup
               key={group.key}
               title={group.title}
               description={group.description}

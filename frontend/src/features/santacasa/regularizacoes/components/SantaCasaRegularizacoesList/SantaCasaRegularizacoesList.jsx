@@ -13,6 +13,8 @@ import {
   groupRegularizacoesByUtente,
 } from "../../utils/santaCasaRegularizacoes.utils";
 
+import Button from "../../../../../shared/ui/Button/Button";
+
 import styles from "./SantaCasaRegularizacoesList.module.css";
 
 import SantaCasaRegularizacoesState from "./SantaCasaRegularizacoesState";
@@ -85,16 +87,16 @@ export default function SantaCasaRegularizacoesList({
           <p className={styles.description}>{sectionConfig.description}</p>
         </div>
 
-        <button
-          type="button"
-          className={styles.refreshButton}
+        <Button
+          variant="secondary"
+          size="sm"
           disabled={isRefreshing}
           onClick={onRefresh}
         >
           {isRefreshing
             ? SANTACASA_REGULARIZACOES_PAGE.actions.refreshing
             : SANTACASA_REGULARIZACOES_PAGE.actions.refresh}
-        </button>
+        </Button>
       </header>
 
       {!hasRegularizacoes ? (

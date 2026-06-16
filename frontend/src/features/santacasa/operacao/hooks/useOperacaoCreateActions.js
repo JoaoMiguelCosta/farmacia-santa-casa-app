@@ -2,10 +2,10 @@
 import { useState } from "react";
 
 import { createReceita } from "../../receitas/api/receitasApi";
-import { createSemReceita } from "../../sem-receita/api/semReceitaApi";
+import { createSemReceita } from "../../semReceita/api/semReceitaApi";
 import { createExtra } from "../../extras/api/extrasApi";
 
-import { SEM_RECEITA_PAGE } from "../../sem-receita/config/semReceitaPage.config";
+import { SEM_RECEITA_PAGE } from "../../semReceita/config/semReceitaPage.config";
 import { EXTRAS_PAGE } from "../../extras/config/extrasPage.config";
 
 import {

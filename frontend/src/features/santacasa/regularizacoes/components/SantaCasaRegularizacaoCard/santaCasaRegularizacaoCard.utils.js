@@ -1,5 +1,7 @@
 // src/features/santacasa/regularizacoes/components/SantaCasaRegularizacaoCard/santaCasaRegularizacaoCard.utils.js
 
+import { classNames } from "../../../../../shared/utils/classNames";
+
 export function getEventoReceita(evento) {
   return evento?.receitaLinha?.receita ?? null;
 }
@@ -19,17 +21,16 @@ export function getSafeUnitValue(value) {
 }
 
 export function getCardClassName({ styles, isCompleted, isHistory }) {
-  return [
+  return classNames(
     styles.card,
-    isCompleted ? styles.cardCompleted : "",
-    isHistory ? styles.cardHistory : "",
-  ]
-    .filter(Boolean)
-    .join(" ");
+    isCompleted && styles.cardCompleted,
+    isHistory && styles.cardHistory,
+  );
 }
 
 export function getStatusClassName({ styles, isCompleted }) {
-  return isCompleted
-    ? `${styles.status} ${styles.statusCompleted}`
-    : `${styles.status} ${styles.statusPending}`;
+  return classNames(
+    styles.status,
+    isCompleted ? styles.statusCompleted : styles.statusPending,
+  );
 }

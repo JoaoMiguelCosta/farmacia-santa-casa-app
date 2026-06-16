@@ -8,6 +8,8 @@ import {
   getSignalTotalUnidades,
 } from "../../utils/farmaciaRegularizacoes.utils";
 
+import Button from "../../../../../shared/ui/Button/Button";
+
 import styles from "./FarmaciaRegularizacoesSignal.module.css";
 
 export default function FarmaciaRegularizacoesSignal({
@@ -62,16 +64,16 @@ export default function FarmaciaRegularizacoesSignal({
           <p className={styles.description}>{sectionConfig.description}</p>
         </div>
 
-        <button
-          type="button"
-          className={styles.refreshButton}
+        <Button
+          variant="secondary"
+          size="sm"
           disabled={isRefreshing}
           onClick={onRefresh}
         >
           {isRefreshing
             ? FARMACIA_REGULARIZACOES_PAGE.actions.refreshing
             : FARMACIA_REGULARIZACOES_PAGE.actions.refresh}
-        </button>
+        </Button>
       </header>
 
       <div className={styles.grid}>

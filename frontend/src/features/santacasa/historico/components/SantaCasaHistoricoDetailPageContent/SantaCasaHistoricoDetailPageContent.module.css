@@ -48,9 +48,7 @@
     min-width: 0;
 }
 
-.backLink,
-.refreshButton,
-.stateAction {
+.backLink {
     min-height: 2.55rem;
     padding: 0.7rem 0.95rem;
 
@@ -90,9 +88,7 @@
     width: fit-content;
 }
 
-.backLink:hover,
-.refreshButton:hover:not(:disabled),
-.stateAction:hover:not(:disabled) {
+.backLink:hover {
     transform: translateY(-1px);
 
     border-color: color-mix(in srgb, var(--clinic-green-700) 30%, transparent);
@@ -103,21 +99,11 @@
         0 0 0 3px color-mix(in srgb, var(--clinic-green-700) 5%, transparent);
 }
 
-.backLink:focus-visible,
-.refreshButton:focus-visible,
-.stateAction:focus-visible {
+.backLink:focus-visible {
     outline: 3px solid color-mix(in srgb, var(--clinic-green-700) 20%, transparent);
     outline-offset: 3px;
 }
 
-.refreshButton:disabled,
-.stateAction:disabled {
-    cursor: not-allowed;
-
-    opacity: 0.56;
-    transform: none;
-    box-shadow: none;
-}
 
 .state {
     position: relative;
@@ -563,8 +549,7 @@
         flex-direction: column;
     }
 
-    .backLink,
-    .refreshButton {
+    .backLink {
         justify-content: center;
 
         width: 100%;
@@ -600,15 +585,11 @@
 
 @media (prefers-reduced-motion: reduce) {
 
-    .backLink,
-    .refreshButton,
-    .stateAction {
+    .backLink {
         transition: none;
     }
 
-    .backLink:hover,
-    .refreshButton:hover,
-    .stateAction:hover {
+    .backLink:hover {
         transform: none;
     }
 }

@@ -1,3 +1,5 @@
+import { classNames } from "../../../../../shared/utils/classNames";
+
 import { getTypeLabel } from "./pedidoGeralList.utils";
 
 import styles from "./PedidoGeralItem.module.css";
@@ -11,9 +13,7 @@ function getTypeClassName(tipo) {
 }
 
 export default function PedidoGeralTypeBadge({ tipo }) {
-  const className = [styles.badge, getTypeClassName(tipo)]
-    .filter(Boolean)
-    .join(" ");
+  const className = classNames(styles.badge, getTypeClassName(tipo));
 
   return <span className={className}>{getTypeLabel(tipo)}</span>;
 }

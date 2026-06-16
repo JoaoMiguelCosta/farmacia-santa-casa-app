@@ -1,11 +1,4 @@
-// src/features/system/home/config/systemHomePage.config.js
-
-const SYSTEM_ROUTES = Object.freeze({
-  home: "/sistema",
-  users: "/sistema/utilizadores",
-  manutencao: "/sistema/manutencao",
-  health: "/sistema/estado-servicos",
-});
+import { SYSTEM_ROUTES } from "../../shared/config/systemRoutes.config";
 
 const FEATURED_ACTIONS = Object.freeze([
   Object.freeze({
@@ -15,7 +8,7 @@ const FEATURED_ACTIONS = Object.freeze([
     description:
       "Cria, edita, ativa ou desativa contas com acesso à Santa Casa, Farmácia e Administração.",
     actionLabel: "Gerir utilizadores",
-    to: SYSTEM_ROUTES.users,
+    to: SYSTEM_ROUTES.utilizadores,
     variant: "primary",
     tone: "green",
   }),
@@ -39,7 +32,7 @@ const FEATURED_ACTIONS = Object.freeze([
     description:
       "Confirma se os serviços principais da Santa Casa e da Farmácia estão a responder corretamente.",
     actionLabel: "Ver estado da plataforma",
-    to: SYSTEM_ROUTES.health,
+    to: SYSTEM_ROUTES.estadoServicos,
     variant: "secondary",
     tone: "blue",
   }),

@@ -12,6 +12,8 @@ export const SANTACASA_ROUTER_PATHS = Object.freeze({
   pedidoDetail: `${SANTACASA_BASE_PATH}/pedidos/:pedidoId`,
 
   regularizacoes: `${SANTACASA_BASE_PATH}/regularizacoes`,
+  regularizacoesUtente: `${SANTACASA_BASE_PATH}/regularizacoes/utente/:utenteId`,
+  regularizacoesHistoricoUtente: `${SANTACASA_BASE_PATH}/regularizacoes/utente/:utenteId/historico`,
 
   historico: `${SANTACASA_BASE_PATH}/historico`,
   historicoDetail: `${SANTACASA_BASE_PATH}/historico/:pedidoId`,

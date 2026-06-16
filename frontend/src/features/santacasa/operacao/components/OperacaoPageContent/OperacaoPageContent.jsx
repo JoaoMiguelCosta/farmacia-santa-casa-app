@@ -2,8 +2,10 @@
 import Button from "../../../../../shared/ui/Button/Button";
 import PageHeader from "../../../../../shared/ui/PageHeader/PageHeader";
 
-import { useMedicacaoHabitual } from "../../../medicacao-habitual/hooks/useMedicacaoHabitual";
+import { useMedicacaoHabitual } from "../../../medicacaoHabitual/hooks/useMedicacaoHabitual";
 import { usePedidoDraft } from "../../../pedidos/state/usePedidoDraft";
+
+import { OperacaoContext } from "../../context/OperacaoContext";
 
 import OperacaoDialogs from "../OperacaoDialogs/OperacaoDialogs";
 import OperacaoExtrasSection from "../OperacaoExtrasSection/OperacaoExtrasSection";
@@ -19,7 +21,7 @@ import { useSantaCasaOperacaoActions } from "../../hooks/useSantaCasaOperacaoAct
 
 import { getDeletingId } from "../../utils/santaCasaOperacao.utils";
 
-import { useOperacaoVisibleItems } from "./useOperacaoVisibleItems";
+import { useOperacaoVisibleItems } from "../../hooks/useOperacaoVisibleItems";
 
 import styles from "./OperacaoPageContent.module.css";
 
@@ -166,72 +168,55 @@ export default function OperacaoPageContent() {
         onSelectUtente={handleSelectOperationUtente}
       />
 
-      <div className={styles.sections}>
-        <OperacaoMedicacaoHabitualSection
-          selectedUtenteId={selectedUtenteId}
-          selectedUtente={selectedUtente}
-          medicacaoHabitualController={medicacaoHabitualController}
-        />
+      <OperacaoContext.Provider
+        value={{
+          selectedUtenteId,
+          selectedUtente,
+          isLoading: isLoadingData,
+          error: dataError,
+          medicacaoHabitualOptions,
+          pedidoQuantities,
+          pedidoItemsQuantities,
+          onPedidoQuantityChange: handlePedidoQuantityInputChange,
+          onAddToPedido: handleAddPedidoItem,
+          onRetry: refreshOperationData,
+          onBlockedDelete: handleBlockedDelete,
+        }}
+      >
+        <div className={styles.sections}>
+          <OperacaoMedicacaoHabitualSection
+            selectedUtenteId={selectedUtenteId}
+            selectedUtente={selectedUtente}
+            medicacaoHabitualController={medicacaoHabitualController}
+          />
 
-        <OperacaoReceitasSection
-          selectedUtenteId={selectedUtenteId}
-          selectedUtente={selectedUtente}
-          receitas={visibleReceitas}
-          isLoading={isLoadingData}
-          error={dataError}
-          isReceitaBusy={isReceitaBusy}
-          receitaFormResetKey={receitaFormResetKey}
-          medicacaoHabitualOptions={medicacaoHabitualOptions}
-          deletingLinhaId={getDeletingId(deletingTargetKey, "receita")}
-          pedidoQuantities={pedidoQuantities}
-          pedidoItemsQuantities={pedidoItemsQuantities}
-          onCreateReceita={handleCreateReceita}
-          onPedidoQuantityChange={handlePedidoQuantityInputChange}
-          onAddToPedido={handleAddPedidoItem}
-          onRetry={refreshOperationData}
-          onBlockedDelete={handleBlockedDelete}
-          onRequestDelete={(linha) => handleRequestDelete("receita", linha)}
-          onQuantityBackToList={handleAfterReceitaQuantityBackToList}
-        />
+          <OperacaoReceitasSection
+            receitas={visibleReceitas}
+            isReceitaBusy={isReceitaBusy}
+            receitaFormResetKey={receitaFormResetKey}
+            deletingLinhaId={getDeletingId(deletingTargetKey, "receita")}
+            onCreateReceita={handleCreateReceita}
+            onRequestDelete={(linha) => handleRequestDelete("receita", linha)}
+            onQuantityBackToList={handleAfterReceitaQuantityBackToList}
+          />
 
-        <OperacaoSemReceitaSection
-          selectedUtenteId={selectedUtenteId}
-          selectedUtente={selectedUtente}
-          items={visibleSemReceita}
-          isLoading={isLoadingData}
-          error={dataError}
-          isCreating={isCreatingSemReceita}
-          medicacaoHabitualOptions={medicacaoHabitualOptions}
-          deletingItemId={getDeletingId(deletingTargetKey, "semReceita")}
-          pedidoQuantities={pedidoQuantities}
-          pedidoItemsQuantities={pedidoItemsQuantities}
-          onCreateSemReceita={handleCreateSemReceita}
-          onPedidoQuantityChange={handlePedidoQuantityInputChange}
-          onAddToPedido={handleAddPedidoItem}
-          onRetry={refreshOperationData}
-          onBlockedDelete={handleBlockedDelete}
-          onRequestDelete={(item) => handleRequestDelete("semReceita", item)}
-        />
+          <OperacaoSemReceitaSection
+            items={visibleSemReceita}
+            isCreating={isCreatingSemReceita}
+            deletingItemId={getDeletingId(deletingTargetKey, "semReceita")}
+            onCreateSemReceita={handleCreateSemReceita}
+            onRequestDelete={(item) => handleRequestDelete("semReceita", item)}
+          />
 
-        <OperacaoExtrasSection
-          selectedUtenteId={selectedUtenteId}
-          selectedUtente={selectedUtente}
-          items={visibleExtras}
-          isLoading={isLoadingData}
-          error={dataError}
-          isCreating={isCreatingExtra}
-          medicacaoHabitualOptions={medicacaoHabitualOptions}
-          deletingItemId={getDeletingId(deletingTargetKey, "extra")}
-          pedidoQuantities={pedidoQuantities}
-          pedidoItemsQuantities={pedidoItemsQuantities}
-          onCreateExtra={handleCreateExtra}
-          onPedidoQuantityChange={handlePedidoQuantityInputChange}
-          onAddToPedido={handleAddPedidoItem}
-          onRetry={refreshOperationData}
-          onBlockedDelete={handleBlockedDelete}
-          onRequestDelete={(item) => handleRequestDelete("extra", item)}
-        />
-      </div>
+          <OperacaoExtrasSection
+            items={visibleExtras}
+            isCreating={isCreatingExtra}
+            deletingItemId={getDeletingId(deletingTargetKey, "extra")}
+            onCreateExtra={handleCreateExtra}
+            onRequestDelete={(item) => handleRequestDelete("extra", item)}
+          />
+        </div>
+      </OperacaoContext.Provider>
 
       <OperacaoDialogs
         regularizacaoConfirmation={regularizacaoConfirmation}

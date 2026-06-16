@@ -1,9 +1,4 @@
-const FARMACIA_ROUTES = Object.freeze({
-  dashboard: "/farmacia/dashboard",
-  pedidos: "/farmacia/pedidos",
-  historico: "/farmacia/historico",
-  regularizacoes: "/farmacia/regularizacoes",
-});
+import { FARMACIA_ROUTES } from "../../shared/config/farmaciaRoutes.config";
 
 const PEDIDOS_META_ITEMS = Object.freeze([
   "Pedidos pendentes",
@@ -65,6 +60,7 @@ export const FARMACIA_HOME_PAGE = Object.freeze({
       actionLabel: "Gerir pedidos",
       to: FARMACIA_ROUTES.pedidos,
       metaItems: PEDIDOS_META_ITEMS,
+      metaAriaLabel: "Áreas incluídas",
       variant: "primary",
       tone: "green",
     }),

@@ -5,6 +5,8 @@ import {
   getAreaLandingModulesLabel,
 } from "./AreaLanding.utils";
 
+import { classNames } from "../../utils/classNames";
+
 import styles from "./AreaLanding.module.css";
 
 export default function AreaLanding({
@@ -20,7 +22,7 @@ export default function AreaLanding({
 
   return (
     <section className={styles.page} aria-labelledby="area-title">
-      <div className={`${styles.header} ${toneClassName}`}>
+      <div className={classNames(styles.header, toneClassName)}>
         {eyebrow ? <p className={styles.kicker}>{eyebrow}</p> : null}
 
         <h1 id="area-title" className={styles.title}>
@@ -48,7 +50,7 @@ export default function AreaLanding({
               <Link
                 key={action.title}
                 to={action.to}
-                className={`${styles.item} ${styles.interactive}`}
+                className={classNames(styles.item, styles.interactive)}
               >
                 {content}
               </Link>

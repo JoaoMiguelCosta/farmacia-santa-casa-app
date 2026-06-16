@@ -1,4 +1,6 @@
 // src/features/santacasa/utentes/components/UtentesList/UtentesList.jsx
+import { classNames } from "../../../../../shared/utils/classNames";
+
 import Button from "../../../../../shared/ui/Button/Button";
 import DataState from "../../../../../shared/ui/DataState/DataState";
 import SurfaceCard from "../../../../../shared/ui/SurfaceCard/SurfaceCard";
@@ -26,7 +28,7 @@ function getStatusClassName(utente) {
   const variant = getUtenteStatusVariant(utente);
   const variantClass = STATUS_CLASS_BY_VARIANT[variant] || "invalid";
 
-  return `${styles.status} ${styles[variantClass]}`;
+  return classNames(styles.status, styles[variantClass]);
 }
 
 export default function UtentesList({

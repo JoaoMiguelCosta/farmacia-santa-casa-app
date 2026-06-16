@@ -52,47 +52,6 @@
     line-height: var(--clinic-line-height-base);
 }
 
-.refreshButton,
-.stateAction {
-    min-height: 2.5rem;
-    padding: 0.68rem 1rem;
-    border: 1px solid var(--clinic-border);
-    border-radius: 999px;
-    background: var(--clinic-white);
-    color: var(--clinic-green-700);
-    font: inherit;
-    font-size: var(--clinic-font-size-sm);
-    font-weight: 850;
-    cursor: pointer;
-    transition:
-        transform var(--clinic-transition),
-        border-color var(--clinic-transition),
-        background var(--clinic-transition),
-        box-shadow var(--clinic-transition),
-        opacity var(--clinic-transition);
-}
-
-.refreshButton:hover,
-.stateAction:hover {
-    transform: translateY(-1px);
-    border-color: var(--clinic-border-strong);
-    background: var(--clinic-mist);
-    box-shadow: var(--clinic-shadow-soft);
-}
-
-.refreshButton:focus-visible,
-.stateAction:focus-visible {
-    outline: 3px solid rgba(31, 95, 81, 0.24);
-    outline-offset: 3px;
-}
-
-.refreshButton:disabled,
-.stateAction:disabled {
-    cursor: not-allowed;
-    opacity: 0.56;
-    transform: none;
-    box-shadow: none;
-}
 
 .grid {
     display: grid;
@@ -206,7 +165,7 @@
         flex-direction: column;
     }
 
-    .refreshButton {
+    .header > button {
         width: 100%;
     }
 

@@ -1,5 +1,7 @@
 import { FARMACIA_REGULARIZACOES_PAGE } from "../../config/farmaciaRegularizacoesPage.config";
 
+import { classNames } from "../../../../../shared/utils/classNames";
+
 import styles from "./FarmaciaRegularizacoesToolbar.module.css";
 
 export default function FarmaciaRegularizacoesToolbar({
@@ -39,11 +41,7 @@ export default function FarmaciaRegularizacoesToolbar({
             type="button"
             role="tab"
             aria-selected={activeTab === tabs.pending}
-            className={
-              activeTab === tabs.pending
-                ? `${styles.tabButton} ${styles.tabButtonActive}`
-                : styles.tabButton
-            }
+            className={classNames(styles.tabButton, activeTab === tabs.pending && styles.tabButtonActive)}
             disabled={isDisabled}
             onClick={() => onTabChange(tabs.pending)}
           >
@@ -54,11 +52,7 @@ export default function FarmaciaRegularizacoesToolbar({
             type="button"
             role="tab"
             aria-selected={activeTab === tabs.history}
-            className={
-              activeTab === tabs.history
-                ? `${styles.tabButton} ${styles.tabButtonActive}`
-                : styles.tabButton
-            }
+            className={classNames(styles.tabButton, activeTab === tabs.history && styles.tabButtonActive)}
             disabled={isDisabled}
             onClick={() => onTabChange(tabs.history)}
           >
