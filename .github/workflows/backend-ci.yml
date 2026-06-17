@@ -90,6 +90,9 @@ jobs:
       - name: Run integration tests
         run: npm run test:integration -- --run
 
+      - name: Seed database for E2E tests
+        run: npx prisma db seed
+
       - name: Run E2E tests
         run: npm run test:e2e -- --run
 
@@ -98,4 +101,3 @@ jobs:
 
       - name: Run backend validation
         run: npm run validate
-
