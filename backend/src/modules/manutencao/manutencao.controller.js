@@ -14,8 +14,8 @@ async function previewReceitaExpiry(_req, res) {
   return ok(res, data);
 }
 
-async function runReceitaExpiry(_req, res) {
-  const data = await service.runReceitaExpiry();
+async function runReceitaExpiry(req, res) {
+  const data = await service.runReceitaExpiry(req.body);
 
   return ok(res, data);
 }

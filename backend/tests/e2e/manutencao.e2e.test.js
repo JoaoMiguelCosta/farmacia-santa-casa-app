@@ -154,11 +154,14 @@ describe("Manutenção E2E", () => {
   });
 
   describe("Execução dos jobs", () => {
-    it("deve executar o job receita-expiry", async () => {
+    it("deve executar o job receita-expiry com confirmação", async () => {
       const agent = await createAdminAgent(app);
 
       const response = await agent
         .post("/api/manutencao/jobs/receita-expiry/run")
+        .send({
+          confirm: "RUN_RECEITA_EXPIRY",
+        })
         .expect(200);
 
       expect(response.body).toEqual(
@@ -178,12 +181,13 @@ describe("Manutenção E2E", () => {
       );
     });
 
-    it("deve executar o job higiene com offsetMonths e anonymize false", async () => {
+    it("deve executar o job higiene com confirmação, offsetMonths e anonymize false", async () => {
       const agent = await createAdminAgent(app);
 
       const response = await agent
         .post("/api/manutencao/jobs/higiene/run")
         .send({
+          confirm: "RUN_HIGIENE",
           offsetMonths: 9999,
           anonymize: false,
         })
@@ -209,12 +213,14 @@ describe("Manutenção E2E", () => {
       );
     });
 
-    it("deve executar o job purge-history com offsetMonths seguro", async () => {
+    it("deve executar o job purge-history com confirmação, backup confirmado e offsetMonths seguro", async () => {
       const agent = await createAdminAgent(app);
 
       const response = await agent
         .post("/api/manutencao/jobs/purge-history/run")
         .send({
+          confirm: "RUN_PURGE_HISTORY",
+          backupConfirmed: true,
           offsetMonths: 9999,
         })
         .expect(200);
@@ -237,6 +243,82 @@ describe("Manutenção E2E", () => {
             dispensas: expect.any(Number),
             regularizacoesDesvinculadas: expect.any(Number),
           }),
+        }),
+      );
+    });
+  });
+
+  describe("Validação de confirmações", () => {
+    it("deve rejeitar execução de receita-expiry sem confirmação", async () => {
+      const agent = await createAdminAgent(app);
+
+      const response = await agent
+        .post("/api/manutencao/jobs/receita-expiry/run")
+        .send({})
+        .expect(400);
+
+      expect(response.body).toEqual(
+        expect.objectContaining({
+          error: "BAD_REQUEST",
+          message: 'Confirmação inválida. Envia confirm="RUN_RECEITA_EXPIRY".',
+        }),
+      );
+    });
+
+    it("deve rejeitar execução de higiene sem confirmação", async () => {
+      const agent = await createAdminAgent(app);
+
+      const response = await agent
+        .post("/api/manutencao/jobs/higiene/run")
+        .send({
+          offsetMonths: 9999,
+          anonymize: false,
+        })
+        .expect(400);
+
+      expect(response.body).toEqual(
+        expect.objectContaining({
+          error: "BAD_REQUEST",
+          message: 'Confirmação inválida. Envia confirm="RUN_HIGIENE".',
+        }),
+      );
+    });
+
+    it("deve rejeitar execução de purge-history sem confirmação", async () => {
+      const agent = await createAdminAgent(app);
+
+      const response = await agent
+        .post("/api/manutencao/jobs/purge-history/run")
+        .send({
+          backupConfirmed: true,
+          offsetMonths: 9999,
+        })
+        .expect(400);
+
+      expect(response.body).toEqual(
+        expect.objectContaining({
+          error: "BAD_REQUEST",
+          message: 'Confirmação inválida. Envia confirm="RUN_PURGE_HISTORY".',
+        }),
+      );
+    });
+
+    it("deve rejeitar execução de purge-history sem backup confirmado", async () => {
+      const agent = await createAdminAgent(app);
+
+      const response = await agent
+        .post("/api/manutencao/jobs/purge-history/run")
+        .send({
+          confirm: "RUN_PURGE_HISTORY",
+          offsetMonths: 9999,
+        })
+        .expect(400);
+
+      expect(response.body).toEqual(
+        expect.objectContaining({
+          error: "BAD_REQUEST",
+          message:
+            "Para executar purge-history, confirma backupConfirmed=true.",
         }),
       );
     });
@@ -279,6 +361,7 @@ describe("Manutenção E2E", () => {
       const response = await agent
         .post("/api/manutencao/jobs/higiene/run")
         .send({
+          confirm: "RUN_HIGIENE",
           offsetMonths: "abc",
         })
         .expect(400);
@@ -297,6 +380,8 @@ describe("Manutenção E2E", () => {
       const response = await agent
         .post("/api/manutencao/jobs/purge-history/run")
         .send({
+          confirm: "RUN_PURGE_HISTORY",
+          backupConfirmed: true,
           offsetMonths: "abc",
         })
         .expect(400);

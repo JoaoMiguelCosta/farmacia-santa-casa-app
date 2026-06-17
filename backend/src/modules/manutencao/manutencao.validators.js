@@ -2,6 +2,12 @@
 const { badRequest } = require("../../shared/errors/AppError");
 const { env } = require("../../config/env");
 
+const JOB_CONFIRMATIONS = Object.freeze({
+  receitaExpiry: "RUN_RECEITA_EXPIRY",
+  higiene: "RUN_HIGIENE",
+  purgeHistory: "RUN_PURGE_HISTORY",
+});
+
 function parseOffsetMonths(value, fallback) {
   if (value === undefined || value === null || value === "") {
     return fallback;
@@ -29,6 +35,26 @@ function parseBoolean(value, fallback = false) {
   return fallback;
 }
 
+function parseConfirm(value, expectedValue) {
+  const confirm = String(value || "").trim();
+
+  if (confirm !== expectedValue) {
+    throw badRequest(`Confirmação inválida. Envia confirm="${expectedValue}".`);
+  }
+
+  return confirm;
+}
+
+function assertBackupConfirmed(value) {
+  const backupConfirmed = parseBoolean(value, false);
+
+  if (!backupConfirmed) {
+    throw badRequest(
+      "Para executar purge-history, confirma backupConfirmed=true.",
+    );
+  }
+}
+
 function parseHigieneOptions(source = {}) {
   return {
     offsetMonths: parseOffsetMonths(
@@ -48,7 +74,30 @@ function parsePurgeOptions(source = {}) {
   };
 }
 
+function parseReceitaExpiryRunPayload(source = {}) {
+  parseConfirm(source.confirm, JOB_CONFIRMATIONS.receitaExpiry);
+
+  return {};
+}
+
+function parseHigieneRunOptions(source = {}) {
+  parseConfirm(source.confirm, JOB_CONFIRMATIONS.higiene);
+
+  return parseHigieneOptions(source);
+}
+
+function parsePurgeRunOptions(source = {}) {
+  parseConfirm(source.confirm, JOB_CONFIRMATIONS.purgeHistory);
+  assertBackupConfirmed(source.backupConfirmed);
+
+  return parsePurgeOptions(source);
+}
+
 module.exports = {
+  JOB_CONFIRMATIONS,
   parseHigieneOptions,
+  parseHigieneRunOptions,
   parsePurgeOptions,
+  parsePurgeRunOptions,
+  parseReceitaExpiryRunPayload,
 };
