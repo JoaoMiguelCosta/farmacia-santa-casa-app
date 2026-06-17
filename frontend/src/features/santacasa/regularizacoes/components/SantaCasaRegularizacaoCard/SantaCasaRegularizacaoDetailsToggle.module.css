@@ -1,0 +1,56 @@
+/* src/features/santacasa/regularizacoes/components/SantaCasaRegularizacaoCard/SantaCasaRegularizacaoDetailsToggle.module.css */
+
+.actions {
+    display: flex;
+    justify-content: flex-start;
+}
+
+.detailsToggleButton {
+    min-height: 2.5rem;
+    padding: 0.68rem 1rem;
+    border: 1px solid var(--clinic-border);
+    border-radius: 999px;
+    background: var(--clinic-white);
+    color: var(--clinic-green-700);
+    font: inherit;
+    font-size: var(--clinic-font-size-sm);
+    font-weight: 850;
+    cursor: pointer;
+    transition:
+        transform var(--clinic-transition),
+        border-color var(--clinic-transition),
+        background var(--clinic-transition),
+        box-shadow var(--clinic-transition),
+        opacity var(--clinic-transition);
+}
+
+.detailsToggleButtonHistory {
+    min-height: 2.22rem;
+    padding: 0.54rem 0.82rem;
+    font-size: var(--clinic-font-size-xs);
+}
+
+.detailsToggleButton:hover {
+    transform: translateY(-1px);
+    border-color: var(--clinic-border-strong);
+    background: var(--clinic-mist);
+    box-shadow: var(--clinic-shadow-soft);
+}
+
+.detailsToggleButton:focus-visible {
+    outline: 3px solid rgba(31, 95, 81, 0.24);
+    outline-offset: 3px;
+}
+
+.detailsToggleButton:disabled {
+    cursor: not-allowed;
+    opacity: 0.56;
+    transform: none;
+    box-shadow: none;
+}
+
+@media (max-width: 720px) {
+    .detailsToggleButton {
+        width: 100%;
+    }
+}

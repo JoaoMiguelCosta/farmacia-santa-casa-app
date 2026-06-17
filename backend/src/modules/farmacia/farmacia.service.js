@@ -7,7 +7,7 @@ const {
   parseValidarPayload,
 } = require("./farmacia.validators");
 
-const { unauthorized } = require("../../shared/errors/AppError");
+const { notFound, unauthorized } = require("../../shared/errors/AppError");
 
 const { toPedidoDTO, toPedidosPageDTO } = require("./farmacia.mappers");
 
@@ -17,6 +17,16 @@ function assertAuthenticatedUserId(userId) {
   }
 
   return userId;
+}
+
+async function getPedidoById(pedidoId) {
+  const pedido = await repository.findPedidoById(pedidoId);
+
+  if (!pedido) {
+    throw notFound("Pedido não encontrado.");
+  }
+
+  return toPedidoDTO(pedido);
 }
 
 async function listPedidos(query = {}) {
@@ -55,6 +65,7 @@ async function getDashboardSignals() {
 }
 
 module.exports = {
+  getPedidoById,
   listPedidos,
   validarPedido,
   rejeitarPedido,

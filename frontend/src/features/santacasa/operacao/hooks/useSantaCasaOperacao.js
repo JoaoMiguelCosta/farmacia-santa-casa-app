@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+// src/features/santacasa/operacao/hooks/useSantaCasaOperacao.js
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { useAuth } from "../../../auth/hooks/useAuth";
 
@@ -8,8 +9,8 @@ import { sortUtentesByName } from "../../utentes/utils/sortUtentes";
 import { getReceitasByUtente } from "../../receitas/api/receitasApi";
 import { sortReceitasByMedicamento } from "../../receitas/utils/sortReceitas";
 
-import { getSemReceitaByUtente } from "../../sem-receita/api/semReceitaApi";
-import { sortSemReceitaByMedicamento } from "../../sem-receita/utils/sortSemReceita";
+import { getSemReceitaByUtente } from "../../semReceita/api/semReceitaApi";
+import { sortSemReceitaByMedicamento } from "../../semReceita/utils/sortSemReceita";
 
 import { getExtrasByUtente } from "../../extras/api/extrasApi";
 import { sortExtrasByMedicamento } from "../../extras/utils/sortExtras";
@@ -18,8 +19,25 @@ function getErrorMessage(error, fallback) {
   return error?.message || fallback;
 }
 
+async function getOperationDataByUtente(utenteId) {
+  const [receitasData, semReceitaData, extrasData] = await Promise.all([
+    getReceitasByUtente(utenteId),
+    getSemReceitaByUtente(utenteId),
+    getExtrasByUtente(utenteId),
+  ]);
+
+  return {
+    receitas: sortReceitasByMedicamento(receitasData),
+    semReceita: sortSemReceitaByMedicamento(semReceitaData),
+    extras: sortExtrasByMedicamento(extrasData),
+  };
+}
+
 export function useSantaCasaOperacao() {
   const { handleAuthError } = useAuth();
+
+  const isMountedRef = useRef(true);
+  const operationRequestIdRef = useRef(0);
 
   const [utentes, setUtentes] = useState([]);
   const [selectedUtenteId, setSelectedUtenteId] = useState("");
@@ -40,12 +58,23 @@ export function useSantaCasaOperacao() {
     [utentes, selectedUtenteId],
   );
 
+  const clearOperationData = useCallback(() => {
+    setReceitas([]);
+    setSemReceita([]);
+    setExtras([]);
+  }, []);
+
   const loadOperationData = useCallback(
     async (utenteId, { showRefreshing = false } = {}) => {
+      operationRequestIdRef.current += 1;
+
+      const requestId = operationRequestIdRef.current;
+
       if (!utenteId) {
-        setReceitas([]);
-        setSemReceita([]);
-        setExtras([]);
+        clearOperationData();
+        setDataError(null);
+        setIsLoadingData(false);
+        setIsRefreshing(false);
         return;
       }
 
@@ -58,27 +87,42 @@ export function useSantaCasaOperacao() {
       setDataError(null);
 
       try {
-        const [receitasData, semReceitaData, extrasData] = await Promise.all([
-          getReceitasByUtente(utenteId),
-          getSemReceitaByUtente(utenteId),
-          getExtrasByUtente(utenteId),
-        ]);
+        const operationData = await getOperationDataByUtente(utenteId);
 
-        setReceitas(sortReceitasByMedicamento(receitasData));
-        setSemReceita(sortSemReceitaByMedicamento(semReceitaData));
-        setExtras(sortExtrasByMedicamento(extrasData));
+        if (
+          !isMountedRef.current ||
+          requestId !== operationRequestIdRef.current
+        ) {
+          return;
+        }
+
+        setReceitas(operationData.receitas);
+        setSemReceita(operationData.semReceita);
+        setExtras(operationData.extras);
       } catch (error) {
+        if (
+          !isMountedRef.current ||
+          requestId !== operationRequestIdRef.current
+        ) {
+          return;
+        }
+
         if (handleAuthError(error)) return;
 
         setDataError(
           getErrorMessage(error, "Erro ao carregar dados da operação."),
         );
       } finally {
-        setIsLoadingData(false);
-        setIsRefreshing(false);
+        if (
+          isMountedRef.current &&
+          requestId === operationRequestIdRef.current
+        ) {
+          setIsLoadingData(false);
+          setIsRefreshing(false);
+        }
       }
     },
-    [handleAuthError],
+    [clearOperationData, handleAuthError],
   );
 
   const handleSelectUtente = useCallback(
@@ -96,7 +140,16 @@ export function useSantaCasaOperacao() {
   }, [loadOperationData, selectedUtenteId]);
 
   useEffect(() => {
-    let isMounted = true;
+    isMountedRef.current = true;
+
+    return () => {
+      isMountedRef.current = false;
+      operationRequestIdRef.current += 1;
+    };
+  }, []);
+
+  useEffect(() => {
+    let shouldIgnore = false;
 
     async function loadInitialData() {
       setIsLoadingUtentes(true);
@@ -105,7 +158,7 @@ export function useSantaCasaOperacao() {
       try {
         const utentesData = await getUtentes();
 
-        if (!isMounted) return;
+        if (shouldIgnore || !isMountedRef.current) return;
 
         const sortedUtentes = sortUtentesByName(utentesData);
         const firstUtenteId = sortedUtentes[0]?.id ?? "";
@@ -114,31 +167,15 @@ export function useSantaCasaOperacao() {
         setSelectedUtenteId(firstUtenteId);
         setUtentesError(null);
 
-        if (!firstUtenteId) return;
-
-        setIsLoadingData(true);
-
-        const [receitasData, semReceitaData, extrasData] = await Promise.all([
-          getReceitasByUtente(firstUtenteId),
-          getSemReceitaByUtente(firstUtenteId),
-          getExtrasByUtente(firstUtenteId),
-        ]);
-
-        if (!isMounted) return;
-
-        setReceitas(sortReceitasByMedicamento(receitasData));
-        setSemReceita(sortSemReceitaByMedicamento(semReceitaData));
-        setExtras(sortExtrasByMedicamento(extrasData));
-        setDataError(null);
+        await loadOperationData(firstUtenteId);
       } catch (error) {
-        if (!isMounted) return;
+        if (shouldIgnore || !isMountedRef.current) return;
         if (handleAuthError(error)) return;
 
         setUtentesError(getErrorMessage(error, "Erro ao carregar utentes."));
       } finally {
-        if (isMounted) {
+        if (!shouldIgnore && isMountedRef.current) {
           setIsLoadingUtentes(false);
-          setIsLoadingData(false);
         }
       }
     }
@@ -146,9 +183,9 @@ export function useSantaCasaOperacao() {
     loadInitialData();
 
     return () => {
-      isMounted = false;
+      shouldIgnore = true;
     };
-  }, [handleAuthError]);
+  }, [handleAuthError, loadOperationData]);
 
   return {
     utentes,

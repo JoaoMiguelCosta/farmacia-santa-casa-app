@@ -1,27 +1,29 @@
+// src/features/system/manutencao/config/systemManutencaoPage.config.js
+
 export const SYSTEM_MANUTENCAO_PAGE = Object.freeze({
   header: {
-    eyebrow: "Sistema/Admin",
+    eyebrow: "Administração",
     title: "Manutenção",
     description:
-      "Execução controlada de jobs técnicos do sistema, com pré-visualização obrigatória antes de ações reais.",
+      "Acompanha e executa tarefas protegidas da plataforma, sempre com pré-visualização antes de qualquer ação real.",
   },
 
   sections: {
     jobs: {
-      title: "Jobs disponíveis",
+      title: "Tarefas de manutenção",
       description:
-        "Rotinas técnicas disponíveis para execução manual controlada por administradores.",
-      loadingTitle: "A carregar jobs...",
-      errorTitle: "Não foi possível carregar os jobs.",
-      emptyTitle: "Sem jobs disponíveis.",
-      emptyDescription:
-        "Quando existirem jobs configurados no backend, aparecem aqui.",
+        "Operações protegidas disponíveis para administradores responsáveis pela Santa Casa e Farmácia.",
+      loadingTitle: "A carregar tarefas...",
+      loadingDescription: "Aguarda enquanto os jobs são carregados.",
+      errorTitle: "Não foi possível carregar as tarefas de manutenção.",
+      emptyTitle: "Sem tarefas disponíveis.",
+      emptyDescription: "Quando existirem tarefas configuradas, aparecem aqui.",
     },
 
     result: {
       title: "Resultado da operação",
       description:
-        "Resumo devolvido pelo backend após uma pré-visualização ou execução.",
+        "Resumo devolvido após uma pré-visualização ou execução de manutenção.",
       emptyTitle: "Sem resultado disponível.",
       emptyDescription:
         "Executa uma pré-visualização para veres o impacto previsto.",
@@ -33,7 +35,7 @@ export const SYSTEM_MANUTENCAO_PAGE = Object.freeze({
       key: "receita-expiry",
       title: "Expiração de receitas",
       description:
-        "Expira linhas de receita vencidas e cancela itens pendentes associados.",
+        "Identifica receitas vencidas, expira as respetivas linhas e cancela itens pendentes associados.",
       scheduleLabel: "Diário",
       risk: "Médio",
       warning:
@@ -44,11 +46,11 @@ export const SYSTEM_MANUTENCAO_PAGE = Object.freeze({
       key: "higiene",
       title: "Higiene de utentes",
       description:
-        "Marca utentes removidos antigos como arquivados e, quando permitido, anonimiza dados.",
+        "Trata registos antigos de utentes removidos, mantendo a base de dados mais limpa e controlada.",
       scheduleLabel: "Mensal",
       risk: "Elevado",
       warning:
-        "Pode alterar dados de utentes removidos antigos. Usa preview antes de executar.",
+        "Pode alterar dados de utentes removidos antigos. Usa sempre a pré-visualização antes de executar.",
     },
 
     purgeHistory: {
@@ -59,8 +61,14 @@ export const SYSTEM_MANUTENCAO_PAGE = Object.freeze({
       scheduleLabel: "Mensal",
       risk: "Crítico",
       warning:
-        "Ação destrutiva. Pode apagar histórico antigo. Nunca executes sem confirmar o preview.",
+        "Ação destrutiva. Pode apagar histórico antigo. Nunca executes sem confirmar a pré-visualização e sem garantir que existe backup atualizado.",
     },
+  },
+
+  labels: {
+    riskPrefix: "Risco",
+    warningPrefix: "Atenção",
+    runHint: "Faz uma pré-visualização deste job antes de executar.",
   },
 
   jobOrder: ["receita-expiry", "higiene", "purge-history"],
@@ -74,10 +82,13 @@ export const SYSTEM_MANUTENCAO_PAGE = Object.freeze({
   actions: {
     refresh: "Atualizar",
     refreshing: "A atualizar...",
+
     preview: "Pré-visualizar",
     previewing: "A pré-visualizar...",
+
     run: "Executar",
     running: "A executar...",
+
     confirmRun: "Confirmar execução",
     close: "Fechar",
   },
@@ -86,17 +97,17 @@ export const SYSTEM_MANUTENCAO_PAGE = Object.freeze({
     offsetMonths: {
       label: "Meses de margem",
       placeholder: "Ex: 6",
-      hint: "Define a idade mínima dos registos considerados pelo job.",
+      hint: "Define a idade mínima dos registos considerados pela tarefa.",
     },
 
     anonymize: {
       label: "Anonimizar utentes",
-      hint: "Só será aplicado se o backend permitir anonimização.",
+      hint: "Só será aplicado se o sistema permitir anonimização.",
     },
   },
 
   resultLabels: {
-    job: "Job",
+    job: "Tarefa",
     mode: "Modo",
     options: "Opções",
     result: "Resultado",
@@ -128,17 +139,27 @@ export const SYSTEM_MANUTENCAO_PAGE = Object.freeze({
   },
 
   confirmDialog: {
-    title: "Executar job de manutenção?",
+    title: "Executar tarefa de manutenção?",
     description:
-      "Esta ação pode alterar ou remover dados. Confirma apenas depois de analisares o preview.",
-    confirmLabel: "Executar job",
+      "Esta ação pode alterar ou remover dados. Confirma apenas depois de analisares a pré-visualização.",
+    selectedJobPrefix: "Tarefa selecionada",
+    confirmLabel: "Executar tarefa",
     cancelLabel: "Cancelar",
+
+    byJob: {
+      "receita-expiry":
+        "Ao confirmar, autorizas a expiração de linhas vencidas e o cancelamento dos itens pendentes associados.",
+      higiene:
+        "Ao confirmar, autorizas a execução da higiene sobre utentes removidos antigos de acordo com as opções selecionadas.",
+      "purge-history":
+        "Ao confirmar, assumes que existe backup atualizado e autorizas a remoção de histórico antigo elegível.",
+    },
   },
 
   feedback: {
     genericError: "Ocorreu um erro inesperado.",
     previewFirst: "Faz primeiro uma pré-visualização antes de executar.",
     previewSuccess: "Pré-visualização concluída.",
-    runSuccess: "Job executado com sucesso.",
+    runSuccess: "Tarefa executada com sucesso.",
   },
 });

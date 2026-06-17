@@ -1,5 +1,6 @@
 // src/modules/pedidos/pedidos.repository.js
 const { prisma } = require("../../db/prisma");
+const { getStartOfDay } = require("../../shared/utils/date");
 
 const auditUserSelect = {
   id: true,
@@ -22,6 +23,11 @@ const pedidoSelect = {
   rejectedAt: true,
   rejectedById: true,
   rejectedBy: {
+    select: auditUserSelect,
+  },
+
+  canceledById: true,
+  canceledBy: {
     select: auditUserSelect,
   },
 
@@ -198,7 +204,7 @@ function findEarlierActiveReceitaLinhasByUtente({
       },
       status: "ATIVA",
       validade: {
-        gt: new Date(),
+        gte: getStartOfDay(),
         lt: beforeValidade,
       },
     },
@@ -300,7 +306,7 @@ async function createPedidoWithItems(items = []) {
   });
 }
 
-async function cancelPendingPedidoById(pedidoId, reason) {
+async function cancelPendingPedidoById(pedidoId, reason, canceledById = null) {
   return prisma.$transaction(async (tx) => {
     const existingPedido = await tx.pedido.findUnique({
       where: {
@@ -354,6 +360,7 @@ async function cancelPendingPedidoById(pedidoId, reason) {
       data: {
         status: "CANCELADO",
         closedReason: reason,
+        canceledById,
       },
       select: pedidoSelect,
     });

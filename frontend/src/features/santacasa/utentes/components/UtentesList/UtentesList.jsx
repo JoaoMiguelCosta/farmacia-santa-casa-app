@@ -1,4 +1,6 @@
 // src/features/santacasa/utentes/components/UtentesList/UtentesList.jsx
+import { classNames } from "../../../../../shared/utils/classNames";
+
 import Button from "../../../../../shared/ui/Button/Button";
 import DataState from "../../../../../shared/ui/DataState/DataState";
 import SurfaceCard from "../../../../../shared/ui/SurfaceCard/SurfaceCard";
@@ -6,6 +8,7 @@ import SurfaceCard from "../../../../../shared/ui/SurfaceCard/SurfaceCard";
 import { UTENTES_PAGE } from "../../config/utentesPage.config";
 
 import {
+  getUtenteActionAriaLabel,
   getUtenteArchiveDetails,
   getUtenteDateLabel,
   getUtenteStatusLabel,
@@ -25,7 +28,7 @@ function getStatusClassName(utente) {
   const variant = getUtenteStatusVariant(utente);
   const variantClass = STATUS_CLASS_BY_VARIANT[variant] || "invalid";
 
-  return `${styles.status} ${styles[variantClass]}`;
+  return classNames(styles.status, styles[variantClass]);
 }
 
 export default function UtentesList({
@@ -49,7 +52,7 @@ export default function UtentesList({
       <DataState
         type="loading"
         title={UTENTES_PAGE.list.loadingTitle}
-        description="Aguarda enquanto os dados são carregados."
+        description={UTENTES_PAGE.list.loadingDescription}
       />
     );
   }
@@ -60,7 +63,7 @@ export default function UtentesList({
         type="error"
         title={UTENTES_PAGE.list.errorTitle}
         description={error}
-        actionLabel="Tentar novamente"
+        actionLabel={UTENTES_PAGE.list.retryLabel}
         onAction={onRetry}
       />
     );
@@ -85,16 +88,16 @@ export default function UtentesList({
       <div className={styles.tableWrap}>
         <table className={styles.table}>
           <caption className={styles.srOnly}>
-            Lista de utentes registados
+            {UTENTES_PAGE.list.caption}
           </caption>
 
           <thead>
             <tr>
-              <th scope="col">Utente</th>
-              <th scope="col">Número</th>
-              <th scope="col">Estado</th>
-              <th scope="col">Data / Motivo</th>
-              <th scope="col">Ações</th>
+              <th scope="col">{UTENTES_PAGE.list.columns.utente}</th>
+              <th scope="col">{UTENTES_PAGE.list.columns.numero}</th>
+              <th scope="col">{UTENTES_PAGE.list.columns.estado}</th>
+              <th scope="col">{UTENTES_PAGE.list.columns.dataMotivo}</th>
+              <th scope="col">{UTENTES_PAGE.list.columns.acoes}</th>
             </tr>
           </thead>
 
@@ -111,7 +114,6 @@ export default function UtentesList({
                 <tr key={utente.id}>
                   <td className={styles.identityCell}>
                     <strong>{utente.nome}</strong>
-                    <span>{utente.id}</span>
                   </td>
 
                   <td>
@@ -146,7 +148,10 @@ export default function UtentesList({
                             size="sm"
                             isLoading={isReactivating}
                             disabled={isAnyActionRunning}
-                            aria-label={`Reativar utente ${utente.nome}`}
+                            aria-label={getUtenteActionAriaLabel(
+                              UTENTES_PAGE.list.ariaLabels.reactivatePrefix,
+                              utente,
+                            )}
                             onClick={() => onReactivate?.(utente)}
                           >
                             {isReactivating
@@ -160,7 +165,10 @@ export default function UtentesList({
                             size="sm"
                             isLoading={isDeleting}
                             disabled={isAnyActionRunning}
-                            aria-label={`Remover registo do utente ${utente.nome}`}
+                            aria-label={getUtenteActionAriaLabel(
+                              UTENTES_PAGE.list.ariaLabels.deletePrefix,
+                              utente,
+                            )}
                             onClick={() => onDelete?.(utente)}
                           >
                             {isDeleting
@@ -176,7 +184,10 @@ export default function UtentesList({
                             size="sm"
                             isLoading={isArchiving}
                             disabled={isAnyActionRunning}
-                            aria-label={`Arquivar utente ${utente.nome}`}
+                            aria-label={getUtenteActionAriaLabel(
+                              UTENTES_PAGE.list.ariaLabels.archivePrefix,
+                              utente,
+                            )}
                             onClick={() => onArchive?.(utente)}
                           >
                             {isArchiving
@@ -190,7 +201,10 @@ export default function UtentesList({
                             size="sm"
                             isLoading={isDeleting}
                             disabled={isAnyActionRunning}
-                            aria-label={`Remover registo do utente ${utente.nome}`}
+                            aria-label={getUtenteActionAriaLabel(
+                              UTENTES_PAGE.list.ariaLabels.deletePrefix,
+                              utente,
+                            )}
                             onClick={() => onDelete?.(utente)}
                           >
                             {isDeleting

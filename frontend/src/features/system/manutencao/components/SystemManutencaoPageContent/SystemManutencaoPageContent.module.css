@@ -1,0 +1,7 @@
+.page {
+    display: grid;
+    gap: clamp(1.25rem, 2.5vw, 2rem);
+
+    width: 100%;
+    min-width: 0;
+}

@@ -15,7 +15,9 @@ async function createUser(req, res) {
 }
 
 async function updateUser(req, res) {
-  const data = await service.updateUser(req.params.userId, req.body);
+  const data = await service.updateUser(req.params.userId, req.body, {
+    currentUserId: req.user?.id,
+  });
 
   return ok(res, { data });
 }

@@ -1,3 +1,4 @@
+// src/features/farmacia/pedidos/api/farmaciaPedidosApi.js
 import { API_ENDPOINTS } from "../../../../shared/api/endpoints";
 import { httpClient } from "../../../../shared/api/httpClient";
 
@@ -32,6 +33,18 @@ export async function getFarmaciaPedidos(query = {}) {
   });
 
   return normalizePedidosResponse(response, finalQuery);
+}
+
+export async function getFarmaciaPedidoById(pedidoId) {
+  if (!pedidoId) {
+    throw new Error("ID do pedido em falta.");
+  }
+
+  const response = await httpClient.get(
+    API_ENDPOINTS.farmacia.pedidoById(pedidoId),
+  );
+
+  return response?.data ?? null;
 }
 
 export async function validarFarmaciaPedido(pedidoId, payload = {}) {

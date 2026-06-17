@@ -1,0 +1,50 @@
+/* src/features/santacasa/historico/components/SantaCasaHistoricoPageContent/SantaCasaHistoricoPageContent.module.css */
+
+.page {
+    position: relative;
+    isolation: isolate;
+
+    display: grid;
+    gap: clamp(1rem, 2.4vw, 1.4rem);
+
+    width: 100%;
+    min-width: 0;
+}
+
+.page::before {
+    content: "";
+
+    position: absolute;
+    inset: -1.4rem -1rem auto;
+    z-index: -1;
+
+    height: clamp(12rem, 30vw, 20rem);
+
+    pointer-events: none;
+
+    background:
+        radial-gradient(circle at 10% 10%,
+            color-mix(in srgb, var(--clinic-green-700) 8%, transparent),
+            transparent 18rem),
+        radial-gradient(circle at 92% 2%,
+            color-mix(in srgb, var(--clinic-gold-500) 6%, transparent),
+            transparent 20rem);
+
+    opacity: 0.72;
+}
+
+.page>* {
+    min-width: 0;
+}
+
+@media (max-width: 760px) {
+    .page {
+        gap: 1.05rem;
+    }
+}
+
+@media (max-width: 420px) {
+    .page {
+        gap: 0.95rem;
+    }
+}

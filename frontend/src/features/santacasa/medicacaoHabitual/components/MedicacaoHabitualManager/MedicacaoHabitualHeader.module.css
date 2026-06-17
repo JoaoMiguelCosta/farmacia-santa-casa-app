@@ -1,0 +1,129 @@
+.header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: clamp(0.9rem, 2vw, 1.15rem);
+
+    min-width: 0;
+    padding: clamp(0.9rem, 2vw, 1rem);
+
+    overflow: hidden;
+
+    border: 1px solid var(--operation-panel-border, rgba(111, 127, 47, 0.34));
+    border-radius: var(--clinic-radius-lg);
+
+    background:
+        radial-gradient(circle at 96% 0%,
+            var(--operation-accent-softer, rgba(111, 127, 47, 0.16)),
+            transparent 13rem),
+        radial-gradient(circle at 0% 100%,
+            var(--operation-accent-softer, rgba(111, 127, 47, 0.1)),
+            transparent 11rem),
+        var(--operation-panel-background,
+            linear-gradient(135deg,
+                rgba(255, 255, 255, 0.98),
+                rgba(244, 248, 225, 0.93)));
+
+    box-shadow:
+        var(--operation-panel-shadow,
+            0 0.8rem 1.8rem rgba(68, 82, 31, 0.08)),
+        inset 5px 0 0 var(--operation-accent-softer, rgba(111, 127, 47, 0.16)),
+        inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+.context {
+    display: grid;
+    gap: 0.72rem;
+
+    min-width: 0;
+}
+
+.contextLabel {
+    color: var(--operation-accent-strong, var(--clinic-green-700));
+
+    font-size: 0.68rem;
+    font-weight: 950;
+    letter-spacing: 0.1em;
+    line-height: 1;
+    text-transform: uppercase;
+}
+
+.contextDetails {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(8rem, auto);
+    gap: clamp(0.85rem, 2vw, 1.4rem);
+
+    min-width: 0;
+}
+
+.contextField {
+    display: grid;
+    gap: 0.16rem;
+
+    min-width: 0;
+}
+
+.contextField span {
+    color: var(--operation-accent-strong, var(--clinic-muted-strong));
+
+    font-size: 0.68rem;
+    font-weight: 950;
+    letter-spacing: 0.09em;
+    line-height: 1;
+    text-transform: uppercase;
+}
+
+.contextField strong {
+    color: var(--clinic-ink);
+
+    font-size: clamp(1.05rem, 1.8vw, 1.22rem);
+    font-weight: 950;
+    letter-spacing: -0.035em;
+    line-height: 1.08;
+
+    overflow-wrap: anywhere;
+}
+
+.actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.55rem;
+
+    flex: 0 0 auto;
+    min-width: 0;
+}
+
+@media (max-width: 760px) {
+    .header {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .contextDetails {
+        grid-template-columns: 1fr;
+    }
+
+    .actions {
+        justify-content: stretch;
+        width: 100%;
+    }
+
+    .actions button {
+        flex: 1 1 0;
+    }
+}
+
+@media (max-width: 520px) {
+    .header {
+        border-radius: var(--clinic-radius-md);
+    }
+
+    .actions {
+        flex-direction: column;
+    }
+
+    .actions button {
+        width: 100%;
+    }
+}

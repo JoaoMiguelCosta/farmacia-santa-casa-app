@@ -1,39 +1,25 @@
-import styles from "./SantaCasaRegularizacoesList.module.css";
+// src/features/santacasa/regularizacoes/components/SantaCasaRegularizacoesList/SantaCasaRegularizacoesList.jsx
+
+import { useMemo } from "react";
 
 import SantaCasaRegularizacaoCard from "../SantaCasaRegularizacaoCard/SantaCasaRegularizacaoCard";
+import SantaCasaRegularizacoesHistoricoUtenteGroup from "../SantaCasaRegularizacoesHistoricoUtenteGroup/SantaCasaRegularizacoesHistoricoUtenteGroup";
+import SantaCasaRegularizacoesUtenteGroup from "../SantaCasaRegularizacoesUtenteGroup/SantaCasaRegularizacoesUtenteGroup";
 
 import { SANTACASA_REGULARIZACOES_PAGE } from "../../config/santaCasaRegularizacoesPage.config";
 
-function SantaCasaRegularizacoesState({
-  title,
-  description,
-  actionLabel,
-  onAction,
-}) {
-  return (
-    <div className={styles.state}>
-      <strong className={styles.stateTitle}>{title}</strong>
+import {
+  groupHistoricoRegularizacoesByUtente,
+  groupRegularizacoesByUtente,
+} from "../../utils/santaCasaRegularizacoes.utils";
 
-      {description ? (
-        <p className={styles.stateDescription}>{description}</p>
-      ) : null}
+import Button from "../../../../../shared/ui/Button/Button";
 
-      {actionLabel && onAction ? (
-        <button type="button" className={styles.stateAction} onClick={onAction}>
-          {actionLabel}
-        </button>
-      ) : null}
-    </div>
-  );
-}
+import styles from "./SantaCasaRegularizacoesList.module.css";
 
-function getSectionConfig(variant) {
-  if (variant === "history") {
-    return SANTACASA_REGULARIZACOES_PAGE.sections.history;
-  }
+import SantaCasaRegularizacoesState from "./SantaCasaRegularizacoesState";
 
-  return SANTACASA_REGULARIZACOES_PAGE.sections.pending;
-}
+import { getSectionConfig } from "./santaCasaRegularizacoesList.utils";
 
 export default function SantaCasaRegularizacoesList({
   regularizacoes = [],
@@ -46,12 +32,26 @@ export default function SantaCasaRegularizacoesList({
   const sectionConfig = getSectionConfig(variant);
   const hasRegularizacoes = regularizacoes.length > 0;
 
+  const pendingGroups = useMemo(() => {
+    if (variant !== "pending") return [];
+
+    return groupRegularizacoesByUtente(regularizacoes);
+  }, [regularizacoes, variant]);
+
+  const historyGroups = useMemo(() => {
+    if (variant !== "history") return [];
+
+    return groupHistoricoRegularizacoesByUtente(regularizacoes);
+  }, [regularizacoes, variant]);
+
   if (isLoading) {
     return (
       <section className={styles.section} aria-live="polite">
         <SantaCasaRegularizacoesState
           title={sectionConfig.loadingTitle}
-          description="Aguarda enquanto os dados são carregados."
+          description={
+            SANTACASA_REGULARIZACOES_PAGE.feedback.loadingDescription
+          }
         />
       </section>
     );
@@ -87,16 +87,16 @@ export default function SantaCasaRegularizacoesList({
           <p className={styles.description}>{sectionConfig.description}</p>
         </div>
 
-        <button
-          type="button"
-          className={styles.refreshButton}
+        <Button
+          variant="secondary"
+          size="sm"
           disabled={isRefreshing}
           onClick={onRefresh}
         >
           {isRefreshing
             ? SANTACASA_REGULARIZACOES_PAGE.actions.refreshing
             : SANTACASA_REGULARIZACOES_PAGE.actions.refresh}
-        </button>
+        </Button>
       </header>
 
       {!hasRegularizacoes ? (
@@ -104,6 +104,21 @@ export default function SantaCasaRegularizacoesList({
           title={sectionConfig.emptyTitle}
           description={sectionConfig.emptyDescription}
         />
+      ) : variant === "pending" ? (
+        <div className={styles.groups}>
+          {pendingGroups.map((group) => (
+            <SantaCasaRegularizacoesUtenteGroup key={group.key} group={group} />
+          ))}
+        </div>
+      ) : variant === "history" ? (
+        <div className={styles.groups}>
+          {historyGroups.map((group) => (
+            <SantaCasaRegularizacoesHistoricoUtenteGroup
+              key={group.key}
+              group={group}
+            />
+          ))}
+        </div>
       ) : (
         <div className={styles.list}>
           {regularizacoes.map((regularizacao) => (

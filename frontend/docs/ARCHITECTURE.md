@@ -4,8 +4,7 @@ Documentação da arquitetura do frontend **Farmácia Santa Casa**.
 
 Este documento descreve a estrutura atual do frontend, a separação de responsabilidades, o fluxo de dados, a organização por features e as regras recomendadas para manter o projeto escalável.
 
-> Estado atual: projeto em desenvolvimento.
-> A arquitetura principal está montada, mas ainda faltam testes frontend, documentação complementar e otimizações finais.
+> Estado atual: projeto fechado — funcionalidades principais implementadas e validadas.
 
 ---
 
@@ -58,11 +57,17 @@ Responsabilidade de cada pasta:
 
 ```txt
 src/app/
+├── router/
+│   ├── routes/
+│   │   ├── farmacia.routes.jsx
+│   │   ├── santaCasa.routes.jsx
+│   │   └── system.routes.jsx
+│   ├── router.jsx
+│   └── router.utils.jsx
 ├── styles/
 │   ├── global.css
 │   └── tokens.css
-├── App.jsx
-└── router.jsx
+└── App.jsx
 ```
 
 ### `App.jsx`
@@ -77,19 +82,16 @@ Atualmente envolve a aplicação com:
 
 Isto faz sentido porque autenticação e pedido em preparação são estados transversais da aplicação.
 
-### `router.jsx`
+### `router/`
 
 Responsável por declarar as rotas principais da aplicação.
 
 Inclui:
 
 * rotas públicas;
-* rotas protegidas;
+* rotas protegidas por auth e role;
 * redirects;
-* proteção por role;
-* páginas da Santa Casa;
-* páginas da Farmácia;
-* páginas de Sistema/Admin;
+* rotas da Santa Casa, Farmácia e Sistema/Admin divididas em ficheiros próprios;
 * página 404.
 
 ### `styles/`
@@ -236,11 +238,18 @@ Responsável por:
 Componentes de UI genéricos:
 
 ```txt
+BarcodeValue/
+BrandMark/
 Button/
 ConfirmDialog/
+DashboardMetricCard/
+DashboardMetricGroup/
+DashboardPriorityCard/
 DataState/
 FeedbackDialog/
 FormField/
+HomeActionCard/
+OperationalDetailState/
 PageHeader/
 SurfaceCard/
 ```
@@ -256,14 +265,14 @@ AppShell/
 AreaLanding/
 ```
 
-### `shared/components/`
+### `shared/hooks/`
 
-Componentes globais não necessariamente genéricos de UI.
+Hooks genéricos reutilizáveis entre features.
 
-Exemplo:
+Exemplo atual:
 
 ```txt
-BrandMark/
+useEscapeKey.js
 ```
 
 ### `shared/utils/`
@@ -273,8 +282,22 @@ Helpers globais.
 Exemplos atuais:
 
 ```txt
+aria.js
 classNames.js
 formatDate.js
+normalizeText.js
+regularizacoesAccessors.utils.js
+```
+
+### `shared/api/`
+
+Camada de comunicação HTTP centralizada.
+
+```txt
+endpoints.js
+httpClient.js
+httpClient.config.js
+httpClient.utils.js
 ```
 
 ---
@@ -895,75 +918,34 @@ Ordem recomendada:
 
 ---
 
-## 27. Riscos atuais
+## 27. Limitações atuais
 
-### 27.1 Hooks grandes
-
-Alguns hooks concentram muita lógica.
-
-Risco:
-
-* manutenção difícil;
-* testes mais difíceis;
-* mais probabilidade de regressões;
-* mistura de responsabilidades.
-
-Mitigação futura:
-
-* dividir hooks por fluxo;
-* extrair funções puras para utils;
-* criar testes para lógica crítica.
-
----
-
-### 27.2 Duplicação de helpers
-
-Existem helpers semelhantes em várias zonas.
-
-Exemplos de possíveis duplicações:
-
-* `clampQuantity`;
-* normalização de nomes de medicamentos;
-* labels de unidades;
-* paginação;
-* normalização de queries.
-
-Mitigação futura:
-
-* criar helpers partilhados;
-* mover para `shared/utils` apenas o que for realmente global;
-* evitar overengineering cedo demais.
-
----
-
-### 27.3 Falta de testes frontend
+### 27.1 Falta de testes frontend
 
 Ainda não há testes automatizados.
 
 Mitigação futura:
 
 * começar por utils;
-* depois hooks;
-* depois guards;
-* depois componentes;
+* depois guards de auth;
+* depois componentes shared;
 * só depois E2E browser.
 
 ---
 
-### 27.4 Bundle grande
+### 27.2 Bundle grande
 
-O bundle JS principal ultrapassa o limite recomendado pelo Vite.
+O bundle JS principal ultrapassa o limite recomendado pelo Vite (500 kB após minificação).
 
 Mitigação futura:
 
-* code splitting por área;
+* code splitting por área com `React.lazy`;
 * lazy loading por página;
-* análise de dependências;
-* separar rotas pesadas.
+* análise de dependências.
 
 ---
 
-### 27.5 Falta de Error Boundary
+### 27.3 Falta de Error Boundary
 
 Ainda não existe uma camada dedicada para erros inesperados de render.
 
@@ -998,7 +980,7 @@ pages/
 Adicionar rota em:
 
 ```txt
-app/router.jsx
+app/router/routes/
 ```
 
 Adicionar endpoints em:
@@ -1069,14 +1051,10 @@ Confirmar:
 Prioridade recomendada:
 
 ```txt
-1. Criar docs/API_CONTRACT.md
-2. Criar docs/TESTING.md
-3. Adicionar testes frontend a utils
-4. Criar Error Boundary
-5. Dividir hooks grandes
-6. Centralizar helpers duplicados
-7. Implementar code splitting por páginas
-8. Adicionar testes E2E com Playwright
+1. Adicionar testes frontend a utils e guards
+2. Criar Error Boundary
+3. Implementar code splitting por páginas
+4. Adicionar testes E2E com Playwright
 ```
 
 ---
@@ -1104,4 +1082,4 @@ Pontos a melhorar futuramente:
 * divisão de hooks grandes;
 * documentação complementar.
 
-O projeto não está finalizado, mas tem uma base arquitetural sólida para continuar.
+O projeto está fechado e tem uma base arquitetural sólida e sustentável.

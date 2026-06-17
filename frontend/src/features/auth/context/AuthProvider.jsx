@@ -1,24 +1,26 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { getCurrentUser, loginUser, logoutUser } from "../api/authApi";
+
 import { AUTH_MESSAGES, AUTH_ROLES } from "../config/auth.config";
+
 import { useIdleLogout } from "../hooks/useIdleLogout";
+
 import {
   clearLastActivityAt,
   writeLastActivityAt,
 } from "../state/authActivity.storage";
+
+import {
+  getAuthErrorMessage,
+  isForbiddenAuthError,
+  isUnauthorizedAuthError,
+} from "../utils/authError.utils";
+
 import { AuthContext } from "./AuthContext";
 
-function getErrorMessage(error, fallback) {
-  return error?.message || fallback;
-}
-
-function isUnauthorizedError(error) {
-  return error?.isUnauthorized || error?.status === 401;
-}
-
-function isForbiddenError(error) {
-  return error?.isForbidden || error?.status === 403;
+function canAlwaysUpdateState() {
+  return true;
 }
 
 export default function AuthProvider({ children }) {
@@ -41,12 +43,12 @@ export default function AuthProvider({ children }) {
 
   const handleAuthError = useCallback(
     (authError) => {
-      if (isUnauthorizedError(authError)) {
+      if (isUnauthorizedAuthError(authError)) {
         clearSession(AUTH_MESSAGES.sessionExpired);
         return true;
       }
 
-      if (isForbiddenError(authError)) {
+      if (isForbiddenAuthError(authError)) {
         setError(AUTH_MESSAGES.forbidden);
         return true;
       }
@@ -56,36 +58,61 @@ export default function AuthProvider({ children }) {
     [clearSession],
   );
 
-  const refreshUser = useCallback(async ({ showLoading = false } = {}) => {
-    if (showLoading) {
-      setIsLoadingSession(true);
-    }
-
-    setError(null);
-
-    try {
-      const response = await getCurrentUser();
-      const currentUser = response?.user ?? null;
-
-      setUser(currentUser);
-
-      return currentUser;
-    } catch (refreshError) {
-      setUser(null);
-
-      if (isUnauthorizedError(refreshError)) {
-        clearLastActivityAt();
-      } else {
-        setError(
-          getErrorMessage(refreshError, "Não foi possível verificar a sessão."),
-        );
+  const loadCurrentUser = useCallback(
+    async ({
+      showLoading = false,
+      canUpdateState = canAlwaysUpdateState,
+    } = {}) => {
+      if (showLoading && canUpdateState()) {
+        setIsLoadingSession(true);
       }
 
-      return null;
-    } finally {
-      setIsLoadingSession(false);
-    }
-  }, []);
+      if (canUpdateState()) {
+        setError(null);
+      }
+
+      try {
+        const response = await getCurrentUser();
+        const currentUser = response?.user ?? null;
+
+        if (canUpdateState()) {
+          setUser(currentUser);
+        }
+
+        return currentUser;
+      } catch (refreshError) {
+        if (!canUpdateState()) {
+          return null;
+        }
+
+        setUser(null);
+
+        if (isUnauthorizedAuthError(refreshError)) {
+          clearLastActivityAt();
+        } else {
+          setError(
+            getAuthErrorMessage(refreshError, AUTH_MESSAGES.sessionCheckError),
+          );
+        }
+
+        return null;
+      } finally {
+        if (canUpdateState()) {
+          setIsLoadingSession(false);
+        }
+      }
+    },
+    [],
+  );
+
+  const refreshUser = useCallback(
+    async ({ showLoading = false } = {}) => {
+      return loadCurrentUser({
+        showLoading,
+      });
+    },
+    [loadCurrentUser],
+  );
 
   const login = useCallback(async ({ email, password }) => {
     setIsLoggingIn(true);
@@ -107,9 +134,7 @@ export default function AuthProvider({ children }) {
       setUser(null);
       clearLastActivityAt();
 
-      const message = getErrorMessage(loginError, AUTH_MESSAGES.loginError);
-
-      setError(message);
+      setError(getAuthErrorMessage(loginError, AUTH_MESSAGES.loginError));
 
       throw loginError;
     } finally {
@@ -124,13 +149,12 @@ export default function AuthProvider({ children }) {
     try {
       await logoutUser();
     } catch (logoutError) {
-      setError(getErrorMessage(logoutError, AUTH_MESSAGES.logoutError));
+      setError(getAuthErrorMessage(logoutError, AUTH_MESSAGES.logoutError));
     } finally {
-      setUser(null);
-      clearLastActivityAt();
+      clearSession();
       setIsLoggingOut(false);
     }
-  }, []);
+  }, [clearSession]);
 
   const logoutByInactivity = useCallback(async () => {
     setIsLoggingOut(true);
@@ -138,14 +162,13 @@ export default function AuthProvider({ children }) {
     try {
       await logoutUser();
     } catch {
-      // Mesmo que o backend falhe, o frontend deve limpar a sessão local.
+      // Mesmo que o backend falhe, o frontend limpa a sessão local.
     } finally {
-      setUser(null);
-      clearLastActivityAt();
-      setError(AUTH_MESSAGES.sessionExpiredByInactivity);
+      clearSession(AUTH_MESSAGES.sessionExpiredByInactivity);
+
       setIsLoggingOut(false);
     }
-  }, []);
+  }, [clearSession]);
 
   const clearAuthError = useCallback(() => {
     setError(null);
@@ -158,6 +181,7 @@ export default function AuthProvider({ children }) {
     dismissIdleWarning: dismissIdleWarningBase,
   } = useIdleLogout({
     enabled: Boolean(user) && !isLoadingSession && !isLoggingOut,
+
     onTimeout: logoutByInactivity,
   });
 
@@ -169,42 +193,17 @@ export default function AuthProvider({ children }) {
   useEffect(() => {
     let isMounted = true;
 
-    async function loadInitialSession() {
-      try {
-        const response = await getCurrentUser();
-        const currentUser = response?.user ?? null;
-
-        if (!isMounted) return;
-
-        setUser(currentUser);
-      } catch (refreshError) {
-        if (!isMounted) return;
-
-        setUser(null);
-
-        if (isUnauthorizedError(refreshError)) {
-          clearLastActivityAt();
-        } else {
-          setError(
-            getErrorMessage(
-              refreshError,
-              "Não foi possível verificar a sessão.",
-            ),
-          );
-        }
-      } finally {
-        if (isMounted) {
-          setIsLoadingSession(false);
-        }
-      }
-    }
-
-    loadInitialSession();
+    const initialSessionTimerId = window.setTimeout(() => {
+      void loadCurrentUser({
+        canUpdateState: () => isMounted,
+      });
+    }, 0);
 
     return () => {
       isMounted = false;
+      window.clearTimeout(initialSessionTimerId);
     };
-  }, []);
+  }, [loadCurrentUser]);
 
   const value = useMemo(() => {
     const role = user?.role ?? null;
@@ -217,6 +216,7 @@ export default function AuthProvider({ children }) {
       isLoadingSession,
       isLoggingIn,
       isLoggingOut,
+
       isBusy: isLoadingSession || isLoggingIn || isLoggingOut,
 
       isSantaCasa: role === AUTH_ROLES.SANTACASA,

@@ -1,84 +1,72 @@
-import { NavLink, Outlet, useLocation } from "react-router-dom";
+// src/shared/layouts/AppShell/AppShell.jsx
 
-import { AUTH_ROLES } from "../../../features/auth/config/auth.config";
+import { Suspense } from "react";
+import { Outlet, useLocation } from "react-router-dom";
+
 import AuthSessionBar from "../../../features/auth/components/AuthSessionBar/AuthSessionBar";
 import IdleSessionWarning from "../../../features/auth/components/IdleSessionWarning/IdleSessionWarning";
 import { useAuth } from "../../../features/auth/hooks/useAuth";
-import FarmaciaAlertasTray from "../../../features/farmacia/alertas/components/FarmaciaAlertasTray/FarmaciaAlertasTray";
 
-import BrandMark from "../../components/BrandMark/BrandMark.jsx";
+import FarmaciaAlertasTray from "../../../features/farmacia/alertas/components/FarmaciaAlertasTray/FarmaciaAlertasTray";
+import { FARMACIA_NAV_ITEMS } from "../../../features/farmacia/shared/config/farmaciaNavigation.config";
+
+import { SANTACASA_NAV_ITEMS } from "../../../features/santacasa/shared/config/santaCasaNavigation.config";
+
+import { SYSTEM_NAV_ITEMS } from "../../../features/system/shared/config/systemNavigation.config";
+
+import AppHeader from "./components/AppHeader/AppHeader";
+import AppSectionNav from "./components/AppSectionNav/AppSectionNav";
+
+import {
+  APP_AREA_NAV_ITEMS,
+  APP_NAV_ITEMS,
+  APP_SHELL_CONFIG,
+} from "./AppShell.config";
+
+import {
+  canSeeFarmaciaAlertas,
+  canSeeFarmaciaSectionNav,
+  canSeeSantaCasaSectionNav,
+  canSeeSystemSectionNav,
+  getPrimaryNavItems,
+  isFarmaciaPath,
+  isSantaCasaPath,
+  isSystemPath,
+} from "./AppShell.utils";
 
 import styles from "./AppShell.module.css";
-
-const NAV_ITEMS = [
-  {
-    label: "Início",
-    to: "/",
-    end: true,
-    authOnly: true,
-  },
-  {
-    label: "Entrar",
-    to: "/login",
-    publicOnly: true,
-  },
-  {
-    label: "Santa Casa",
-    to: "/santacasa",
-    allowedRoles: [AUTH_ROLES.SANTACASA, AUTH_ROLES.ADMIN],
-  },
-  {
-    label: "Farmácia",
-    to: "/farmacia",
-    allowedRoles: [AUTH_ROLES.FARMACIA, AUTH_ROLES.ADMIN],
-  },
-  {
-    label: "Sistema",
-    to: "/sistema",
-    allowedRoles: [AUTH_ROLES.ADMIN],
-  },
-];
-
-function getNavLinkClassName({ isActive }) {
-  return isActive ? `${styles.navLink} ${styles.active}` : styles.navLink;
-}
-
-function getVisibleNavItems({ isAuthenticated, role }) {
-  return NAV_ITEMS.filter((item) => {
-    if (item.publicOnly) {
-      return !isAuthenticated;
-    }
-
-    if (item.authOnly) {
-      return isAuthenticated;
-    }
-
-    if (!Array.isArray(item.allowedRoles)) {
-      return true;
-    }
-
-    return isAuthenticated && item.allowedRoles.includes(role);
-  });
-}
-
-function isFarmaciaPath(pathname) {
-  return pathname === "/farmacia" || pathname.startsWith("/farmacia/");
-}
-
-function canSeeFarmaciaAlertas({ isAuthenticated, role }) {
-  return (
-    isAuthenticated && [AUTH_ROLES.FARMACIA, AUTH_ROLES.ADMIN].includes(role)
-  );
-}
 
 export default function AppShell() {
   const { isAuthenticated, role } = useAuth();
   const { pathname } = useLocation();
 
-  const visibleNavItems = getVisibleNavItems({
+  const primaryNavItems = getPrimaryNavItems({
+    items: APP_NAV_ITEMS,
+    areaItems: APP_AREA_NAV_ITEMS,
     isAuthenticated,
     role,
   });
+
+  const shouldShowSantaCasaSectionNav =
+    isSantaCasaPath(pathname) &&
+    canSeeSantaCasaSectionNav({
+      isAuthenticated,
+      role,
+    });
+
+  const shouldShowFarmaciaSectionNav =
+    isFarmaciaPath(pathname) &&
+    canSeeFarmaciaSectionNav({
+      isAuthenticated,
+      role,
+    });
+
+  const shouldShowSystemSectionNav =
+    isSystemPath(pathname) &&
+    canSeeSystemSectionNav({
+      isAuthenticated,
+      role,
+    });
 
   const shouldShowFarmaciaAlertas =
     isFarmaciaPath(pathname) &&
@@ -87,43 +75,45 @@ export default function AppShell() {
       role,
     });
 
+  const sectionNav = shouldShowSantaCasaSectionNav ? (
+    <AppSectionNav
+      items={SANTACASA_NAV_ITEMS}
+      ariaLabel={APP_SHELL_CONFIG.sectionNavLabels.santacasa}
+    />
+  ) : shouldShowFarmaciaSectionNav ? (
+    <AppSectionNav
+      items={FARMACIA_NAV_ITEMS}
+      ariaLabel={APP_SHELL_CONFIG.sectionNavLabels.farmacia}
+    />
+  ) : shouldShowSystemSectionNav ? (
+    <AppSectionNav
+      items={SYSTEM_NAV_ITEMS}
+      ariaLabel={APP_SHELL_CONFIG.sectionNavLabels.system}
+    />
+  ) : null;
+
   return (
     <div className={styles.shell}>
-      <a href="#main-content" className={styles.skipLink}>
-        Saltar para o conteúdo
+      <a
+        href={`#${APP_SHELL_CONFIG.mainContentId}`}
+        className={styles.skipLink}
+      >
+        {APP_SHELL_CONFIG.labels.skipToContent}
       </a>
 
-      <header className={styles.header}>
-        <div className={styles.headerInner}>
-          <NavLink
-            to="/"
-            className={styles.brandLink}
-            aria-label="Ir para o início"
-          >
-            <BrandMark />
-          </NavLink>
-
-          <nav className={styles.nav} aria-label="Navegação principal">
-            {visibleNavItems.map((item) => (
-              <NavLink
-                key={item.to}
-                to={item.to}
-                end={item.end}
-                className={getNavLinkClassName}
-              >
-                {item.label}
-              </NavLink>
-            ))}
-          </nav>
-        </div>
-      </header>
-
-      <AuthSessionBar />
+      <AppHeader
+        labels={APP_SHELL_CONFIG.labels}
+        primaryNavItems={primaryNavItems}
+        sessionBar={<AuthSessionBar />}
+        sectionNav={sectionNav}
+      />
 
       <FarmaciaAlertasTray enabled={shouldShowFarmaciaAlertas} />
 
-      <main id="main-content" className={styles.main}>
-        <Outlet />
+      <main id={APP_SHELL_CONFIG.mainContentId} className={styles.main}>
+        <Suspense fallback={null}>
+          <Outlet />
+        </Suspense>
       </main>
 
       <IdleSessionWarning />

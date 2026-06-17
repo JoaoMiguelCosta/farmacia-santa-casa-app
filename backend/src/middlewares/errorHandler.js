@@ -40,7 +40,7 @@ function mapPrismaError(error) {
 }
 
 function shouldLogError(statusCode) {
-  return env.NODE_ENV !== "production" && statusCode >= 500;
+  return statusCode >= 500;
 }
 
 function shouldLogWarning(statusCode) {
@@ -50,6 +50,17 @@ function shouldLogWarning(statusCode) {
     statusCode < 500 &&
     statusCode !== 401
   );
+}
+
+function buildLogPayload({ error, req, statusCode, code }) {
+  return {
+    requestId: req.requestId || null,
+    path: `${req.method} ${req.originalUrl}`,
+    statusCode,
+    code,
+    message: error.message,
+    ...(statusCode >= 500 ? { stack: error.stack } : {}),
+  };
 }
 
 function errorHandler(error, req, res, _next) {
@@ -67,13 +78,12 @@ function errorHandler(error, req, res, _next) {
     prismaError?.message ||
     (statusCode >= 500 ? "Erro interno do servidor." : error.message);
 
-  const logPayload = {
-    path: `${req.method} ${req.originalUrl}`,
+  const logPayload = buildLogPayload({
+    error,
+    req,
     statusCode,
     code,
-    message: error.message,
-    ...(statusCode >= 500 ? { stack: error.stack } : {}),
-  };
+  });
 
   if (shouldLogError(statusCode)) {
     console.error("[error]", logPayload);

@@ -1,12 +1,13 @@
 import Button from "../Button/Button";
 
+import {
+  getDataStateTypeConfig,
+  getSafeDataStateType,
+} from "./DataState.utils";
+
+import { classNames } from "../../utils/classNames";
+
 import styles from "./DataState.module.css";
-
-const VALID_TYPES = ["empty", "loading", "error"];
-
-function getSafeType(type) {
-  return VALID_TYPES.includes(type) ? type : "empty";
-}
 
 export default function DataState({
   type = "empty",
@@ -15,19 +16,21 @@ export default function DataState({
   actionLabel,
   onAction,
 }) {
-  const stateType = getSafeType(type);
+  const stateType = getSafeDataStateType(type);
+  const typeConfig = getDataStateTypeConfig(stateType);
+
   const isError = stateType === "error";
   const isLoading = stateType === "loading";
 
   return (
     <div
-      className={`${styles.state} ${styles[stateType]}`}
+      className={classNames(styles.state, styles[stateType])}
       role={isError ? "alert" : "status"}
       aria-live={isError ? "assertive" : "polite"}
       aria-busy={isLoading || undefined}
     >
       <span className={styles.icon} aria-hidden="true">
-        {isLoading ? "…" : isError ? "!" : "∅"}
+        {typeConfig.symbol}
       </span>
 
       <div className={styles.content}>

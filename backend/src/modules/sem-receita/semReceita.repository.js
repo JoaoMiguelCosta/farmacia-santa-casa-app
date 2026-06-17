@@ -10,16 +10,16 @@ const baseSelect = Object.freeze({
   updatedAt: true,
 });
 
-const selectWithPendingPedidoItems = Object.freeze({
+const pedidoItemSelect = Object.freeze({
+  id: true,
+  quantidade: true,
+  status: true,
+});
+
+const selectWithPedidoItems = Object.freeze({
   ...baseSelect,
   pedidoItens: {
-    where: {
-      status: "PENDENTE",
-    },
-    select: {
-      id: true,
-      quantidade: true,
-    },
+    select: pedidoItemSelect,
   },
 });
 
@@ -28,7 +28,7 @@ function findByUtente(utenteId) {
     where: {
       utenteId,
     },
-    select: selectWithPendingPedidoItems,
+    select: selectWithPedidoItems,
     orderBy: {
       createdAt: "desc",
     },
@@ -39,12 +39,18 @@ function findExistingByMedicamento(utenteId, medicamento) {
   return prisma.semReceita.findFirst({
     where: {
       utenteId,
+      quantidade: {
+        gt: 0,
+      },
       medicamento: {
         equals: medicamento,
         mode: "insensitive",
       },
+      pedidoItens: {
+        none: {},
+      },
     },
-    select: selectWithPendingPedidoItems,
+    select: selectWithPedidoItems,
   });
 }
 
@@ -55,7 +61,7 @@ function create(utenteId, data) {
       medicamento: data.medicamento,
       quantidade: data.quantidade,
     },
-    select: selectWithPendingPedidoItems,
+    select: selectWithPedidoItems,
   });
 }
 
@@ -69,7 +75,7 @@ function incrementQuantidade(id, quantidadeToAdd) {
         increment: quantidadeToAdd,
       },
     },
-    select: selectWithPendingPedidoItems,
+    select: selectWithPedidoItems,
   });
 }
 
@@ -78,7 +84,7 @@ function findById(id) {
     where: {
       id,
     },
-    select: selectWithPendingPedidoItems,
+    select: selectWithPedidoItems,
   });
 }
 
@@ -86,6 +92,26 @@ function countPedidoItemsBySemReceita(semReceitaId) {
   return prisma.pedidoItem.count({
     where: {
       semReceitaId,
+    },
+  });
+}
+
+function countPendingPedidoItemsBySemReceita(semReceitaId) {
+  return prisma.pedidoItem.count({
+    where: {
+      semReceitaId,
+      status: "PENDENTE",
+    },
+  });
+}
+
+function unlinkPedidoItemsBySemReceita(semReceitaId) {
+  return prisma.pedidoItem.updateMany({
+    where: {
+      semReceitaId,
+    },
+    data: {
+      semReceitaId: null,
     },
   });
 }
@@ -106,5 +132,7 @@ module.exports = {
   incrementQuantidade,
   findById,
   countPedidoItemsBySemReceita,
+  countPendingPedidoItemsBySemReceita,
+  unlinkPedidoItemsBySemReceita,
   deleteById,
 };

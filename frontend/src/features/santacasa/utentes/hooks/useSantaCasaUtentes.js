@@ -1,111 +1,67 @@
 // src/features/santacasa/utentes/hooks/useSantaCasaUtentes.js
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import { useAuth } from "../../../auth/hooks/useAuth";
 
-import {
-  archiveUtente,
-  createUtente,
-  deleteUtente,
-  getUtentesPaginated,
-  reactivateUtente,
-} from "../api/utentesApi";
+import { createUtente, getUtentesPaginated } from "../api/utentesApi";
 
 import { UTENTES_PAGE } from "../config/utentesPage.config";
 
-import {
-  UTENTE_ACTION_MESSAGES,
-  UTENTE_ARCHIVE_DEFAULT_REASON,
-  UTENTE_STATUS,
-  UTENTE_STATUS_FILTER_OPTIONS,
-} from "../config/utentesStatus.config";
+import { UTENTE_STATUS_FILTER_OPTIONS } from "../config/utentesStatus.config";
+
+import { useUtenteActions } from "./useUtenteActions";
+import { useUtentesListControls } from "./useUtentesListControls";
 
 import { sortUtentesByName } from "../utils/sortUtentes";
 
-const DEFAULT_STATUS_FILTER = UTENTE_STATUS.ATIVO;
-const DEFAULT_PAGE_SIZE = 50;
-
-function getErrorMessage(error, fallback) {
-  return error?.message || fallback;
-}
-
-function buildArchivePayload({
-  archivedReason = UTENTE_ARCHIVE_DEFAULT_REASON,
-} = {}) {
-  return {
-    archivedReason: archivedReason || UTENTE_ARCHIVE_DEFAULT_REASON,
-  };
-}
-
-function buildInitialPagination() {
-  return {
-    total: 0,
-    skip: 0,
-    take: DEFAULT_PAGE_SIZE,
-  };
-}
-
-function shouldKeepUtenteInCurrentFilter(utente, statusFilter) {
-  if (!utente) return false;
-  if (statusFilter === UTENTE_STATUS.TODOS) return true;
-
-  return utente.status === statusFilter;
-}
-
-function doesUtenteMatchSearch(utente, searchQuery) {
-  const search = String(searchQuery || "")
-    .trim()
-    .toLowerCase();
-
-  if (!search) return true;
-
-  return (
-    String(utente?.nome || "")
-      .toLowerCase()
-      .includes(search) || String(utente?.numero9 || "").includes(search)
-  );
-}
+import {
+  doesUtenteMatchSearch,
+  getErrorMessage,
+  normalizePaginationParams,
+  shouldKeepUtenteInCurrentFilter,
+} from "../utils/utentesState.utils";
 
 export function useSantaCasaUtentes() {
   const { handleAuthError } = useAuth();
 
   const [utentes, setUtentes] = useState([]);
-  const [statusFilter, setStatusFilter] = useState(DEFAULT_STATUS_FILTER);
-
-  const [searchInput, setSearchInput] = useState("");
-  const [searchQuery, setSearchQuery] = useState("");
-
-  const [pagination, setPagination] = useState(buildInitialPagination);
 
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
 
-  const [deletingUtenteId, setDeletingUtenteId] = useState(null);
-  const [archivingUtenteId, setArchivingUtenteId] = useState(null);
-  const [reactivatingUtenteId, setReactivatingUtenteId] = useState(null);
-
-  const [utenteToDelete, setUtenteToDelete] = useState(null);
-
   const [error, setError] = useState(null);
   const [feedback, setFeedback] = useState(null);
 
-  const hasUtentes = utentes.length > 0;
+  const clearTransientState = useCallback(() => {
+    setFeedback(null);
+    setError(null);
+  }, []);
 
-  const totalPages = Math.max(1, Math.ceil(pagination.total / pagination.take));
-  const currentPage = Math.min(
+  const {
+    statusFilter,
+    searchInput,
+    searchQuery,
+
+    pagination,
+    setPagination,
+
+    currentPage,
     totalPages,
-    Math.floor(pagination.skip / pagination.take) + 1,
-  );
+    hasPreviousPage,
+    hasNextPage,
 
-  const hasPreviousPage = pagination.skip > 0;
-  const hasNextPage = pagination.skip + pagination.take < pagination.total;
+    updateStatusFilter,
+    updateSearchInput,
+    handleSubmitSearch,
+    handleClearSearch,
+    handlePreviousPage,
+    handleNextPage,
+  } = useUtentesListControls({
+    onControlsChange: clearTransientState,
+  });
 
-  const isActionRunning = useMemo(() => {
-    return Boolean(
-      deletingUtenteId || archivingUtenteId || reactivatingUtenteId,
-    );
-  }, [archivingUtenteId, deletingUtenteId, reactivatingUtenteId]);
+  const hasUtentes = utentes.length > 0;
 
   const loadUtentes = useCallback(
     async ({
@@ -132,15 +88,17 @@ export function useSantaCasaUtentes() {
 
         setUtentes(sortUtentesByName(result.rows));
 
-        setPagination({
-          total: result.total,
-          skip: Number(result.params?.skip) || 0,
-          take: Number(result.params?.take) || DEFAULT_PAGE_SIZE,
-        });
+        setPagination(
+          normalizePaginationParams({
+            total: result.total,
+            skip: result.params?.skip,
+            take: result.params?.take,
+          }),
+        );
       } catch (requestError) {
         if (handleAuthError(requestError)) return;
 
-        setError(getErrorMessage(requestError, "Erro ao carregar utentes."));
+        setError(getErrorMessage(requestError, UTENTES_PAGE.list.errorMessage));
       } finally {
         setIsLoading(false);
         setIsRefreshing(false);
@@ -151,77 +109,35 @@ export function useSantaCasaUtentes() {
       pagination.skip,
       pagination.take,
       searchQuery,
+      setPagination,
       statusFilter,
     ],
   );
 
+  const {
+    isActionRunning,
+
+    deletingUtenteId,
+    archivingUtenteId,
+    reactivatingUtenteId,
+
+    utenteToDelete,
+
+    handleArchiveUtente,
+    handleReactivateUtente,
+
+    handleRequestDeleteUtente,
+    handleCancelDeleteUtente,
+    handleConfirmDeleteUtente,
+  } = useUtenteActions({
+    handleAuthError,
+    loadUtentes,
+    setFeedback,
+  });
+
   const handleRefreshUtentes = useCallback(async () => {
     await loadUtentes({ showRefreshing: true });
   }, [loadUtentes]);
-
-  const updateStatusFilter = useCallback((nextStatus) => {
-    setStatusFilter(nextStatus || DEFAULT_STATUS_FILTER);
-    setPagination((currentPagination) => ({
-      ...currentPagination,
-      skip: 0,
-    }));
-    setFeedback(null);
-    setError(null);
-  }, []);
-
-  const updateSearchInput = useCallback((value) => {
-    setSearchInput(value);
-  }, []);
-
-  const handleSubmitSearch = useCallback(
-    (event) => {
-      event?.preventDefault?.();
-
-      const nextSearch = searchInput.trim();
-
-      setSearchQuery(nextSearch);
-      setPagination((currentPagination) => ({
-        ...currentPagination,
-        skip: 0,
-      }));
-      setFeedback(null);
-      setError(null);
-    },
-    [searchInput],
-  );
-
-  const handleClearSearch = useCallback(() => {
-    setSearchInput("");
-    setSearchQuery("");
-    setPagination((currentPagination) => ({
-      ...currentPagination,
-      skip: 0,
-    }));
-    setFeedback(null);
-    setError(null);
-  }, []);
-
-  const handlePreviousPage = useCallback(() => {
-    setPagination((currentPagination) => ({
-      ...currentPagination,
-      skip: Math.max(0, currentPagination.skip - currentPagination.take),
-    }));
-  }, []);
-
-  const handleNextPage = useCallback(() => {
-    setPagination((currentPagination) => {
-      const nextSkip = currentPagination.skip + currentPagination.take;
-
-      if (nextSkip >= currentPagination.total) {
-        return currentPagination;
-      }
-
-      return {
-        ...currentPagination,
-        skip: nextSkip,
-      };
-    });
-  }, []);
 
   const handleCreateUtente = useCallback(
     async (payload) => {
@@ -262,7 +178,10 @@ export function useSantaCasaUtentes() {
           };
         }
 
-        const message = getErrorMessage(requestError, "Erro ao criar utente.");
+        const message = getErrorMessage(
+          requestError,
+          UTENTES_PAGE.form.errorMessage,
+        );
 
         setFeedback({
           type: "error",
@@ -281,186 +200,15 @@ export function useSantaCasaUtentes() {
     [handleAuthError, loadUtentes, searchQuery, statusFilter],
   );
 
-  const handleArchiveUtente = useCallback(
-    async (utente, options = {}) => {
-      if (!utente?.id) {
-        setFeedback({
-          type: "error",
-          message: UTENTE_ACTION_MESSAGES.invalidUtente,
-        });
-
-        return null;
-      }
-
-      const payload = buildArchivePayload(options);
-
-      setArchivingUtenteId(utente.id);
-      setFeedback(null);
-
-      try {
-        const updatedUtente = await archiveUtente(utente.id, payload);
-
-        await loadUtentes({ showRefreshing: true });
-
-        setFeedback({
-          type: "success",
-          message: UTENTE_ACTION_MESSAGES.archiveSuccess,
-        });
-
-        return updatedUtente;
-      } catch (requestError) {
-        if (handleAuthError(requestError)) return null;
-
-        setFeedback({
-          type: "error",
-          message: getErrorMessage(
-            requestError,
-            UTENTE_ACTION_MESSAGES.archiveError,
-          ),
-        });
-
-        return null;
-      } finally {
-        setArchivingUtenteId(null);
-      }
-    },
-    [handleAuthError, loadUtentes],
-  );
-
-  const handleReactivateUtente = useCallback(
-    async (utente) => {
-      if (!utente?.id) {
-        setFeedback({
-          type: "error",
-          message: UTENTE_ACTION_MESSAGES.invalidUtente,
-        });
-
-        return null;
-      }
-
-      setReactivatingUtenteId(utente.id);
-      setFeedback(null);
-
-      try {
-        const updatedUtente = await reactivateUtente(utente.id);
-
-        await loadUtentes({ showRefreshing: true });
-
-        setFeedback({
-          type: "success",
-          message: UTENTE_ACTION_MESSAGES.reactivateSuccess,
-        });
-
-        return updatedUtente;
-      } catch (requestError) {
-        if (handleAuthError(requestError)) return null;
-
-        setFeedback({
-          type: "error",
-          message: getErrorMessage(
-            requestError,
-            UTENTE_ACTION_MESSAGES.reactivateError,
-          ),
-        });
-
-        return null;
-      } finally {
-        setReactivatingUtenteId(null);
-      }
-    },
-    [handleAuthError, loadUtentes],
-  );
-
-  const handleRequestDeleteUtente = useCallback((utente) => {
-    setUtenteToDelete(utente);
-    setFeedback(null);
-  }, []);
-
-  const handleCancelDeleteUtente = useCallback(() => {
-    if (deletingUtenteId) return;
-
-    setUtenteToDelete(null);
-  }, [deletingUtenteId]);
-
-  const handleConfirmDeleteUtente = useCallback(async () => {
-    if (!utenteToDelete) return;
-
-    setDeletingUtenteId(utenteToDelete.id);
-    setFeedback(null);
-
-    try {
-      await deleteUtente(utenteToDelete.id);
-      await loadUtentes({ showRefreshing: true });
-
-      setFeedback({
-        type: "success",
-        message: UTENTE_ACTION_MESSAGES.deleteSuccess,
-      });
-
-      setUtenteToDelete(null);
-    } catch (requestError) {
-      if (handleAuthError(requestError)) return;
-
-      setFeedback({
-        type: "error",
-        message: getErrorMessage(
-          requestError,
-          UTENTE_ACTION_MESSAGES.deleteError,
-        ),
-      });
-    } finally {
-      setDeletingUtenteId(null);
-    }
-  }, [handleAuthError, loadUtentes, utenteToDelete]);
-
   useEffect(() => {
-    let isMounted = true;
-
-    async function loadInitialUtentes() {
-      setIsLoading(true);
-      setError(null);
-
-      try {
-        const result = await getUtentesPaginated({
-          status: statusFilter,
-          search: searchQuery,
-          skip: pagination.skip,
-          take: pagination.take,
-        });
-
-        if (!isMounted) return;
-
-        setUtentes(sortUtentesByName(result.rows));
-        setPagination({
-          total: result.total,
-          skip: Number(result.params?.skip) || 0,
-          take: Number(result.params?.take) || DEFAULT_PAGE_SIZE,
-        });
-        setError(null);
-      } catch (requestError) {
-        if (!isMounted) return;
-        if (handleAuthError(requestError)) return;
-
-        setError(getErrorMessage(requestError, "Erro ao carregar utentes."));
-      } finally {
-        if (isMounted) {
-          setIsLoading(false);
-        }
-      }
-    }
-
-    loadInitialUtentes();
+    const timeoutId = window.setTimeout(() => {
+      void loadUtentes();
+    }, 0);
 
     return () => {
-      isMounted = false;
+      window.clearTimeout(timeoutId);
     };
-  }, [
-    handleAuthError,
-    pagination.skip,
-    pagination.take,
-    searchQuery,
-    statusFilter,
-  ]);
+  }, [loadUtentes]);
 
   return {
     utentes,

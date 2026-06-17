@@ -4,8 +4,7 @@ Contrato de integração entre o frontend **Farmácia Santa Casa** e o backend d
 
 Este documento descreve como o frontend comunica com a API, quais são os endpoints usados, como são tratados erros, autenticação, paginação, permissões e regras de integração.
 
-> Estado atual: projeto em desenvolvimento.
-> O contrato reflete o frontend e backend existentes nesta fase, mas pode evoluir conforme novas funcionalidades forem adicionadas.
+> Estado atual: projeto fechado — contrato estabilizado. Atualizar este ficheiro sempre que endpoints ou payloads mudarem.
 
 ---
 
@@ -1111,30 +1110,19 @@ Antes de considerar uma integração pronta:
 
 ---
 
-## 39. Estado atual do contrato
+## 39. Cobertura atual do contrato
 
-O contrato atual cobre:
+O contrato cobre:
 
 * auth;
 * health;
-* Santa Casa;
-* Farmácia;
-* Admin users;
-* manutenção;
-* pedidos;
-* regularizações;
-* jobs;
+* Santa Casa (utentes, receitas, sem-receita, extras, pedidos, regularizações);
+* Farmácia (pedidos, regularizações, histórico, dashboard);
+* Admin (utilizadores);
+* manutenção (receita-expiry, higiene, purge-history);
 * paginação;
 * erros;
 * roles.
-
-Ainda pode ser aprofundado futuramente com:
-
-* exemplos reais de responses;
-* tabela completa de payloads;
-* documentação de erros por endpoint;
-* testes frontend de contrato;
-* mocks para desenvolvimento offline.
 
 ---
 
@@ -1152,10 +1140,6 @@ Pontos fortes:
 * UI alinhada com roles;
 * manutenção com preview antes de execução.
 
-Pontos a melhorar futuramente:
+Ponto a melhorar:
 
-* adicionar testes de contrato;
-* criar mocks;
-* centralizar normalização paginada;
-* documentar responses reais por endpoint;
-* reduzir duplicação entre APIs de regularizações/histórico.
+* documentar responses reais por endpoint quando houver deploy em produção.

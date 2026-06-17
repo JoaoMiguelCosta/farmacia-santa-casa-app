@@ -1,18 +1,14 @@
+/* src/features/santacasa/regularizacoes/components/SantaCasaRegularizacoesSignal/SantaCasaRegularizacoesSignal.module.css */
+
 .section {
     display: grid;
-    gap: clamp(1rem, 2vw, 1.35rem);
+    gap: clamp(1rem, 2vw, 1.25rem);
     inline-size: 100%;
     padding: clamp(1rem, 2.5vw, 1.35rem);
-    border: 1px solid rgba(39, 92, 72, 0.14);
-    border-radius: 1.35rem;
-    background:
-        linear-gradient(135deg,
-            rgba(255, 255, 255, 0.95),
-            rgba(247, 251, 249, 0.9)),
-        radial-gradient(circle at top left,
-            rgba(93, 160, 126, 0.1),
-            transparent 42%);
-    box-shadow: 0 18px 46px rgba(24, 43, 35, 0.07);
+    border: 1px solid var(--clinic-border);
+    border-radius: var(--clinic-radius-2xl);
+    background: var(--clinic-surface);
+    box-shadow: var(--clinic-shadow-soft);
 }
 
 .header {
@@ -24,100 +20,120 @@
 
 .heading {
     display: grid;
-    gap: 0.35rem;
+    gap: 0.34rem;
     min-width: 0;
+}
+
+.eyebrow {
+    width: fit-content;
+    color: var(--clinic-muted);
+    font-size: var(--clinic-font-size-xs);
+    font-weight: 850;
+    letter-spacing: 0.08em;
+    line-height: 1.25;
+    text-transform: uppercase;
 }
 
 .title {
     margin: 0;
-    color: #16251f;
-    font-size: clamp(1.25rem, 2.2vw, 1.65rem);
-    line-height: 1.1;
+    color: var(--clinic-ink);
+    font-size: clamp(1.45rem, 2vw, 1.85rem);
+    font-weight: 900;
+    letter-spacing: -0.025em;
+    line-height: var(--clinic-line-height-tight);
 }
 
 .description {
-    max-width: 68ch;
+    max-width: 70ch;
     margin: 0;
-    color: #60766d;
-    font-size: 0.95rem;
-    line-height: 1.6;
+    color: var(--clinic-muted-strong);
+    font-size: var(--clinic-font-size-md);
+    font-weight: 500;
+    line-height: var(--clinic-line-height-base);
 }
 
-.refreshButton,
-.stateAction {
-    min-height: 2.5rem;
-    padding: 0.68rem 1rem;
-    border: 1px solid rgba(39, 92, 72, 0.18);
-    border-radius: 999px;
-    background: rgba(255, 255, 255, 0.86);
-    color: #275c48;
-    font: inherit;
-    font-size: 0.86rem;
-    font-weight: 850;
-    cursor: pointer;
-    transition:
-        transform 160ms ease,
-        border-color 160ms ease,
-        background 160ms ease,
-        box-shadow 160ms ease,
-        opacity 160ms ease;
-}
-
-.refreshButton:hover,
-.stateAction:hover {
-    transform: translateY(-1px);
-    border-color: rgba(39, 92, 72, 0.28);
-    background: rgba(247, 251, 249, 0.96);
-    box-shadow: 0 12px 28px rgba(24, 43, 35, 0.08);
-}
-
-.refreshButton:focus-visible,
-.stateAction:focus-visible {
-    outline: 3px solid rgba(72, 128, 102, 0.28);
-    outline-offset: 3px;
-}
-
-.refreshButton:disabled,
-.stateAction:disabled {
-    cursor: not-allowed;
-    opacity: 0.56;
-    transform: none;
-    box-shadow: none;
-}
 
 .grid {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 0.85rem;
+    gap: 0.8rem;
 }
 
 .metric {
     display: grid;
-    gap: 0.35rem;
+    align-content: center;
+    gap: 0.42rem;
     min-width: 0;
+    min-height: 6.4rem;
     padding: clamp(0.9rem, 2vw, 1rem);
-    border: 1px solid rgba(39, 92, 72, 0.12);
-    border-radius: 1.1rem;
-    background:
-        linear-gradient(135deg,
-            rgba(255, 255, 255, 0.82),
-            rgba(246, 250, 248, 0.92)),
-        radial-gradient(circle at top right,
-            rgba(93, 160, 126, 0.08),
-            transparent 44%);
+    border: 1px solid var(--clinic-border);
+    border-radius: var(--clinic-radius-xl);
+    background: var(--clinic-mist);
 }
 
-.metric span {
-    color: #6d8279;
-    font-size: 0.78rem;
+.metricPrimary {
+    border-color: rgba(31, 95, 81, 0.2);
+}
+
+.metricSuccess {
+    border-color: rgba(37, 115, 90, 0.24);
+    background: rgba(37, 115, 90, 0.08);
+}
+
+.metricDate {
+    border-color: var(--clinic-border);
+    background: var(--clinic-white);
+}
+
+.metric>span {
+    color: var(--clinic-muted);
+    font-size: var(--clinic-font-size-xs);
     font-weight: 800;
+    line-height: 1.25;
 }
 
-.metric strong {
+.metricPrimary>span,
+.metricSuccess>span {
+    color: var(--clinic-muted-strong);
+    font-weight: 850;
+}
+
+.metricValue {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.34rem;
+    min-width: 0;
     overflow-wrap: anywhere;
-    color: #275c48;
-    font-size: clamp(1.25rem, 2vw, 1.55rem);
-    line-height: 1.05;
+    color: var(--clinic-green-700);
+    line-height: 1;
+}
+
+.metricValue>span {
+    color: inherit;
+    font-size: clamp(1.45rem, 2.4vw, 1.9rem);
+    font-weight: 950;
+    letter-spacing: -0.04em;
+    line-height: 1;
+}
+
+.metricValue small {
+    color: var(--clinic-muted-strong);
+    font-size: var(--clinic-font-size-sm);
+    font-weight: 850;
+    letter-spacing: -0.01em;
+    line-height: 1;
+}
+
+.metricValueMuted {
+    color: var(--clinic-ink-soft);
+}
+
+.metricValueMuted>span {
+    font-size: clamp(1rem, 1.5vw, 1.18rem);
+    font-weight: 900;
+    letter-spacing: -0.02em;
+    line-height: 1.25;
 }
 
 .state {
@@ -127,16 +143,20 @@
 }
 
 .stateTitle {
-    color: #16251f;
-    font-size: clamp(1rem, 1.6vw, 1.2rem);
+    color: var(--clinic-ink);
+    font-size: clamp(1.45rem, 2vw, 1.85rem);
+    font-weight: 900;
+    letter-spacing: -0.025em;
+    line-height: var(--clinic-line-height-tight);
 }
 
 .stateDescription {
-    max-width: 62ch;
+    max-width: 70ch;
     margin: 0;
-    color: #60766d;
-    font-size: 0.94rem;
-    line-height: 1.55;
+    color: var(--clinic-muted-strong);
+    font-size: var(--clinic-font-size-md);
+    font-weight: 500;
+    line-height: var(--clinic-line-height-base);
 }
 
 @media (max-width: 860px) {
@@ -145,11 +165,15 @@
         flex-direction: column;
     }
 
-    .refreshButton {
+    .header > button {
         width: 100%;
     }
 
     .grid {
         grid-template-columns: 1fr;
+    }
+
+    .metric {
+        min-height: auto;
     }
 }

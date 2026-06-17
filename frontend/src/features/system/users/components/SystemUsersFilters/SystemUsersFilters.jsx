@@ -1,3 +1,5 @@
+import Button from "../../../../../shared/ui/Button/Button";
+
 import styles from "./SystemUsersFilters.module.css";
 
 import { SYSTEM_USERS_PAGE } from "../../config/systemUsersPage.config";
@@ -32,34 +34,34 @@ export default function SystemUsersFilters({
         </div>
 
         <div className={styles.headerActions}>
-          <button
-            type="button"
-            className={styles.secondaryButton}
+          <Button
+            variant="secondary"
+            size="sm"
             disabled={isDisabled}
             onClick={onClearFilters}
           >
             {SYSTEM_USERS_PAGE.actions.clear}
-          </button>
+          </Button>
 
-          <button
-            type="button"
-            className={styles.secondaryButton}
+          <Button
+            variant="secondary"
+            size="sm"
             disabled={isDisabled || isRefreshing}
             onClick={onRefresh}
           >
             {isRefreshing
               ? SYSTEM_USERS_PAGE.actions.refreshing
               : SYSTEM_USERS_PAGE.actions.refresh}
-          </button>
+          </Button>
 
-          <button
-            type="button"
-            className={styles.primaryButton}
+          <Button
+            variant="primary"
+            size="sm"
             disabled={isDisabled}
             onClick={onCreate}
           >
             {SYSTEM_USERS_PAGE.actions.create}
-          </button>
+          </Button>
         </div>
       </header>
 

@@ -1,3 +1,4 @@
+// src/shared/api/endpoints.js
 const SYSTEM_MANUTENCAO_ENDPOINTS = Object.freeze({
   jobs: "/manutencao/jobs",
 
@@ -75,6 +76,7 @@ export const API_ENDPOINTS = Object.freeze({
     alertasDismissAll: "/farmacia/alertas/dismiss-all",
 
     pedidos: "/farmacia/pedidos",
+    pedidoById: (pedidoId) => `/farmacia/pedidos/${pedidoId}`,
     validarPedido: (pedidoId) => `/farmacia/pedidos/${pedidoId}/validar`,
     rejeitarPedido: (pedidoId) => `/farmacia/pedidos/${pedidoId}/rejeitar`,
 

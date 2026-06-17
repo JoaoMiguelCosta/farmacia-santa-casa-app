@@ -46,6 +46,15 @@ function getReceitaLinhaRestanteVisual(linha, draftQuantityMap) {
   return Math.max(0, quantidadeRestante - quantidadeEmPedidoDraft);
 }
 
+function getExtraQuantidadeRestante(extra) {
+  return Math.max(
+    0,
+    Number(extra.quantidadeSolicitada || 0) -
+      Number(extra.quantidadeRegularizada || 0) -
+      Number(extra.quantidadeCancelada || 0),
+  );
+}
+
 async function listByUtente(utenteId) {
   await ensureUtenteOperational(
     utenteId,
@@ -121,13 +130,33 @@ async function removeForUtente(utenteId, extraId) {
     throw forbidden("Venda Suspensa não pertence a este utente.");
   }
 
-  const linkedPedidoItems =
-    await extrasRepository.countPedidoItemsByExtra(extraId);
+  const pendingPedidoItems =
+    await extrasRepository.countPedidoItemsByExtraAndStatus(extraId, [
+      "PENDENTE",
+    ]);
 
-  if (linkedPedidoItems > 0) {
+  if (pendingPedidoItems > 0) {
     throw conflict(
-      "Não é possível remover: a Venda Suspensa já está associada a pedidos.",
+      "Não é possível remover: a Venda Suspensa ainda está associada a pedidos pendentes.",
     );
+  }
+
+  const [validatedPedidoItems, regularizacoes] = await Promise.all([
+    extrasRepository.countPedidoItemsByExtraAndStatus(extraId, ["VALIDADO"]),
+    extrasRepository.countRegularizacoesByExtra(extraId),
+  ]);
+
+  const hasQuantidadeAceiteOuRegularizacao =
+    validatedPedidoItems > 0 || regularizacoes > 0;
+
+  if (hasQuantidadeAceiteOuRegularizacao) {
+    const quantidadeRestante = getExtraQuantidadeRestante(extra);
+
+    if (quantidadeRestante > 0) {
+      await extrasRepository.cancelRemainingById(extraId, quantidadeRestante);
+    }
+
+    return;
   }
 
   await extrasRepository.deleteById(extraId);

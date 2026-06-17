@@ -1,0 +1,14 @@
+.page {
+    display: grid;
+    gap: clamp(1rem, 2.5vw, 1.35rem);
+
+    width: 100%;
+    min-width: 0;
+}
+
+.sections {
+    display: grid;
+    gap: clamp(1rem, 2.6vw, 1.45rem);
+
+    min-width: 0;
+}

@@ -7,16 +7,10 @@ import {
 } from "../api/farmaciaAlertasApi";
 
 import { FARMACIA_ALERTAS_CONFIG } from "../config/farmaciaAlertas.config";
-
-function sortAlertasByDate(alertas = []) {
-  return [...alertas].sort((a, b) => {
-    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-  });
-}
-
-function getSafeErrorMessage(error, fallbackMessage) {
-  return error?.message || fallbackMessage;
-}
+import {
+  getSafeErrorMessage,
+  sortAlertasByDate,
+} from "../utils/farmaciaAlertas.utils";
 
 export function useFarmaciaAlertas({
   enabled = true,

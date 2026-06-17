@@ -1,3 +1,5 @@
+import { PEDIDOS_PAGE } from "../config/pedidosPage.config";
+
 export function clampQuantity(value, max) {
   const quantity = Math.floor(Number(value));
   const maxQuantity = Math.floor(Number(max));
@@ -39,6 +41,60 @@ export function isSameMedication(a, b) {
     normalizeMedicationName(getItemMedicationName(a)) ===
     normalizeMedicationName(getItemMedicationName(b))
   );
+}
+
+function getLocalDateKey(value) {
+  const date = value instanceof Date ? value : new Date(value);
+
+  if (Number.isNaN(date.getTime())) return "";
+
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+}
+
+export function isReceitaDraftItemExpired(item, now = new Date()) {
+  if (item?.tipo !== "COM_RECEITA") return false;
+
+  const validadeKey = getLocalDateKey(item?.validade);
+  const todayKey = getLocalDateKey(now);
+
+  if (!validadeKey || !todayKey) return false;
+
+  return validadeKey < todayKey;
+}
+
+export function getExpiredReceitaDraftItems(items = [], now = new Date()) {
+  return items.filter((item) => isReceitaDraftItemExpired(item, now));
+}
+
+function getExpiredItemsLabel(items = []) {
+  return items
+    .map(getItemMedicationName)
+    .map((name) => name.trim())
+    .filter(Boolean)
+    .join(", ");
+}
+
+export function buildExpiredReceitasRemovedMessage(items = []) {
+  const count = items.length;
+
+  if (count === 0) return "";
+
+  const medicamentos = getExpiredItemsLabel(items);
+
+  if (count === 1) {
+    return PEDIDOS_PAGE.feedback.expiredReceitaRemoved.replace(
+      "{medicamento}",
+      medicamentos || PEDIDOS_PAGE.labels.medicamentoFallback,
+    );
+  }
+
+  return PEDIDOS_PAGE.feedback.expiredReceitasRemoved
+    .replace("{count}", count)
+    .replace("{medicamentos}", medicamentos);
 }
 
 export function buildPedidoPayload(items = []) {

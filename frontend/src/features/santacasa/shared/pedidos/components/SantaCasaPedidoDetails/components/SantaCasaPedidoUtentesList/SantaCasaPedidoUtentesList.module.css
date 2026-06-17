@@ -1,0 +1,215 @@
+/* src/features/santacasa/shared/pedidos/components/SantaCasaPedidoUtentesList/SantaCasaPedidoUtentesList.module.css */
+
+.section {
+    display: grid;
+    gap: 0.7rem;
+
+    padding: 0.8rem;
+
+    border: 1px solid var(--clinic-border);
+    border-radius: var(--clinic-radius-lg);
+
+    background: var(--clinic-cream);
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+}
+
+.title {
+    margin: 0;
+
+    color: var(--clinic-ink);
+
+    font-size: 0.94rem;
+    line-height: 1.2;
+}
+
+.count {
+    display: inline-grid;
+    place-items: center;
+
+    min-width: 1.8rem;
+    min-height: 1.8rem;
+    padding-inline: 0.45rem;
+
+    border: 1px solid var(--clinic-border);
+    border-radius: 999px;
+
+    background: var(--clinic-surface);
+    color: var(--clinic-muted-strong);
+
+    font-size: 0.72rem;
+    font-weight: 800;
+}
+
+.searchField {
+    display: grid;
+    gap: 0.35rem;
+}
+
+.searchField>span {
+    color: var(--clinic-ink-soft);
+
+    font-size: var(--clinic-font-size-xs);
+    font-weight: 800;
+}
+
+.searchField input {
+    min-height: 2.75rem;
+    inline-size: 100%;
+    padding: 0.68rem 0.8rem;
+
+    border: 1px solid var(--clinic-border-strong);
+    border-radius: var(--clinic-radius-md);
+
+    background: var(--clinic-white);
+    color: var(--clinic-ink);
+
+    font: inherit;
+    font-size: var(--clinic-font-size-sm);
+
+    transition:
+        border-color var(--clinic-transition),
+        box-shadow var(--clinic-transition);
+}
+
+.searchField input:focus {
+    outline: none;
+
+    border-color: var(--clinic-green-600);
+
+    box-shadow:
+        0 0 0 3px rgb(31 95 81 / 0.12);
+}
+
+.list {
+    display: grid;
+    gap: 0.65rem;
+
+    margin: 0;
+    padding: 0;
+
+    list-style: none;
+}
+
+.emptyState {
+    display: grid;
+    gap: 0.3rem;
+
+    padding: 1rem;
+
+    border: 1px dashed var(--clinic-border-strong);
+    border-radius: var(--clinic-radius-md);
+
+    background: var(--clinic-surface);
+}
+
+.emptyState strong {
+    color: var(--clinic-ink);
+
+    font-size: var(--clinic-font-size-sm);
+}
+
+.emptyState p {
+    margin: 0;
+
+    color: var(--clinic-muted);
+
+    font-size: var(--clinic-font-size-sm);
+    line-height: 1.5;
+}
+
+.pagination {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+
+    padding-top: 0.7rem;
+
+    border-top: 1px solid var(--clinic-border);
+}
+
+.results {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem 1rem;
+
+    color: var(--clinic-muted);
+
+    font-size: var(--clinic-font-size-xs);
+}
+
+.results strong {
+    color: var(--clinic-ink-soft);
+}
+
+.pageActions {
+    display: flex;
+    flex: 0 0 auto;
+    gap: 0.45rem;
+}
+
+.pageActions button {
+    min-height: 2.35rem;
+    padding: 0.55rem 0.75rem;
+
+    border: 1px solid rgb(31 95 81 / 0.22);
+    border-radius: var(--clinic-radius-md);
+
+    background: var(--clinic-white);
+    color: var(--clinic-green-700);
+
+    font: inherit;
+    font-size: var(--clinic-font-size-xs);
+    font-weight: 800;
+
+    cursor: pointer;
+
+    transition:
+        border-color var(--clinic-transition),
+        background var(--clinic-transition),
+        opacity var(--clinic-transition);
+}
+
+.pageActions button:hover:not(:disabled) {
+    border-color: rgb(31 95 81 / 0.38);
+
+    background: var(--clinic-mist);
+}
+
+.pageActions button:disabled {
+    cursor: not-allowed;
+
+    opacity: 0.45;
+}
+
+.pageActions button:focus-visible {
+    outline: 3px solid rgb(31 95 81 / 0.22);
+    outline-offset: 2px;
+}
+
+@media (max-width: 680px) {
+    .pagination {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .pageActions {
+        width: 100%;
+    }
+
+    .pageActions button {
+        flex: 1 1 0;
+    }
+}
+
+@media (max-width: 420px) {
+    .section {
+        padding: 0.65rem;
+    }
+}

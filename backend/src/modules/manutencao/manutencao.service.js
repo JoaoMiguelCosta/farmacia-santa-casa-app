@@ -5,7 +5,10 @@ const purgeHistoryJob = require("../../jobs/purgeHistory.job");
 
 const {
   parseHigieneOptions,
+  parseHigieneRunOptions,
   parsePurgeOptions,
+  parsePurgeRunOptions,
+  parseReceitaExpiryRunPayload,
 } = require("./manutencao.validators");
 
 function listJobs() {
@@ -46,7 +49,9 @@ async function previewReceitaExpiry() {
   };
 }
 
-async function runReceitaExpiry() {
+async function runReceitaExpiry(body = {}) {
+  parseReceitaExpiryRunPayload(body);
+
   const result = await receitaExpiryJob.runOnce();
 
   return {
@@ -69,7 +74,7 @@ async function previewHigiene(query = {}) {
 }
 
 async function runHigiene(body = {}) {
-  const options = parseHigieneOptions(body);
+  const options = parseHigieneRunOptions(body);
   const result = await higieneJob.runOnce(options);
 
   return {
@@ -93,7 +98,7 @@ async function previewPurgeHistory(query = {}) {
 }
 
 async function runPurgeHistory(body = {}) {
-  const options = parsePurgeOptions(body);
+  const options = parsePurgeRunOptions(body);
   const result = await purgeHistoryJob.runOnce(options);
 
   return {

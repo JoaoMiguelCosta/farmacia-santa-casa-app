@@ -1,31 +1,20 @@
-import styles from "./FarmaciaRegularizacoesList.module.css";
+import { useMemo } from "react";
 
 import FarmaciaRegularizacaoCard from "../FarmaciaRegularizacaoCard/FarmaciaRegularizacaoCard";
+import FarmaciaRegularizacoesHistoricoUtenteGroup from "../FarmaciaRegularizacoesHistoricoUtenteGroup/FarmaciaRegularizacoesHistoricoUtenteGroup";
+import FarmaciaRegularizacoesState from "../FarmaciaRegularizacoesState/FarmaciaRegularizacoesState";
+import FarmaciaRegularizacoesUtenteGroup from "../FarmaciaRegularizacoesUtenteGroup/FarmaciaRegularizacoesUtenteGroup";
 
 import { FARMACIA_REGULARIZACOES_PAGE } from "../../config/farmaciaRegularizacoesPage.config";
 
-function FarmaciaRegularizacoesState({
-  title,
-  description,
-  actionLabel,
-  onAction,
-}) {
-  return (
-    <div className={styles.state}>
-      <strong className={styles.stateTitle}>{title}</strong>
+import {
+  groupHistoricoRegularizacoesByUtente,
+  groupRegularizacoesByUtente,
+} from "../../utils/farmaciaRegularizacoes.utils";
 
-      {description ? (
-        <p className={styles.stateDescription}>{description}</p>
-      ) : null}
+import Button from "../../../../../shared/ui/Button/Button";
 
-      {actionLabel && onAction ? (
-        <button type="button" className={styles.stateAction} onClick={onAction}>
-          {actionLabel}
-        </button>
-      ) : null}
-    </div>
-  );
-}
+import styles from "./FarmaciaRegularizacoesList.module.css";
 
 function getSectionConfig(variant) {
   if (variant === "history") {
@@ -46,12 +35,24 @@ export default function FarmaciaRegularizacoesList({
   const sectionConfig = getSectionConfig(variant);
   const hasRegularizacoes = regularizacoes.length > 0;
 
+  const pendingGroups = useMemo(() => {
+    if (variant !== "pending") return [];
+
+    return groupRegularizacoesByUtente(regularizacoes);
+  }, [regularizacoes, variant]);
+
+  const historyGroups = useMemo(() => {
+    if (variant !== "history") return [];
+
+    return groupHistoricoRegularizacoesByUtente(regularizacoes);
+  }, [regularizacoes, variant]);
+
   if (isLoading) {
     return (
       <section className={styles.section} aria-live="polite">
         <FarmaciaRegularizacoesState
           title={sectionConfig.loadingTitle}
-          description="Aguarda enquanto os dados são carregados."
+          description={sectionConfig.loadingDescription}
         />
       </section>
     );
@@ -87,16 +88,16 @@ export default function FarmaciaRegularizacoesList({
           <p className={styles.description}>{sectionConfig.description}</p>
         </div>
 
-        <button
-          type="button"
-          className={styles.refreshButton}
+        <Button
+          variant="secondary"
+          size="sm"
           disabled={isRefreshing}
           onClick={onRefresh}
         >
           {isRefreshing
             ? FARMACIA_REGULARIZACOES_PAGE.actions.refreshing
             : FARMACIA_REGULARIZACOES_PAGE.actions.refresh}
-        </button>
+        </Button>
       </header>
 
       {!hasRegularizacoes ? (
@@ -104,6 +105,21 @@ export default function FarmaciaRegularizacoesList({
           title={sectionConfig.emptyTitle}
           description={sectionConfig.emptyDescription}
         />
+      ) : variant === "pending" ? (
+        <div className={styles.list}>
+          {pendingGroups.map((group) => (
+            <FarmaciaRegularizacoesUtenteGroup key={group.id} group={group} />
+          ))}
+        </div>
+      ) : variant === "history" ? (
+        <div className={styles.list}>
+          {historyGroups.map((group) => (
+            <FarmaciaRegularizacoesHistoricoUtenteGroup
+              key={group.id}
+              group={group}
+            />
+          ))}
+        </div>
       ) : (
         <div className={styles.list}>
           {regularizacoes.map((regularizacao) => (

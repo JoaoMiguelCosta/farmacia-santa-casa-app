@@ -161,6 +161,59 @@ describe("Farmácia E2E", () => {
       );
     });
 
+    it("deve validar pedido com receita válida no próprio dia", async () => {
+      const santaCasaAgent = await createSantaCasaAgent(app);
+      const farmaciaAgent = await createFarmaciaAgent(app);
+
+      const utente = await createUtente(
+        santaCasaAgent,
+        "Utente Receita Validade Hoje",
+      );
+
+      const receita = await createReceita(santaCasaAgent, utente.id, {
+        medicamento: `Medicamento Validade Hoje ${Date.now()}`,
+        quantidade: 1,
+        validade: new Date().toISOString().slice(0, 10),
+      });
+
+      const linhaId = receita.linhas[0].linhaId;
+
+      const pedido = await createPedido(santaCasaAgent, [
+        {
+          utenteId: utente.id,
+          tipo: "COM_RECEITA",
+          id: linhaId,
+          quantidade: 1,
+        },
+      ]);
+
+      const validateResponse = await farmaciaAgent
+        .post(`/api/farmacia/pedidos/${pedido.id}/validar`)
+        .expect(200);
+
+      expect(validateResponse.body.data).toEqual(
+        expect.objectContaining({
+          id: pedido.id,
+          status: "VALIDADO",
+          validatedAt: expect.any(String),
+        }),
+      );
+
+      expect(validateResponse.body.data.itens).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            tipo: "COM_RECEITA",
+            status: "VALIDADO",
+            quantidade: 1,
+            receitaLinha: expect.objectContaining({
+              validade: expect.any(String),
+            }),
+          }),
+        ]),
+      );
+    });
+
+
     it("deve rejeitar pedido pendente com motivo", async () => {
       const santaCasaAgent = await createSantaCasaAgent(app);
       const farmaciaAgent = await createFarmaciaAgent(app);

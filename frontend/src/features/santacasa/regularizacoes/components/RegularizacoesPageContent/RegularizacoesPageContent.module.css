@@ -1,0 +1,97 @@
+.page {
+    display: grid;
+    gap: clamp(1.25rem, 2.5vw, 2rem);
+    inline-size: min(100%, var(--clinic-page-max));
+    margin-inline: auto;
+}
+
+.pagination {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: clamp(0.9rem, 2vw, 1.05rem);
+    border: 1px solid var(--clinic-border);
+    border-radius: var(--clinic-radius-xl);
+    background: var(--clinic-surface);
+    box-shadow: var(--clinic-shadow-soft);
+}
+
+.paginationInfo {
+    margin: 0;
+    color: var(--clinic-muted);
+    font-size: var(--clinic-font-size-sm);
+    font-weight: 750;
+    line-height: var(--clinic-line-height-base);
+}
+
+.paginationActions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 0.5rem;
+}
+
+.paginationButton {
+    min-height: 2.35rem;
+    padding: 0.62rem 0.9rem;
+    border: 1px solid var(--clinic-border);
+    border-radius: 999px;
+    background: var(--clinic-white);
+    color: var(--clinic-green-700);
+    font: inherit;
+    font-size: var(--clinic-font-size-sm);
+    font-weight: 850;
+    cursor: pointer;
+    transition:
+        transform var(--clinic-transition),
+        border-color var(--clinic-transition),
+        background var(--clinic-transition),
+        box-shadow var(--clinic-transition),
+        opacity var(--clinic-transition);
+}
+
+.paginationButton:hover {
+    transform: translateY(-1px);
+    border-color: var(--clinic-border-strong);
+    background: var(--clinic-mist);
+    box-shadow: var(--clinic-shadow-soft);
+}
+
+.paginationButton:focus-visible {
+    outline: 3px solid rgba(31, 95, 81, 0.24);
+    outline-offset: 3px;
+}
+
+.paginationButton:disabled {
+    cursor: not-allowed;
+    opacity: 0.58;
+    transform: none;
+    box-shadow: none;
+}
+
+@media (max-width: 760px) {
+    .pagination {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .paginationActions {
+        justify-content: stretch;
+    }
+
+    .paginationActions > * {
+        flex: 1;
+    }
+}
+
+@media (max-width: 640px) {
+    .paginationActions {
+        display: grid;
+        grid-template-columns: 1fr;
+    }
+
+    .paginationButton {
+        width: 100%;
+    }
+}

@@ -1,0 +1,53 @@
+.pagination {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.9rem;
+
+    min-width: 0;
+    padding: 0.95rem 1rem;
+
+    border: 1px solid var(--clinic-border);
+    border-radius: var(--clinic-radius-lg);
+
+    background-color: var(--clinic-white);
+
+    box-shadow: var(--clinic-shadow-soft);
+}
+
+.paginationInfo {
+    margin: 0;
+
+    color: var(--clinic-muted-strong);
+
+    font-size: var(--clinic-font-size-sm);
+    font-weight: 750;
+    line-height: 1.4;
+}
+
+.paginationActions {
+    display: flex;
+    flex: 0 0 auto;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+@media (max-width: 620px) {
+    .pagination {
+        align-items: stretch;
+        flex-direction: column;
+
+        border-radius: var(--clinic-radius-lg);
+    }
+
+    .paginationActions {
+        display: grid;
+        grid-template-columns: 1fr;
+
+        width: 100%;
+    }
+
+    .paginationActions>* {
+        width: 100%;
+    }
+}

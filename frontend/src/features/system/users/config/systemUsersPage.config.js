@@ -1,4 +1,5 @@
 // src/features/system/users/config/systemUsersPage.config.js
+
 export const SYSTEM_USERS_ROLES = Object.freeze({
   SANTACASA: "SANTACASA",
   FARMACIA: "FARMACIA",
@@ -7,23 +8,24 @@ export const SYSTEM_USERS_ROLES = Object.freeze({
 
 export const SYSTEM_USERS_PAGE = Object.freeze({
   header: {
-    eyebrow: "Sistema/Admin",
-    title: "Utilizadores",
+    eyebrow: "Administração",
+    title: "Gestão de acessos",
     description:
-      "Gestão de acessos ao sistema. Cria, edita, ativa ou desativa contas da Santa Casa, Farmácia e Administração.",
+      "Cria e gere contas com acesso à Santa Casa, Farmácia e área administrativa.",
   },
 
   sections: {
     filters: {
       title: "Filtros",
-      description: "Pesquisa utilizadores por nome, email, role ou estado.",
+      description: "Pesquisa contas por nome, email, perfil ou estado.",
     },
 
     list: {
       title: "Contas de utilizador",
       description:
-        "Utilizadores com acesso ao sistema interno da Farmácia Santa Casa.",
+        "Pessoas com acesso autorizado às áreas da Farmácia Santa Casa.",
       loadingTitle: "A carregar utilizadores...",
+      loadingDescription: "Aguarda enquanto os utilizadores são carregados.",
       errorTitle: "Não foi possível carregar os utilizadores.",
       emptyTitle: "Sem utilizadores encontrados.",
       emptyDescription:
@@ -40,7 +42,7 @@ export const SYSTEM_USERS_PAGE = Object.freeze({
   roles: {
     SANTACASA: "Santa Casa",
     FARMACIA: "Farmácia",
-    ADMIN: "Sistema/Admin",
+    ADMIN: "Administrador",
   },
 
   status: {
@@ -75,16 +77,17 @@ export const SYSTEM_USERS_PAGE = Object.freeze({
 
     email: {
       label: "Email",
-      placeholder: "email@sistema.local",
+      placeholder: "email@sistema.pt",
     },
 
     role: {
       label: "Perfil",
+      selfEditHint: "Não podes alterar o perfil da tua própria conta.",
     },
 
     password: {
       label: "Password",
-      placeholder: "Mínimo 8 caracteres",
+      placeholder: "Mínimo 10 caracteres",
     },
   },
 
@@ -115,6 +118,49 @@ export const SYSTEM_USERS_PAGE = Object.freeze({
     clear: "Limpar",
     close: "Fechar",
   },
+
+  labels: {
+    profile: "Perfil",
+    createdAt: "Criado em",
+    updatedAt: "Atualizado em",
+    isCurrentUser: "Conta atual",
+    yes: "Sim",
+    no: "Não",
+    total: "Total",
+  },
+
+  pagination: {
+    ariaLabel: "Paginação de utilizadores do sistema",
+    noResults: "Sem resultados.",
+    getPaginationLabel({ start, end, total, currentPage, totalPages }) {
+      return `A mostrar ${start}-${end} de ${total} utilizador(es). Página ${currentPage} de ${totalPages}.`;
+    },
+  },
+
+  confirm: {
+    status: {
+      eyebrow: "Confirmação necessária",
+      getTitleLabel(action) {
+        return `${action} utilizador?`;
+      },
+      inactivateDescription:
+        "Esta conta ficará inativa e deixará de conseguir iniciar sessão no sistema.",
+      activateDescription:
+        "Esta conta voltará a ficar ativa e poderá iniciar sessão no sistema.",
+    },
+    delete: {
+      eyebrow: "Remoção segura",
+      title: "Remover utilizador?",
+      description:
+        "Esta ação só será permitida se a conta estiver desativada e não tiver histórico associado. Caso tenha histórico de validações ou rejeições, o sistema vai bloquear a remoção.",
+    },
+    fields: {
+      name: "Nome",
+      email: "Email",
+      status: "Estado atual",
+    },
+  },
+
   feedback: {
     genericError: "Ocorreu um erro inesperado.",
     createSuccess: "Utilizador criado com sucesso.",
@@ -125,6 +171,11 @@ export const SYSTEM_USERS_PAGE = Object.freeze({
     deleteActiveBlocked: "Só podes remover utilizadores desativados.",
     selfDeactivateBlocked: "Não podes desativar a tua própria conta.",
     selfDeleteBlocked: "Não podes remover a tua própria conta.",
+    selfRoleChangeBlocked: "Não podes alterar o perfil da tua própria conta.",
     missingRequiredFields: "Preenche todos os campos obrigatórios.",
+    invalidEmail: "Email inválido.",
+    invalidRole: "Perfil inválido.",
+    passwordRequired: "Password obrigatória.",
+    passwordMinLength: "A password deve ter pelo menos 10 caracteres.",
   },
 });

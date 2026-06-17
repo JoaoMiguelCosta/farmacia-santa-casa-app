@@ -1,0 +1,139 @@
+.alerta {
+    --alert-accent: var(--clinic-green-700);
+    --alert-border: var(--clinic-border);
+    --alert-soft: var(--clinic-mist);
+
+    position: relative;
+    isolation: isolate;
+
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 0.85rem;
+    align-items: center;
+
+    min-width: 0;
+    overflow: hidden;
+
+    padding: 0.9rem;
+
+    border: 1px solid var(--alert-border);
+    border-inline-start: 4px solid var(--alert-accent);
+    border-radius: var(--clinic-radius-lg);
+
+    background: var(--clinic-surface);
+    color: var(--clinic-ink);
+
+    box-shadow: var(--clinic-shadow-soft);
+}
+
+.pedido {
+    --alert-accent: var(--clinic-warning);
+    --alert-border: rgba(161, 92, 7, 0.26);
+    --alert-soft: rgba(161, 92, 7, 0.09);
+}
+
+.regularizacaoParcial {
+    --alert-accent: var(--clinic-gold-500);
+    --alert-border: var(--clinic-border-gold);
+    --alert-soft: var(--clinic-gold-soft);
+}
+
+.regularizacaoTotal {
+    --alert-accent: var(--clinic-success);
+    --alert-border: rgba(37, 115, 90, 0.22);
+    --alert-soft: rgba(37, 115, 90, 0.08);
+}
+
+.default {
+    --alert-accent: var(--clinic-muted-strong);
+    --alert-border: var(--clinic-border);
+    --alert-soft: var(--clinic-mist);
+}
+
+.alertaMain {
+    display: grid;
+    gap: 0.38rem;
+
+    min-width: 0;
+}
+
+.alertaHeader {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.42rem;
+}
+
+.typeLabel {
+    width: fit-content;
+    max-width: 100%;
+    padding: 0.3rem 0.56rem;
+
+    border: 1px solid var(--alert-border);
+    border-radius: 999px;
+
+    color: var(--alert-accent);
+    background: var(--alert-soft);
+
+    font-size: 0.68rem;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.dateLabel {
+    color: var(--clinic-muted);
+
+    font-size: 0.74rem;
+    font-weight: 650;
+    line-height: 1.35;
+}
+
+.alerta h3 {
+    margin: 0;
+
+    overflow-wrap: anywhere;
+
+    color: var(--clinic-ink);
+
+    font-size: 0.98rem;
+    font-weight: 800;
+    letter-spacing: -0.025em;
+    line-height: 1.18;
+}
+
+.alerta p {
+    margin: 0;
+
+    overflow-wrap: anywhere;
+
+    color: var(--clinic-muted-strong);
+
+    font-size: 0.84rem;
+    font-weight: 550;
+    line-height: 1.48;
+}
+
+.alerta>button {
+    min-height: 2.35rem;
+    padding-inline: 0.9rem;
+
+    white-space: nowrap;
+}
+
+@media (max-width: 760px) {
+    .alerta {
+        grid-template-columns: 1fr;
+        align-items: stretch;
+    }
+
+    .alerta>button {
+        width: 100%;
+    }
+}
+
+@media (max-width: 420px) {
+    .alerta {
+        padding: 0.78rem;
+        border-radius: var(--clinic-radius-md);
+    }
+}

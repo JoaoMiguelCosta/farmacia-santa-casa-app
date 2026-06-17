@@ -1,3 +1,5 @@
+// src/features/santacasa/historico/api/santaCasaHistoricoApi.js
+
 import { API_ENDPOINTS } from "../../../../shared/api/endpoints";
 import { httpClient } from "../../../../shared/api/httpClient";
 
@@ -7,7 +9,7 @@ const DEFAULT_HISTORICO_QUERY = Object.freeze({
   from: "",
   to: "",
   skip: 0,
-  take: 50,
+  take: 10,
 });
 
 const VALID_HISTORICO_STATUS = new Set([
@@ -18,7 +20,7 @@ const VALID_HISTORICO_STATUS = new Set([
 ]);
 
 function normalizeStatus(status) {
-  const normalizedStatus = String(status || "TODOS")
+  const normalizedStatus = String(status || DEFAULT_HISTORICO_QUERY.status)
     .trim()
     .toUpperCase();
 
@@ -27,18 +29,42 @@ function normalizeStatus(status) {
     : DEFAULT_HISTORICO_QUERY.status;
 }
 
+function normalizeNonNegativeInteger(value, fallback) {
+  const numberValue = Number(value);
+
+  if (!Number.isFinite(numberValue)) {
+    return fallback;
+  }
+
+  return Math.max(0, Math.floor(numberValue));
+}
+
+function normalizePositiveInteger(value, fallback) {
+  const numberValue = Number(value);
+
+  if (!Number.isFinite(numberValue)) {
+    return fallback;
+  }
+
+  return Math.max(1, Math.floor(numberValue));
+}
+
 function buildHistoricoQuery(query = {}) {
   const status = normalizeStatus(query.status);
 
   return {
     search: String(query.search || "").trim(),
+
     from: query.from || "",
     to: query.to || "",
-    skip: Math.max(0, Number(query.skip ?? DEFAULT_HISTORICO_QUERY.skip)),
+
+    skip: normalizeNonNegativeInteger(query.skip, DEFAULT_HISTORICO_QUERY.skip),
+
     take: Math.min(
-      Math.max(1, Number(query.take ?? DEFAULT_HISTORICO_QUERY.take)),
+      normalizePositiveInteger(query.take, DEFAULT_HISTORICO_QUERY.take),
       200,
     ),
+
     ...(status !== "TODOS" ? { status } : {}),
   };
 }
@@ -54,35 +80,54 @@ function getPedidoDecisionDate(pedido) {
 }
 
 function sortPedidosFromNewestToOldest(pedidos = []) {
-  return [...pedidos].sort((a, b) => {
-    const dateA = new Date(getPedidoDecisionDate(a)).getTime();
-    const dateB = new Date(getPedidoDecisionDate(b)).getTime();
+  return [...pedidos].sort((firstPedido, secondPedido) => {
+    const firstDate = new Date(getPedidoDecisionDate(firstPedido)).getTime();
 
-    if (dateA !== dateB) {
-      return dateB - dateA;
+    const secondDate = new Date(getPedidoDecisionDate(secondPedido)).getTime();
+
+    if (firstDate !== secondDate) {
+      return secondDate - firstDate;
     }
 
-    const numeroA = Number(a?.numero) || 0;
-    const numeroB = Number(b?.numero) || 0;
+    const firstNumero = Number(firstPedido?.numero) || 0;
 
-    return numeroB - numeroA;
+    const secondNumero = Number(secondPedido?.numero) || 0;
+
+    return secondNumero - firstNumero;
   });
 }
 
 function normalizeHistoricoResponse(response, fallbackQuery) {
   const rows = Array.isArray(response?.rows) ? response.rows : [];
 
+  const responseSkip = Number(response?.params?.skip);
+
+  const responseTake = Number(response?.params?.take);
+
   return {
     data: sortPedidosFromNewestToOldest(rows),
+
     meta: {
-      total: Number(response?.total) || 0,
-      skip: Number(response?.params?.skip ?? fallbackQuery.skip) || 0,
-      take: Number(response?.params?.take ?? fallbackQuery.take) || 50,
+      total: Math.max(0, Number(response?.total) || 0),
+
+      skip:
+        Number.isFinite(responseSkip) && responseSkip >= 0
+          ? responseSkip
+          : fallbackQuery.skip,
+
+      take:
+        Number.isFinite(responseTake) && responseTake > 0
+          ? responseTake
+          : fallbackQuery.take,
     },
+
     params: {
       search: response?.params?.search ?? fallbackQuery.search,
+
       status: response?.params?.status ?? fallbackQuery.status,
+
       from: response?.params?.from ?? fallbackQuery.from,
+
       to: response?.params?.to ?? fallbackQuery.to,
     },
   };
@@ -102,4 +147,18 @@ export async function getSantaCasaHistorico(query = {}) {
   );
 
   return normalizeHistoricoResponse(response, finalQuery);
+}
+
+export async function getSantaCasaHistoricoPedidoById(pedidoId) {
+  const normalizedPedidoId = String(pedidoId || "").trim();
+
+  if (!normalizedPedidoId) {
+    throw new Error("ID do pedido em falta.");
+  }
+
+  const response = await httpClient.get(
+    API_ENDPOINTS.santacasa.pedidoById(normalizedPedidoId),
+  );
+
+  return response?.data ?? null;
 }

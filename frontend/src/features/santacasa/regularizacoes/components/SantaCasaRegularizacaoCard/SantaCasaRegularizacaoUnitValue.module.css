@@ -1,0 +1,54 @@
+/* src/features/santacasa/regularizacoes/components/SantaCasaRegularizacaoCard/SantaCasaRegularizacaoUnitValue.module.css */
+
+.unitValue {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.3rem;
+    min-width: 0;
+    color: var(--clinic-ink-soft);
+    font-weight: 900;
+    line-height: 1;
+    text-transform: none;
+}
+
+.unitValue strong {
+    color: inherit;
+    font-size: 1.05rem;
+    font-weight: 950;
+    line-height: 1;
+}
+
+.unitValue span {
+    color: inherit;
+    font-size: 0.86rem;
+    font-weight: 850;
+    letter-spacing: -0.01em;
+    line-height: 1;
+    text-transform: none;
+}
+
+.unitValueFeatured {
+    gap: 0.42rem;
+    color: var(--clinic-warning);
+}
+
+.unitValueFeatured strong {
+    font-size: clamp(2.2rem, 4.2vw, 2.85rem);
+    letter-spacing: -0.06em;
+}
+
+.unitValueFeatured span {
+    color: var(--clinic-warning);
+    font-size: clamp(0.88rem, 1.25vw, 1rem);
+    font-weight: 850;
+    letter-spacing: -0.01em;
+    text-transform: none;
+}
+
+.unitValueSuccess {
+    color: var(--clinic-success);
+}
+
+.unitValueSuccess span {
+    color: var(--clinic-success);
+}

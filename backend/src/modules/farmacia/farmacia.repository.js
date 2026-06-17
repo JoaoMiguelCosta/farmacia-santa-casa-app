@@ -1,10 +1,12 @@
 // src/modules/farmacia/farmacia.repository.js
 const { prisma } = require("../../db/prisma");
 const { normalizeText } = require("../../shared/utils/normalize");
+const { isDateBeforeToday } = require("../../shared/utils/date");
 
 const { conflict, notFound } = require("../../shared/errors/AppError");
 
 const HISTORICO_STATUSES = Object.freeze(["VALIDADO", "REJEITADO"]);
+const CANCEL_REASON = "Cancelado automaticamente por expiração da receita.";
 
 const auditUserSelect = {
   id: true,
@@ -185,6 +187,7 @@ const pedidoActionSelect = {
           medicamentoNorm: true,
           quantidadeSolicitada: true,
           quantidadeRegularizada: true,
+          quantidadeCancelada: true,
           status: true,
           pedidoItens: {
             where: {
@@ -200,6 +203,10 @@ const pedidoActionSelect = {
     },
   },
 };
+
+function getUniqueValues(values = []) {
+  return Array.from(new Set(values.filter(Boolean)));
+}
 
 function sumPendingExcept(pedidoItens = [], currentPedidoItemId) {
   return pedidoItens.reduce((total, item) => {
@@ -221,7 +228,106 @@ function ensurePedidoPending(pedido) {
   }
 }
 
-function validateReceitaItem(item) {
+function ensurePedidoPending(pedido) {
+  if (pedido.status !== "PENDENTE") {
+    throw conflict("O pedido não está em estado PENDENTE.");
+  }
+}
+
+function findPedidoById(pedidoId) {
+  return prisma.pedido.findUnique({
+    where: {
+      id: pedidoId,
+    },
+    select: pedidoSelect,
+  });
+}
+
+function findPedidoActionById(client, pedidoId) {
+  return client.pedido.findUnique({
+    where: {
+      id: pedidoId,
+    },
+    select: pedidoActionSelect,
+  });
+}
+
+function findPedidoActionById(client, pedidoId) {
+  return client.pedido.findUnique({
+    where: {
+      id: pedidoId,
+    },
+    select: pedidoActionSelect,
+  });
+}
+
+function isReceitaLinhaExpired(linha, now) {
+  if (!linha) return false;
+
+  if (linha.status === "EXPIRADA") return true;
+
+  return isDateBeforeToday(linha.validade, now);
+}
+
+function getPendingPedidoItems(pedido) {
+  return pedido.itens.filter((item) => item.status === "PENDENTE");
+}
+
+async function cancelExpiredReceitaItemsForPedido(tx, pedido, now) {
+  const expiredReceitaItems = pedido.itens.filter((item) => {
+    return (
+      item.status === "PENDENTE" &&
+      item.tipo === "COM_RECEITA" &&
+      isReceitaLinhaExpired(item.receitaLinha, now)
+    );
+  });
+
+  if (expiredReceitaItems.length === 0) {
+    return {
+      expiredLineIds: [],
+      canceledPedidoItems: 0,
+    };
+  }
+
+  const expiredLineIds = getUniqueValues(
+    expiredReceitaItems.map((item) => item.receitaLinhaId),
+  );
+
+  const expiredPedidoItemIds = expiredReceitaItems.map((item) => item.id);
+
+  if (expiredLineIds.length > 0) {
+    await tx.receitaLinha.updateMany({
+      where: {
+        id: {
+          in: expiredLineIds,
+        },
+        status: "ATIVA",
+      },
+      data: {
+        status: "EXPIRADA",
+      },
+    });
+  }
+
+  const canceledItems = await tx.pedidoItem.updateMany({
+    where: {
+      id: {
+        in: expiredPedidoItemIds,
+      },
+      status: "PENDENTE",
+    },
+    data: {
+      status: "CANCELADO_POR_EXPIRACAO",
+    },
+  });
+
+  return {
+    expiredLineIds,
+    canceledPedidoItems: canceledItems.count,
+  };
+}
+
+function validateReceitaItem(item, now) {
   const linha = item.receitaLinha;
 
   if (!linha) {
@@ -234,7 +340,7 @@ function validateReceitaItem(item) {
     throw conflict(`Linha de receita "${linha.nome}" não está ativa.`);
   }
 
-  if (new Date(linha.validade) <= new Date()) {
+  if (isDateBeforeToday(linha.validade, now)) {
     throw conflict(`Linha de receita "${linha.nome}" está expirada.`);
   }
 
@@ -277,6 +383,20 @@ function validateSemReceitaItem(item) {
   }
 }
 
+function getExtraQuantidadeLivreDepoisDeValidarItem(item) {
+  const extra = item.extra;
+  const reservadoPorOutros = sumPendingExcept(extra.pedidoItens, item.id);
+
+  return Math.max(
+    0,
+    Number(extra.quantidadeSolicitada || 0) -
+      Number(extra.quantidadeRegularizada || 0) -
+      Number(extra.quantidadeCancelada || 0) -
+      Number(item.quantidade || 0) -
+      reservadoPorOutros,
+  );
+}
+
 function validateExtraItem(item) {
   const extra = item.extra;
 
@@ -296,6 +416,7 @@ function validateExtraItem(item) {
     0,
     Number(extra.quantidadeSolicitada || 0) -
       Number(extra.quantidadeRegularizada || 0) -
+      Number(extra.quantidadeCancelada || 0) -
       reservadoPorOutros,
   );
 
@@ -306,14 +427,14 @@ function validateExtraItem(item) {
   }
 }
 
-function validatePedidoItemsBeforeValidation(pedido) {
-  for (const item of pedido.itens) {
+function validatePedidoItemsBeforeValidation(items, now) {
+  for (const item of items) {
     if (item.status !== "PENDENTE") {
       throw conflict(`Item "${item.medicamento}" não está pendente.`);
     }
 
     if (item.tipo === "COM_RECEITA") {
-      validateReceitaItem(item);
+      validateReceitaItem(item, now);
       continue;
     }
 
@@ -555,20 +676,41 @@ async function listPedidos({ status, search, from, to, skip, take }) {
 
 async function validarPedido(pedidoId, { validatedById = null } = {}) {
   return prisma.$transaction(async (tx) => {
-    const pedido = await tx.pedido.findUnique({
-      where: {
-        id: pedidoId,
-      },
-      select: pedidoActionSelect,
-    });
+    let pedido = await findPedidoActionById(tx, pedidoId);
 
     ensurePedidoExists(pedido);
     ensurePedidoPending(pedido);
-    validatePedidoItemsBeforeValidation(pedido);
 
     const now = new Date();
 
-    for (const item of pedido.itens) {
+    await cancelExpiredReceitaItemsForPedido(tx, pedido, now);
+
+    pedido = await findPedidoActionById(tx, pedidoId);
+
+    const pendingItems = getPendingPedidoItems(pedido);
+
+    if (pendingItems.length === 0) {
+      await tx.pedido.update({
+        where: {
+          id: pedido.id,
+        },
+        data: {
+          status: "CANCELADO",
+          closedReason: CANCEL_REASON,
+        },
+      });
+
+      return tx.pedido.findUnique({
+        where: {
+          id: pedido.id,
+        },
+        select: pedidoSelect,
+      });
+    }
+
+    validatePedidoItemsBeforeValidation(pendingItems, now);
+
+    for (const item of pendingItems) {
       if (item.tipo === "COM_RECEITA") {
         await tx.dispensa.create({
           data: {
@@ -609,6 +751,8 @@ async function validarPedido(pedidoId, { validatedById = null } = {}) {
 
       if (item.tipo === "EXTRA") {
         const extra = item.extra;
+        const quantidadeLivreParaFechar =
+          getExtraQuantidadeLivreDepoisDeValidarItem(item);
 
         await tx.regularizacaoExtra.create({
           data: {
@@ -624,19 +768,15 @@ async function validarPedido(pedidoId, { validatedById = null } = {}) {
           },
         });
 
-        const restanteExtra = Math.max(
-          0,
-          Number(extra.quantidadeSolicitada || 0) -
-            Number(item.quantidade || 0),
-        );
-
         await tx.extra.update({
           where: {
             id: extra.id,
           },
           data: {
-            quantidadeSolicitada: restanteExtra,
-            status: restanteExtra > 0 ? "PENDENTE" : "REGULARIZADO",
+            quantidadeCancelada: {
+              increment: quantidadeLivreParaFechar,
+            },
+            status: "REGULARIZADO",
           },
         });
       }
@@ -832,6 +972,7 @@ async function getDashboardSignals() {
 }
 
 module.exports = {
+  findPedidoById,
   listPedidos,
   validarPedido,
   rejeitarPedido,

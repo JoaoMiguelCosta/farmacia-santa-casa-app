@@ -1,0 +1,330 @@
+/* src/features/farmacia/historico/components/FarmaciaHistoricoFilters/FarmaciaHistoricoFilters.module.css */
+
+.filters {
+    display: grid;
+    gap: 1rem;
+    padding: clamp(0.95rem, 2vw, 1.15rem);
+    border: 1px solid var(--clinic-border);
+    border-inline-start: 4px solid var(--clinic-green-700);
+    border-radius: var(--clinic-radius-lg);
+    background: var(--clinic-surface);
+    box-shadow: var(--clinic-shadow-soft);
+}
+
+.statusRow {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.statusGroup {
+    display: grid;
+    gap: 0.55rem;
+    min-width: 0;
+}
+
+.groupLabel,
+.searchField>span,
+.dateField>span {
+    color: var(--clinic-muted);
+    font-size: var(--clinic-font-size-xs);
+    font-weight: 800;
+    letter-spacing: 0.055em;
+    line-height: 1.2;
+    text-transform: uppercase;
+}
+
+.statusOptions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.statusButton {
+    min-height: 2.45rem;
+    padding: 0.62rem 0.85rem;
+    border: 1px solid var(--clinic-border);
+    border-radius: var(--clinic-radius-md);
+    background: var(--clinic-white);
+    color: var(--clinic-muted-strong);
+    font: inherit;
+    font-size: var(--clinic-font-size-sm);
+    font-weight: 800;
+    cursor: pointer;
+    transition:
+        transform var(--clinic-transition),
+        border-color var(--clinic-transition),
+        background var(--clinic-transition),
+        box-shadow var(--clinic-transition),
+        color var(--clinic-transition),
+        opacity var(--clinic-transition);
+}
+
+.statusButton:hover:not(:disabled) {
+    transform: translateY(-1px);
+    border-color: var(--clinic-border-strong);
+    background: var(--clinic-mist);
+    box-shadow: var(--clinic-shadow-soft);
+}
+
+.statusButton[data-active="true"] {
+    border-color: var(--clinic-green-700);
+    background: var(--clinic-green-700);
+    color: var(--clinic-white);
+    box-shadow:
+        0 6px 16px rgba(31, 95, 81, 0.16);
+}
+
+.statusButton[data-status="VALIDADO"][data-active="true"] {
+    border-color: var(--clinic-success);
+    background: var(--clinic-success);
+}
+
+.statusButton[data-status="REJEITADO"][data-active="true"] {
+    border-color: var(--clinic-danger);
+    background: var(--clinic-danger);
+}
+
+.statusButton:focus-visible,
+.clearButton:focus-visible,
+.submitButton:focus-visible {
+    outline: 3px solid rgba(31, 95, 81, 0.22);
+    outline-offset: 3px;
+}
+
+.statusButton[data-status="REJEITADO"]:focus-visible {
+    outline-color:
+        rgba(180, 35, 24, 0.22);
+}
+
+.statusButton:disabled,
+.clearButton:disabled,
+.submitButton:disabled {
+    cursor: not-allowed;
+    opacity: 0.52;
+    transform: none;
+    box-shadow: none;
+}
+
+.total {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: baseline;
+    gap: 0.38rem;
+    min-height: 2.65rem;
+    padding: 0.58rem 0.8rem;
+    border: 1px solid rgba(31, 95, 81, 0.2);
+    border-radius: var(--clinic-radius-md);
+    background: rgba(31, 95, 81, 0.07);
+    color: var(--clinic-green-700);
+    white-space: nowrap;
+}
+
+.total strong {
+    font-size: 1.1rem;
+    line-height: 1;
+}
+
+.total span {
+    font-size: var(--clinic-font-size-xs);
+    font-weight: 750;
+}
+
+.form {
+    display: grid;
+    grid-template-columns:
+        minmax(16rem, 1.5fr) minmax(10rem, 0.75fr) minmax(10rem, 0.75fr) auto;
+    align-items: end;
+    gap: 0.7rem;
+}
+
+.searchField,
+.dateField {
+    display: grid;
+    gap: 0.38rem;
+    min-width: 0;
+}
+
+.searchField input,
+.dateField input {
+    min-height: 2.7rem;
+    inline-size: 100%;
+    padding: 0.68rem 0.8rem;
+    border: 1px solid var(--clinic-border-strong);
+    border-radius: var(--clinic-radius-md);
+    background: var(--clinic-white);
+    color: var(--clinic-ink);
+    font: inherit;
+    font-size: var(--clinic-font-size-sm);
+    transition:
+        border-color var(--clinic-transition),
+        background var(--clinic-transition),
+        box-shadow var(--clinic-transition),
+        opacity var(--clinic-transition);
+}
+
+.searchField input::placeholder {
+    color: var(--clinic-muted);
+}
+
+.searchField input:focus,
+.dateField input:focus {
+    outline: none;
+    border-color: var(--clinic-green-600);
+    box-shadow:
+        0 0 0 3px rgba(31, 95, 81, 0.12);
+}
+
+.dateField input[aria-invalid="true"] {
+    border-color: var(--clinic-danger);
+    background: rgba(180, 35, 24, 0.035);
+    box-shadow:
+        0 0 0 3px rgba(180, 35, 24, 0.09);
+}
+
+.dateField input[aria-invalid="true"]:focus {
+    border-color: var(--clinic-danger);
+    box-shadow:
+        0 0 0 3px rgba(180, 35, 24, 0.14);
+}
+
+.searchField input:disabled,
+.dateField input:disabled {
+    cursor: not-allowed;
+    opacity: 0.58;
+}
+
+.actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.clearButton,
+.submitButton {
+    min-height: 2.7rem;
+    padding: 0.68rem 0.9rem;
+    border-radius: var(--clinic-radius-md);
+    font: inherit;
+    font-size: var(--clinic-font-size-sm);
+    font-weight: 800;
+    white-space: nowrap;
+    cursor: pointer;
+    transition:
+        transform var(--clinic-transition),
+        border-color var(--clinic-transition),
+        background var(--clinic-transition),
+        box-shadow var(--clinic-transition),
+        color var(--clinic-transition),
+        opacity var(--clinic-transition);
+}
+
+.clearButton {
+    border: 1px solid rgba(31, 95, 81, 0.22);
+    background: var(--clinic-white);
+    color: var(--clinic-green-700);
+}
+
+.submitButton {
+    border: 1px solid var(--clinic-green-700);
+    background: var(--clinic-green-700);
+    color: var(--clinic-white);
+    box-shadow:
+        0 6px 16px rgba(31, 95, 81, 0.14);
+}
+
+.clearButton:hover:not(:disabled),
+.submitButton:hover:not(:disabled) {
+    transform: translateY(-1px);
+}
+
+.clearButton:hover:not(:disabled) {
+    border-color:
+        rgba(31, 95, 81, 0.38);
+    background: var(--clinic-mist);
+    box-shadow: var(--clinic-shadow-soft);
+}
+
+.submitButton:hover:not(:disabled) {
+    border-color: var(--clinic-green-800);
+    background: var(--clinic-green-800);
+    box-shadow:
+        0 8px 20px rgba(31, 95, 81, 0.18);
+}
+
+.dateError {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    min-height: 2.5rem;
+    margin: 0;
+    padding: 0.6rem 0.75rem;
+    border: 1px solid rgba(180, 35, 24, 0.2);
+    border-inline-start: 3px solid var(--clinic-danger);
+    border-radius:
+        0 var(--clinic-radius-sm) var(--clinic-radius-sm) 0;
+    background: rgba(180, 35, 24, 0.055);
+    color: var(--clinic-danger);
+    font-size: var(--clinic-font-size-xs);
+    font-weight: 750;
+    line-height: 1.45;
+}
+
+@media (max-width: 980px) {
+    .form {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+
+    .searchField {
+        grid-column: 1 / -1;
+    }
+
+    .actions {
+        justify-content: flex-end;
+    }
+}
+
+@media (max-width: 680px) {
+    .statusRow {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .total {
+        justify-content: center;
+        width: 100%;
+    }
+
+    .form {
+        grid-template-columns: 1fr;
+    }
+
+    .searchField {
+        grid-column: auto;
+    }
+
+    .actions {
+        width: 100%;
+    }
+
+    .clearButton,
+    .submitButton {
+        flex: 1 1 0;
+    }
+}
+
+@media (max-width: 440px) {
+
+    .statusOptions,
+    .actions {
+        display: grid;
+        grid-template-columns: 1fr;
+    }
+
+    .statusButton,
+    .clearButton,
+    .submitButton {
+        width: 100%;
+    }
+}

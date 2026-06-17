@@ -1,16 +1,20 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+// src/features/santacasa/pedidos/hooks/useSantaCasaPedidosPendentes.js
+
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+
+import { useSearchParams } from "react-router-dom";
 
 import { useAuth } from "../../../auth/hooks/useAuth";
 
-import { cancelPedido, getPedidosPendentes } from "../api/pedidosApi";
+import { getPedidosPendentes } from "../api/pedidosApi";
 
 import { PEDIDOS_PAGE } from "../config/pedidosPage.config";
 
-const DEFAULT_QUERY = Object.freeze({
-  search: "",
-  skip: 0,
-  take: 50,
-});
+import {
+  buildSantaCasaPedidosSearchParams,
+  getSantaCasaPedidosQueryFromSearchParams,
+  SANTACASA_PEDIDOS_DEFAULT_QUERY,
+} from "../utils/santaCasaPedidosQuery.utils";
 
 function getErrorMessage(error, fallback) {
   return error?.message || fallback;
@@ -19,43 +23,83 @@ function getErrorMessage(error, fallback) {
 function getInitialMeta() {
   return {
     total: 0,
-    skip: DEFAULT_QUERY.skip,
-    take: DEFAULT_QUERY.take,
+    skip: 0,
+    take: SANTACASA_PEDIDOS_DEFAULT_QUERY.take,
+  };
+}
+
+function getSafeMeta(meta) {
+  const total = Number(meta?.total);
+  const skip = Number(meta?.skip);
+  const take = Number(meta?.take);
+
+  return {
+    total: Number.isFinite(total) && total >= 0 ? total : 0,
+
+    skip: Number.isFinite(skip) && skip >= 0 ? skip : 0,
+
+    take:
+      Number.isFinite(take) && take > 0
+        ? take
+        : SANTACASA_PEDIDOS_DEFAULT_QUERY.take,
   };
 }
 
 export function useSantaCasaPedidosPendentes() {
   const { handleAuthError } = useAuth();
 
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const isMountedRef = useRef(true);
+  const latestRequestIdRef = useRef(0);
+
+  const currentQuery = useMemo(() => {
+    return getSantaCasaPedidosQueryFromSearchParams(searchParams);
+  }, [searchParams]);
+
   const [pedidos, setPedidos] = useState([]);
+
   const [meta, setMeta] = useState(getInitialMeta);
 
-  const [query, setQuery] = useState(DEFAULT_QUERY);
-  const [searchInput, setSearchInput] = useState(DEFAULT_QUERY.search);
-
-  const [pedidoToCancel, setPedidoToCancel] = useState(null);
+  const [searchInput, setSearchInput] = useState(() => currentQuery.search);
 
   const [isLoading, setIsLoading] = useState(true);
+
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [isCanceling, setIsCanceling] = useState(false);
 
   const [error, setError] = useState(null);
-  const [feedback, setFeedback] = useState(null);
 
-  const currentQuery = useMemo(() => query, [query]);
-  const pedidoToCancelId = pedidoToCancel?.id;
+  const safeMeta = getSafeMeta(meta);
 
-  const totalPages = Math.max(1, Math.ceil(meta.total / meta.take));
-  const currentPage = Math.min(
-    totalPages,
-    Math.floor(meta.skip / meta.take) + 1,
+  const totalPages = Math.max(1, Math.ceil(safeMeta.total / safeMeta.take));
+
+  const currentPage = Math.min(totalPages, currentQuery.page);
+
+  const hasPreviousPage = currentQuery.page > 1;
+
+  const hasNextPage = safeMeta.skip + safeMeta.take < safeMeta.total;
+
+  const updateSearchParams = useCallback(
+    ({ search, page, replace = false }) => {
+      const nextSearchParams = buildSantaCasaPedidosSearchParams({
+        currentSearchParams: searchParams,
+        search,
+        page,
+      });
+
+      setSearchParams(nextSearchParams, {
+        replace,
+      });
+    },
+    [searchParams, setSearchParams],
   );
-
-  const hasPreviousPage = meta.skip > 0;
-  const hasNextPage = meta.skip + meta.take < meta.total;
 
   const loadPendentes = useCallback(
     async ({ showRefreshing = false } = {}) => {
+      const requestId = latestRequestIdRef.current + 1;
+
+      latestRequestIdRef.current = requestId;
+
       if (showRefreshing) {
         setIsRefreshing(true);
       } else {
@@ -67,27 +111,38 @@ export function useSantaCasaPedidosPendentes() {
       try {
         const result = await getPedidosPendentes(currentQuery);
 
+        if (!isMountedRef.current || requestId !== latestRequestIdRef.current) {
+          return;
+        }
+
         setPedidos(result.data);
         setMeta(result.meta);
       } catch (loadError) {
-        if (handleAuthError(loadError)) return;
+        if (!isMountedRef.current || requestId !== latestRequestIdRef.current) {
+          return;
+        }
+
+        if (handleAuthError(loadError)) {
+          return;
+        }
 
         setError(
-          getErrorMessage(
-            loadError,
-            "Não foi possível carregar os pedidos pendentes.",
-          ),
+          getErrorMessage(loadError, PEDIDOS_PAGE.sections.pending.errorTitle),
         );
       } finally {
-        setIsLoading(false);
-        setIsRefreshing(false);
+        if (isMountedRef.current && requestId === latestRequestIdRef.current) {
+          setIsLoading(false);
+          setIsRefreshing(false);
+        }
       }
     },
     [currentQuery, handleAuthError],
   );
 
   const refreshPendentes = useCallback(async () => {
-    await loadPendentes({ showRefreshing: true });
+    await loadPendentes({
+      showRefreshing: true,
+    });
   }, [loadPendentes]);
 
   const updateSearchInput = useCallback((value) => {
@@ -95,153 +150,131 @@ export function useSantaCasaPedidosPendentes() {
   }, []);
 
   const applyFilters = useCallback(() => {
-    setQuery((currentQueryValue) => ({
-      ...currentQueryValue,
-      search: searchInput,
-      skip: 0,
-    }));
-  }, [searchInput]);
+    const normalizedSearch = String(searchInput || "").trim();
+
+    const isSameQuery =
+      normalizedSearch === currentQuery.search && currentQuery.page === 1;
+
+    if (isSameQuery) {
+      void loadPendentes({
+        showRefreshing: true,
+      });
+
+      return;
+    }
+
+    updateSearchParams({
+      search: normalizedSearch,
+      page: 1,
+    });
+  }, [
+    currentQuery.page,
+    currentQuery.search,
+    loadPendentes,
+    searchInput,
+    updateSearchParams,
+  ]);
 
   const clearFilters = useCallback(() => {
-    setSearchInput(DEFAULT_QUERY.search);
-    setQuery({
-      ...DEFAULT_QUERY,
+    setSearchInput("");
+
+    const isAlreadyClear =
+      currentQuery.search === "" && currentQuery.page === 1;
+
+    if (isAlreadyClear) {
+      void loadPendentes({
+        showRefreshing: true,
+      });
+
+      return;
+    }
+
+    updateSearchParams({
+      search: "",
+      page: 1,
     });
-  }, []);
+  }, [
+    currentQuery.page,
+    currentQuery.search,
+    loadPendentes,
+    updateSearchParams,
+  ]);
 
   const goToPreviousPage = useCallback(() => {
-    setQuery((currentQueryValue) => ({
-      ...currentQueryValue,
-      skip: Math.max(
-        0,
-        Number(currentQueryValue.skip || 0) -
-          Number(currentQueryValue.take || DEFAULT_QUERY.take),
-      ),
-    }));
-  }, []);
+    if (!hasPreviousPage) {
+      return;
+    }
+
+    updateSearchParams({
+      search: currentQuery.search,
+
+      page: Math.max(1, currentQuery.page - 1),
+    });
+  }, [
+    currentQuery.page,
+    currentQuery.search,
+    hasPreviousPage,
+    updateSearchParams,
+  ]);
 
   const goToNextPage = useCallback(() => {
-    setQuery((currentQueryValue) => {
-      const currentSkip = Number(currentQueryValue.skip || 0);
-      const currentTake = Number(currentQueryValue.take || DEFAULT_QUERY.take);
-      const nextSkip = currentSkip + currentTake;
-
-      if (nextSkip >= meta.total) {
-        return currentQueryValue;
-      }
-
-      return {
-        ...currentQueryValue,
-        skip: nextSkip,
-      };
-    });
-  }, [meta.total]);
-
-  const requestCancelPedido = useCallback((pedido) => {
-    setPedidoToCancel(pedido);
-  }, []);
-
-  const cancelCancelPedido = useCallback(() => {
-    if (isCanceling) return;
-
-    setPedidoToCancel(null);
-  }, [isCanceling]);
-
-  const confirmCancelPedido = useCallback(async () => {
-    if (!pedidoToCancelId) return;
-
-    setIsCanceling(true);
-    setFeedback(null);
-
-    try {
-      await cancelPedido(pedidoToCancelId, {
-        reason: PEDIDOS_PAGE.cancelDialog.reason,
-      });
-
-      setPedidoToCancel(null);
-
-      setFeedback({
-        type: "success",
-        message: PEDIDOS_PAGE.feedback.cancelSuccess,
-      });
-
-      await loadPendentes({ showRefreshing: true });
-    } catch (cancelError) {
-      if (handleAuthError(cancelError)) return;
-
-      setFeedback({
-        type: "error",
-        message: getErrorMessage(
-          cancelError,
-          PEDIDOS_PAGE.feedback.genericError,
-        ),
-      });
-    } finally {
-      setIsCanceling(false);
+    if (!hasNextPage) {
+      return;
     }
-  }, [handleAuthError, loadPendentes, pedidoToCancelId]);
 
-  const clearFeedback = useCallback(() => {
-    setFeedback(null);
+    updateSearchParams({
+      search: currentQuery.search,
+      page: currentQuery.page + 1,
+    });
+  }, [currentQuery.page, currentQuery.search, hasNextPage, updateSearchParams]);
+
+  useEffect(() => {
+    isMountedRef.current = true;
+
+    return () => {
+      isMountedRef.current = false;
+      latestRequestIdRef.current += 1;
+    };
   }, []);
 
   useEffect(() => {
-    let isMounted = true;
-
-    async function loadInitialPendentes() {
-      setIsLoading(true);
-      setError(null);
-
-      try {
-        const result = await getPedidosPendentes(currentQuery);
-
-        if (!isMounted) return;
-
-        setPedidos(result.data);
-        setMeta(result.meta);
-      } catch (loadError) {
-        if (!isMounted) return;
-        if (handleAuthError(loadError)) return;
-
-        setError(
-          getErrorMessage(
-            loadError,
-            "Não foi possível carregar os pedidos pendentes.",
-          ),
-        );
-      } finally {
-        if (isMounted) {
-          setIsLoading(false);
-        }
-      }
-    }
-
-    loadInitialPendentes();
+    const timeoutId = window.setTimeout(() => {
+      setSearchInput(currentQuery.search);
+    }, 0);
 
     return () => {
-      isMounted = false;
+      window.clearTimeout(timeoutId);
     };
-  }, [currentQuery, handleAuthError]);
+  }, [currentQuery.search]);
+
+  useEffect(() => {
+    const timeoutId = window.setTimeout(() => {
+      void loadPendentes();
+    }, 0);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+      latestRequestIdRef.current += 1;
+    };
+  }, [loadPendentes]);
 
   return {
     pedidos,
     meta,
-    query,
 
+    query: currentQuery,
     searchInput,
-    pedidoToCancel,
 
     currentPage,
     totalPages,
+
     hasPreviousPage,
     hasNextPage,
 
     isLoading,
     isRefreshing,
-    isCanceling,
 
     error,
-    feedback,
 
     loadPendentes,
     refreshPendentes,
@@ -249,13 +282,8 @@ export function useSantaCasaPedidosPendentes() {
     updateSearchInput,
     applyFilters,
     clearFilters,
+
     goToPreviousPage,
     goToNextPage,
-
-    requestCancelPedido,
-    cancelCancelPedido,
-    confirmCancelPedido,
-
-    clearFeedback,
   };
 }

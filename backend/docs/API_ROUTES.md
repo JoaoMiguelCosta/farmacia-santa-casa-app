@@ -22,10 +22,37 @@ A aplicação está organizada por contextos funcionais:
 /api/farmacia
 /api/admin
 /api/manutencao
+/api/health/live
+/api/health/ready
 /api/health
 ```
 
 A autenticação é feita através de **JWT guardado em cookie HTTP-only**.
+
+### Headers transversais
+
+Todas as respostas incluem o header:
+
+```txt
+X-Request-Id
+```
+
+Regras:
+
+* se o cliente enviar `X-Request-Id` válido, o backend preserva esse valor;
+* se o cliente não enviar, o backend gera um identificador;
+* o header também é devolvido em respostas de erro;
+* em CORS, o backend expõe o header através de `Access-Control-Expose-Headers`.
+
+A API também aplica security headers HTTP através de `helmet`, incluindo proteções base como:
+
+```txt
+X-Content-Type-Options
+Referrer-Policy
+X-Frame-Options
+Cross-Origin-Resource-Policy
+Content-Security-Policy
+```
 
 ---
 
@@ -49,7 +76,9 @@ AUTH_COOKIE_NAME
 
 ### Credenciais no frontend
 
-Como a autenticação usa cookies, os pedidos do frontend devem incluir credenciais:
+Como a autenticação usa cookies, os pedidos do frontend devem incluir credenciais.
+
+Com `fetch`:
 
 ```js
 fetch(url, {
@@ -77,14 +106,16 @@ FARMACIA
 
 ### Matriz geral de acesso
 
-| Contexto | Roles autorizadas |
-|---|---|
-| `/api/auth` | Público em login/logout; `/me` exige sessão válida |
-| `/api/santacasa` | `SANTACASA`, `ADMIN` |
-| `/api/farmacia` | `FARMACIA`, `ADMIN` |
-| `/api/admin` | `ADMIN` |
-| `/api/manutencao` | `ADMIN` |
-| `/api/health` | `ADMIN` |
+| Contexto          | Roles autorizadas                                  |
+| ----------------- | -------------------------------------------------- |
+| `/api/auth`       | Público em login/logout; `/me` exige sessão válida |
+| `/api/santacasa`  | `SANTACASA`, `ADMIN`                               |
+| `/api/farmacia`   | `FARMACIA`, `ADMIN`                                |
+| `/api/admin`      | `ADMIN`                                            |
+| `/api/manutencao` | `ADMIN`                                            |
+| `/api/health/live`  | Público                                         |
+| `/api/health/ready` | Público                                         |
+| `/api/health`       | `ADMIN`                                        |
 
 ---
 
@@ -101,17 +132,32 @@ A API devolve erros neste formato:
 
 Em ambiente de desenvolvimento, alguns erros podem incluir `details`.
 
+O header `X-Request-Id` é sempre devolvido, incluindo em respostas de erro, para apoio a diagnóstico técnico.
+
+Rotas inexistentes devolvem também o `path`:
+
+```json
+{
+  "error": "ROUTE_NOT_FOUND",
+  "message": "Rota não encontrada.",
+  "path": "/api/rota-inexistente"
+}
+```
+
 ### Códigos comuns
 
-| HTTP | Código | Significado |
-|---:|---|---|
-| 400 | `BAD_REQUEST` | Payload/query inválido |
-| 401 | `UNAUTHORIZED` | Sessão inexistente, inválida ou expirada |
-| 403 | `FORBIDDEN` | Role sem permissão ou origem bloqueada |
-| 404 | `NOT_FOUND` | Recurso inexistente |
-| 409 | `CONFLICT` | Regra de negócio violada |
-| 429 | `TOO_MANY_REQUESTS` | Demasiadas tentativas de login |
-| 500 | `INTERNAL_ERROR` | Erro interno |
+| HTTP | Código                   | Significado                              |
+| ---: | ------------------------ | ---------------------------------------- |
+|  400 | `BAD_REQUEST`            | Payload/query inválido                   |
+|  401 | `UNAUTHORIZED`           | Sessão inexistente, inválida ou expirada |
+|  403 | `FORBIDDEN`              | Role sem permissão ou origem bloqueada   |
+|  404 | `NOT_FOUND`              | Recurso inexistente                      |
+|  404 | `ROUTE_NOT_FOUND`        | Rota inexistente                         |
+|  409 | `CONFLICT`               | Regra de negócio violada                 |
+|  409 | `UNIQUE_VIOLATION`       | Violação de unicidade Prisma             |
+|  409 | `FOREIGN_KEY_CONSTRAINT` | Dependências existentes                  |
+|  429 | `TOO_MANY_REQUESTS`      | Demasiadas tentativas de login           |
+|  500 | `INTERNAL_ERROR`         | Erro interno                             |
 
 ---
 
@@ -158,16 +204,18 @@ Público.
 
 #### Efeitos
 
-- Cria cookie HTTP-only com token JWT.
-- Rejeita utilizadores inexistentes, inativos ou com password inválida.
-- Aplica rate limit por IP/email.
+* Cria cookie HTTP-only com token JWT.
+* Rejeita utilizadores inexistentes, inativos ou com password inválida.
+* Aplica rate limit por IP/email.
+* Não devolve `password` nem `passwordHash`.
 
 #### Erros comuns
 
-| HTTP | Motivo |
-|---:|---|
-| 401 | Credenciais inválidas |
-| 429 | Demasiadas tentativas de login |
+| HTTP | Motivo                         |
+| ---: | ------------------------------ |
+|  400 | Email/password inválidos       |
+|  401 | Credenciais inválidas          |
+|  429 | Demasiadas tentativas de login |
 
 ---
 
@@ -193,7 +241,8 @@ Não requer body.
 
 #### Efeitos
 
-- Limpa o cookie de sessão.
+* Limpa o cookie de sessão.
+* É permitido mesmo sem sessão ativa.
 
 ---
 
@@ -221,17 +270,96 @@ Sessão válida.
 
 #### Erros comuns
 
-| HTTP | Motivo |
-|---:|---|
-| 401 | Sessão em falta, inválida ou expirada |
+| HTTP | Motivo                                |
+| ---: | ------------------------------------- |
+|  401 | Sessão em falta, inválida ou expirada |
+|  401 | Utilizador inválido ou inativo        |
 
 ---
 
-## 6. Health check global
+## 6. Health checks
+
+Existem três endpoints de health:
+
+```txt
+/api/health/live
+/api/health/ready
+/api/health
+```
+
+---
+
+### GET `/api/health/live`
+
+Confirma que o processo Node está vivo.
+
+#### Acesso
+
+Público.
+
+#### Resposta `200`
+
+```json
+{
+  "status": "ok",
+  "service": "farmacia-santacasa-api",
+  "check": "live",
+  "timestamp": "2026-06-17T00:00:00.000Z"
+}
+```
+
+Uso recomendado:
+
+* liveness probe;
+* reverse proxy;
+* plataforma de deploy;
+* confirmação simples de processo ativo.
+
+---
+
+### GET `/api/health/ready`
+
+Confirma que a API está pronta e que consegue comunicar com a base de dados.
+
+#### Acesso
+
+Público.
+
+#### Resposta `200`
+
+```json
+{
+  "status": "ok",
+  "service": "farmacia-santacasa-api",
+  "check": "ready",
+  "database": "ok",
+  "timestamp": "2026-06-17T00:00:00.000Z"
+}
+```
+
+#### Resposta `503`
+
+```json
+{
+  "status": "error",
+  "service": "farmacia-santacasa-api",
+  "check": "ready",
+  "database": "unavailable",
+  "timestamp": "2026-06-17T00:00:00.000Z"
+}
+```
+
+Uso recomendado:
+
+* readiness probe;
+* validação após deploy;
+* confirmação de ligação à base de dados.
+
+---
 
 ### GET `/api/health`
 
-Verifica estado geral da API.
+Verifica estado geral da API para uso administrativo.
 
 #### Acesso
 
@@ -243,11 +371,11 @@ Verifica estado geral da API.
 {
   "status": "ok",
   "service": "farmacia-santacasa-api",
-  "timestamp": "2026-05-28T00:00:00.000Z"
+  "timestamp": "2026-06-17T00:00:00.000Z"
 }
 ```
 
----
+# 7. Rotas Santa Casa
 
 # 7. Rotas Santa Casa
 
@@ -265,7 +393,7 @@ SANTACASA, ADMIN
 
 ---
 
-## 7.1 Dashboard Santa Casa
+## 7.1 Health e Dashboard Santa Casa
 
 ### GET `/api/santacasa/health`
 
@@ -339,12 +467,12 @@ Lista utentes.
 
 #### Query params
 
-| Parâmetro | Tipo | Default | Descrição |
-|---|---:|---|---|
-| `status` | string | `ATIVO` | `ATIVO`, `ARQUIVADO`, `TODOS` |
-| `search` | string | `""` | Pesquisa por nome ou número de utente |
-| `skip` | number | `0` | Offset |
-| `take` | number | `50` | Limite, máximo `100` |
+| Parâmetro |   Tipo | Default | Descrição                             |
+| --------- | -----: | ------- | ------------------------------------- |
+| `status`  | string | `ATIVO` | `ATIVO`, `ARQUIVADO`, `TODOS`         |
+| `search`  | string | `""`    | Pesquisa por nome ou número de utente |
+| `skip`    | number | `0`     | Offset                                |
+| `take`    | number | `50`    | Limite, máximo `100`                  |
 
 #### Exemplo
 
@@ -371,8 +499,8 @@ GET /api/santacasa/utentes?status=ATIVO&search=joao&skip=0&take=50
         "isValid": true,
         "invalidReason": null,
         "deletedAt": null,
-        "createdAt": "2026-05-28T00:00:00.000Z",
-        "updatedAt": "2026-05-28T00:00:00.000Z"
+        "createdAt": "2026-06-16T00:00:00.000Z",
+        "updatedAt": "2026-06-16T00:00:00.000Z"
       }
     ],
     "total": 1,
@@ -409,17 +537,17 @@ Obtém detalhe de um utente.
     "isValid": true,
     "invalidReason": null,
     "deletedAt": null,
-    "createdAt": "2026-05-28T00:00:00.000Z",
-    "updatedAt": "2026-05-28T00:00:00.000Z"
+    "createdAt": "2026-06-16T00:00:00.000Z",
+    "updatedAt": "2026-06-16T00:00:00.000Z"
   }
 }
 ```
 
 #### Erros comuns
 
-| HTTP | Motivo |
-|---:|---|
-| 404 | Utente não encontrado |
+| HTTP | Motivo                |
+| ---: | --------------------- |
+|  404 | Utente não encontrado |
 
 ---
 
@@ -438,10 +566,12 @@ Cria utente.
 
 #### Validações
 
-- `numero9` deve ter exatamente 9 dígitos.
-- `nome` é obrigatório.
-- Não pode existir outro utente não removido com o mesmo nome.
-- Não pode existir outro utente com o mesmo `numero9`, mesmo que removido.
+* `numero9` deve ter exatamente 9 dígitos.
+* `nome` é obrigatório.
+* Não pode existir outro utente ativo com o mesmo `numero9`.
+* Não pode existir utente arquivado com o mesmo nome.
+* Não pode existir utente arquivado com o mesmo `numero9`.
+* Não pode reutilizar `numero9` de utente removido logicamente.
 
 #### Resposta `201`
 
@@ -451,17 +581,20 @@ Cria utente.
     "id": "cuid",
     "numero9": "123456789",
     "nome": "João Costa",
-    "status": "ATIVO"
+    "status": "ATIVO",
+    "isArchived": false,
+    "isValid": true,
+    "deletedAt": null
   }
 }
 ```
 
 #### Erros comuns
 
-| HTTP | Motivo |
-|---:|---|
-| 400 | Número ou nome inválido |
-| 409 | Utente duplicado |
+| HTTP | Motivo                  |
+| ---: | ----------------------- |
+|  400 | Número ou nome inválido |
+|  409 | Utente duplicado        |
 
 ---
 
@@ -487,10 +620,10 @@ Também é aceite:
 
 #### Validações
 
-- Utente tem de existir.
-- Utente não pode estar removido.
-- Utente não pode já estar arquivado.
-- Não pode ter pendências operacionais abertas.
+* Utente tem de existir.
+* Utente não pode estar removido.
+* Utente não pode já estar arquivado.
+* Não pode ter pendências operacionais abertas.
 
 #### Resposta `200`
 
@@ -498,9 +631,19 @@ Também é aceite:
 {
   "data": {
     "id": "cuid",
+    "numero9": "123456789",
+    "nome": "João Costa",
     "status": "ARQUIVADO",
     "isArchived": true,
-    "archivedReason": "Deixou de ser acompanhado pela instituição."
+    "archivedAt": "2026-06-16T00:00:00.000Z",
+    "archivedReason": "Deixou de ser acompanhado pela instituição.",
+    "archivedById": "userId",
+    "archivedBy": {
+      "id": "userId",
+      "name": "Santa Casa",
+      "email": "santacasa@sistema.local",
+      "role": "SANTACASA"
+    }
   }
 }
 ```
@@ -525,7 +668,8 @@ Não requer body.
     "isArchived": false,
     "archivedAt": null,
     "archivedReason": null,
-    "archivedById": null
+    "archivedById": null,
+    "archivedBy": null
   }
 }
 ```
@@ -538,9 +682,11 @@ Remove logicamente um utente sem dependências.
 
 #### Regras
 
-- Não apaga fisicamente o registo.
-- Define `deletedAt`.
-- Só é permitido se não existirem dados associados relevantes.
+* Não apaga fisicamente o registo.
+* Define `deletedAt`.
+* Define `isValid` como `false`.
+* Só é permitido se não existirem dados associados relevantes.
+* Se existirem dados associados, deve ser usado arquivo em vez de remoção.
 
 #### Resposta `204`
 
@@ -548,13 +694,109 @@ Sem body.
 
 #### Erros comuns
 
-| HTTP | Motivo |
-|---:|---|
-| 409 | Utente tem dados associados |
+| HTTP | Motivo                      |
+| ---: | --------------------------- |
+|  409 | Utente tem dados associados |
 
 ---
 
-## 7.3 Receitas
+## 7.3 Medicação Habitual
+
+Prefixo:
+
+```txt
+/api/santacasa/utentes/:utenteId/medicacao-habitual
+```
+
+---
+
+### GET `/api/santacasa/utentes/:utenteId/medicacao-habitual`
+
+Lista a medicação habitual do utente.
+
+#### Resposta `200`
+
+```json
+{
+  "data": [
+    {
+      "id": "cuid",
+      "utenteId": "cuid",
+      "medicamento": "Cipralex",
+      "createdAt": "2026-06-16T00:00:00.000Z",
+      "updatedAt": "2026-06-16T00:00:00.000Z"
+    }
+  ]
+}
+```
+
+---
+
+### POST `/api/santacasa/utentes/:utenteId/medicacao-habitual`
+
+Cria medicação habitual para o utente.
+
+#### Body
+
+```json
+{
+  "medicamento": "Cipralex"
+}
+```
+
+Também é aceite:
+
+```json
+{
+  "nome": "Cipralex"
+}
+```
+
+#### Regras
+
+* Utente tem de estar operacional.
+* Medicamento é obrigatório.
+* Medicamento tem limite de 160 caracteres.
+* Não pode existir medicamento duplicado para o mesmo utente.
+* A duplicação é comparada por texto normalizado.
+
+#### Resposta `201`
+
+```json
+{
+  "data": {
+    "id": "cuid",
+    "utenteId": "cuid",
+    "medicamento": "Cipralex",
+    "createdAt": "2026-06-16T00:00:00.000Z",
+    "updatedAt": "2026-06-16T00:00:00.000Z"
+  }
+}
+```
+
+---
+
+### DELETE `/api/santacasa/utentes/:utenteId/medicacao-habitual/:medicacaoId`
+
+Remove um item de medicação habitual.
+
+#### Resposta `204`
+
+Sem body.
+
+---
+
+### DELETE `/api/santacasa/utentes/:utenteId/medicacao-habitual`
+
+Remove toda a medicação habitual do utente.
+
+#### Resposta `204`
+
+Sem body.
+
+---
+
+## 7.4 Receitas
 
 Prefixo:
 
@@ -588,8 +830,8 @@ Lista linhas de receita ativas com quantidade restante.
       "quantidadeRestante": 2,
       "validade": "2026-12-31T00:00:00.000Z",
       "status": "ATIVA",
-      "createdAt": "2026-05-28T00:00:00.000Z",
-      "updatedAt": "2026-05-28T00:00:00.000Z"
+      "createdAt": "2026-06-16T00:00:00.000Z",
+      "updatedAt": "2026-06-16T00:00:00.000Z"
     }
   ]
 }
@@ -623,13 +865,14 @@ Também é aceite `medicamento` em vez de `nome` dentro das linhas.
 
 #### Validações
 
-- `numero19` deve ter exatamente 19 dígitos.
-- `pinAcesso6` deve ter exatamente 6 dígitos.
-- `pinOpcao4` deve ter exatamente 4 dígitos.
-- Deve existir pelo menos uma linha.
-- Cada linha precisa de medicamento, quantidade maior que zero e validade futura.
-- Não é permitido repetir o mesmo medicamento na mesma receita.
-- Não pode existir receita com o mesmo `numero19`.
+* `numero19` deve ter exatamente 19 dígitos.
+* `pinAcesso6` deve ter exatamente 6 dígitos.
+* `pinOpcao4` deve ter exatamente 4 dígitos.
+* Deve existir pelo menos uma linha.
+* Cada linha precisa de medicamento, quantidade maior que zero e validade de hoje ou futura.
+* Não é permitido repetir o mesmo medicamento na mesma receita.
+* A comparação de medicamentos repetidos ignora maiúsculas, minúsculas e acentos.
+* Não pode existir receita com o mesmo `numero19`.
 
 #### Regularizações pendentes
 
@@ -660,10 +903,27 @@ Se a nova receita regularizar Vendas Suspensas pendentes e `confirmRegularizacao
     "numero19": "1234567890123456789",
     "pinAcesso6": "123456",
     "pinOpcao4": "1234",
-    "linhas": [],
+    "linhas": [
+      {
+        "linhaId": "cuid",
+        "receitaId": "cuid",
+        "utenteId": "cuid",
+        "numero19": "1234567890123456789",
+        "pinAcesso6": "123456",
+        "pinOpcao4": "1234",
+        "medicamentoId": null,
+        "medicamento": "Paracetamol",
+        "quantidade": 2,
+        "quantidadeDispensada": 0,
+        "quantidadeReservadaPendente": 0,
+        "quantidadeRestante": 2,
+        "validade": "2026-12-31T00:00:00.000Z",
+        "status": "ATIVA"
+      }
+    ],
     "extrasResolvidos": [],
-    "createdAt": "2026-05-28T00:00:00.000Z",
-    "updatedAt": "2026-05-28T00:00:00.000Z"
+    "createdAt": "2026-06-16T00:00:00.000Z",
+    "updatedAt": "2026-06-16T00:00:00.000Z"
   }
 }
 ```
@@ -678,11 +938,11 @@ Remove uma linha de receita.
 
 Só é permitido remover se a linha:
 
-- Pertence ao utente.
-- Não tem unidades dispensadas.
-- Não tem dispensas associadas.
-- Não está associada a pedidos.
-- Não foi usada em regularizações.
+* Pertence ao utente.
+* Não tem unidades dispensadas.
+* Não tem dispensas associadas.
+* Não está associada a pedidos.
+* Não foi usada em regularizações.
 
 Se for a última linha da receita, a receita também é removida.
 
@@ -692,7 +952,7 @@ Sem body.
 
 ---
 
-## 7.4 Medicamentos não sujeitos a receita médica
+## 7.5 Medicamentos não sujeitos a receita médica
 
 Prefixo:
 
@@ -718,8 +978,8 @@ Lista medicamentos não sujeitos a receita médica com quantidade restante.
       "quantidade": 2,
       "quantidadeReservadaPendente": 0,
       "quantidadeRestante": 2,
-      "createdAt": "2026-05-28T00:00:00.000Z",
-      "updatedAt": "2026-05-28T00:00:00.000Z"
+      "createdAt": "2026-06-16T00:00:00.000Z",
+      "updatedAt": "2026-06-16T00:00:00.000Z"
     }
   ]
 }
@@ -740,12 +1000,23 @@ Cria ou incrementa medicamento não sujeito a receita médica.
 }
 ```
 
-Também é aceite `nome` em vez de `medicamento`.
+Também é aceite:
+
+```json
+{
+  "nome": "Ibuprofeno",
+  "quantidade": 2
+}
+```
 
 #### Regras
 
-- Se já existir medicamento igual para o utente, incrementa quantidade.
-- Pesquisa duplicados de forma case-insensitive.
+* Utente tem de estar operacional.
+* Medicamento é obrigatório.
+* Quantidade tem de ser maior que zero.
+* Quantidade decimal é convertida para inteiro por baixo.
+* Se já existir medicamento igual para o utente, incrementa a quantidade.
+* Pesquisa duplicados de forma case-insensitive.
 
 #### Resposta `201`
 
@@ -757,7 +1028,9 @@ Também é aceite `nome` em vez de `medicamento`.
     "medicamento": "Ibuprofeno",
     "quantidade": 4,
     "quantidadeReservadaPendente": 0,
-    "quantidadeRestante": 4
+    "quantidadeRestante": 4,
+    "createdAt": "2026-06-16T00:00:00.000Z",
+    "updatedAt": "2026-06-16T00:00:00.000Z"
   }
 }
 ```
@@ -772,8 +1045,8 @@ Remove medicamento não sujeito a receita médica.
 
 Só é permitido se:
 
-- O registo pertence ao utente.
-- Não está associado a pedidos.
+* O registo pertence ao utente.
+* Não está associado a pedidos pendentes.
 
 #### Resposta `204`
 
@@ -781,7 +1054,7 @@ Sem body.
 
 ---
 
-## 7.5 Vendas Suspensas
+## 7.6 Vendas Suspensas
 
 Prefixo:
 
@@ -813,8 +1086,8 @@ Lista Vendas Suspensas em aberto com quantidade restante.
       "quantidadeReservadaPendente": 0,
       "quantidadeRestante": 1,
       "status": "PENDENTE",
-      "createdAt": "2026-05-28T00:00:00.000Z",
-      "updatedAt": "2026-05-28T00:00:00.000Z"
+      "createdAt": "2026-06-16T00:00:00.000Z",
+      "updatedAt": "2026-06-16T00:00:00.000Z"
     }
   ]
 }
@@ -852,9 +1125,15 @@ Também é aceite:
 
 #### Regras
 
-- Não pode existir receita ativa com quantidade disponível para o mesmo medicamento.
-- Não pode existir Venda Suspensa em aberto para o mesmo medicamento.
-- `receitaDraftItems` é usado para descontar quantidades já escolhidas num pedido em preparação.
+* Utente tem de estar operacional.
+* Medicamento é obrigatório.
+* Quantidade solicitada tem de ser maior que zero.
+* Quantidade decimal é convertida para inteiro por baixo.
+* Não pode existir receita ativa com quantidade disponível para o mesmo medicamento.
+* Não pode existir Venda Suspensa em aberto para o mesmo medicamento.
+* `receitaDraftItems` aceita `linhaId` ou `id`.
+* `receitaDraftItems` junta itens duplicados.
+* `receitaDraftItems` ignora linhas sem ID ou com quantidade inválida.
 
 #### Resposta `201`
 
@@ -863,13 +1142,16 @@ Também é aceite:
   "data": {
     "id": "cuid",
     "utenteId": "cuid",
+    "medicamentoId": null,
     "medicamento": "Amoxicilina",
     "quantidadeSolicitada": 1,
     "quantidadeRegularizada": 0,
     "quantidadeCancelada": 0,
     "quantidadeReservadaPendente": 0,
     "quantidadeRestante": 1,
-    "status": "PENDENTE"
+    "status": "PENDENTE",
+    "createdAt": "2026-06-16T00:00:00.000Z",
+    "updatedAt": "2026-06-16T00:00:00.000Z"
   }
 }
 ```
@@ -884,8 +1166,8 @@ Remove Venda Suspensa.
 
 Só é permitido se:
 
-- A Venda Suspensa pertence ao utente.
-- Não está associada a pedidos.
+* A Venda Suspensa pertence ao utente.
+* Não está associada a pedidos pendentes.
 
 #### Resposta `204`
 
@@ -893,7 +1175,7 @@ Sem body.
 
 ---
 
-## 7.6 Pedidos Santa Casa
+## 7.7 Pedidos Santa Casa
 
 Prefixo:
 
@@ -946,13 +1228,15 @@ SEM_RECEITA
 EXTRA
 ```
 
+Também é aceite `kind` como alternativa a `tipo`.
+
 Para IDs:
 
-| Tipo | Campos aceites |
-|---|---|
+| Tipo          | Campos aceites                    |
+| ------------- | --------------------------------- |
 | `COM_RECEITA` | `id`, `linhaId`, `receitaLinhaId` |
-| `SEM_RECEITA` | `id`, `semReceitaId` |
-| `EXTRA` | `id`, `extraId` |
+| `SEM_RECEITA` | `id`, `semReceitaId`              |
+| `EXTRA`       | `id`, `extraId`                   |
 
 Para quantidade:
 
@@ -962,12 +1246,13 @@ quantidade ou qtd
 
 #### Regras
 
-- O pedido deve conter pelo menos um item.
-- Itens duplicados são agregados por `utenteId:tipo:id`.
-- Utente tem de estar operacional.
-- Cada item tem de pertencer ao utente.
-- Quantidade tem de estar disponível.
-- Para receitas, aplica regra FEFO: usar primeiro a linha do mesmo medicamento com validade mais próxima.
+* O pedido deve conter pelo menos um item.
+* Itens duplicados são agregados por `utenteId:tipo:id`.
+* Utente tem de estar operacional.
+* Cada item tem de pertencer ao utente.
+* Quantidade tem de estar disponível.
+* Para receitas, aplica regra FEFO: usar primeiro a linha do mesmo medicamento com validade mais próxima.
+* Ao criar pedido, é criado alerta operacional `PEDIDO_ENVIADO` para a Farmácia.
 
 #### Resposta `201`
 
@@ -983,11 +1268,13 @@ quantidade ou qtd
     "rejectedAt": null,
     "rejectedById": null,
     "rejectedBy": null,
+    "canceledById": null,
+    "canceledBy": null,
     "closedReason": null,
     "cancelReason": null,
     "itens": [],
-    "createdAt": "2026-05-28T00:00:00.000Z",
-    "updatedAt": "2026-05-28T00:00:00.000Z"
+    "createdAt": "2026-06-16T00:00:00.000Z",
+    "updatedAt": "2026-06-16T00:00:00.000Z"
   }
 }
 ```
@@ -1000,11 +1287,11 @@ Lista pedidos pendentes.
 
 #### Query params
 
-| Parâmetro | Tipo | Default | Descrição |
-|---|---:|---|---|
-| `search` | string | `""` | Pesquisa por número, utente, receita ou medicamento |
-| `skip` | number | `0` | Offset |
-| `take` | number | `50` | Limite, máximo `200` |
+| Parâmetro |   Tipo | Default | Descrição                                           |
+| --------- | -----: | ------- | --------------------------------------------------- |
+| `search`  | string | `""`    | Pesquisa por número, utente, receita ou medicamento |
+| `skip`    | number | `0`     | Offset                                              |
+| `take`    | number | `50`    | Limite, máximo `200`                                |
 
 #### Resposta `200`
 
@@ -1029,14 +1316,14 @@ Lista histórico de pedidos fechados.
 
 #### Query params
 
-| Parâmetro | Tipo | Default | Descrição |
-|---|---:|---|---|
-| `status` | string | `TODOS` | `TODOS`, `VALIDADO`, `REJEITADO`, `CANCELADO` |
-| `from` | date | `null` | Data inicial |
-| `to` | date | `null` | Data final |
-| `search` | string | `""` | Pesquisa |
-| `skip` | number | `0` | Offset |
-| `take` | number | `50` | Limite, máximo `200` |
+| Parâmetro |   Tipo | Default | Descrição                                     |
+| --------- | -----: | ------- | --------------------------------------------- |
+| `status`  | string | `TODOS` | `TODOS`, `VALIDADO`, `REJEITADO`, `CANCELADO` |
+| `from`    |   date | `null`  | Data inicial                                  |
+| `to`      |   date | `null`  | Data final                                    |
+| `search`  | string | `""`    | Pesquisa                                      |
+| `skip`    | number | `0`     | Offset                                        |
+| `take`    | number | `50`    | Limite, máximo `200`                          |
 
 #### Resposta `200`
 
@@ -1069,6 +1356,16 @@ Obtém detalhe de pedido.
     "id": "cuid",
     "numero": 1,
     "status": "PENDENTE",
+    "validatedAt": null,
+    "validatedById": null,
+    "validatedBy": null,
+    "rejectedAt": null,
+    "rejectedById": null,
+    "rejectedBy": null,
+    "canceledById": null,
+    "canceledBy": null,
+    "closedReason": null,
+    "cancelReason": null,
     "itens": []
   }
 }
@@ -1098,9 +1395,10 @@ Também é aceite:
 
 #### Regras
 
-- Só pedidos `PENDENTE` podem ser cancelados.
-- Itens pendentes passam para `CANCELADO`.
-- Pedido passa para `CANCELADO`.
+* Só pedidos `PENDENTE` podem ser cancelados.
+* Itens pendentes passam para `CANCELADO`.
+* Pedido passa para `CANCELADO`.
+* Guarda auditoria do utilizador autenticado em `canceledBy`.
 
 #### Resposta `200`
 
@@ -1110,14 +1408,23 @@ Também é aceite:
     "id": "cuid",
     "numero": 1,
     "status": "CANCELADO",
-    "closedReason": "Cancelado por engano."
+    "closedReason": "Cancelado por engano.",
+    "cancelReason": "Cancelado por engano.",
+    "canceledById": "userId",
+    "canceledBy": {
+      "id": "userId",
+      "name": "Santa Casa",
+      "email": "santacasa@sistema.local",
+      "role": "SANTACASA"
+    },
+    "itens": []
   }
 }
 ```
 
 ---
 
-## 7.7 Regularizações Santa Casa
+## 7.8 Regularizações Santa Casa
 
 Prefixo:
 
@@ -1139,23 +1446,51 @@ Lista regularizações pendentes ou parcialmente regularizadas.
 
 #### Query params
 
-| Parâmetro | Tipo | Default | Descrição |
-|---|---:|---|---|
-| `utenteId` | string | `null` | Filtra por utente |
-| `medicamento` | string | `null` | Filtra por medicamento |
-| `search` | string | `""` | Pesquisa geral |
-| `from` | date | `null` | Data inicial |
-| `to` | date | `null` | Data final |
-| `skip` | number | `0` | Offset |
-| `take` | number | `50` | Limite, máximo `200` |
+| Parâmetro     |   Tipo | Default | Descrição              |
+| ------------- | -----: | ------- | ---------------------- |
+| `utenteId`    | string | `null`  | Filtra por utente      |
+| `medicamento` | string | `null`  | Filtra por medicamento |
+| `search`      | string | `""`    | Pesquisa geral         |
+| `from`        |   date | `null`  | Data inicial           |
+| `to`          |   date | `null`  | Data final             |
+| `skip`        | number | `0`     | Offset                 |
+| `take`        | number | `50`    | Limite, máximo `200`   |
 
 #### Resposta `200`
 
 ```json
 {
-  "data": [],
+  "data": [
+    {
+      "id": "cuid",
+      "utenteId": "cuid",
+      "extraId": "cuid",
+      "pedidoId": "cuid",
+      "pedidoNumero": 1,
+      "medicamentoId": null,
+      "medicamento": "Amoxicilina",
+      "medicamentoNorm": "amoxicilina",
+      "quantidadeSolicitada": 2,
+      "quantidadeRegularizada": 1,
+      "quantidadeRestante": 1,
+      "status": "PARCIALMENTE_REGULARIZADO",
+      "utente": {
+        "id": "cuid",
+        "numero9": "123456789",
+        "nome": "João Costa"
+      },
+      "pedido": {
+        "id": "cuid",
+        "numero": 1,
+        "status": "VALIDADO"
+      },
+      "eventos": [],
+      "createdAt": "2026-06-16T00:00:00.000Z",
+      "updatedAt": "2026-06-16T00:00:00.000Z"
+    }
+  ],
   "meta": {
-    "total": 0,
+    "total": 1,
     "skip": 0,
     "take": 50
   },
@@ -1183,9 +1518,56 @@ Iguais a `/pendentes`.
 
 ```json
 {
-  "data": [],
+  "data": [
+    {
+      "id": "cuid",
+      "utenteId": "cuid",
+      "extraId": "cuid",
+      "pedidoId": "cuid",
+      "pedidoNumero": 1,
+      "medicamentoId": null,
+      "medicamento": "Amoxicilina",
+      "medicamentoNorm": "amoxicilina",
+      "quantidadeSolicitada": 1,
+      "quantidadeRegularizada": 1,
+      "quantidadeRestante": 0,
+      "status": "REGULARIZADO",
+      "utente": {
+        "id": "cuid",
+        "numero9": "123456789",
+        "nome": "João Costa"
+      },
+      "pedido": {
+        "id": "cuid",
+        "numero": 1,
+        "status": "VALIDADO"
+      },
+      "eventos": [
+        {
+          "id": "cuid",
+          "regularizacaoId": "cuid",
+          "receitaLinhaId": "cuid",
+          "quantidade": 1,
+          "createdAt": "2026-06-16T00:00:00.000Z",
+          "receitaLinha": {
+            "id": "cuid",
+            "nome": "Amoxicilina",
+            "validade": "2026-12-31T00:00:00.000Z",
+            "receita": {
+              "id": "cuid",
+              "numero19": "1234567890123456789",
+              "pinAcesso6": "123456",
+              "pinOpcao4": "1234"
+            }
+          }
+        }
+      ],
+      "createdAt": "2026-06-16T00:00:00.000Z",
+      "updatedAt": "2026-06-16T00:00:00.000Z"
+    }
+  ],
   "meta": {
-    "total": 0,
+    "total": 1,
     "skip": 0,
     "take": 50
   },
@@ -1233,7 +1615,7 @@ FARMACIA, ADMIN
 
 ---
 
-## 8.1 Health Farmácia
+## 8.1 Health e Dashboard Farmácia
 
 ### GET `/api/farmacia/health`
 
@@ -1249,8 +1631,6 @@ Health check do contexto Farmácia.
 ```
 
 ---
-
-## 8.2 Dashboard Farmácia
 
 ### GET `/api/farmacia/dashboard/sinais`
 
@@ -1279,6 +1659,163 @@ Obtém sinais agregados para dashboard da Farmácia.
 
 ---
 
+## 8.2 Alertas Farmácia
+
+Prefixo:
+
+```txt
+/api/farmacia/alertas
+```
+
+#### Acesso
+
+```txt
+FARMACIA, ADMIN
+```
+
+---
+
+### GET `/api/farmacia/alertas`
+
+Lista alertas operacionais ativos da Farmácia para o utilizador atual.
+
+#### Tipos possíveis
+
+```txt
+PEDIDO_ENVIADO
+REGULARIZACAO_PARCIAL
+REGULARIZACAO_TOTAL
+```
+
+#### Resposta `200`
+
+```json
+{
+  "data": [
+    {
+      "id": "cuid",
+      "tipo": "PEDIDO_ENVIADO",
+      "destino": "FARMACIA",
+      "titulo": "Novo pedido recebido",
+      "mensagem": "A Santa Casa enviou o pedido #1 para validação.",
+      "pedidoId": "cuid",
+      "regularizacaoId": null,
+      "utenteId": null,
+      "metadata": {
+        "pedidoNumero": 1
+      },
+      "createdAt": "2026-06-16T00:00:00.000Z",
+      "updatedAt": "2026-06-16T00:00:00.000Z"
+    }
+  ]
+}
+```
+
+#### Exemplo de alerta de regularização parcial
+
+```json
+{
+  "id": "cuid",
+  "tipo": "REGULARIZACAO_PARCIAL",
+  "destino": "FARMACIA",
+  "titulo": "Regularização parcial efetuada",
+  "mensagem": "Amoxicilina foi parcialmente regularizado. Pedido #1.",
+  "pedidoId": "cuid",
+  "regularizacaoId": "cuid",
+  "utenteId": "cuid",
+  "metadata": {
+    "medicamento": "Amoxicilina",
+    "pedidoNumero": 1,
+    "quantidadeSolicitada": 2,
+    "quantidadeRegularizada": 1,
+    "status": "PARCIALMENTE_REGULARIZADO"
+  },
+  "createdAt": "2026-06-16T00:00:00.000Z",
+  "updatedAt": "2026-06-16T00:00:00.000Z"
+}
+```
+
+#### Exemplo de alerta de regularização total
+
+```json
+{
+  "id": "cuid",
+  "tipo": "REGULARIZACAO_TOTAL",
+  "destino": "FARMACIA",
+  "titulo": "Regularização concluída",
+  "mensagem": "Amoxicilina foi totalmente regularizado. Pedido #1.",
+  "pedidoId": "cuid",
+  "regularizacaoId": "cuid",
+  "utenteId": "cuid",
+  "metadata": {
+    "medicamento": "Amoxicilina",
+    "pedidoNumero": 1,
+    "quantidadeSolicitada": 1,
+    "quantidadeRegularizada": 1,
+    "status": "REGULARIZADO"
+  },
+  "createdAt": "2026-06-16T00:00:00.000Z",
+  "updatedAt": "2026-06-16T00:00:00.000Z"
+}
+```
+
+---
+
+### POST `/api/farmacia/alertas/:alertaId/dismiss`
+
+Fecha um alerta para o utilizador atual.
+
+#### Body
+
+Não requer body.
+
+#### Resposta `200`
+
+```json
+{
+  "data": {
+    "dismissed": true,
+    "alerta": {
+      "id": "cuid",
+      "tipo": "PEDIDO_ENVIADO",
+      "destino": "FARMACIA",
+      "titulo": "Novo pedido recebido",
+      "mensagem": "A Santa Casa enviou o pedido #1 para validação.",
+      "pedidoId": "cuid",
+      "regularizacaoId": null,
+      "utenteId": null,
+      "metadata": {
+        "pedidoNumero": 1
+      },
+      "createdAt": "2026-06-16T00:00:00.000Z",
+      "updatedAt": "2026-06-16T00:00:00.000Z"
+    }
+  }
+}
+```
+
+---
+
+### POST `/api/farmacia/alertas/dismiss-all`
+
+Fecha todos os alertas ativos da Farmácia para o utilizador atual.
+
+#### Body
+
+Não requer body.
+
+#### Resposta `200`
+
+```json
+{
+  "data": {
+    "dismissed": 2
+  }
+}
+```
+
+---
+
 ## 8.3 Pedidos Farmácia
 
 Prefixo:
@@ -1295,14 +1832,14 @@ Lista pedidos para a Farmácia.
 
 #### Query params
 
-| Parâmetro | Tipo | Default | Descrição |
-|---|---:|---|---|
-| `status` | string | `PENDENTE` | `TODOS`, `PENDENTE`, `VALIDADO`, `REJEITADO`, `CANCELADO` |
-| `search` | string | `""` | Pesquisa por número, utente, receita, PIN, motivo ou medicamento |
-| `from` | date | `null` | Data inicial |
-| `to` | date | `null` | Data final |
-| `skip` | number | `0` | Offset |
-| `take` | number | `50` | Limite, máximo `200` |
+| Parâmetro |   Tipo | Default    | Descrição                                                        |
+| --------- | -----: | ---------- | ---------------------------------------------------------------- |
+| `status`  | string | `PENDENTE` | `TODOS`, `PENDENTE`, `VALIDADO`, `REJEITADO`, `CANCELADO`        |
+| `search`  | string | `""`       | Pesquisa por número, utente, receita, PIN, motivo ou medicamento |
+| `from`    |   date | `null`     | Data inicial                                                     |
+| `to`      |   date | `null`     | Data final                                                       |
+| `skip`    | number | `0`        | Offset                                                           |
+| `take`    | number | `50`       | Limite, máximo `200`                                             |
 
 #### Exemplo
 
@@ -1331,6 +1868,41 @@ GET /api/farmacia/pedidos?status=PENDENTE&skip=0&take=50
 
 ---
 
+### GET `/api/farmacia/pedidos/:pedidoId`
+
+Obtém detalhe de pedido para a Farmácia.
+
+#### Resposta `200`
+
+```json
+{
+  "data": {
+    "id": "cuid",
+    "numero": 1,
+    "status": "PENDENTE",
+    "validatedAt": null,
+    "validatedById": null,
+    "validatedBy": null,
+    "rejectedAt": null,
+    "rejectedById": null,
+    "rejectedBy": null,
+    "canceledById": null,
+    "canceledBy": null,
+    "closedReason": null,
+    "cancelReason": null,
+    "itens": []
+  }
+}
+```
+
+#### Erros comuns
+
+| HTTP | Motivo                |
+| ---: | --------------------- |
+|  404 | Pedido não encontrado |
+
+---
+
 ### POST `/api/farmacia/pedidos/:pedidoId/validar`
 
 Valida pedido pendente.
@@ -1345,14 +1917,16 @@ Existe suporte técnico para `validatedById`, mas em uso normal o backend usa o 
 
 #### Regras
 
-- Pedido tem de existir.
-- Pedido tem de estar `PENDENTE`.
-- Todos os itens têm de estar `PENDENTE`.
-- As quantidades ainda têm de estar disponíveis.
-- Linhas de receita têm de estar ativas e dentro da validade.
-- Medicamentos não sujeitos a receita médica reduzem stock.
-- Vendas Suspensas geram regularizações.
-- Itens e pedido ficam com auditoria de validação.
+* Pedido tem de existir.
+* Pedido tem de estar `PENDENTE`.
+* Todos os itens têm de estar `PENDENTE`.
+* As quantidades ainda têm de estar disponíveis.
+* Linhas de receita têm de estar ativas e dentro da validade.
+* Medicamentos não sujeitos a receita médica reduzem quantidade disponível.
+* Vendas Suspensas geram regularizações.
+* Se todos os itens de receita estiverem expirados, o pedido pode ficar `CANCELADO`.
+* Itens de receita expirados podem ficar `CANCELADO_POR_EXPIRACAO`.
+* Itens e pedido ficam com auditoria de validação.
 
 #### Resposta `200`
 
@@ -1362,7 +1936,7 @@ Existe suporte técnico para `validatedById`, mas em uso normal o backend usa o 
     "id": "cuid",
     "numero": 1,
     "status": "VALIDADO",
-    "validatedAt": "2026-05-28T00:00:00.000Z",
+    "validatedAt": "2026-06-16T00:00:00.000Z",
     "validatedById": "userId",
     "validatedBy": {
       "id": "userId",
@@ -1399,11 +1973,13 @@ Também é aceite:
 
 #### Regras
 
-- Pedido tem de existir.
-- Pedido tem de estar `PENDENTE`.
-- Itens pendentes passam para `REJEITADO`.
-- Pedido passa para `REJEITADO`.
-- Guarda auditoria do utilizador autenticado.
+* Pedido tem de existir.
+* Pedido tem de estar `PENDENTE`.
+* Itens pendentes passam para `REJEITADO`.
+* Pedido passa para `REJEITADO`.
+* Guarda auditoria do utilizador autenticado.
+* `motivo`/`reason` pode ser vazio.
+* Motivo não pode exceder 500 caracteres.
 
 #### Resposta `200`
 
@@ -1413,9 +1989,16 @@ Também é aceite:
     "id": "cuid",
     "numero": 1,
     "status": "REJEITADO",
-    "rejectedAt": "2026-05-28T00:00:00.000Z",
+    "rejectedAt": "2026-06-16T00:00:00.000Z",
     "rejectedById": "userId",
+    "rejectedBy": {
+      "id": "userId",
+      "name": "Utilizador Farmácia",
+      "email": "farmacia@sistema.local",
+      "role": "FARMACIA"
+    },
     "closedReason": "Medicamento indisponível.",
+    "cancelReason": "Medicamento indisponível.",
     "itens": []
   }
 }
@@ -1439,7 +2022,7 @@ GET /api/farmacia/regularizacoes/historico
 GET /api/farmacia/regularizacoes/sinal
 ```
 
-Consultar secção `7.7 Regularizações Santa Casa`.
+Consultar secção `7.8 Regularizações Santa Casa`.
 
 ---
 
@@ -1475,15 +2058,15 @@ Lista utilizadores do sistema.
 
 #### Query params
 
-| Parâmetro | Tipo | Default | Descrição |
-|---|---:|---|---|
-| `search` | string | `""` | Pesquisa por nome/email |
-| `role` | string | `TODOS` | `ADMIN`, `SANTACASA`, `FARMACIA`, `TODOS` |
-| `isActive` | boolean/string | `TODOS` | `true`, `false`, `ativo`, `inativo`, `TODOS` |
-| `page` | number | `1` | Página, se não usar `skip/take` |
-| `pageSize` | number | `50` | Tamanho da página |
-| `skip` | number | `0` | Offset alternativo |
-| `take` | number | `50` | Limite, máximo `100` |
+| Parâmetro  |           Tipo | Default | Descrição                                                         |
+| ---------- | -------------: | ------- | ----------------------------------------------------------------- |
+| `search`   |         string | `""`    | Pesquisa por nome/email, máximo 160 caracteres                    |
+| `role`     |         string | `TODOS` | `ADMIN`, `SANTACASA`, `FARMACIA`, `TODOS`, `ALL`                  |
+| `isActive` | boolean/string | `TODOS` | `true`, `false`, `ativo`, `inativo`, `active`, `inactive`         |
+| `page`     |         number | `1`     | Página, se não usar `skip/take`                                   |
+| `pageSize` |         number | `50`    | Tamanho da página                                                 |
+| `skip`     |         number | `0`     | Offset alternativo; tem prioridade sobre `page`                   |
+| `take`     |         number | `50`    | Limite alternativo, máximo `100`; tem prioridade sobre `pageSize` |
 
 #### Resposta `200`
 
@@ -1522,11 +2105,11 @@ Cria utilizador.
 
 #### Validações
 
-- Nome obrigatório.
-- Email obrigatório e deve conter `@`.
-- Password obrigatória com pelo menos 8 caracteres.
-- Role válida: `SANTACASA`, `FARMACIA`, `ADMIN`.
-- Email único.
+* Nome obrigatório.
+* Email obrigatório e com formato válido.
+* Password obrigatória com pelo menos 10 caracteres.
+* Role válida: `SANTACASA`, `FARMACIA`, `ADMIN`.
+* Email único.
 
 #### Resposta `201`
 
@@ -1538,8 +2121,8 @@ Cria utilizador.
     "email": "farmacia@sistema.local",
     "role": "FARMACIA",
     "isActive": true,
-    "createdAt": "2026-05-28T00:00:00.000Z",
-    "updatedAt": "2026-05-28T00:00:00.000Z"
+    "createdAt": "2026-06-16T00:00:00.000Z",
+    "updatedAt": "2026-06-16T00:00:00.000Z"
   }
 }
 ```
@@ -1549,6 +2132,13 @@ Cria utilizador.
 ### PATCH `/api/admin/users/:userId`
 
 Atualiza dados principais do utilizador.
+
+#### Regras
+
+* Nome obrigatório.
+* Email obrigatório e com formato válido.
+* Role válida.
+* Não é permitido ao utilizador autenticado alterar a role da própria conta.
 
 #### Body
 
@@ -1579,6 +2169,11 @@ Atualiza dados principais do utilizador.
 ### PATCH `/api/admin/users/:userId/password`
 
 Atualiza password de utilizador.
+
+#### Regras
+
+* Password obrigatória.
+* Password com pelo menos 10 caracteres.
 
 #### Body
 
@@ -1617,7 +2212,8 @@ Ativa ou desativa utilizador.
 
 #### Regras
 
-- Não é permitido alterar o estado da própria conta autenticada.
+* `isActive` tem de ser booleano real.
+* Não é permitido alterar o estado da própria conta autenticada.
 
 #### Resposta `200`
 
@@ -1638,9 +2234,9 @@ Remove utilizador.
 
 #### Regras
 
-- Não é permitido remover a própria conta.
-- Só é possível remover utilizadores desativados.
-- Não é possível remover utilizadores com histórico de auditoria associado.
+* Não é permitido remover a própria conta.
+* Só é possível remover utilizadores desativados.
+* Não é possível remover utilizadores com histórico de auditoria associado.
 
 #### Resposta `200`
 
@@ -1669,6 +2265,8 @@ Prefixo protegido:
 ```txt
 ADMIN
 ```
+
+Todas as execuções reais exigem confirmação forte no body. A pré-visualização continua obrigatória no fluxo recomendado da UI.
 
 ---
 
@@ -1718,7 +2316,7 @@ Pré-visualiza expiração de receitas.
   "job": "receita-expiry",
   "mode": "preview",
   "result": {
-    "checkedAt": "2026-05-28T00:00:00.000Z",
+    "checkedAt": "2026-06-17T00:00:00.000Z",
     "expiredLines": 0,
     "pendingItemsFromExpiredLines": 0,
     "affectedPedidos": 0,
@@ -1733,6 +2331,14 @@ Pré-visualiza expiração de receitas.
 
 Executa expiração de receitas.
 
+#### Body obrigatório
+
+```json
+{
+  "confirm": "RUN_RECEITA_EXPIRY"
+}
+```
+
 #### Resposta `200`
 
 ```json
@@ -1740,7 +2346,7 @@ Executa expiração de receitas.
   "job": "receita-expiry",
   "mode": "run",
   "result": {
-    "checkedAt": "2026-05-28T00:00:00.000Z",
+    "checkedAt": "2026-06-17T00:00:00.000Z",
     "expiredLines": 0,
     "pendingItemsFromExpiredLines": 0,
     "affectedPedidos": 0,
@@ -1759,10 +2365,10 @@ Pré-visualiza rotina de higiene.
 
 #### Query params
 
-| Parâmetro | Tipo | Default | Descrição |
-|---|---:|---|---|
-| `offsetMonths` | number | `HIGIENE_OFFSET_MONTHS` | Meses de antiguidade |
-| `anonymize` | boolean | `HIGIENE_ANONYMIZE` | Indica intenção de anonimizar |
+| Parâmetro      |    Tipo | Default                 | Descrição                     |
+| -------------- | ------: | ----------------------- | ----------------------------- |
+| `offsetMonths` |  number | `HIGIENE_OFFSET_MONTHS` | Meses de antiguidade          |
+| `anonymize`    | boolean | `HIGIENE_ANONYMIZE`     | Indica intenção de anonimizar |
 
 #### Resposta `200`
 
@@ -1771,11 +2377,10 @@ Pré-visualiza rotina de higiene.
   "job": "higiene",
   "mode": "preview",
   "options": {
-    "offsetMonths": 12,
-    "anonymize": false
+    "offsetMonths": 12
   },
   "result": {
-    "cutoffDate": "2025-05-28T00:00:00.000Z",
+    "cutoffDate": "2025-06-17T00:00:00.000Z",
     "offsetMonths": 12,
     "candidatos": 0
   }
@@ -1788,10 +2393,11 @@ Pré-visualiza rotina de higiene.
 
 Executa rotina de higiene.
 
-#### Body
+#### Body obrigatório
 
 ```json
 {
+  "confirm": "RUN_HIGIENE",
   "offsetMonths": 12,
   "anonymize": false
 }
@@ -1808,8 +2414,8 @@ Executa rotina de higiene.
     "anonymize": false
   },
   "result": {
-    "checkedAt": "2026-05-28T00:00:00.000Z",
-    "cutoffDate": "2025-05-28T00:00:00.000Z",
+    "checkedAt": "2026-06-17T00:00:00.000Z",
+    "cutoffDate": "2025-06-17T00:00:00.000Z",
     "offsetMonths": 12,
     "anonymizeRequested": false,
     "anonymizeApplied": false,
@@ -1826,8 +2432,8 @@ Pré-visualiza limpeza de histórico.
 
 #### Query params
 
-| Parâmetro | Tipo | Default | Descrição |
-|---|---:|---|---|
+| Parâmetro      |   Tipo | Default               | Descrição            |
+| -------------- | -----: | --------------------- | -------------------- |
 | `offsetMonths` | number | `PURGE_OFFSET_MONTHS` | Meses de antiguidade |
 
 #### Resposta `200`
@@ -1840,13 +2446,13 @@ Pré-visualiza limpeza de histórico.
     "offsetMonths": 6
   },
   "result": {
-    "cutoffDate": "2025-11-28T00:00:00.000Z",
+    "cutoffDate": "2025-12-17T00:00:00.000Z",
     "offsetMonths": 6,
+    "regularizacoes": 0,
+    "eventos": 0,
     "pedidos": 0,
     "pedidoItens": 0,
-    "dispensas": 0,
-    "regularizacoes": 0,
-    "eventos": 0
+    "dispensas": 0
   }
 }
 ```
@@ -1857,13 +2463,21 @@ Pré-visualiza limpeza de histórico.
 
 Executa limpeza de histórico.
 
-#### Body
+#### Body obrigatório
 
 ```json
 {
+  "confirm": "RUN_PURGE_HISTORY",
+  "backupConfirmed": true,
   "offsetMonths": 6
 }
 ```
+
+#### Regras adicionais
+
+* `confirm` tem de ser exatamente `RUN_PURGE_HISTORY`.
+* `backupConfirmed` tem de ser `true`.
+* Este endpoint é destrutivo e não deve ser executado sem backup atualizado.
 
 #### Resposta `200`
 
@@ -1875,8 +2489,8 @@ Executa limpeza de histórico.
     "offsetMonths": 6
   },
   "result": {
-    "checkedAt": "2026-05-28T00:00:00.000Z",
-    "cutoffDate": "2025-11-28T00:00:00.000Z",
+    "checkedAt": "2026-06-17T00:00:00.000Z",
+    "cutoffDate": "2025-12-17T00:00:00.000Z",
     "offsetMonths": 6,
     "regularizacoes": 0,
     "eventos": 0,
@@ -1889,6 +2503,20 @@ Executa limpeza de histórico.
 ```
 
 ---
+
+## 10.2 Erros esperados de manutenção
+
+| Caso                                      | HTTP |
+| ----------------------------------------- | ---: |
+| Sem sessão                                |  401 |
+| Role `SANTACASA` ou `FARMACIA`            |  403 |
+| Job inexistente                           |  404 |
+| Ação inexistente                          |  404 |
+| `offsetMonths` inválido                   |  400 |
+| `confirm` inválido ou ausente             |  400 |
+| `backupConfirmed` ausente em purge-history | 400 |
+
+# 11. Estados principais
 
 # 11. Estados principais
 
@@ -1958,6 +2586,20 @@ SANTACASA
 FARMACIA
 ```
 
+## 11.9 Alerta operacional
+
+```txt
+PEDIDO_ENVIADO
+REGULARIZACAO_PARCIAL
+REGULARIZACAO_TOTAL
+```
+
+## 11.10 Destino de alerta operacional
+
+```txt
+FARMACIA
+```
+
 ---
 
 # 12. Notas para frontend
@@ -1970,24 +2612,35 @@ Todas as chamadas autenticadas devem usar `credentials: "include"` ou `withCrede
 
 Quando a API devolver `401`, o frontend deve:
 
-- Limpar estado local de autenticação.
-- Redirecionar para login.
-- Evitar manter UI com utilizador antigo.
+* Limpar estado local de autenticação.
+* Redirecionar para login.
+* Evitar manter UI com utilizador antigo.
 
-## 12.3 Tratar `409`
+## 12.3 Tratar `403`
+
+`403` normalmente indica:
+
+* Role sem permissão para o contexto.
+* Origem bloqueada em pedidos que alteram estado.
+* Tentativa de aceder a contexto de outra área.
+
+## 12.4 Tratar `409`
 
 `409` normalmente indica erro funcional esperado:
 
-- Quantidade indisponível.
-- Pedido já não está pendente.
-- Utente arquivado/removido.
-- Venda Suspensa duplicada.
-- Receita duplicada.
-- Regularização exige confirmação.
+* Quantidade indisponível.
+* Pedido já não está pendente.
+* Utente arquivado/removido.
+* Utente com pendências abertas.
+* Venda Suspensa duplicada.
+* Receita duplicada.
+* Receita ativa já disponível para medicamento de Venda Suspensa.
+* Regularização exige confirmação.
+* Utilizador ativo não pode ser removido.
 
-O frontend deve mostrar a mensagem do backend.
+O frontend deve mostrar a mensagem devolvida pelo backend.
 
-## 12.4 Datas
+## 12.5 Datas
 
 A API aceita datas em formato:
 
@@ -1999,8 +2652,13 @@ ou strings compatíveis com `Date`.
 
 Para filtros `from` e `to`:
 
-- `from=YYYY-MM-DD` é interpretado como início do dia.
-- `to=YYYY-MM-DD` é interpretado como fim do dia.
+* `from=YYYY-MM-DD` é interpretado como início do dia.
+* `to=YYYY-MM-DD` é interpretado como fim do dia.
+
+Para validade de receita:
+
+* Validade igual ao dia atual é válida.
+* Validade anterior ao dia atual é inválida ou expirada, dependendo do fluxo.
 
 ---
 
@@ -2008,15 +2666,16 @@ Para filtros `from` e `to`:
 
 Antes de adicionar uma rota nova:
 
-- [ ] Definir contexto correto: `auth`, `santacasa`, `farmacia`, `admin` ou `manutencao`.
-- [ ] Confirmar roles autorizadas.
-- [ ] Criar ou atualizar controller.
-- [ ] Colocar regra de negócio no service.
-- [ ] Colocar acesso a dados no repository.
-- [ ] Criar validator para body/query.
-- [ ] Criar mapper/DTO se a resposta expõe dados ao frontend.
-- [ ] Evitar devolver password, hashes ou dados internos sensíveis.
-- [ ] Garantir erros com `AppError`.
-- [ ] Atualizar este ficheiro.
-- [ ] Atualizar `BUSINESS_RULES.md` se a rota alterar comportamento funcional.
-- [ ] Atualizar `TESTING.md` com cenário de teste.
+* [ ] Definir contexto correto: `auth`, `santacasa`, `farmacia`, `admin` ou `manutencao`.
+* [ ] Confirmar roles autorizadas.
+* [ ] Criar ou atualizar controller.
+* [ ] Colocar regra de negócio no service.
+* [ ] Colocar acesso a dados no repository.
+* [ ] Criar validator para body/query.
+* [ ] Criar mapper/DTO se a resposta expõe dados ao frontend.
+* [ ] Evitar devolver password, hashes ou dados internos sensíveis.
+* [ ] Garantir erros com `AppError`.
+* [ ] Atualizar este ficheiro.
+* [ ] Atualizar `BUSINESS_RULES.md` se a rota alterar comportamento funcional.
+* [ ] Atualizar `TESTING.md` com cenário de teste.
+* [ ] Adicionar ou atualizar testes unitários, integration ou E2E conforme o risco da alteração.

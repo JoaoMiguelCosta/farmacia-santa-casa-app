@@ -1,0 +1,14 @@
+/* src/features/farmacia/pedidos/components/FarmaciaPedidosPageContent/FarmaciaPedidosPageContent.module.css */
+
+.page {
+    display: grid;
+    gap: clamp(1.25rem, 2.5vw, 2rem);
+    inline-size: min(100%, var(--clinic-page-max));
+    margin-inline: auto;
+}
+
+@media (max-width: 620px) {
+    .page {
+        inline-size: 100%;
+    }
+}

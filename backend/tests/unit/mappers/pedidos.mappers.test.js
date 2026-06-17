@@ -416,6 +416,9 @@ describe("pedidos.mappers", () => {
         rejectedById: null,
         rejectedBy: null,
 
+        canceledById: null,
+        canceledBy: null,
+
         closedReason: null,
         cancelReason: null,
 
@@ -598,6 +601,47 @@ describe("pedidos.mappers", () => {
         name: "Farmácia",
         email: "farmacia@sistema.local",
         role: "FARMACIA",
+      });
+    });
+
+    it("deve mapear utilizador que cancelou o pedido", () => {
+      const pedido = {
+        id: "pedido-1",
+        numero: 1,
+        status: "CANCELADO",
+
+        validatedAt: null,
+        validatedById: null,
+        validatedBy: null,
+
+        rejectedAt: null,
+        rejectedById: null,
+        rejectedBy: null,
+
+        canceledById: "user-3",
+        canceledBy: {
+          id: "user-3",
+          name: "Santa Casa",
+          email: "santacasa@sistema.local",
+          role: "SANTACASA",
+        },
+
+        closedReason: "Cancelado pela Santa Casa.",
+        itens: [],
+
+        createdAt: new Date("2026-01-01T10:00:00.000Z"),
+        updatedAt: new Date("2026-01-02T10:00:00.000Z"),
+      };
+
+      const result = toPedidoDTO(pedido);
+
+      expect(result.canceledById).toBe("user-3");
+
+      expect(result.canceledBy).toEqual({
+        id: "user-3",
+        name: "Santa Casa",
+        email: "santacasa@sistema.local",
+        role: "SANTACASA",
       });
     });
   });

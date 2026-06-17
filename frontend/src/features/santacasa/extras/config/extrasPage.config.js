@@ -1,38 +1,78 @@
+// src/features/santacasa/extras/config/extrasPage.config.js
 export const EXTRAS_PAGE = Object.freeze({
   header: {
-    eyebrow: "Santa Casa",
-    title: "Vendas Suspensas",
+    eyebrow: "Vendas suspensas",
+    title: "Medicamentos para Venda Suspensa",
     description:
-      "Regista e acompanha vendas suspensas que precisam de regularização futura por receita.",
+      "Medicamentos que exigem receita, mas que ainda não têm receita disponível.",
   },
 
   form: {
-    title: "Criar Venda Suspensa",
+    title: "Criar Medicamento para Venda Suspensa",
     description:
-      "Regista um medicamento entregue no momento como venda suspensa, para posterior regularização por receita.",
-    submitLabel: "Criar Venda Suspensa",
+      "Adiciona um Medicamento que o utente precisa, mas que ainda não tem receita disponível.",
+    submitLabel: "Criar Medicamento",
     submittingLabel: "A criar...",
-    successMessage: "Venda Suspensa criada com sucesso.",
+    noUtenteSelectedMessage:
+      "Seleciona um utente antes de criar um Medicamento para Venda Suspensa.",
+    successMessage: "Medicamento para Venda Suspensa criado com sucesso.",
+
+    errors: {
+      medicamentoRequired: "O Medicamento é obrigatório.",
+      quantidadeSolicitadaInvalid: "A quantidade deve ser maior que 0.",
+    },
   },
 
   list: {
-    title: "Vendas suspensas em aberto",
+    title: "Medicamentos para Venda Suspensa",
     description:
-      "Lista de vendas suspensas com quantidade restante por regularizar para o utente selecionado.",
-    emptyTitle: "Sem vendas suspensas em aberto.",
-    emptyDescription: "Cria uma venda suspensa ou seleciona outro utente.",
-    loadingTitle: "A carregar vendas suspensas...",
-    errorTitle: "Não foi possível carregar as vendas suspensas.",
+      "Medicamentos sem receita disponível, com quantidade ainda disponível para pedido à Farmácia.",
+    emptyTitle: "Sem Medicamentos para Venda Suspensa.",
+    emptyDescription:
+      "Cria um Medicamento para Venda Suspensa ou seleciona outro utente.",
+    noUtenteTitle: "Seleciona um utente.",
+    noUtenteDescription:
+      "Depois de selecionares um utente, os Medicamentos para Venda Suspensa aparecem aqui.",
+    loadingTitle: "A carregar Medicamentos...",
+    loadingDescription: "Aguarda enquanto os Medicamentos são carregados.",
+    errorTitle:
+      "Não foi possível carregar os Medicamentos para Venda Suspensa.",
+    retryLabel: "Tentar novamente",
+
     deleteLabel: "Remover",
     deletingLabel: "A remover...",
-    deleteSuccessMessage: "Venda Suspensa removida com sucesso.",
+    deleteSuccessMessage: "Medicamento removido com sucesso.",
+
+    emptyValue: "—",
+
+    columns: {
+      medicamento: "Medicamento",
+      quantidade: "Quantidade",
+      criadoEm: "Criado em",
+      pedido: "Pedido",
+      remover: "Remover",
+    },
+
+    labels: {
+      extraDescription: "Para Venda Suspensa",
+      total: "Total inicial:",
+      dispensada: "Dispensadas:",
+      emPedido: "Em pedidos:",
+      quantidadeShort: "Qtd",
+    },
+
+    pedidoActions: {
+      addLabel: "Adicionar",
+      noStockLabel: "Sem saldo",
+      quantityAriaLabelPrefix: "Quantidade para pedido de",
+    },
   },
 
   deleteDialog: {
-    title: "Remover Venda Suspensa?",
+    title: "Remover Medicamento para Venda Suspensa?",
     description:
-      "Esta ação pode ser bloqueada se a venda suspensa já estiver associada a pedidos, dispensas ou regularizações.",
-    confirmLabel: "Remover Venda Suspensa",
+      "Pode não ser possível remover se o Medicamento já estiver associado a pedidos.",
+    confirmLabel: "Remover Medicamento",
     cancelLabel: "Cancelar",
   },
 
@@ -40,13 +80,13 @@ export const EXTRAS_PAGE = Object.freeze({
     medicamento: {
       id: "extra-medicamento",
       label: "Medicamento",
-      hint: "Indica o nome do medicamento entregue.",
+      hint: "Indica o nome do Medicamento.",
       placeholder: "Ex: Cipralex 30mg",
     },
     quantidadeSolicitada: {
       id: "extra-quantidade-solicitada",
-      label: "Quantidade solicitada",
-      hint: "Deve ser um número inteiro maior que 0.",
+      label: "Quantidade",
+      hint: "Indica a quantidade necessária.",
       placeholder: "Ex: 3",
     },
   },

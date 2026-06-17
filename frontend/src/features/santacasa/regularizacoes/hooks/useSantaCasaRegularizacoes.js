@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 
+import { useSearchParams } from "react-router-dom";
+
 import { useAuth } from "../../../auth/hooks/useAuth";
 
 import {
@@ -8,12 +10,12 @@ import {
   getSantaCasaRegularizacoesSignal,
 } from "../api/santaCasaRegularizacoesApi";
 
-import { buildRegularizacoesQuery } from "../utils/santaCasaRegularizacoes.utils";
-
-const TABS = Object.freeze({
-  pending: "pending",
-  history: "history",
-});
+import {
+  SANTACASA_REGULARIZACOES_TABS,
+  buildRegularizacoesQuery,
+  buildRegularizacoesViewSearchParams,
+  getRegularizacoesViewFromSearchParams,
+} from "../utils/santaCasaRegularizacoes.utils";
 
 const DEFAULT_QUERY = Object.freeze({
   search: "",
@@ -28,7 +30,7 @@ function getErrorMessage(error, fallback) {
 }
 
 function getLoaderByTab(activeTab) {
-  if (activeTab === TABS.history) {
+  if (activeTab === SANTACASA_REGULARIZACOES_TABS.history) {
     return getSantaCasaRegularizacoesHistorico;
   }
 
@@ -46,9 +48,10 @@ function getInitialMeta() {
 export function useSantaCasaRegularizacoes() {
   const { handleAuthError } = useAuth();
 
-  const [activeTab, setActiveTab] = useState(TABS.pending);
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const [regularizacoes, setRegularizacoes] = useState([]);
+
   const [meta, setMeta] = useState(getInitialMeta);
 
   const [signal, setSignal] = useState(null);
@@ -59,11 +62,18 @@ export function useSantaCasaRegularizacoes() {
   const [toInput, setToInput] = useState("");
 
   const [isLoading, setIsLoading] = useState(true);
+
   const [isRefreshing, setIsRefreshing] = useState(false);
+
   const [isLoadingSignal, setIsLoadingSignal] = useState(true);
 
   const [error, setError] = useState(null);
+
   const [signalError, setSignalError] = useState(null);
+
+  const activeTab = useMemo(() => {
+    return getRegularizacoesViewFromSearchParams(searchParams);
+  }, [searchParams]);
 
   const hasRegularizacoes = regularizacoes.length > 0;
 
@@ -72,12 +82,14 @@ export function useSantaCasaRegularizacoes() {
   }, [query]);
 
   const totalPages = Math.max(1, Math.ceil(meta.total / meta.take));
+
   const currentPage = Math.min(
     totalPages,
     Math.floor(meta.skip / meta.take) + 1,
   );
 
   const hasPreviousPage = meta.skip > 0;
+
   const hasNextPage = meta.skip + meta.take < meta.total;
 
   const loadSignal = useCallback(async () => {
@@ -89,7 +101,9 @@ export function useSantaCasaRegularizacoes() {
 
       setSignal(data);
     } catch (signalLoadError) {
-      if (handleAuthError(signalLoadError)) return;
+      if (handleAuthError(signalLoadError)) {
+        return;
+      }
 
       setSignalError(
         getErrorMessage(signalLoadError, "Não foi possível carregar o resumo."),
@@ -117,7 +131,9 @@ export function useSantaCasaRegularizacoes() {
         setRegularizacoes(result.data);
         setMeta(result.meta);
       } catch (loadError) {
-        if (handleAuthError(loadError)) return;
+        if (handleAuthError(loadError)) {
+          return;
+        }
 
         setError(
           getErrorMessage(
@@ -135,20 +151,37 @@ export function useSantaCasaRegularizacoes() {
 
   const refreshRegularizacoes = useCallback(async () => {
     await Promise.all([
-      loadRegularizacoes({ showRefreshing: true }),
+      loadRegularizacoes({
+        showRefreshing: true,
+      }),
       loadSignal(),
     ]);
   }, [loadRegularizacoes, loadSignal]);
 
-  const updateTab = useCallback((nextTab) => {
-    if (!Object.values(TABS).includes(nextTab)) return;
+  const updateTab = useCallback(
+    (nextTab) => {
+      if (!Object.values(SANTACASA_REGULARIZACOES_TABS).includes(nextTab)) {
+        return;
+      }
 
-    setActiveTab(nextTab);
-    setQuery((currentQueryValue) => ({
-      ...currentQueryValue,
-      skip: 0,
-    }));
-  }, []);
+      if (nextTab === activeTab) {
+        return;
+      }
+
+      const nextSearchParams = buildRegularizacoesViewSearchParams({
+        currentSearchParams: searchParams,
+        view: nextTab,
+      });
+
+      setSearchParams(nextSearchParams);
+
+      setQuery((currentQueryValue) => ({
+        ...currentQueryValue,
+        skip: 0,
+      }));
+    },
+    [activeTab, searchParams, setSearchParams],
+  );
 
   const updateSearchInput = useCallback((value) => {
     setSearchInput(value);
@@ -200,7 +233,9 @@ export function useSantaCasaRegularizacoes() {
   const goToNextPage = useCallback(() => {
     setQuery((currentQueryValue) => {
       const currentSkip = Number(currentQueryValue.skip || 0);
+
       const currentTake = Number(currentQueryValue.take || DEFAULT_QUERY.take);
+
       const nextSkip = currentSkip + currentTake;
 
       if (nextSkip >= meta.total) {
@@ -229,7 +264,10 @@ export function useSantaCasaRegularizacoes() {
         setSignal(data);
       } catch (signalLoadError) {
         if (!isMounted) return;
-        if (handleAuthError(signalLoadError)) return;
+
+        if (handleAuthError(signalLoadError)) {
+          return;
+        }
 
         setSignalError(
           getErrorMessage(
@@ -244,7 +282,7 @@ export function useSantaCasaRegularizacoes() {
       }
     }
 
-    loadInitialSignal();
+    void loadInitialSignal();
 
     return () => {
       isMounted = false;
@@ -269,7 +307,10 @@ export function useSantaCasaRegularizacoes() {
         setMeta(result.meta);
       } catch (loadError) {
         if (!isMounted) return;
-        if (handleAuthError(loadError)) return;
+
+        if (handleAuthError(loadError)) {
+          return;
+        }
 
         setError(
           getErrorMessage(
@@ -284,7 +325,7 @@ export function useSantaCasaRegularizacoes() {
       }
     }
 
-    loadInitialRegularizacoes();
+    void loadInitialRegularizacoes();
 
     return () => {
       isMounted = false;
@@ -292,7 +333,7 @@ export function useSantaCasaRegularizacoes() {
   }, [activeTab, currentQuery, handleAuthError]);
 
   return {
-    tabs: TABS,
+    tabs: SANTACASA_REGULARIZACOES_TABS,
 
     activeTab,
     regularizacoes,

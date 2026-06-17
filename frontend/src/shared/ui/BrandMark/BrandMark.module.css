@@ -1,0 +1,81 @@
+.brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.72rem;
+
+    min-width: 0;
+
+    color: var(--clinic-ink);
+}
+
+.symbol {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 2.55rem;
+    height: 2.55rem;
+
+    flex: 0 0 auto;
+
+    border: 1px solid rgba(31, 95, 81, 0.2);
+    border-radius: var(--clinic-radius-md);
+
+    color: var(--clinic-white);
+    background-color: var(--clinic-green-700);
+
+    font-size: 1.45rem;
+    font-weight: 950;
+    line-height: 1;
+
+    box-shadow: 0 8px 20px rgba(31, 95, 81, 0.16);
+}
+
+.text {
+    display: grid;
+    gap: 0.12rem;
+
+    min-width: 0;
+}
+
+.text strong {
+    color: var(--clinic-ink);
+
+    font-size: 1rem;
+    font-weight: 950;
+    letter-spacing: -0.035em;
+    line-height: 1.05;
+    white-space: nowrap;
+}
+
+.text small {
+    color: var(--clinic-muted-strong);
+
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    line-height: 1.1;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+@media (max-width: 420px) {
+    .brand {
+        gap: 0.62rem;
+    }
+
+    .symbol {
+        width: 2.35rem;
+        height: 2.35rem;
+
+        font-size: 1.3rem;
+    }
+
+    .text strong {
+        font-size: 0.95rem;
+    }
+
+    .text small {
+        font-size: 0.72rem;
+    }
+}

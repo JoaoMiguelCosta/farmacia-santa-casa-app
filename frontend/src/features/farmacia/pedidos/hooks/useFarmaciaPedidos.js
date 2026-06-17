@@ -1,57 +1,138 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+// src/features/farmacia/pedidos/hooks/useFarmaciaPedidos.js
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { useAuth } from "../../../auth/hooks/useAuth";
 
-import {
-  getFarmaciaPedidos,
-  rejeitarFarmaciaPedido,
-  validarFarmaciaPedido,
-} from "../api/farmaciaPedidosApi";
-
-import { buildRejectPedidoPayload } from "../../shared/pedidos/utils/farmaciaPedido.utils";
+import { getFarmaciaPedidos } from "../api/farmaciaPedidosApi";
 
 const DEFAULT_QUERY = Object.freeze({
   status: "PENDENTE",
+  search: "",
   skip: 0,
-  take: 50,
+  take: 10,
 });
+
+const LOAD_ERROR_MESSAGE = "Não foi possível carregar os pedidos.";
 
 function getErrorMessage(error, fallback) {
   return error?.message || fallback;
 }
 
+function getInitialQuery(initialQuery) {
+  return {
+    ...DEFAULT_QUERY,
+    ...initialQuery,
+  };
+}
+
+function getSafeMeta(meta, fallbackQuery) {
+  const total = Number(meta?.total);
+  const skip = Number(meta?.skip);
+  const take = Number(meta?.take);
+
+  return {
+    total: Number.isFinite(total) && total >= 0 ? total : 0,
+
+    skip: Number.isFinite(skip) && skip >= 0 ? skip : fallbackQuery.skip,
+
+    take: Number.isFinite(take) && take > 0 ? take : fallbackQuery.take,
+  };
+}
+
+function getInitialMeta(initialQuery) {
+  return getSafeMeta(null, initialQuery);
+}
+
+function getPagination(meta, pedidosCount) {
+  const total = Number(meta?.total) || 0;
+  const skip = Math.max(0, Number(meta?.skip) || 0);
+
+  const take = Math.max(1, Number(meta?.take) || DEFAULT_QUERY.take);
+
+  const totalPages = Math.max(1, Math.ceil(total / take));
+
+  const currentPage = Math.min(totalPages, Math.floor(skip / take) + 1);
+
+  const rangeStart = total === 0 ? 0 : skip + 1;
+
+  const rangeEnd = total === 0 ? 0 : Math.min(skip + pedidosCount, total);
+
+  return {
+    currentPage,
+    totalPages,
+
+    rangeStart,
+    rangeEnd,
+
+    hasPreviousPage: skip > 0,
+    hasNextPage: skip + take < total,
+  };
+}
+
 export function useFarmaciaPedidos(initialQuery = DEFAULT_QUERY) {
   const { handleAuthError } = useAuth();
 
-  const [pedidos, setPedidos] = useState([]);
-  const [meta, setMeta] = useState({
-    total: 0,
-    skip: initialQuery.skip ?? DEFAULT_QUERY.skip,
-    take: initialQuery.take ?? DEFAULT_QUERY.take,
-  });
+  const latestRequestIdRef = useRef(0);
 
-  const [query, setQuery] = useState({
-    ...DEFAULT_QUERY,
-    ...initialQuery,
+  const [query, setQuery] = useState(() => getInitialQuery(initialQuery));
+
+  const [pedidos, setPedidos] = useState([]);
+
+  const [meta, setMeta] = useState(() => {
+    const initialSafeQuery = getInitialQuery(initialQuery);
+
+    return getInitialMeta(initialSafeQuery);
   });
 
   const [isLoading, setIsLoading] = useState(true);
+
   const [isRefreshing, setIsRefreshing] = useState(false);
 
-  const [validatingPedidoId, setValidatingPedidoId] = useState(null);
-  const [rejectingPedidoId, setRejectingPedidoId] = useState(null);
+  const [isQuerying, setIsQuerying] = useState(false);
 
   const [error, setError] = useState(null);
-  const [actionError, setActionError] = useState(null);
 
-  const hasPedidos = pedidos.length > 0;
+  const pagination = useMemo(() => {
+    return getPagination(meta, pedidos.length);
+  }, [meta, pedidos.length]);
 
-  const isActionRunning = useMemo(() => {
-    return Boolean(validatingPedidoId || rejectingPedidoId);
-  }, [validatingPedidoId, rejectingPedidoId]);
+  const executePedidosRequest = useCallback(
+    async (requestQuery, requestId) => {
+      try {
+        const result = await getFarmaciaPedidos(requestQuery);
+
+        if (requestId !== latestRequestIdRef.current) {
+          return null;
+        }
+
+        setPedidos(result.data);
+
+        setMeta(getSafeMeta(result.meta, requestQuery));
+
+        return result;
+      } catch (loadError) {
+        if (requestId !== latestRequestIdRef.current) {
+          return null;
+        }
+
+        if (handleAuthError(loadError)) {
+          return null;
+        }
+
+        setError(getErrorMessage(loadError, LOAD_ERROR_MESSAGE));
+
+        return null;
+      }
+    },
+    [handleAuthError],
+  );
 
   const loadPedidos = useCallback(
     async ({ showRefreshing = false } = {}) => {
+      const requestId = latestRequestIdRef.current + 1;
+
+      latestRequestIdRef.current = requestId;
+
       if (showRefreshing) {
         setIsRefreshing(true);
       } else {
@@ -60,153 +141,122 @@ export function useFarmaciaPedidos(initialQuery = DEFAULT_QUERY) {
 
       setError(null);
 
-      try {
-        const result = await getFarmaciaPedidos(query);
+      const result = await executePedidosRequest(query, requestId);
 
-        setPedidos(result.data);
-        setMeta(result.meta);
-      } catch (loadError) {
-        if (handleAuthError(loadError)) return;
-
-        setError(
-          getErrorMessage(loadError, "Não foi possível carregar os pedidos."),
-        );
-      } finally {
+      if (requestId === latestRequestIdRef.current) {
         setIsLoading(false);
         setIsRefreshing(false);
+        setIsQuerying(false);
       }
+
+      return result;
     },
-    [handleAuthError, query],
+    [executePedidosRequest, query],
   );
 
-  const refreshPedidos = useCallback(async () => {
-    await loadPedidos({ showRefreshing: true });
+  const refreshPedidos = useCallback(() => {
+    return loadPedidos({
+      showRefreshing: true,
+    });
   }, [loadPedidos]);
 
   const updateQuery = useCallback((nextQuery = {}) => {
+    setError(null);
+    setIsQuerying(true);
+
     setQuery((currentQuery) => ({
       ...currentQuery,
       ...nextQuery,
     }));
   }, []);
 
-  const validatePedido = useCallback(
-    async (pedidoId) => {
-      if (!pedidoId) return null;
-
-      setValidatingPedidoId(pedidoId);
-      setActionError(null);
-
-      try {
-        const updatedPedido = await validarFarmaciaPedido(pedidoId);
-
-        await loadPedidos({ showRefreshing: true });
-
-        return updatedPedido;
-      } catch (validateError) {
-        if (handleAuthError(validateError)) return null;
-
-        setActionError(
-          getErrorMessage(validateError, "Não foi possível validar o pedido."),
-        );
-
-        return null;
-      } finally {
-        setValidatingPedidoId(null);
-      }
+  const searchPedidos = useCallback(
+    (searchValue = "") => {
+      updateQuery({
+        search: String(searchValue).trim(),
+        skip: 0,
+      });
     },
-    [handleAuthError, loadPedidos],
+    [updateQuery],
   );
 
-  const rejectPedido = useCallback(
-    async (pedidoId, reason = "") => {
-      if (!pedidoId) return null;
+  const clearSearch = useCallback(() => {
+    updateQuery({
+      search: "",
+      skip: 0,
+    });
+  }, [updateQuery]);
 
-      setRejectingPedidoId(pedidoId);
-      setActionError(null);
-
-      try {
-        const payload = buildRejectPedidoPayload(reason);
-        const updatedPedido = await rejeitarFarmaciaPedido(pedidoId, payload);
-
-        await loadPedidos({ showRefreshing: true });
-
-        return updatedPedido;
-      } catch (rejectError) {
-        if (handleAuthError(rejectError)) return null;
-
-        setActionError(
-          getErrorMessage(rejectError, "Não foi possível rejeitar o pedido."),
-        );
-
-        return null;
-      } finally {
-        setRejectingPedidoId(null);
-      }
-    },
-    [handleAuthError, loadPedidos],
-  );
-
-  const clearActionError = useCallback(() => {
-    setActionError(null);
-  }, []);
-
-  useEffect(() => {
-    let isMounted = true;
-
-    async function loadInitialPedidos() {
-      setIsLoading(true);
-      setError(null);
-
-      try {
-        const result = await getFarmaciaPedidos(query);
-
-        if (!isMounted) return;
-
-        setPedidos(result.data);
-        setMeta(result.meta);
-      } catch (loadError) {
-        if (!isMounted) return;
-        if (handleAuthError(loadError)) return;
-
-        setError(
-          getErrorMessage(loadError, "Não foi possível carregar os pedidos."),
-        );
-      } finally {
-        if (isMounted) {
-          setIsLoading(false);
-        }
-      }
+  const goToPreviousPage = useCallback(() => {
+    if (!pagination.hasPreviousPage) {
+      return;
     }
 
-    loadInitialPedidos();
+    updateQuery({
+      skip: Math.max(0, query.skip - query.take),
+    });
+  }, [pagination.hasPreviousPage, query.skip, query.take, updateQuery]);
+
+  const goToNextPage = useCallback(() => {
+    if (!pagination.hasNextPage) {
+      return;
+    }
+
+    updateQuery({
+      skip: query.skip + query.take,
+    });
+  }, [pagination.hasNextPage, query.skip, query.take, updateQuery]);
+
+  useEffect(() => {
+    const requestId = latestRequestIdRef.current + 1;
+
+    latestRequestIdRef.current = requestId;
+
+    let isCancelled = false;
+
+    async function loadCurrentQuery() {
+      await executePedidosRequest(query, requestId);
+
+      if (isCancelled || requestId !== latestRequestIdRef.current) {
+        return;
+      }
+
+      setIsLoading(false);
+      setIsRefreshing(false);
+      setIsQuerying(false);
+    }
+
+    void loadCurrentQuery();
 
     return () => {
-      isMounted = false;
+      isCancelled = true;
+
+      if (latestRequestIdRef.current === requestId) {
+        latestRequestIdRef.current += 1;
+      }
     };
-  }, [handleAuthError, query]);
+  }, [executePedidosRequest, query]);
 
   return {
     pedidos,
     meta,
     query,
+    pagination,
 
-    hasPedidos,
     isLoading,
     isRefreshing,
-    isActionRunning,
-
-    validatingPedidoId,
-    rejectingPedidoId,
+    isQuerying,
 
     error,
-    actionError,
 
     loadPedidos,
     refreshPedidos,
     updateQuery,
-    validatePedido,
-    rejectPedido,
-    clearActionError,
+
+    searchPedidos,
+    clearSearch,
+
+    goToPreviousPage,
+    goToNextPage,
   };
 }

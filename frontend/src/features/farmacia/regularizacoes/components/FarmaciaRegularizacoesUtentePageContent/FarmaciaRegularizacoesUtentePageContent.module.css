@@ -1,0 +1,250 @@
+.page {
+    display: grid;
+    gap: clamp(1.25rem, 2.5vw, 2rem);
+    inline-size: min(100%, var(--clinic-page-max));
+    margin-inline: auto;
+}
+
+.backLink {
+    width: fit-content;
+    min-height: 2.45rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.65rem 0.95rem;
+    border: 1px solid var(--clinic-border);
+    border-radius: 999px;
+    background: var(--clinic-white);
+    color: var(--clinic-green-700);
+    font-size: var(--clinic-font-size-sm);
+    font-weight: 850;
+    box-shadow: var(--clinic-shadow-soft);
+    transition:
+        transform var(--clinic-transition),
+        border-color var(--clinic-transition),
+        background var(--clinic-transition),
+        box-shadow var(--clinic-transition);
+}
+
+.backLink:hover {
+    transform: translateY(-1px);
+    border-color: var(--clinic-border-strong);
+    background: var(--clinic-mist);
+    box-shadow: var(--clinic-shadow-card);
+}
+
+.backLink:focus-visible {
+    outline: 3px solid rgba(31, 95, 81, 0.24);
+    outline-offset: 3px;
+}
+
+.medicamentos {
+    display: grid;
+    gap: 1rem;
+    padding: clamp(1rem, 2vw, 1.25rem);
+    border: 1px solid var(--clinic-border);
+    border-radius: var(--clinic-radius-2xl);
+    background: var(--clinic-surface);
+    box-shadow: var(--clinic-shadow-soft);
+}
+
+.sectionHeader {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.heading {
+    display: grid;
+    gap: 0.35rem;
+    min-width: 0;
+}
+
+.sectionTitle {
+    margin: 0;
+    color: var(--clinic-ink);
+    font-size: clamp(1.25rem, 2.2vw, 1.65rem);
+    line-height: var(--clinic-line-height-tight);
+}
+
+.sectionDescription {
+    max-width: 70ch;
+    margin: 0;
+    color: var(--clinic-muted);
+    font-size: var(--clinic-font-size-sm);
+    line-height: var(--clinic-line-height-base);
+}
+
+.clearButton,
+.listButton {
+    min-height: 2.45rem;
+    padding: 0.65rem 0.95rem;
+    border: 1px solid var(--clinic-border);
+    border-radius: 999px;
+    background: var(--clinic-white);
+    color: var(--clinic-green-700);
+    font: inherit;
+    font-size: var(--clinic-font-size-sm);
+    font-weight: 850;
+    cursor: pointer;
+    transition:
+        transform var(--clinic-transition),
+        border-color var(--clinic-transition),
+        background var(--clinic-transition),
+        box-shadow var(--clinic-transition),
+        opacity var(--clinic-transition);
+}
+
+.clearButton:hover,
+.listButton:hover {
+    transform: translateY(-1px);
+    border-color: var(--clinic-border-strong);
+    background: var(--clinic-mist);
+    box-shadow: var(--clinic-shadow-soft);
+}
+
+.clearButton:focus-visible,
+.listButton:focus-visible {
+    outline: 3px solid rgba(31, 95, 81, 0.24);
+    outline-offset: 3px;
+}
+
+.clearButton:disabled,
+.listButton:disabled {
+    cursor: not-allowed;
+    opacity: 0.56;
+    transform: none;
+    box-shadow: none;
+}
+
+.controls {
+    display: grid;
+    grid-template-columns: minmax(16rem, 1fr) minmax(11rem, 0.35fr) auto;
+    align-items: end;
+    gap: 0.75rem;
+    padding: 0.9rem;
+    border: 1px solid var(--clinic-border);
+    border-radius: var(--clinic-radius-xl);
+    background: var(--clinic-mist);
+}
+
+.controlField {
+    display: grid;
+    gap: 0.35rem;
+    min-width: 0;
+}
+
+.controlField span {
+    color: var(--clinic-muted);
+    font-size: var(--clinic-font-size-xs);
+    font-weight: 850;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.controlField input,
+.controlField select {
+    min-height: 2.45rem;
+    width: 100%;
+    padding: 0.65rem 0.85rem;
+    border: 1px solid var(--clinic-border);
+    border-radius: 999px;
+    background: var(--clinic-white);
+    color: var(--clinic-ink);
+    font: inherit;
+    font-size: var(--clinic-font-size-sm);
+}
+
+.controlField input:focus,
+.controlField select:focus {
+    outline: none;
+    border-color: var(--clinic-border-strong);
+    box-shadow: 0 0 0 3px rgba(31, 95, 81, 0.16);
+}
+
+.clearButton {
+    white-space: nowrap;
+}
+
+.resultsMeta {
+    grid-column: 1 / -1;
+    margin: 0;
+    color: var(--clinic-muted);
+    font-size: var(--clinic-font-size-sm);
+    font-weight: 750;
+}
+
+.cards {
+    display: grid;
+    gap: 0.9rem;
+}
+
+.listActions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 0.85rem 0.95rem;
+    border: 1px solid var(--clinic-border);
+    border-radius: var(--clinic-radius-xl);
+    background: var(--clinic-mist);
+}
+
+.hiddenMeta {
+    flex: 1 1 14rem;
+    color: var(--clinic-muted);
+    font-size: var(--clinic-font-size-sm);
+    font-weight: 750;
+    line-height: var(--clinic-line-height-base);
+}
+
+.emptyResults {
+    display: grid;
+    gap: 0.3rem;
+    padding: 1rem;
+    border: 1px solid var(--clinic-border);
+    border-radius: var(--clinic-radius-xl);
+    background: var(--clinic-white);
+}
+
+.emptyResults strong {
+    color: var(--clinic-ink);
+    font-size: var(--clinic-font-size-md);
+}
+
+.emptyResults span {
+    color: var(--clinic-muted);
+    font-size: var(--clinic-font-size-sm);
+    line-height: var(--clinic-line-height-base);
+}
+
+@media (max-width: 780px) {
+    .sectionHeader {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .controls {
+        grid-template-columns: 1fr;
+    }
+
+    .clearButton,
+    .listButton,
+    .backLink {
+        width: 100%;
+    }
+
+    .sectionHeader > button {
+        width: 100%;
+    }
+
+    .listActions {
+        display: grid;
+        grid-template-columns: 1fr;
+    }
+
+    .hiddenMeta {
+        flex: initial;
+    }
+}

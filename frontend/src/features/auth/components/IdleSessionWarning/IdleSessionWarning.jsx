@@ -1,13 +1,18 @@
-import { AUTH_MESSAGES } from "../../config/auth.config";
+// src/features/auth/components/IdleSessionWarning/IdleSessionWarning.jsx
+
+import { useId } from "react";
+
 import { useAuth } from "../../hooks/useAuth";
+
+import { IDLE_SESSION_WARNING_CONFIG } from "./IdleSessionWarning.config";
+import { formatIdleSessionDuration } from "./idleSessionWarning.utils";
 
 import styles from "./IdleSessionWarning.module.css";
 
-function formatSeconds(milliseconds) {
-  return Math.ceil(milliseconds / 1000);
-}
-
 export default function IdleSessionWarning() {
+  const titleId = useId();
+  const descriptionId = useId();
+
   const {
     isAuthenticated,
     isIdleWarningVisible,
@@ -19,21 +24,32 @@ export default function IdleSessionWarning() {
     return null;
   }
 
+  const formattedDuration = formatIdleSessionDuration(idleWarningBeforeMs);
+
   return (
     <section
       className={styles.warning}
-      role="status"
-      aria-live="polite"
-      aria-label="Aviso de sessão"
+      role="alert"
+      aria-live="assertive"
+      aria-atomic="true"
+      aria-labelledby={titleId}
+      aria-describedby={descriptionId}
     >
       <div className={styles.inner}>
-        <div className={styles.content}>
-          <strong className={styles.title}>Sessão quase a terminar</strong>
+        <span className={styles.indicator} aria-hidden="true">
+          !
+        </span>
 
-          <p className={styles.description}>
-            {AUTH_MESSAGES.sessionExpiringSoon} Tens cerca de{" "}
-            <strong>{formatSeconds(idleWarningBeforeMs)} segundos</strong> para
-            continuar.
+        <div className={styles.content}>
+          <strong id={titleId} className={styles.title}>
+            {IDLE_SESSION_WARNING_CONFIG.title}
+          </strong>
+
+          <p id={descriptionId} className={styles.description}>
+            {IDLE_SESSION_WARNING_CONFIG.description.message}{" "}
+            {IDLE_SESSION_WARNING_CONFIG.description.remainingTimePrefix}{" "}
+            <strong>{formattedDuration}</strong>{" "}
+            {IDLE_SESSION_WARNING_CONFIG.description.remainingTimeSuffix}
           </p>
         </div>
 
@@ -42,7 +58,7 @@ export default function IdleSessionWarning() {
           className={styles.action}
           onClick={dismissIdleWarning}
         >
-          Continuar sessão
+          {IDLE_SESSION_WARNING_CONFIG.actions.continueSession}
         </button>
       </div>
     </section>

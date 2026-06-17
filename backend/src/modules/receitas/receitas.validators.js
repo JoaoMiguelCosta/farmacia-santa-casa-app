@@ -1,6 +1,7 @@
 // src/modules/receitas/receitas.validators.js
 const { badRequest } = require("../../shared/errors/AppError");
 const { normalizeText } = require("../../shared/utils/normalize");
+const { isDateBeforeToday } = require("../../shared/utils/date");
 
 function assertDigits(value, length, fieldName) {
   const text = String(value || "").trim();
@@ -29,25 +30,59 @@ function parseBoolean(value) {
   return ["1", "true", "yes", "on", "sim"].includes(normalized);
 }
 
+function getLinhaLabel(index) {
+  return `Medicamento ${index + 1}`;
+}
+
+function parseDateOnly(value) {
+  const text = String(value || "").trim();
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(text);
+
+  if (!match) return null;
+
+  const [, year, month, day] = match.map(Number);
+  const date = new Date(year, month - 1, day);
+
+  if (
+    date.getFullYear() !== year ||
+    date.getMonth() !== month - 1 ||
+    date.getDate() !== day
+  ) {
+    return null;
+  }
+
+  return date;
+}
+
+function parseValidityDate(value) {
+  const dateOnly = parseDateOnly(value);
+
+  if (dateOnly) return dateOnly;
+
+  return value ? new Date(value) : null;
+}
+
 function parseLinha(raw = {}, index) {
+  const linhaLabel = getLinhaLabel(index);
+
   const nome = String(raw.nome || raw.medicamento || "").trim();
   const quantidade = Math.floor(Number(raw.quantidade));
-  const validade = raw.validade ? new Date(raw.validade) : null;
+  const validade = parseValidityDate(raw.validade);
 
   if (!nome) {
-    throw badRequest(`Linha ${index + 1}: o medicamento é obrigatório.`);
+    throw badRequest(`${linhaLabel}: o medicamento é obrigatório.`);
   }
 
   if (!Number.isFinite(quantidade) || quantidade <= 0) {
-    throw badRequest(`Linha ${index + 1}: a quantidade deve ser maior que 0.`);
+    throw badRequest(`${linhaLabel}: a quantidade deve ser maior que 0.`);
   }
 
   if (!(validade instanceof Date) || Number.isNaN(validade.getTime())) {
-    throw badRequest(`Linha ${index + 1}: a validade é inválida.`);
+    throw badRequest(`${linhaLabel}: a validade é inválida.`);
   }
 
-  if (validade <= new Date()) {
-    throw badRequest(`Linha ${index + 1}: a validade deve ser futura.`);
+  if (isDateBeforeToday(validade)) {
+    throw badRequest(`${linhaLabel}: a validade deve ser hoje ou futura.`);
   }
 
   return {

@@ -1,0 +1,106 @@
+.card {
+    --metric-accent: var(--clinic-green-700);
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+
+    min-width: 0;
+    min-height: 3.5rem;
+    padding: 0.75rem 0.85rem;
+
+    border: 1px solid var(--clinic-border);
+    border-radius: var(--clinic-radius-md);
+
+    background: var(--clinic-mist);
+    color: var(--clinic-ink);
+
+    text-decoration: none;
+
+    transition:
+        border-color var(--clinic-transition),
+        background var(--clinic-transition),
+        box-shadow var(--clinic-transition);
+}
+
+.label {
+    min-width: 0;
+
+    color: var(--clinic-muted-strong);
+
+    font-size: var(--clinic-font-size-sm);
+    font-weight: 550;
+    line-height: 1.4;
+}
+
+.result {
+    display: grid;
+    grid-template-columns: minmax(1.5rem, auto) 1rem;
+    align-items: center;
+    justify-items: end;
+    gap: 0.45rem;
+
+    flex: 0 0 auto;
+}
+
+.value {
+    color: var(--metric-accent);
+
+    font-size: var(--clinic-font-size-lg);
+    font-weight: 800;
+    line-height: 1;
+}
+
+.arrow {
+    color: var(--metric-accent);
+    font-size: var(--clinic-font-size-sm);
+    line-height: 1;
+}
+
+.hiddenArrow {
+    visibility: hidden;
+}
+
+.success {
+    --metric-accent: var(--clinic-success);
+}
+
+.warning {
+    --metric-accent: var(--clinic-warning);
+}
+
+.danger {
+    --metric-accent: var(--clinic-danger);
+}
+
+.info {
+    --metric-accent: var(--clinic-blue-700);
+}
+
+.neutral {
+    --metric-accent: var(--clinic-green-700);
+}
+
+.card:focus-visible {
+    outline: 3px solid rgba(31, 95, 81, 0.22);
+    outline-offset: 3px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    a.card:hover {
+        border-color: var(--metric-accent);
+        background: var(--clinic-soft);
+        box-shadow: var(--clinic-shadow-soft);
+    }
+}
+
+@media (max-width: 420px) {
+    .card {
+        align-items: flex-start;
+    }
+
+    .label {
+        font-size: var(--clinic-font-size-xs);
+    }
+}

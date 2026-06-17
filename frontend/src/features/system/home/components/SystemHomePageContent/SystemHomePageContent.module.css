@@ -1,0 +1,111 @@
+.page {
+    display: grid;
+    gap: clamp(1.25rem, 2.5vw, 2rem);
+
+    width: 100%;
+    min-width: 0;
+}
+
+.header {
+    position: relative;
+    isolation: isolate;
+
+    display: grid;
+    gap: 0.7rem;
+
+    min-width: 0;
+    overflow: hidden;
+
+    padding: clamp(1.25rem, 3vw, 1.9rem);
+
+    border: 1px solid var(--clinic-border);
+    border-radius: var(--clinic-radius-2xl);
+
+    background: var(--clinic-surface);
+
+    box-shadow: var(--clinic-shadow-soft);
+}
+
+.header::before {
+    content: "";
+
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline: 0;
+
+    height: 4px;
+
+    background: linear-gradient(90deg,
+            var(--clinic-green-700),
+            var(--clinic-blue-700),
+            var(--clinic-gold-500));
+}
+
+.eyebrow {
+    width: fit-content;
+    margin: 0;
+    padding: 0.34rem 0.68rem;
+
+    border: 1px solid rgba(31, 95, 81, 0.16);
+    border-radius: 999px;
+
+    color: var(--clinic-green-700);
+    background: var(--clinic-mist);
+
+    font-size: 0.7rem;
+    font-weight: 850;
+    letter-spacing: 0.11em;
+    line-height: 1;
+    text-transform: uppercase;
+}
+
+.title {
+    max-width: 16ch;
+    margin: 0;
+
+    color: var(--clinic-ink);
+
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 900;
+    letter-spacing: -0.055em;
+    line-height: 1.02;
+}
+
+.description {
+    max-width: 70ch;
+    margin: 0;
+
+    color: var(--clinic-muted-strong);
+
+    font-size: clamp(1rem, 2vw, 1.12rem);
+    font-weight: 550;
+    line-height: var(--clinic-line-height-base);
+}
+
+.featured {
+    display: grid;
+    grid-template-columns: minmax(0, 1.25fr) repeat(2, minmax(0, 1fr));
+    gap: clamp(0.9rem, 2vw, 1.1rem);
+
+    min-width: 0;
+}
+
+@media (max-width: 980px) {
+    .featured {
+        grid-template-columns: 1fr;
+    }
+
+    .title {
+        max-width: 20ch;
+    }
+}
+
+@media (max-width: 520px) {
+    .header {
+        border-radius: var(--clinic-radius-xl);
+    }
+
+    .title {
+        font-size: clamp(1.8rem, 10vw, 2.35rem);
+    }
+}

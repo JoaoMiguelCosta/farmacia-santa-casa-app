@@ -1,3 +1,4 @@
+// src/features/santacasa/pedidos/utils/pedidoItems.js
 const collator = new Intl.Collator("pt-PT", {
   sensitivity: "base",
   numeric: true,
@@ -34,6 +35,12 @@ export function normalizeReceitaItems(items = []) {
       title: item.medicamento,
       description: `Receita ${item.numero19}`,
       meta: `PIN ${item.pinAcesso6} · Opção ${item.pinOpcao4}`,
+
+      numero19: item.numero19,
+      pinAcesso6: item.pinAcesso6,
+      pinOpcao4: item.pinOpcao4,
+      validade: item.validade,
+
       quantidadeRestante: Number(item.quantidadeRestante) || 0,
       source: item,
     }))

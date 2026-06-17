@@ -1,0 +1,163 @@
+/* src/features/santacasa/pedidos/components/SantaCasaPedidoDetailPageContent/SantaCasaPedidoDetailPageContent.module.css */
+
+.page {
+    display: grid;
+    gap: clamp(1rem, 2vw, 1.5rem);
+
+    inline-size: min(100%,
+            var(--clinic-page-max));
+
+    margin-inline: auto;
+    padding-bottom: 1rem;
+}
+
+.navigation {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.backLink {
+    min-height: 2.55rem;
+    padding: 0.68rem 0.9rem;
+
+    border: 1px solid rgb(31 95 81 / 0.22);
+    border-radius: var(--clinic-radius-md);
+
+    color: var(--clinic-green-700);
+    background: var(--clinic-white);
+
+    font: inherit;
+    font-size: var(--clinic-font-size-sm);
+    font-weight: 800;
+    line-height: 1;
+
+    transition:
+        transform var(--clinic-transition),
+        border-color var(--clinic-transition),
+        background var(--clinic-transition),
+        box-shadow var(--clinic-transition),
+        opacity var(--clinic-transition);
+}
+
+.backLink {
+    display: inline-flex;
+    align-items: center;
+
+    width: fit-content;
+
+    text-decoration: none;
+}
+
+.backLink:hover {
+    transform: translateY(-1px);
+
+    border-color: rgb(31 95 81 / 0.38);
+
+    background: var(--clinic-mist);
+
+    box-shadow: var(--clinic-shadow-soft);
+}
+
+.backLink:focus-visible {
+    outline: 3px solid rgb(31 95 81 / 0.24);
+    outline-offset: 3px;
+}
+
+
+.cancelSection {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+
+    min-width: 0;
+    padding: clamp(0.95rem,
+            2vw,
+            1.15rem);
+
+    border: 1px solid rgb(180 35 24 / 0.18);
+    border-radius: var(--clinic-radius-lg);
+
+    background: rgb(180 35 24 / 0.04);
+
+    box-shadow:
+        inset 0 1px 0 rgb(255 255 255 / 0.78);
+}
+
+.cancelContent {
+    display: grid;
+    gap: 0.3rem;
+
+    min-width: 0;
+}
+
+.cancelContent h2 {
+    margin: 0;
+
+    color: var(--clinic-danger);
+
+    font-size: clamp(1rem,
+            1.5vw,
+            1.15rem);
+
+    font-weight: 950;
+    letter-spacing: -0.03em;
+    line-height: 1.2;
+}
+
+.cancelContent p {
+    max-width: 72ch;
+    margin: 0;
+
+    color: var(--clinic-muted-strong);
+
+    font-size: var(--clinic-font-size-sm);
+    font-weight: 650;
+    line-height: 1.5;
+}
+
+@media (max-width: 700px) {
+    .cancelSection {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .cancelSection>button {
+        width: 100%;
+    }
+}
+
+@media (max-width: 620px) {
+    .navigation {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .backLink {
+        justify-content: center;
+
+        width: 100%;
+    }
+}
+
+@media (max-width: 420px) {
+    .cancelSection {
+        padding: 0.9rem;
+
+        border-radius:
+            var(--clinic-radius-lg);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .backLink {
+        transition: none;
+    }
+
+    .backLink:hover {
+        transform: none;
+    }
+}

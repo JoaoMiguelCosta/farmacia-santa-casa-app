@@ -105,6 +105,9 @@ function toPedidoDTO(pedido) {
     rejectedById: pedido.rejectedById,
     rejectedBy: toAuditUserDTO(pedido.rejectedBy),
 
+    canceledById: pedido.canceledById ?? null,
+    canceledBy: toAuditUserDTO(pedido.canceledBy),
+
     closedReason,
     cancelReason: closedReason,
 

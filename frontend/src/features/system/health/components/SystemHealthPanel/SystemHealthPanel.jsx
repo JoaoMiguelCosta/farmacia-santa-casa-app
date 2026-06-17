@@ -1,65 +1,12 @@
-import styles from "./SystemHealthPanel.module.css";
+import Button from "../../../../../shared/ui/Button/Button";
 
 import { SYSTEM_HEALTH_CONFIG } from "../../config/systemHealth.config";
 import { useSystemHealth } from "../../hooks/useSystemHealth";
 
-function formatPayload(payload) {
-  if (!payload) return "—";
+import SystemHealthCard from "../SystemHealthCard/SystemHealthCard";
+import SystemHealthState from "../SystemHealthState/SystemHealthState";
 
-  return JSON.stringify(payload, null, 2);
-}
-
-function getStatusLabel(status) {
-  return SYSTEM_HEALTH_CONFIG.status[status] || status;
-}
-
-function SystemHealthState({ title, description }) {
-  return (
-    <div className={styles.state}>
-      <strong className={styles.stateTitle}>{title}</strong>
-
-      {description ? (
-        <p className={styles.stateDescription}>{description}</p>
-      ) : null}
-    </div>
-  );
-}
-
-function SystemHealthCard({ service }) {
-  const isOnline = service.status === "online";
-
-  return (
-    <article className={styles.card}>
-      <div className={styles.cardStatus}>
-        <span
-          className={
-            isOnline ? styles.statusDotOnline : styles.statusDotOffline
-          }
-          aria-hidden="true"
-        />
-
-        <span className={styles.statusLabel}>
-          {getStatusLabel(service.status)}
-        </span>
-      </div>
-
-      <h3 className={styles.cardTitle}>{service.title}</h3>
-
-      <p className={styles.cardDescription}>{service.description}</p>
-
-      <pre className={styles.payload}>
-        <code>
-          {isOnline
-            ? formatPayload(service.data)
-            : formatPayload({
-                error: service.error,
-                checkedAt: service.checkedAt,
-              })}
-        </code>
-      </pre>
-    </article>
-  );
-}
+import styles from "./SystemHealthPanel.module.css";
 
 export default function SystemHealthPanel() {
   const { services, hasServices, isLoading, isRefreshing, refreshHealth } =
@@ -96,16 +43,16 @@ export default function SystemHealthPanel() {
           </p>
         </div>
 
-        <button
-          type="button"
-          className={styles.refreshButton}
+        <Button
+          variant="secondary"
+          size="sm"
           disabled={isRefreshing}
           onClick={refreshHealth}
         >
           {isRefreshing
             ? SYSTEM_HEALTH_CONFIG.actions.refreshing
             : SYSTEM_HEALTH_CONFIG.actions.refresh}
-        </button>
+        </Button>
       </header>
 
       {!hasServices ? (

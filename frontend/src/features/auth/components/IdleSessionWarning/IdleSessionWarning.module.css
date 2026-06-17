@@ -1,87 +1,108 @@
+/* src/features/auth/components/IdleSessionWarning/IdleSessionWarning.module.css */
+
 .warning {
     position: fixed;
     right: clamp(1rem, 3vw, 1.5rem);
     bottom: clamp(1rem, 3vw, 1.5rem);
     z-index: 100;
-    inline-size: min(calc(100vw - 2rem), 28rem);
+    inline-size: min(calc(100vw - 2rem), 29rem);
 }
 
 .inner {
     display: grid;
-    gap: 0.85rem;
-    padding: clamp(1rem, 2.5vw, 1.2rem);
-    border: 1px solid rgba(191, 156, 76, 0.28);
-    border-top-color: rgba(191, 156, 76, 0.48);
-    border-radius: 1.25rem;
-    background:
-        linear-gradient(135deg,
-            rgba(255, 252, 244, 0.98),
-            rgba(250, 246, 232, 0.95)),
-        radial-gradient(circle at top right,
-            rgba(191, 156, 76, 0.16),
-            transparent 46%);
-    box-shadow: 0 24px 70px rgba(24, 43, 35, 0.18);
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: start;
+    gap: 0.85rem 1rem;
+    padding: clamp(1.1rem, 3vw, 1.35rem);
+    border: 1px solid var(--clinic-border-gold);
+    border-radius: var(--clinic-radius-xl);
+    background: var(--clinic-surface);
+    box-shadow: var(--clinic-shadow-hover);
+}
+
+.indicator {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: 2rem;
+    block-size: 2rem;
+    border: 1px solid var(--clinic-border-gold);
+    border-radius: 999px;
+    background: var(--clinic-gold-soft);
+    color: var(--clinic-warning);
+    font-size: var(--clinic-font-size-md);
+    font-weight: 800;
+    line-height: 1;
 }
 
 .content {
     display: grid;
-    gap: 0.35rem;
+    gap: 0.4rem;
+    min-inline-size: 0;
 }
 
 .title {
-    color: #3c3216;
-    font-size: 0.98rem;
-    font-weight: 900;
-    line-height: 1.25;
+    color: var(--clinic-ink);
+    font-size: var(--clinic-font-size-md);
+    font-weight: 750;
+    line-height: 1.3;
 }
 
 .description {
     margin: 0;
-    color: #70561f;
-    font-size: 0.9rem;
-    font-weight: 650;
-    line-height: 1.5;
+    color: var(--clinic-muted-strong);
+    font-size: var(--clinic-font-size-sm);
+    font-weight: 500;
+    line-height: 1.55;
 }
 
 .description strong {
-    color: #3c3216;
-    font-weight: 900;
+    color: var(--clinic-warning);
+    font-weight: 750;
 }
 
 .action {
+    grid-column: 2;
+    justify-self: start;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-height: 2.45rem;
-    width: fit-content;
-    padding: 0.65rem 0.95rem;
-    border: 1px solid rgba(39, 92, 72, 0.28);
-    border-radius: 999px;
-    background: #275c48;
-    color: #ffffff;
+    min-block-size: 2.75rem;
+    padding-inline: 1rem;
+    border: 1px solid var(--clinic-green-700);
+    border-radius: var(--clinic-radius-md);
+    background: var(--clinic-green-700);
+    color: var(--clinic-white);
     font: inherit;
-    font-size: 0.84rem;
-    font-weight: 900;
+    font-size: var(--clinic-font-size-sm);
+    font-weight: 700;
     line-height: 1;
     cursor: pointer;
-    box-shadow: 0 14px 30px rgba(39, 92, 72, 0.18);
+    box-shadow: 0 8px 20px rgba(31, 95, 81, 0.14);
     transition:
-        transform 160ms ease,
-        border-color 160ms ease,
-        background 160ms ease,
-        box-shadow 160ms ease;
-}
-
-.action:hover {
-    transform: translateY(-1px);
-    border-color: rgba(39, 92, 72, 0.36);
-    background: #214f3e;
-    box-shadow: 0 16px 34px rgba(39, 92, 72, 0.22);
+        border-color var(--clinic-transition),
+        background var(--clinic-transition),
+        box-shadow var(--clinic-transition),
+        opacity var(--clinic-transition);
 }
 
 .action:focus-visible {
-    outline: 3px solid rgba(72, 128, 102, 0.26);
+    outline: 3px solid rgba(31, 95, 81, 0.24);
     outline-offset: 3px;
+}
+
+.action:disabled {
+    cursor: not-allowed;
+    opacity: 0.58;
+    box-shadow: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .action:hover:not(:disabled) {
+        border-color: var(--clinic-green-800);
+        background: var(--clinic-green-800);
+        box-shadow: 0 10px 24px rgba(31, 95, 81, 0.18);
+    }
 }
 
 @media (max-width: 520px) {
@@ -91,7 +112,28 @@
         inline-size: calc(100vw - 2rem);
     }
 
+    .inner {
+        grid-template-columns: auto minmax(0, 1fr);
+        padding: 1rem;
+        border-radius: var(--clinic-radius-lg);
+    }
+
     .action {
-        width: 100%;
+        grid-column: 1 / -1;
+        inline-size: 100%;
+    }
+}
+
+@media (max-width: 380px) {
+    .inner {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .indicator {
+        display: none;
+    }
+
+    .action {
+        grid-column: 1;
     }
 }

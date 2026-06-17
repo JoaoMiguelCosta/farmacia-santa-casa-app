@@ -1,21 +1,32 @@
 // src/modules/sem-receita/semReceita.mappers.js
-function calculateReservedQuantity(row) {
-  return (row.pedidoItens || []).reduce((total, item) => {
-    return total + (Number(item.quantidade) || 0);
-  }, 0);
+function getPedidoItemStatus(item) {
+  return item?.status || "PENDENTE";
+}
+
+function calculateQuantityByStatus(row, status) {
+  return (row.pedidoItens || [])
+    .filter((item) => getPedidoItemStatus(item) === status)
+    .reduce((total, item) => {
+      return total + (Number(item.quantidade) || 0);
+    }, 0);
 }
 
 function toSemReceitaDTO(row) {
   if (!row) return null;
 
   const quantidade = Number(row.quantidade) || 0;
-  const quantidadeReservadaPendente = calculateReservedQuantity(row);
+  const quantidadeReservadaPendente = calculateQuantityByStatus(
+    row,
+    "PENDENTE",
+  );
+  const quantidadeDispensada = calculateQuantityByStatus(row, "VALIDADO");
+
   const quantidadeRestante = Math.max(
     0,
     quantidade - quantidadeReservadaPendente,
   );
 
-  return {
+  const dto = {
     id: row.id,
     utenteId: row.utenteId,
     medicamento: row.medicamento,
@@ -25,6 +36,12 @@ function toSemReceitaDTO(row) {
     createdAt: row.createdAt,
     updatedAt: row.updatedAt,
   };
+
+  if (quantidadeDispensada > 0) {
+    dto.quantidadeDispensada = quantidadeDispensada;
+  }
+
+  return dto;
 }
 
 module.exports = {

@@ -1,9 +1,17 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+// src/features/farmacia/historico/hooks/useFarmaciaHistorico.js
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+
+import { useSearchParams } from "react-router-dom";
 
 import { useAuth } from "../../../auth/hooks/useAuth";
 
 import { getFarmaciaHistorico } from "../api/farmaciaHistoricoApi";
-import { buildFarmaciaHistoricoQuery } from "../utils/farmaciaHistorico.utils";
+
+import {
+  buildFarmaciaHistoricoQuery,
+  buildFarmaciaHistoricoSearchParams,
+  getFarmaciaHistoricoQueryFromSearchParams,
+} from "../utils/farmaciaHistorico.utils";
 
 const DEFAULT_HISTORICO_QUERY = Object.freeze({
   status: "TODOS",
@@ -11,70 +19,142 @@ const DEFAULT_HISTORICO_QUERY = Object.freeze({
   from: "",
   to: "",
   skip: 0,
-  take: 50,
+  take: 10,
 });
+
+const LOAD_ERROR_MESSAGE = "Não foi possível carregar o histórico da Farmácia.";
 
 function getErrorMessage(error, fallback) {
   return error?.message || fallback;
 }
 
-function getInitialMeta(initialQuery = DEFAULT_HISTORICO_QUERY) {
+function getSafeMeta(meta, fallbackQuery) {
+  const total = Number(meta?.total);
+  const skip = Number(meta?.skip);
+  const take = Number(meta?.take);
+
   return {
-    total: 0,
-    skip: initialQuery.skip ?? DEFAULT_HISTORICO_QUERY.skip,
-    take: initialQuery.take ?? DEFAULT_HISTORICO_QUERY.take,
+    total: Number.isFinite(total) && total >= 0 ? total : 0,
+
+    skip: Number.isFinite(skip) && skip >= 0 ? skip : fallbackQuery.skip,
+
+    take: Number.isFinite(take) && take > 0 ? take : fallbackQuery.take,
+  };
+}
+
+function getPagination(meta, pedidosCount) {
+  const total = Math.max(0, Number(meta?.total) || 0);
+
+  const skip = Math.max(0, Number(meta?.skip) || 0);
+
+  const take = Math.max(1, Number(meta?.take) || DEFAULT_HISTORICO_QUERY.take);
+
+  const totalPages = Math.max(1, Math.ceil(total / take));
+
+  const currentPage = Math.min(totalPages, Math.floor(skip / take) + 1);
+
+  const rangeStart = total === 0 ? 0 : skip + 1;
+
+  const rangeEnd = total === 0 ? 0 : Math.min(skip + pedidosCount, total);
+
+  return {
+    currentPage,
+    totalPages,
+
+    rangeStart,
+    rangeEnd,
+
+    hasPreviousPage: skip > 0,
+    hasNextPage: skip + take < total,
   };
 }
 
 export function useFarmaciaHistorico(initialQuery = DEFAULT_HISTORICO_QUERY) {
   const { handleAuthError } = useAuth();
 
-  const [pedidos, setPedidos] = useState([]);
-  const [meta, setMeta] = useState(() => getInitialMeta(initialQuery));
+  const [searchParams, setSearchParams] = useSearchParams();
 
-  const [query, setQuery] = useState({
-    ...DEFAULT_HISTORICO_QUERY,
-    ...initialQuery,
+  const [initialQueryState] = useState(() => {
+    return buildFarmaciaHistoricoQuery({
+      ...DEFAULT_HISTORICO_QUERY,
+      ...initialQuery,
+    });
   });
 
-  const [statusInput, setStatusInput] = useState(
-    initialQuery.status ?? DEFAULT_HISTORICO_QUERY.status,
-  );
-  const [searchInput, setSearchInput] = useState(
-    initialQuery.search ?? DEFAULT_HISTORICO_QUERY.search,
-  );
-  const [fromInput, setFromInput] = useState(
-    initialQuery.from ?? DEFAULT_HISTORICO_QUERY.from,
-  );
-  const [toInput, setToInput] = useState(
-    initialQuery.to ?? DEFAULT_HISTORICO_QUERY.to,
-  );
+  const latestRequestIdRef = useRef(0);
 
-  const [isLoading, setIsLoading] = useState(true);
-  const [isRefreshing, setIsRefreshing] = useState(false);
-  const [error, setError] = useState(null);
-
-  const hasPedidos = pedidos.length > 0;
+  const searchParamsKey = searchParams.toString();
 
   const currentQuery = useMemo(() => {
-    return buildFarmaciaHistoricoQuery(query);
-  }, [query]);
+    return getFarmaciaHistoricoQueryFromSearchParams(
+      searchParamsKey,
+      initialQueryState,
+    );
+  }, [initialQueryState, searchParamsKey]);
 
-  const selectedStatus = useMemo(() => {
-    return query.status || DEFAULT_HISTORICO_QUERY.status;
-  }, [query.status]);
+  const [pedidos, setPedidos] = useState([]);
 
-  const totalPages = Math.max(1, Math.ceil(meta.total / meta.take));
-  const currentPage = Math.min(
-    totalPages,
-    Math.floor(meta.skip / meta.take) + 1,
+  const [meta, setMeta] = useState(() => {
+    return getSafeMeta(null, initialQueryState);
+  });
+
+  const [statusInput, setStatusInput] = useState(currentQuery.status);
+
+  const [searchInput, setSearchInput] = useState(currentQuery.search);
+
+  const [fromInput, setFromInput] = useState(currentQuery.from);
+
+  const [toInput, setToInput] = useState(currentQuery.to);
+
+  const [isLoading, setIsLoading] = useState(true);
+
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const [isQuerying, setIsQuerying] = useState(false);
+
+  const [error, setError] = useState(null);
+
+  const pagination = useMemo(() => {
+    return getPagination(meta, pedidos.length);
+  }, [meta, pedidos.length]);
+
+  const executeHistoricoRequest = useCallback(
+    async (requestQuery, requestId) => {
+      try {
+        const result = await getFarmaciaHistorico(requestQuery);
+
+        if (requestId !== latestRequestIdRef.current) {
+          return null;
+        }
+
+        setPedidos(result.data);
+
+        setMeta(getSafeMeta(result.meta, requestQuery));
+
+        return result;
+      } catch (loadError) {
+        if (requestId !== latestRequestIdRef.current) {
+          return null;
+        }
+
+        if (handleAuthError(loadError)) {
+          return null;
+        }
+
+        setError(getErrorMessage(loadError, LOAD_ERROR_MESSAGE));
+
+        return null;
+      }
+    },
+    [handleAuthError],
   );
-
-  const hasPreviousPage = meta.skip > 0;
-  const hasNextPage = meta.skip + meta.take < meta.total;
 
   const loadHistorico = useCallback(
     async ({ showRefreshing = false } = {}) => {
+      const requestId = latestRequestIdRef.current + 1;
+
+      latestRequestIdRef.current = requestId;
+
       if (showRefreshing) {
         setIsRefreshing(true);
       } else {
@@ -83,41 +163,62 @@ export function useFarmaciaHistorico(initialQuery = DEFAULT_HISTORICO_QUERY) {
 
       setError(null);
 
-      try {
-        const result = await getFarmaciaHistorico(currentQuery);
+      const result = await executeHistoricoRequest(currentQuery, requestId);
 
-        setPedidos(result.data);
-        setMeta(result.meta);
-      } catch (loadError) {
-        if (handleAuthError(loadError)) return;
-
-        setError(
-          getErrorMessage(
-            loadError,
-            "Não foi possível carregar o histórico da Farmácia.",
-          ),
-        );
-      } finally {
+      if (requestId === latestRequestIdRef.current) {
         setIsLoading(false);
         setIsRefreshing(false);
+        setIsQuerying(false);
       }
+
+      return result;
     },
-    [currentQuery, handleAuthError],
+    [currentQuery, executeHistoricoRequest],
   );
 
-  const refreshHistorico = useCallback(async () => {
-    await loadHistorico({ showRefreshing: true });
+  const refreshHistorico = useCallback(() => {
+    return loadHistorico({
+      showRefreshing: true,
+    });
   }, [loadHistorico]);
 
-  const updateStatus = useCallback((status) => {
-    setStatusInput(status);
+  const updateAppliedQuery = useCallback(
+    (nextQuery = {}) => {
+      const normalizedNextQuery = buildFarmaciaHistoricoQuery({
+        ...currentQuery,
+        ...nextQuery,
+      });
 
-    setQuery((currentQueryValue) => ({
-      ...currentQueryValue,
-      status,
-      skip: 0,
-    }));
-  }, []);
+      const nextSearchParams =
+        buildFarmaciaHistoricoSearchParams(normalizedNextQuery);
+
+      if (nextSearchParams.toString() === searchParamsKey) {
+        return false;
+      }
+
+      setError(null);
+      setIsQuerying(true);
+
+      setSearchParams(nextSearchParams, {
+        replace: true,
+      });
+
+      return true;
+    },
+    [currentQuery, searchParamsKey, setSearchParams],
+  );
+
+  const updateStatus = useCallback(
+    (status) => {
+      setStatusInput(status);
+
+      updateAppliedQuery({
+        status,
+        skip: 0,
+      });
+    },
+    [updateAppliedQuery],
+  );
 
   const updateSearchInput = useCallback((value) => {
     setSearchInput(value);
@@ -132,126 +233,119 @@ export function useFarmaciaHistorico(initialQuery = DEFAULT_HISTORICO_QUERY) {
   }, []);
 
   const applyFilters = useCallback(() => {
-    setQuery((currentQueryValue) => ({
-      ...currentQueryValue,
+    updateAppliedQuery({
       status: statusInput,
       search: searchInput,
       from: fromInput,
       to: toInput,
       skip: 0,
-    }));
-  }, [fromInput, searchInput, statusInput, toInput]);
+    });
+  }, [fromInput, searchInput, statusInput, toInput, updateAppliedQuery]);
 
   const clearFilters = useCallback(() => {
     setStatusInput(DEFAULT_HISTORICO_QUERY.status);
+
     setSearchInput(DEFAULT_HISTORICO_QUERY.search);
+
     setFromInput(DEFAULT_HISTORICO_QUERY.from);
+
     setToInput(DEFAULT_HISTORICO_QUERY.to);
 
-    setQuery({
+    updateAppliedQuery({
       ...DEFAULT_HISTORICO_QUERY,
     });
-  }, []);
+  }, [updateAppliedQuery]);
 
   const goToPreviousPage = useCallback(() => {
-    setQuery((currentQueryValue) => ({
-      ...currentQueryValue,
-      skip: Math.max(
-        0,
-        Number(currentQueryValue.skip || 0) -
-          Number(currentQueryValue.take || DEFAULT_HISTORICO_QUERY.take),
-      ),
-    }));
-  }, []);
-
-  const goToNextPage = useCallback(() => {
-    setQuery((currentQueryValue) => {
-      const currentSkip = Number(currentQueryValue.skip || 0);
-      const currentTake = Number(
-        currentQueryValue.take || DEFAULT_HISTORICO_QUERY.take,
-      );
-      const nextSkip = currentSkip + currentTake;
-
-      if (nextSkip >= meta.total) {
-        return currentQueryValue;
-      }
-
-      return {
-        ...currentQueryValue,
-        skip: nextSkip,
-      };
-    });
-  }, [meta.total]);
-
-  useEffect(() => {
-    let isMounted = true;
-
-    async function loadInitialHistorico() {
-      setIsLoading(true);
-      setError(null);
-
-      try {
-        const result = await getFarmaciaHistorico(currentQuery);
-
-        if (!isMounted) return;
-
-        setPedidos(result.data);
-        setMeta(result.meta);
-      } catch (loadError) {
-        if (!isMounted) return;
-        if (handleAuthError(loadError)) return;
-
-        setError(
-          getErrorMessage(
-            loadError,
-            "Não foi possível carregar o histórico da Farmácia.",
-          ),
-        );
-      } finally {
-        if (isMounted) {
-          setIsLoading(false);
-        }
-      }
+    if (!pagination.hasPreviousPage) {
+      return;
     }
 
-    loadInitialHistorico();
+    updateAppliedQuery({
+      skip: Math.max(0, currentQuery.skip - currentQuery.take),
+    });
+  }, [
+    currentQuery.skip,
+    currentQuery.take,
+    pagination.hasPreviousPage,
+    updateAppliedQuery,
+  ]);
+
+  const goToNextPage = useCallback(() => {
+    if (!pagination.hasNextPage) {
+      return;
+    }
+
+    updateAppliedQuery({
+      skip: currentQuery.skip + currentQuery.take,
+    });
+  }, [
+    currentQuery.skip,
+    currentQuery.take,
+    pagination.hasNextPage,
+    updateAppliedQuery,
+  ]);
+
+  useEffect(() => {
+    const requestId = latestRequestIdRef.current + 1;
+
+    latestRequestIdRef.current = requestId;
+
+    let isCancelled = false;
+
+    async function loadCurrentQuery() {
+      await executeHistoricoRequest(currentQuery, requestId);
+
+      if (isCancelled || requestId !== latestRequestIdRef.current) {
+        return;
+      }
+
+      setIsLoading(false);
+      setIsRefreshing(false);
+      setIsQuerying(false);
+    }
+
+    void loadCurrentQuery();
 
     return () => {
-      isMounted = false;
+      isCancelled = true;
+
+      if (latestRequestIdRef.current === requestId) {
+        latestRequestIdRef.current += 1;
+      }
     };
-  }, [currentQuery, handleAuthError]);
+  }, [currentQuery, executeHistoricoRequest]);
 
   return {
     pedidos,
     meta,
-    query,
-    selectedStatus,
+    query: currentQuery,
+    pagination,
+
+    selectedStatus: currentQuery.status,
 
     statusInput,
     searchInput,
     fromInput,
     toInput,
 
-    hasPedidos,
-    currentPage,
-    totalPages,
-    hasPreviousPage,
-    hasNextPage,
-
     isLoading,
     isRefreshing,
+    isQuerying,
+
     error,
 
     loadHistorico,
     refreshHistorico,
-    updateStatus,
 
+    updateStatus,
     updateSearchInput,
     updateFromInput,
     updateToInput,
 
     applyFilters,
     clearFilters,
+
     goToPreviousPage,
     goToNextPage,
   };

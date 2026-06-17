@@ -1,0 +1,81 @@
+.group {
+    --group-accent: var(--clinic-green-700);
+    --group-border: rgba(31, 95, 81, 0.2);
+
+    display: grid;
+    align-content: start;
+    gap: 1rem;
+
+    min-width: 0;
+    padding: clamp(1rem, 2vw, 1.25rem);
+
+    border: 1px solid var(--group-border);
+    border-block-start: 3px solid var(--group-accent);
+    border-radius: var(--clinic-radius-xl);
+
+    background: var(--clinic-surface);
+
+    box-shadow: var(--clinic-shadow-soft);
+}
+
+.header {
+    display: grid;
+    gap: 0.35rem;
+}
+
+.title {
+    margin: 0;
+
+    color: var(--clinic-ink);
+
+    font-size: var(--clinic-font-size-lg);
+    font-weight: 750;
+    line-height: 1.25;
+}
+
+.description {
+    margin: 0;
+
+    color: var(--clinic-muted-strong);
+
+    font-size: var(--clinic-font-size-sm);
+    font-weight: 450;
+    line-height: 1.5;
+}
+
+.list {
+    display: grid;
+    gap: 0.55rem;
+
+    margin: 0;
+    padding: 0;
+
+    list-style: none;
+}
+
+.green {
+    --group-accent: var(--clinic-green-700);
+    --group-border: rgba(31, 95, 81, 0.2);
+}
+
+.blue {
+    --group-accent: var(--clinic-blue-700);
+    --group-border: rgba(35, 93, 115, 0.22);
+}
+
+.gold {
+    --group-accent: var(--clinic-gold-500);
+    --group-border: var(--clinic-border-gold);
+}
+
+.sage {
+    --group-accent: var(--clinic-green-600);
+    --group-border: rgba(145, 170, 158, 0.42);
+}
+
+@media (max-width: 520px) {
+    .group {
+        padding: 1rem;
+        border-radius: var(--clinic-radius-lg);
+    }
+}

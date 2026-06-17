@@ -1,106 +1,19 @@
-import { Link } from "react-router-dom";
-
-import styles from "./FarmaciaDashboardSignals.module.css";
-
 import { FARMACIA_DASHBOARD_PAGE } from "../../config/farmaciaDashboardPage.config";
 
 import {
-  buildDashboardMetrics,
-  buildRegularizacoesMetrics,
-  getLatestPedidoCreatedAtLabel,
-  getLatestPedidoDecisionAtLabel,
-  getLatestPedidoDecisionLabel,
-  getLatestPedidoNumberLabel,
-  getLatestPedidoStatusLabel,
-  hasLatestPedido,
+  buildDashboardMetricGroups,
+  buildDashboardPriorityMetrics,
 } from "../../utils/farmaciaDashboard.utils";
 
-function DashboardState({ title, description, actionLabel, onAction }) {
-  return (
-    <div className={styles.state}>
-      <strong className={styles.stateTitle}>{title}</strong>
+import DashboardMetricGroup from "../../../../../shared/ui/DashboardMetricGroup/DashboardMetricGroup";
+import DashboardPriorityCard from "../../../../../shared/ui/DashboardPriorityCard/DashboardPriorityCard";
 
-      {description ? (
-        <p className={styles.stateDescription}>{description}</p>
-      ) : null}
+import FarmaciaDashboardLatestPedido from "../FarmaciaDashboardLatestPedido/FarmaciaDashboardLatestPedido";
+import FarmaciaDashboardState from "../FarmaciaDashboardState/FarmaciaDashboardState";
 
-      {actionLabel && onAction ? (
-        <button type="button" className={styles.stateAction} onClick={onAction}>
-          {actionLabel}
-        </button>
-      ) : null}
-    </div>
-  );
-}
+import Button from "../../../../../shared/ui/Button/Button";
 
-function MetricCard({ metric }) {
-  const content = (
-    <>
-      <span className={styles.metricLabel}>{metric.label}</span>
-      <strong className={styles.metricValue}>{metric.value}</strong>
-    </>
-  );
-
-  if (metric.to) {
-    return (
-      <Link className={styles.metricCard} to={metric.to}>
-        {content}
-      </Link>
-    );
-  }
-
-  return <article className={styles.metricCard}>{content}</article>;
-}
-
-function LatestPedido({ dashboard }) {
-  if (!hasLatestPedido(dashboard)) {
-    return (
-      <article className={styles.latestCard}>
-        <span className={styles.latestEyebrow}>
-          {FARMACIA_DASHBOARD_PAGE.labels.latestPedido}
-        </span>
-
-        <strong className={styles.latestTitle}>Sem pedidos registados</strong>
-
-        <p className={styles.latestText}>
-          Quando existir atividade, o último pedido aparece aqui.
-        </p>
-      </article>
-    );
-  }
-
-  return (
-    <article className={styles.latestCard}>
-      <div className={styles.latestHeader}>
-        <div>
-          <span className={styles.latestEyebrow}>
-            {FARMACIA_DASHBOARD_PAGE.labels.latestPedido}
-          </span>
-
-          <strong className={styles.latestTitle}>
-            {getLatestPedidoNumberLabel(dashboard)}
-          </strong>
-        </div>
-
-        <span className={styles.latestStatus}>
-          {getLatestPedidoStatusLabel(dashboard)}
-        </span>
-      </div>
-
-      <dl className={styles.latestMeta}>
-        <div>
-          <dt>{FARMACIA_DASHBOARD_PAGE.labels.createdAt}</dt>
-          <dd>{getLatestPedidoCreatedAtLabel(dashboard)}</dd>
-        </div>
-
-        <div>
-          <dt>{getLatestPedidoDecisionLabel(dashboard)}</dt>
-          <dd>{getLatestPedidoDecisionAtLabel(dashboard)}</dd>
-        </div>
-      </dl>
-    </article>
-  );
-}
+import styles from "./FarmaciaDashboardSignals.module.css";
 
 export default function FarmaciaDashboardSignals({
   dashboard = null,
@@ -111,10 +24,12 @@ export default function FarmaciaDashboardSignals({
 }) {
   if (isLoading) {
     return (
-      <section className={styles.section} aria-live="polite">
-        <DashboardState
+      <section className={styles.stateSection} aria-live="polite">
+        <FarmaciaDashboardState
           title={FARMACIA_DASHBOARD_PAGE.sections.signals.loadingTitle}
-          description="Aguarda enquanto os sinais operacionais são carregados."
+          description={
+            FARMACIA_DASHBOARD_PAGE.sections.signals.loadingDescription
+          }
         />
       </section>
     );
@@ -122,8 +37,8 @@ export default function FarmaciaDashboardSignals({
 
   if (error) {
     return (
-      <section className={styles.section} aria-live="polite">
-        <DashboardState
+      <section className={styles.stateSection} aria-live="polite">
+        <FarmaciaDashboardState
           title={FARMACIA_DASHBOARD_PAGE.sections.signals.errorTitle}
           description={error}
           actionLabel={FARMACIA_DASHBOARD_PAGE.actions.refresh}
@@ -133,52 +48,80 @@ export default function FarmaciaDashboardSignals({
     );
   }
 
-  const mainMetrics = buildDashboardMetrics(dashboard);
-  const regularizacoesMetrics = buildRegularizacoesMetrics(dashboard);
+  const priorities = buildDashboardPriorityMetrics(dashboard);
+
+  const metricGroups = buildDashboardMetricGroups(dashboard);
+
+  const { priorities: prioritiesConfig, indicators } =
+    FARMACIA_DASHBOARD_PAGE.sections;
 
   return (
-    <section
-      className={styles.section}
-      aria-labelledby="farmacia-dashboard-signals-title"
-    >
-      <header className={styles.header}>
-        <div className={styles.heading}>
-          <h2 id="farmacia-dashboard-signals-title" className={styles.title}>
-            {FARMACIA_DASHBOARD_PAGE.sections.signals.title}
-          </h2>
+    <div className={styles.dashboardContent}>
+      <header className={styles.toolbar}>
+        <div className={styles.toolbarHeading}>
+          <h2 className={styles.toolbarTitle}>{prioritiesConfig.title}</h2>
 
-          <p className={styles.description}>
-            {FARMACIA_DASHBOARD_PAGE.sections.signals.description}
+          <p className={styles.toolbarDescription}>
+            {prioritiesConfig.description}
           </p>
         </div>
 
-        <button
-          type="button"
-          className={styles.refreshButton}
+        <Button
+          variant="secondary"
+          size="sm"
           disabled={isRefreshing}
           onClick={onRefresh}
         >
           {isRefreshing
             ? FARMACIA_DASHBOARD_PAGE.actions.refreshing
             : FARMACIA_DASHBOARD_PAGE.actions.refresh}
-        </button>
+        </Button>
       </header>
 
-      <div className={styles.grid}>
-        <div className={styles.metrics}>
-          {mainMetrics.map((metric) => (
-            <MetricCard key={metric.key} metric={metric} />
+      <section
+        className={styles.overview}
+        aria-label={prioritiesConfig.ariaLabel}
+      >
+        <div className={styles.priorityGrid}>
+          {priorities.map((priority) => (
+            <DashboardPriorityCard key={priority.key} {...priority} />
           ))}
         </div>
 
-        <LatestPedido dashboard={dashboard} />
-      </div>
+        <FarmaciaDashboardLatestPedido dashboard={dashboard} />
+      </section>
 
-      <div className={styles.secondaryMetrics}>
-        {regularizacoesMetrics.map((metric) => (
-          <MetricCard key={metric.key} metric={metric} />
-        ))}
-      </div>
-    </section>
+      <section
+        className={styles.indicators}
+        aria-labelledby="farmacia-dashboard-indicators-title"
+      >
+        <header className={styles.indicatorsHeader}>
+          <p className={styles.indicatorsEyebrow}>{indicators.eyebrow}</p>
+
+          <h2
+            id="farmacia-dashboard-indicators-title"
+            className={styles.indicatorsTitle}
+          >
+            {indicators.title}
+          </h2>
+
+          <p className={styles.indicatorsDescription}>
+            {indicators.description}
+          </p>
+        </header>
+
+        <div className={styles.groupGrid}>
+          {metricGroups.map((group) => (
+            <DashboardMetricGroup
+              key={group.key}
+              title={group.title}
+              description={group.description}
+              tone={group.tone}
+              metrics={group.metrics}
+            />
+          ))}
+        </div>
+      </section>
+    </div>
   );
 }

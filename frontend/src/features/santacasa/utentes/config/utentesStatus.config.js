@@ -25,6 +25,13 @@ export const UTENTE_STATUS_LABELS = Object.freeze({
   [UTENTE_STATUS.ARQUIVADO]: "Arquivado",
 });
 
+export const UTENTE_LIST_FALLBACKS = Object.freeze({
+  activeLabel: "Ativo",
+  invalidLabel: "Inválido",
+  missingArchivedDate: "Sem data de arquivo",
+  archivedByPrefix: "Por",
+});
+
 export const UTENTE_ARCHIVE_DEFAULT_REASON = "Arquivado pela Santa Casa.";
 
 export const UTENTE_ACTION_MESSAGES = Object.freeze({

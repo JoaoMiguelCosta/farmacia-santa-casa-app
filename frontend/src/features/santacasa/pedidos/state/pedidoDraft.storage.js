@@ -1,3 +1,4 @@
+// src/features/santacasa/pedidos/state/pedidoDraft.storage.js
 const STORAGE_KEY = "farmacia-santa-casa:pedido-draft";
 
 function canUseStorage() {
@@ -34,6 +35,11 @@ function normalizeStoredItem(item) {
     description: String(item.description || "").trim(),
     meta: String(item.meta || "").trim(),
 
+    numero19: String(item.numero19 || item.source?.numero19 || "").trim(),
+    pinAcesso6: String(item.pinAcesso6 || item.source?.pinAcesso6 || "").trim(),
+    pinOpcao4: String(item.pinOpcao4 || item.source?.pinOpcao4 || "").trim(),
+    validade: String(item.validade || item.source?.validade || "").trim(),
+
     quantidade: Math.min(quantidade, quantidadeRestante),
     quantidadeRestante,
   };
@@ -61,7 +67,10 @@ export function writePedidoDraftItems(items = []) {
   if (!canUseStorage()) return;
 
   try {
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+    window.localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify(items.map(normalizeStoredItem).filter(Boolean)),
+    );
   } catch {
     // Evita rebentar a app se o browser bloquear localStorage.
   }

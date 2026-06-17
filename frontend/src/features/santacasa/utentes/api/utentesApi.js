@@ -1,8 +1,10 @@
 import { API_ENDPOINTS } from "../../../../shared/api/endpoints";
 import { httpClient } from "../../../../shared/api/httpClient";
 
+import { UTENTE_STATUS } from "../config/utentesStatus.config";
+
 const DEFAULT_LIST_PARAMS = Object.freeze({
-  status: "ATIVO",
+  status: UTENTE_STATUS.ATIVO,
   search: "",
   skip: 0,
   take: 50,

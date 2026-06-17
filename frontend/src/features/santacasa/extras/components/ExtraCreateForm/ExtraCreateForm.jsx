@@ -1,8 +1,9 @@
+// src/features/santacasa/extras/components/ExtraCreateForm/ExtraCreateForm.jsx
 import Button from "../../../../../shared/ui/Button/Button";
 import FormField from "../../../../../shared/ui/FormField/FormField";
 import SurfaceCard from "../../../../../shared/ui/SurfaceCard/SurfaceCard";
 
-import MedicamentoAutocomplete from "../../../medicacao-habitual/components/MedicamentoAutocomplete/MedicamentoAutocomplete";
+import MedicamentoAutocomplete from "../../../shared/components/MedicamentoAutocomplete/MedicamentoAutocomplete";
 
 import { EXTRAS_PAGE } from "../../config/extrasPage.config";
 import { useExtraCreateForm } from "../../hooks/useExtraCreateForm";
@@ -37,7 +38,7 @@ export default function ExtraCreateForm({
       <form className={styles.form} onSubmit={handleSubmit} noValidate>
         {!selectedUtenteId ? (
           <p className={styles.notice} role="status">
-            Seleciona um utente antes de criar uma Venda Suspensa.
+            {EXTRAS_PAGE.form.noUtenteSelectedMessage}
           </p>
         ) : null}
 

@@ -1,10 +1,12 @@
 import { Children, cloneElement, isValidElement } from "react";
 
-import styles from "./FormField.module.css";
+import { mergeAriaIds } from "../../utils/aria";
 
-function mergeIds(...ids) {
-  return ids.filter(Boolean).join(" ") || undefined;
-}
+import { FORM_FIELD_CONFIG } from "./FormField.config";
+
+import { classNames } from "../../utils/classNames";
+
+import styles from "./FormField.module.css";
 
 export default function FormField({
   id,
@@ -16,11 +18,9 @@ export default function FormField({
 }) {
   const hintId = hint ? `${id}-hint` : undefined;
   const errorId = error ? `${id}-error` : undefined;
-  const describedBy = mergeIds(hintId, errorId);
+  const describedBy = mergeAriaIds(hintId, errorId);
 
-  const fieldClassName = error
-    ? `${styles.field} ${styles.hasError}`
-    : styles.field;
+  const fieldClassName = classNames(styles.field, error && styles.hasError);
 
   const enhancedChildren =
     Children.count(children) === 1 && isValidElement(children)
@@ -28,7 +28,7 @@ export default function FormField({
           id: children.props.id ?? id,
           required: children.props.required ?? required,
           "aria-invalid": error ? true : children.props["aria-invalid"],
-          "aria-describedby": mergeIds(
+          "aria-describedby": mergeAriaIds(
             children.props["aria-describedby"],
             describedBy,
           ),
@@ -39,7 +39,12 @@ export default function FormField({
     <div className={fieldClassName}>
       <label className={styles.label} htmlFor={id}>
         <span>{label}</span>
-        {required ? <strong aria-label="obrigatório">*</strong> : null}
+
+        {required ? (
+          <strong aria-label={FORM_FIELD_CONFIG.requiredAriaLabel}>
+            {FORM_FIELD_CONFIG.requiredSymbol}
+          </strong>
+        ) : null}
       </label>
 
       <div className={styles.control}>{enhancedChildren}</div>

@@ -1,0 +1,149 @@
+/* src/features/santacasa/regularizacoes/components/SantaCasaRegularizacaoCard/SantaCasaRegularizacaoHeader.module.css */
+
+.header {
+    display: grid;
+    gap: 0.9rem;
+    min-width: 0;
+}
+
+.headerHistory {
+    gap: 0.72rem;
+}
+
+.statusGroup {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.55rem;
+}
+
+.headerMeta {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 0.5rem;
+}
+
+.status,
+.pedidoPill,
+.datePill {
+    display: inline-flex;
+    align-items: center;
+    width: fit-content;
+    min-height: 2rem;
+    padding: 0.42rem 0.72rem;
+    border-radius: 999px;
+    font-size: var(--clinic-font-size-xs);
+    font-weight: 850;
+    line-height: 1;
+}
+
+.headerHistory .status,
+.headerHistory .pedidoPill,
+.headerHistory .datePill {
+    min-height: 1.75rem;
+    padding: 0.34rem 0.58rem;
+    font-size: 0.72rem;
+}
+
+.statusPending {
+    border: 1px solid var(--clinic-border-gold);
+    background: var(--clinic-gold-soft);
+    color: var(--clinic-warning);
+}
+
+.statusCompleted {
+    border: 1px solid rgba(37, 115, 90, 0.24);
+    background: rgba(37, 115, 90, 0.1);
+    color: var(--clinic-success);
+}
+
+.pedidoPill,
+.datePill {
+    border: 1px solid var(--clinic-border);
+    background: var(--clinic-white);
+    color: var(--clinic-muted-strong);
+}
+
+.datePill {
+    color: var(--clinic-muted);
+}
+
+.identityGrid {
+    display: grid;
+    grid-template-columns: minmax(13rem, 1.35fr) minmax(11rem, 1fr) minmax(7rem, 0.65fr);
+    gap: 0.85rem;
+    margin: 0;
+}
+
+.identityGridGrouped {
+    grid-template-columns: minmax(0, 1fr);
+}
+
+.identityGridHistory {
+    grid-template-columns: minmax(12rem, 1.15fr) minmax(10rem, 0.85fr) minmax(7rem, 0.6fr);
+    gap: 0.7rem;
+}
+
+.identityGrid div {
+    display: grid;
+    gap: 0.25rem;
+    min-width: 0;
+}
+
+.identityGrid dt {
+    color: var(--clinic-muted);
+    font-size: var(--clinic-font-size-xs);
+    font-weight: 850;
+    letter-spacing: 0.07em;
+    line-height: 1.25;
+    text-transform: uppercase;
+}
+
+.identityGridHistory dt {
+    font-size: 0.68rem;
+}
+
+.identityGrid dd {
+    min-width: 0;
+    margin: 0;
+    overflow-wrap: anywhere;
+    color: var(--clinic-ink);
+    font-size: clamp(1rem, 1.45vw, 1.25rem);
+    font-weight: 900;
+    line-height: 1.15;
+}
+
+.identityGrid div:first-child dd {
+    font-size: clamp(1.2rem, 2vw, 1.55rem);
+    letter-spacing: -0.03em;
+}
+
+.identityGridHistory dd {
+    font-size: clamp(0.95rem, 1.25vw, 1.08rem);
+    line-height: 1.12;
+}
+
+.identityGridHistory div:first-child dd {
+    font-size: clamp(1.05rem, 1.45vw, 1.22rem);
+}
+
+@media (max-width: 1080px) {
+
+    .identityGrid,
+    .identityGridHistory {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 720px) {
+    .statusGroup {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .headerMeta {
+        justify-content: flex-start;
+    }
+}

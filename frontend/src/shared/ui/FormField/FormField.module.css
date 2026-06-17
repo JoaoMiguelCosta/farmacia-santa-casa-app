@@ -1,6 +1,6 @@
 .field {
     display: grid;
-    gap: 0.48rem;
+    gap: 0.45rem;
 
     width: 100%;
     min-width: 0;
@@ -9,187 +9,277 @@
 .label {
     display: inline-flex;
     align-items: center;
-    gap: 0.28rem;
+    gap: 0.35rem;
 
     width: fit-content;
     max-width: 100%;
 
-    color: var(--clinic-ink-soft);
+    color: var(--clinic-ink);
 
-    font-size: clamp(0.84rem, 1vw, 0.9rem);
-    font-weight: 820;
-    letter-spacing: -0.012em;
-    line-height: 1.2;
+    font-size: var(--clinic-font-size-sm);
+    font-weight: 850;
+    line-height: 1.25;
 }
 
 .label span {
     min-width: 0;
 
-    overflow: hidden;
-
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    overflow-wrap: anywhere;
 }
 
 .label strong {
     color: var(--clinic-danger);
 
-    font-size: 0.95em;
-    font-weight: 900;
+    font-size: 1rem;
+    font-weight: 950;
     line-height: 1;
 }
 
 .control {
     position: relative;
 
+    display: grid;
+
     width: 100%;
     min-width: 0;
 }
 
-.control :global(input),
-.control :global(select),
-.control :global(textarea) {
+.control :where(input, textarea, select) {
     width: 100%;
-    min-width: 0;
-    min-height: 2.9rem;
-    padding: 0.82rem 0.98rem;
+    min-height: 3.05rem;
+    padding: 0.82rem 1rem;
 
-    border: 1px solid var(--clinic-border);
+    border: 1px solid rgba(193, 211, 203, 0.95);
     border-radius: var(--clinic-radius-md);
 
     color: var(--clinic-ink);
-
     background:
-        radial-gradient(circle at 100% 0%,
-            rgba(227, 207, 159, 0.08),
-            transparent 10rem),
-        rgba(255, 255, 255, 0.88);
+        linear-gradient(180deg, rgba(255, 255, 255, 0.99), rgba(248, 252, 250, 0.96));
+
+    font-size: var(--clinic-font-size-md);
+    font-weight: 700;
+    line-height: 1.35;
 
     box-shadow:
-        0 10px 28px rgba(16, 44, 54, 0.045),
-        inset 0 1px 0 rgba(255, 255, 255, 0.82);
-
-    font: inherit;
-    font-size: 0.95rem;
-    font-weight: 540;
-    line-height: 1.4;
+        0 0.45rem 1rem rgba(23, 33, 29, 0.035),
+        inset 0 1px 0 rgba(255, 255, 255, 0.95),
+        inset 0 -1px 0 rgba(23, 33, 29, 0.035);
 
     transition:
         border-color var(--clinic-transition),
         box-shadow var(--clinic-transition),
-        background var(--clinic-transition),
-        color var(--clinic-transition);
+        background-color var(--clinic-transition),
+        color var(--clinic-transition),
+        transform var(--clinic-transition);
 }
 
-.control :global(input::placeholder),
-.control :global(textarea::placeholder) {
-    color: rgba(109, 123, 118, 0.72);
+.control :where(input, textarea, select)::placeholder {
+    color: rgba(102, 115, 109, 0.72);
+
+    font-weight: 650;
 }
 
-.control :global(select) {
-    cursor: pointer;
-}
-
-.control :global(textarea) {
-    min-height: 7.25rem;
+.control :where(textarea) {
+    min-height: 7rem;
     resize: vertical;
 }
 
-.control :global(input:hover:not(:disabled)),
-.control :global(select:hover:not(:disabled)),
-.control :global(textarea:hover:not(:disabled)) {
-    border-color: var(--clinic-border-strong);
+.control :where(select) {
+    cursor: pointer;
+    appearance: none;
+
+    padding-right: 3rem;
+
     background:
-        radial-gradient(circle at 100% 0%,
-            rgba(227, 207, 159, 0.1),
-            transparent 10rem),
-        rgba(255, 255, 255, 0.94);
+        linear-gradient(45deg, transparent 50%, var(--clinic-green-800) 50%),
+        linear-gradient(135deg, var(--clinic-green-800) 50%, transparent 50%),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.99), rgba(248, 252, 250, 0.96));
+
+    background-position:
+        calc(100% - 1.28rem) 50%,
+        calc(100% - 0.92rem) 50%,
+        0 0;
+
+    background-size:
+        0.42rem 0.42rem,
+        0.42rem 0.42rem,
+        100% 100%;
+
+    background-repeat: no-repeat;
+
+    color: var(--clinic-ink);
 }
 
-.control :global(input:focus),
-.control :global(select:focus),
-.control :global(textarea:focus) {
+.control :where(select option) {
+    color: var(--clinic-ink);
+    background-color: var(--clinic-white);
+
+    font-size: var(--clinic-font-size-md);
+    font-weight: 700;
+}
+
+.control :where(select option:checked) {
+    color: var(--clinic-green-900);
+    background-color: rgba(238, 247, 243, 0.98);
+
+    font-weight: 850;
+}
+
+.control :where(input, textarea, select):hover:not(:disabled) {
+    border-color: rgba(31, 95, 81, 0.34);
+
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 1), rgba(246, 251, 248, 0.98));
+
+    box-shadow:
+        0 0.6rem 1.25rem rgba(23, 33, 29, 0.05),
+        0 0 0 1px rgba(31, 95, 81, 0.055),
+        inset 0 1px 0 rgba(255, 255, 255, 0.96);
+}
+
+.control :where(select):hover:not(:disabled) {
+    background:
+        linear-gradient(45deg, transparent 50%, var(--clinic-green-900) 50%),
+        linear-gradient(135deg, var(--clinic-green-900) 50%, transparent 50%),
+        linear-gradient(180deg, rgba(255, 255, 255, 1), rgba(246, 251, 248, 0.98));
+
+    background-position:
+        calc(100% - 1.28rem) 50%,
+        calc(100% - 0.92rem) 50%,
+        0 0;
+
+    background-size:
+        0.42rem 0.42rem,
+        0.42rem 0.42rem,
+        100% 100%;
+
+    background-repeat: no-repeat;
+}
+
+.control :where(input, textarea, select):focus {
     outline: none;
 
-    border-color: rgba(79, 155, 139, 0.48);
-
-    background: var(--clinic-white);
-
-    box-shadow:
-        0 0 0 4px rgba(79, 155, 139, 0.12),
-        0 14px 34px rgba(16, 44, 54, 0.07),
-        inset 0 1px 0 rgba(255, 255, 255, 0.92);
-}
-
-.control :global(input:disabled),
-.control :global(select:disabled),
-.control :global(textarea:disabled) {
-    cursor: not-allowed;
-    opacity: 0.64;
-
-    background: rgba(238, 245, 241, 0.64);
-}
-
-.hasError .control :global(input),
-.hasError .control :global(select),
-.hasError .control :global(textarea) {
-    border-color: rgba(181, 71, 71, 0.34);
+    border-color: var(--operation-header-border, var(--clinic-green-700));
 
     background:
-        radial-gradient(circle at 100% 0%,
-            rgba(181, 71, 71, 0.07),
-            transparent 10rem),
-        rgba(255, 255, 255, 0.9);
-}
-
-.hasError .control :global(input:focus),
-.hasError .control :global(select:focus),
-.hasError .control :global(textarea:focus) {
-    border-color: rgba(181, 71, 71, 0.52);
+        linear-gradient(180deg, rgba(255, 255, 255, 1), rgba(247, 252, 249, 0.98));
 
     box-shadow:
-        0 0 0 4px rgba(181, 71, 71, 0.11),
-        0 14px 34px rgba(181, 71, 71, 0.08),
-        inset 0 1px 0 rgba(255, 255, 255, 0.92);
+        0 0.7rem 1.45rem rgba(23, 33, 29, 0.06),
+        0 0 0 3px var(--operation-accent-softer, rgba(31, 95, 81, 0.14)),
+        inset 0 1px 0 rgba(255, 255, 255, 0.96);
+}
+
+.control :where(select):focus {
+    background:
+        linear-gradient(45deg, transparent 50%, var(--operation-accent-strong, var(--clinic-green-900)) 50%),
+        linear-gradient(135deg, var(--operation-accent-strong, var(--clinic-green-900)) 50%, transparent 50%),
+        linear-gradient(180deg, rgba(255, 255, 255, 1), rgba(247, 252, 249, 0.98));
+
+    background-position:
+        calc(100% - 1.28rem) 50%,
+        calc(100% - 0.92rem) 50%,
+        0 0;
+
+    background-size:
+        0.42rem 0.42rem,
+        0.42rem 0.42rem,
+        100% 100%;
+
+    background-repeat: no-repeat;
+}
+
+.control :where(input, textarea, select):disabled {
+    cursor: not-allowed;
+
+    color: var(--clinic-muted);
+    background:
+        linear-gradient(180deg, rgba(247, 250, 248, 0.9), rgba(239, 245, 242, 0.85));
+
+    border-color: var(--clinic-border);
+
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.82);
+
+    opacity: 0.72;
+}
+
+.control :where(select):disabled {
+    background:
+        linear-gradient(45deg, transparent 50%, var(--clinic-muted) 50%),
+        linear-gradient(135deg, var(--clinic-muted) 50%, transparent 50%),
+        linear-gradient(180deg, rgba(247, 250, 248, 0.9), rgba(239, 245, 242, 0.85));
+
+    background-position:
+        calc(100% - 1.28rem) 50%,
+        calc(100% - 0.92rem) 50%,
+        0 0;
+
+    background-size:
+        0.42rem 0.42rem,
+        0.42rem 0.42rem,
+        100% 100%;
+
+    background-repeat: no-repeat;
 }
 
 .hint,
 .error {
     margin: 0;
 
-    font-size: clamp(0.78rem, 1vw, 0.83rem);
-    font-weight: 650;
-    line-height: 1.45;
+    font-size: var(--clinic-font-size-sm);
+    line-height: 1.4;
 }
 
 .hint {
     color: var(--clinic-muted);
+
+    font-weight: 650;
 }
 
 .error {
     color: var(--clinic-danger);
+
+    font-weight: 850;
+}
+
+.hasError .label {
+    color: var(--clinic-danger);
+}
+
+.hasError .control :where(input, textarea, select) {
+    border-color: rgba(180, 35, 24, 0.58);
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.99), rgba(255, 247, 246, 0.92));
+}
+
+.hasError .control :where(input, textarea, select):focus {
+    border-color: var(--clinic-danger);
+
+    box-shadow:
+        0 0.7rem 1.45rem rgba(180, 35, 24, 0.06),
+        0 0 0 3px rgba(180, 35, 24, 0.14),
+        inset 0 1px 0 rgba(255, 255, 255, 0.96);
 }
 
 @media (max-width: 420px) {
-    .field {
-        gap: 0.42rem;
+    .control :where(input, textarea, select) {
+        min-height: 3.1rem;
+        padding-inline: 0.9rem;
     }
 
-    .control :global(input),
-    .control :global(select),
-    .control :global(textarea) {
-        min-height: 2.7rem;
-        padding: 0.76rem 0.86rem;
+    .control :where(select) {
+        padding-right: 2.75rem;
 
-        font-size: 0.9rem;
+        background-position:
+            calc(100% - 1.18rem) 50%,
+            calc(100% - 0.84rem) 50%,
+            0 0;
     }
+}
 
-    .control :global(textarea) {
-        min-height: 6.75rem;
-    }
-
-    .hint,
-    .error {
-        font-size: 0.76rem;
+@media (prefers-reduced-motion: reduce) {
+    .control :where(input, textarea, select) {
+        transition: none;
     }
 }

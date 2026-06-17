@@ -1,37 +1,63 @@
 .barcodeValue {
     display: grid;
-    gap: 0.45rem;
+    justify-items: center;
+    gap: 0.4rem;
+
+    width: 100%;
     min-width: 0;
+
+    color: var(--clinic-ink);
+    text-align: center;
 }
 
 .label {
-    color: var(--clinic-muted);
-    font-size: 0.74rem;
-    font-weight: 800;
-    letter-spacing: 0.08em;
+    display: block;
+
+    min-width: 0;
+
+    color: var(--clinic-muted-strong);
+
+    font-size: var(--clinic-font-size-xs);
+    font-weight: 900;
+    letter-spacing: 0.06em;
     line-height: 1.2;
+    text-align: center;
     text-transform: uppercase;
+
+    overflow-wrap: anywhere;
 }
 
 .frame {
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: 4.25rem;
-    padding: 0.75rem;
-    overflow: hidden;
+
+    width: 100%;
+    min-width: 0;
+    min-height: 3.2rem;
+    padding: 0.45rem 0.55rem;
+
+    border: 1px solid var(--clinic-border);
+    border-radius: var(--clinic-radius-md);
+
     color: var(--clinic-ink);
-    border: 1px solid rgb(18 72 54 / 0.12);
-    border-radius: var(--radius-md);
-    background: rgb(255 255 255 / 0.94);
-    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.9);
+    background-color: var(--clinic-white);
+
+    box-shadow: inset 0 1px 2px rgba(23, 33, 29, 0.04);
 }
 
 .svg {
     display: block;
+
     width: 100%;
-    max-width: 18rem;
-    height: auto;
+    max-width: 100%;
+    min-width: 0;
+
+    color: currentColor;
+}
+
+.svg text {
+    font-weight: 900;
 }
 
 .svg[data-barcode-error="true"] {
@@ -39,46 +65,67 @@
 }
 
 .caption {
+    display: block;
+
+    min-width: 0;
+
     color: var(--clinic-muted);
-    font-family:
-        ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
-        monospace;
-    font-size: 0.76rem;
+
+    font-size: var(--clinic-font-size-xs);
     font-weight: 700;
-    line-height: 1.35;
+    line-height: 1.25;
     text-align: center;
-    word-break: break-all;
+
+    overflow-wrap: anywhere;
+}
+
+/* Sizes */
+
+.default {
+    max-width: 18rem;
+}
+
+.default .frame {
+    min-height: 3.5rem;
 }
 
 .compact {
-    gap: 0.32rem;
-}
-
-.compact .label {
-    font-size: 0.68rem;
+    max-width: 12rem;
 }
 
 .compact .frame {
-    width: 100%;
-    min-height: 3.15rem;
-    padding: 0.5rem 0.55rem;
-    border-radius: calc(var(--radius-md) - 0.2rem);
+    min-height: 2.85rem;
+    padding: 0.38rem 0.45rem;
 }
 
-.compact .svg {
-    max-width: 10.5rem;
-}
-
+.compact .label,
 .compact .caption {
     font-size: 0.72rem;
 }
 
+.large {
+    max-width: 24rem;
+}
+
+.large .frame {
+    min-height: 4.2rem;
+    padding: 0.6rem 0.75rem;
+}
+
+.large .label,
+.large .caption {
+    font-size: var(--clinic-font-size-sm);
+}
+
 @media (max-width: 520px) {
-    .frame {
-        padding: 0.65rem;
+
+    .default,
+    .compact,
+    .large {
+        max-width: 100%;
     }
 
-    .svg {
-        max-width: 100%;
+    .frame {
+        justify-content: center;
     }
 }

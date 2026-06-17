@@ -15,7 +15,11 @@ async function getById(req, res) {
 }
 
 async function cancel(req, res) {
-  const data = await service.cancelPedido(req.params.pedidoId, req.body);
+  const data = await service.cancelPedido(
+    req.params.pedidoId,
+    req.body,
+    req.user?.id ?? null,
+  );
 
   return ok(res, { data });
 }

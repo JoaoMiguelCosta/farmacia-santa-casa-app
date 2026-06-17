@@ -1,0 +1,488 @@
+/* src/features/santacasa/historico/components/SantaCasaHistoricoList/components/SantaCasaHistoricoCard/SantaCasaHistoricoCard.module.css */
+
+.card {
+    --history-accent: var(--clinic-green-700);
+    --history-accent-soft:
+        color-mix(in srgb,
+            var(--history-accent) 7%,
+            transparent);
+
+    --history-accent-border:
+        color-mix(in srgb,
+            var(--history-accent) 20%,
+            transparent);
+
+    position: relative;
+    isolation: isolate;
+
+    display: grid;
+    gap: 0.78rem;
+
+    min-width: 0;
+    padding: clamp(0.95rem, 2vw, 1.14rem);
+
+    overflow: hidden;
+
+    border: 1px solid var(--history-accent-border);
+    border-radius: var(--clinic-radius-lg);
+
+    background:
+        linear-gradient(135deg,
+            color-mix(in srgb, var(--clinic-white) 98%, transparent),
+            color-mix(in srgb, var(--clinic-cream) 88%, transparent));
+
+    box-shadow:
+        0 0.7rem 1.55rem color-mix(in srgb, var(--history-accent) 4%, transparent),
+        inset 0 1px 0 color-mix(in srgb, var(--clinic-white) 90%, transparent);
+
+    transition:
+        transform var(--clinic-transition),
+        border-color var(--clinic-transition),
+        box-shadow var(--clinic-transition);
+}
+
+.card::before {
+    content: "";
+
+    position: absolute;
+    inset-inline: 0;
+    inset-block-start: 0;
+    z-index: 1;
+
+    height: 3px;
+
+    background:
+        linear-gradient(90deg,
+            var(--history-accent),
+            color-mix(in srgb, var(--history-accent) 42%, transparent),
+            transparent 82%);
+
+    pointer-events: none;
+}
+
+.card:hover {
+    transform: translateY(-1px);
+
+    border-color:
+        color-mix(in srgb, var(--history-accent) 28%, transparent);
+
+    box-shadow:
+        var(--clinic-shadow-hover),
+        0 0 0 3px color-mix(in srgb, var(--history-accent) 4%, transparent),
+        inset 0 1px 0 color-mix(in srgb, var(--clinic-white) 92%, transparent);
+}
+
+.cardValidated {
+    --history-accent: var(--clinic-success);
+}
+
+.cardWarning {
+    --history-accent: var(--clinic-warning);
+}
+
+.cardRejected,
+.cardCancelled {
+    --history-accent: var(--clinic-danger);
+}
+
+.cardHeader {
+    position: relative;
+    z-index: 2;
+
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+
+    min-width: 0;
+}
+
+.identity {
+    display: grid;
+    gap: 0.28rem;
+
+    min-width: 0;
+}
+
+.eyebrow {
+    width: fit-content;
+    padding: 0.31rem 0.55rem;
+
+    border: 1px solid var(--history-accent-border);
+    border-radius: 999px;
+
+    color: var(--history-accent);
+    background:
+        color-mix(in srgb,
+            var(--history-accent) 7%,
+            var(--clinic-white));
+
+    font-size: 0.66rem;
+    font-weight: 950;
+    letter-spacing: 0.105em;
+    line-height: 1;
+    text-transform: uppercase;
+}
+
+.identity h3 {
+    margin: 0;
+
+    color: var(--clinic-ink);
+
+    font-size: clamp(1.18rem, 2vw, 1.44rem);
+    font-weight: 950;
+    letter-spacing: -0.048em;
+    line-height: 1.05;
+}
+
+.identity p {
+    margin: 0;
+
+    color: var(--clinic-muted-strong);
+
+    font-size: 0.79rem;
+    font-weight: 720;
+    line-height: 1.35;
+}
+
+.status {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    flex: 0 0 auto;
+
+    min-height: 2rem;
+    padding: 0.4rem 0.7rem;
+
+    border: 1px solid var(--history-accent-border);
+    border-radius: 999px;
+
+    color: var(--history-accent);
+    background:
+        color-mix(in srgb,
+            var(--history-accent) 8%,
+            var(--clinic-white));
+
+    font-size: 0.74rem;
+    font-weight: 950;
+    letter-spacing: 0.045em;
+    line-height: 1;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.message {
+    position: relative;
+    z-index: 2;
+
+    margin: 0;
+    padding: 0.72rem 0.8rem;
+
+    border: 1px solid color-mix(in srgb, var(--history-accent) 13%, transparent);
+    border-radius: var(--clinic-radius-md);
+
+    color: var(--clinic-muted-strong);
+    background:
+        color-mix(in srgb, var(--clinic-white) 76%, transparent);
+
+    font-size: 0.81rem;
+    font-weight: 690;
+    line-height: 1.45;
+}
+
+.summary {
+    position: relative;
+    z-index: 2;
+
+    display: grid;
+    grid-template-columns:
+        repeat(4, minmax(0, 1fr));
+
+    gap: 0.58rem;
+    margin: 0;
+}
+
+.summaryItem {
+    display: grid;
+    align-content: center;
+    gap: 0.22rem;
+
+    min-width: 0;
+    min-height: 3.65rem;
+    padding: 0.65rem 0.7rem;
+
+    border: 1px solid var(--clinic-border);
+    border-radius: var(--clinic-radius-md);
+
+    background:
+        color-mix(in srgb, var(--clinic-white) 76%, transparent);
+
+    box-shadow:
+        inset 0 1px 0 color-mix(in srgb, var(--clinic-white) 84%, transparent);
+}
+
+.summaryItem[data-tone="success"] {
+    border-color:
+        color-mix(in srgb, var(--clinic-success) 18%, transparent);
+
+    background:
+        color-mix(in srgb, var(--clinic-success) 5%, var(--clinic-white));
+}
+
+.summaryItem[data-tone="danger"] {
+    border-color:
+        color-mix(in srgb, var(--clinic-danger) 18%, transparent);
+
+    background:
+        color-mix(in srgb, var(--clinic-danger) 5%, var(--clinic-white));
+}
+
+.summaryItem dt {
+    color: var(--clinic-muted-strong);
+
+    font-size: 0.65rem;
+    font-weight: 900;
+    letter-spacing: 0.06em;
+    line-height: 1.15;
+    text-transform: uppercase;
+}
+
+.summaryItem dd {
+    min-width: 0;
+    margin: 0;
+
+    overflow-wrap: anywhere;
+
+    color: var(--clinic-ink);
+
+    font-size: 0.96rem;
+    font-weight: 930;
+    line-height: 1.2;
+}
+
+.summaryItem[data-tone="success"] dd {
+    color: var(--clinic-success);
+}
+
+.summaryItem[data-tone="danger"] dd {
+    color: var(--clinic-danger);
+}
+
+.warning {
+    position: relative;
+    z-index: 2;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.85rem;
+
+    min-width: 0;
+    padding: 0.74rem 0.82rem;
+
+    border: 1px solid color-mix(in srgb, var(--clinic-warning) 23%, transparent);
+    border-inline-start: 4px solid var(--clinic-warning);
+
+    border-radius: var(--clinic-radius-md);
+
+    background:
+        color-mix(in srgb, var(--clinic-warning) 6%, var(--clinic-white));
+}
+
+.warning>div {
+    display: grid;
+    gap: 0.22rem;
+
+    min-width: 0;
+}
+
+.warning strong {
+    color: var(--clinic-warning);
+
+    font-size: 0.8rem;
+    font-weight: 950;
+    line-height: 1.25;
+}
+
+.warning p {
+    max-width: 72ch;
+    margin: 0;
+
+    color: var(--clinic-muted-strong);
+
+    font-size: 0.78rem;
+    font-weight: 680;
+    line-height: 1.4;
+}
+
+.warning span {
+    flex: 0 0 auto;
+
+    padding: 0.32rem 0.54rem;
+
+    border: 1px solid color-mix(in srgb, var(--clinic-warning) 18%, transparent);
+    border-radius: 999px;
+
+    color: var(--clinic-warning);
+    background:
+        color-mix(in srgb, var(--clinic-white) 74%, transparent);
+
+    font-size: 0.7rem;
+    font-weight: 900;
+    line-height: 1;
+    white-space: nowrap;
+}
+
+.reason {
+    position: relative;
+    z-index: 2;
+
+    display: grid;
+    gap: 0.22rem;
+
+    padding: 0.68rem 0.78rem;
+
+    border: 1px solid color-mix(in srgb, var(--clinic-danger) 16%, transparent);
+    border-inline-start: 4px solid var(--clinic-danger);
+
+    border-radius: var(--clinic-radius-md);
+
+    background:
+        color-mix(in srgb, var(--clinic-danger) 4%, var(--clinic-white));
+}
+
+.reason strong {
+    color: var(--clinic-danger);
+
+    font-size: 0.7rem;
+    font-weight: 950;
+    letter-spacing: 0.06em;
+    line-height: 1.2;
+    text-transform: uppercase;
+}
+
+.reason p {
+    margin: 0;
+
+    color: var(--clinic-muted-strong);
+
+    font-size: 0.78rem;
+    font-weight: 680;
+    line-height: 1.4;
+}
+
+.actions {
+    position: relative;
+    z-index: 2;
+
+    display: flex;
+    justify-content: flex-end;
+
+    min-width: 0;
+}
+
+.detailLink {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 2.42rem;
+    padding: 0.66rem 0.92rem;
+
+    border: 1px solid var(--history-accent);
+    border-radius: var(--clinic-radius-md);
+
+    color: var(--clinic-white);
+    background: var(--history-accent);
+
+    box-shadow:
+        0 0.52rem 1rem color-mix(in srgb, var(--history-accent) 14%, transparent);
+
+    font-size: var(--clinic-font-size-sm);
+    font-weight: 850;
+    line-height: 1;
+    text-decoration: none;
+    white-space: nowrap;
+
+    transition:
+        transform var(--clinic-transition),
+        filter var(--clinic-transition),
+        box-shadow var(--clinic-transition);
+}
+
+.detailLink:hover {
+    transform: translateY(-1px);
+    filter: brightness(0.92);
+
+    box-shadow:
+        0 0.75rem 1.35rem color-mix(in srgb, var(--history-accent) 18%, transparent);
+}
+
+.detailLink:focus-visible {
+    outline: 3px solid color-mix(in srgb, var(--history-accent) 22%, transparent);
+    outline-offset: 3px;
+}
+
+@media (max-width: 900px) {
+    .summary {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 620px) {
+
+    .cardHeader,
+    .warning {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .status,
+    .warning span {
+        width: fit-content;
+        white-space: normal;
+    }
+
+    .summary {
+        grid-template-columns: 1fr;
+    }
+
+    .actions,
+    .detailLink {
+        width: 100%;
+    }
+}
+
+@media (max-width: 420px) {
+    .card {
+        padding: 0.85rem;
+        border-radius: var(--clinic-radius-md);
+    }
+
+    .summaryItem {
+        padding: 0.66rem;
+    }
+
+    .identity h3 {
+        font-size: 1.14rem;
+    }
+
+    .summaryItem dt {
+        font-size: 0.62rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .card,
+    .detailLink {
+        transition: none;
+    }
+
+    .card:hover,
+    .detailLink:hover {
+        transform: none;
+    }
+}

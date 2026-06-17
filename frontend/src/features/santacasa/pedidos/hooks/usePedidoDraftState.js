@@ -1,3 +1,4 @@
+// src/features/santacasa/pedidos/hooks/usePedidoDraftState.js
 import { useCallback, useMemo, useState } from "react";
 
 import {
@@ -16,6 +17,32 @@ function clampQuantity(value, max) {
   return Math.min(quantity, maxQuantity);
 }
 
+function getStringValue(...values) {
+  const value = values.find((currentValue) => {
+    return String(currentValue || "").trim().length > 0;
+  });
+
+  return String(value || "").trim();
+}
+
+function extractReceitaNumber(description) {
+  const match = String(description || "").match(/receita\s+([0-9]+)/i);
+
+  return match?.[1] || "";
+}
+
+function extractPinAcesso(meta) {
+  const match = String(meta || "").match(/pin\s+([0-9]+)/i);
+
+  return match?.[1] || "";
+}
+
+function extractPinOpcao(meta) {
+  const match = String(meta || "").match(/opção\s+([0-9]+)/i);
+
+  return match?.[1] || "";
+}
+
 function normalizeDraftItem(item) {
   const quantidadeRestante = Math.floor(Number(item?.quantidadeRestante));
   const quantidade = clampQuantity(item?.quantidade, quantidadeRestante);
@@ -32,6 +59,34 @@ function normalizeDraftItem(item) {
     title: item.title,
     description: item.description,
     meta: item.meta,
+
+    numero19: getStringValue(
+      item.numero19,
+      item.source?.numero19,
+      item.source?.receita?.numero19,
+      extractReceitaNumber(item.description),
+    ),
+
+    pinAcesso6: getStringValue(
+      item.pinAcesso6,
+      item.source?.pinAcesso6,
+      item.source?.receita?.pinAcesso6,
+      extractPinAcesso(item.meta),
+    ),
+
+    pinOpcao4: getStringValue(
+      item.pinOpcao4,
+      item.source?.pinOpcao4,
+      item.source?.receita?.pinOpcao4,
+      extractPinOpcao(item.meta),
+    ),
+
+    validade: getStringValue(
+      item.validade,
+      item.source?.validade,
+      item.source?.receitaLinha?.validade,
+      item.source?.receita?.validade,
+    ),
 
     quantidade,
     quantidadeRestante,
@@ -107,6 +162,12 @@ export function usePedidoDraftState() {
 
           return {
             ...currentItem,
+
+            numero19: currentItem.numero19 || nextItem.numero19,
+            pinAcesso6: currentItem.pinAcesso6 || nextItem.pinAcesso6,
+            pinOpcao4: currentItem.pinOpcao4 || nextItem.pinOpcao4,
+            validade: currentItem.validade || nextItem.validade,
+
             quantidade: clampQuantity(
               Number(currentItem.quantidade) + Number(nextItem.quantidade),
               currentItem.quantidadeRestante,
@@ -114,58 +175,6 @@ export function usePedidoDraftState() {
           };
         });
       });
-    },
-    [updateItems],
-  );
-
-  const updateItemQuantity = useCallback(
-    (itemKey, quantity) => {
-      updateItems((currentItems) =>
-        currentItems
-          .map((item) => {
-            if (item.key !== itemKey) return item;
-
-            const nextQuantity = clampQuantity(
-              quantity,
-              item.quantidadeRestante,
-            );
-
-            if (nextQuantity <= 0) return null;
-
-            return {
-              ...item,
-              quantidade: nextQuantity,
-            };
-          })
-          .filter(Boolean),
-      );
-    },
-    [updateItems],
-  );
-
-  const removeItemQuantity = useCallback(
-    (itemKey, quantityToRemove) => {
-      updateItems((currentItems) =>
-        currentItems
-          .map((item) => {
-            if (item.key !== itemKey) return item;
-
-            const removeQuantity = clampQuantity(
-              quantityToRemove,
-              item.quantidade,
-            );
-
-            const nextQuantity = Number(item.quantidade) - removeQuantity;
-
-            if (nextQuantity <= 0) return null;
-
-            return {
-              ...item,
-              quantidade: nextQuantity,
-            };
-          })
-          .filter(Boolean),
-      );
     },
     [updateItems],
   );
@@ -202,20 +211,10 @@ export function usePedidoDraftState() {
       hasItems: items.length > 0,
 
       addItem,
-      updateItemQuantity,
-      removeItemQuantity,
       removeItem,
       removeItemsByKeys,
       clearDraft,
     }),
-    [
-      items,
-      addItem,
-      updateItemQuantity,
-      removeItemQuantity,
-      removeItem,
-      removeItemsByKeys,
-      clearDraft,
-    ],
+    [items, addItem, removeItem, removeItemsByKeys, clearDraft],
   );
 }
