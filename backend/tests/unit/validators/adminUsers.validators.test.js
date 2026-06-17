@@ -225,11 +225,33 @@ describe("adminUsers.validators", () => {
       }).toThrow("Email obrigatório.");
     });
 
-    it("deve rejeitar email inválido", () => {
+    it("deve rejeitar email sem arroba", () => {
       expect(() => {
         parseCreateUserPayload({
           name: "João Costa",
           email: "email-invalido",
+          password: "Password123",
+          role: "ADMIN",
+        });
+      }).toThrow("Email inválido.");
+    });
+
+    it("deve rejeitar email sem domínio", () => {
+      expect(() => {
+        parseCreateUserPayload({
+          name: "João Costa",
+          email: "joao@",
+          password: "Password123",
+          role: "ADMIN",
+        });
+      }).toThrow("Email inválido.");
+    });
+
+    it("deve rejeitar email sem ponto no domínio", () => {
+      expect(() => {
+        parseCreateUserPayload({
+          name: "João Costa",
+          email: "joao@example",
           password: "Password123",
           role: "ADMIN",
         });
@@ -247,15 +269,15 @@ describe("adminUsers.validators", () => {
       }).toThrow("Password obrigatória.");
     });
 
-    it("deve rejeitar password com menos de 8 caracteres", () => {
+    it("deve rejeitar password com menos de 10 caracteres", () => {
       expect(() => {
         parseCreateUserPayload({
           name: "João Costa",
           email: "joao@example.com",
-          password: "1234567",
+          password: "123456789",
           role: "ADMIN",
         });
-      }).toThrow("A password deve ter pelo menos 8 caracteres.");
+      }).toThrow("A password deve ter pelo menos 10 caracteres.");
     });
 
     it("deve rejeitar role inválida", () => {
@@ -309,11 +331,31 @@ describe("adminUsers.validators", () => {
       }).toThrow("Nome obrigatório.");
     });
 
-    it("deve rejeitar email inválido", () => {
+    it("deve rejeitar email sem arroba", () => {
       expect(() => {
         parseUpdateUserPayload({
           name: "João Costa",
           email: "email-invalido",
+          role: "ADMIN",
+        });
+      }).toThrow("Email inválido.");
+    });
+
+    it("deve rejeitar email sem domínio", () => {
+      expect(() => {
+        parseUpdateUserPayload({
+          name: "João Costa",
+          email: "joao@",
+          role: "ADMIN",
+        });
+      }).toThrow("Email inválido.");
+    });
+
+    it("deve rejeitar email sem ponto no domínio", () => {
+      expect(() => {
+        parseUpdateUserPayload({
+          name: "João Costa",
+          email: "joao@example",
           role: "ADMIN",
         });
       }).toThrow("Email inválido.");
@@ -349,12 +391,12 @@ describe("adminUsers.validators", () => {
       }).toThrow("Password obrigatória.");
     });
 
-    it("deve rejeitar password com menos de 8 caracteres", () => {
+    it("deve rejeitar password com menos de 10 caracteres", () => {
       expect(() => {
         parseUpdatePasswordPayload({
-          password: "1234567",
+          password: "123456789",
         });
-      }).toThrow("A password deve ter pelo menos 8 caracteres.");
+      }).toThrow("A password deve ter pelo menos 10 caracteres.");
     });
   });
 

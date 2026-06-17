@@ -20,6 +20,20 @@ function createUniqueAdminUserPayload(prefix = "admin-users-e2e") {
   };
 }
 
+function getSeedAdminEmail() {
+  return process.env.SEED_ADMIN_EMAIL || "admin@sistema.local";
+}
+
+async function findCurrentAdminUser(agent) {
+  const adminEmail = getSeedAdminEmail();
+
+  const response = await agent
+    .get(`/api/admin/users?search=${encodeURIComponent(adminEmail)}`)
+    .expect(200);
+
+  return response.body.data.find((user) => user.email === adminEmail);
+}
+
 async function cleanupUser(agent, userId) {
   if (!userId) return;
 
@@ -278,6 +292,65 @@ describe("Admin Users E2E", () => {
       } finally {
         await cleanupUser(agent, createdUserId);
       }
+    });
+
+    it("deve impedir ADMIN alterar a própria role", async () => {
+      const agent = await createAdminAgent(app);
+      const adminUser = await findCurrentAdminUser(agent);
+
+      expect(adminUser).toEqual(
+        expect.objectContaining({
+          id: expect.any(String),
+          email: getSeedAdminEmail(),
+          role: "ADMIN",
+        }),
+      );
+
+      const response = await agent
+        .patch(`/api/admin/users/${adminUser.id}`)
+        .send({
+          name: adminUser.name,
+          email: adminUser.email,
+          role: "SANTACASA",
+        })
+        .expect(403);
+
+      expect(response.body).toEqual(
+        expect.objectContaining({
+          error: "FORBIDDEN",
+          message: "Não podes alterar a role da tua própria conta.",
+        }),
+      );
+    });
+
+    it("deve permitir ADMIN atualizar os próprios dados se mantiver a role", async () => {
+      const agent = await createAdminAgent(app);
+      const adminUser = await findCurrentAdminUser(agent);
+
+      expect(adminUser).toEqual(
+        expect.objectContaining({
+          id: expect.any(String),
+          email: getSeedAdminEmail(),
+          role: "ADMIN",
+        }),
+      );
+
+      const response = await agent
+        .patch(`/api/admin/users/${adminUser.id}`)
+        .send({
+          name: adminUser.name,
+          email: adminUser.email,
+          role: "ADMIN",
+        })
+        .expect(200);
+
+      expect(response.body.data).toEqual(
+        expect.objectContaining({
+          id: adminUser.id,
+          email: adminUser.email,
+          role: "ADMIN",
+        }),
+      );
     });
   });
 });

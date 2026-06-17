@@ -39,6 +39,19 @@ async function assertUserExists(userId) {
   return user;
 }
 
+function assertNotSelfRoleChange(
+  targetUserId,
+  currentUserId,
+  currentRole,
+  nextRole,
+) {
+  if (targetUserId !== currentUserId) return;
+
+  if (currentRole === nextRole) return;
+
+  throw forbidden("Não podes alterar a role da tua própria conta.");
+}
+
 function assertNotSelfStatusChange(targetUserId, currentUserId) {
   if (targetUserId === currentUserId) {
     throw forbidden("Não podes alterar o estado da tua própria conta.");
@@ -105,10 +118,18 @@ async function createUser(payload = {}) {
   });
 }
 
-async function updateUser(userId, payload = {}) {
+async function updateUser(userId, payload = {}, context = {}) {
   const params = parseUpdateUserPayload(payload);
 
-  await assertUserExists(userId);
+  const user = await assertUserExists(userId);
+
+  assertNotSelfRoleChange(
+    userId,
+    context.currentUserId,
+    user.role,
+    params.role,
+  );
+
   await assertEmailAvailable(params.email, userId);
 
   return repository.updateUser(userId, {

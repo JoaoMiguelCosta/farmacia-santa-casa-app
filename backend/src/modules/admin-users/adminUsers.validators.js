@@ -9,6 +9,9 @@ const DEFAULT_PAGE = 1;
 const DEFAULT_PAGE_SIZE = 50;
 const MAX_TAKE = 100;
 const MAX_SEARCH_LENGTH = 160;
+const MIN_PASSWORD_LENGTH = 10;
+
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 function normalizeText(value) {
   return String(value || "").trim();
@@ -120,7 +123,7 @@ function assertValidEmail(email) {
     throw badRequest("Email obrigatório.");
   }
 
-  if (!email.includes("@")) {
+  if (!EMAIL_PATTERN.test(email)) {
     throw badRequest("Email inválido.");
   }
 }
@@ -136,8 +139,10 @@ function assertValidPassword(password) {
     throw badRequest("Password obrigatória.");
   }
 
-  if (password.length < 8) {
-    throw badRequest("A password deve ter pelo menos 8 caracteres.");
+  if (password.length < MIN_PASSWORD_LENGTH) {
+    throw badRequest(
+      `A password deve ter pelo menos ${MIN_PASSWORD_LENGTH} caracteres.`,
+    );
   }
 }
 
