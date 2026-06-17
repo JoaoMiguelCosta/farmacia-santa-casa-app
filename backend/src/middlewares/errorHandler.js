@@ -54,6 +54,7 @@ function shouldLogWarning(statusCode) {
 
 function buildLogPayload({ error, req, statusCode, code }) {
   return {
+    requestId: req.requestId || null,
     path: `${req.method} ${req.originalUrl}`,
     statusCode,
     code,

@@ -4,8 +4,8 @@ Backend da aplicação **Farmácia Santa Casa**, responsável pela gestão de ut
 
 Este backend foi construído com **Node.js**, **Express**, **Prisma** e **PostgreSQL**.
 
-**Última atualização:** 2026-06-16
-**Estado atual:** backend estável; testes automatizados fechados por agora; documentação principal atualizada.
+**Última atualização:** 2026-06-17
+**Estado atual:** backend estável; preparação inicial para produção reforçada; security headers, request ID, shutdown lifecycle, testes automatizados e documentação principal atualizados.
 
 ---
 
@@ -60,7 +60,16 @@ Estado validado nesta fase:
 * scripts manuais mantidos como apoio/smoke tests;
 * alertas operacionais cobertos;
 * regularizações Santa Casa/Farmácia cobertas;
-* `npm audit` integrado no fluxo de validação.
+* `npm audit` integrado no fluxo de validação;
+* coverage configurado com Vitest/V8;
+* health checks de produção adicionados (`/api/health/live` e `/api/health/ready`);
+* `TRUST_PROXY` configurável para deploy atrás de reverse proxy;
+* rate limit de login alinhado com `req.ip`;
+* seed de produção endurecido;
+* endpoints de manutenção exigem confirmação forte;
+* security headers HTTP aplicados com `helmet`;
+* `X-Request-Id` devolvido em todas as respostas;
+* shutdown lifecycle reforçado para fechar HTTP, jobs e Prisma de forma controlada.
 
 Comandos validados:
 
@@ -69,6 +78,7 @@ npm run test:unit -- --run
 npm run test:integration -- --run
 npm run test:e2e -- --run
 npm run test:all
+npm run test:coverage
 npm run validate
 ```
 
@@ -78,6 +88,7 @@ Estado final:
 Unit tests        ✅ passam
 Integration tests ✅ passam
 E2E tests         ✅ passam
+Coverage          ✅ configurado
 test:all          ✅ passa
 validate          ✅ passa
 ```
@@ -142,6 +153,7 @@ Responsável por:
 | Autenticação             | JWT em cookie HTTP-only |
 | Password hashing         | bcryptjs                |
 | Cookies                  | cookie-parser           |
+| Segurança HTTP           | helmet                  |
 | Jobs                     | node-cron               |
 | Configuração             | dotenv                  |
 | Desenvolvimento          | nodemon                 |
@@ -190,7 +202,8 @@ backend/
 │   │   ├── errorHandler.js
 │   │   ├── loginRateLimit.js
 │   │   ├── notFoundHandler.js
-│   │   └── originGuard.js
+│   │   ├── originGuard.js
+│   │   └── requestId.js
 │   │
 │   ├── modules/
 │   │   ├── admin-users/
@@ -260,6 +273,7 @@ docs/
 ├── BUSINESS_RULES.md
 ├── ENVIRONMENT.md
 ├── MAINTENANCE_JOBS.md
+├── PRODUCTION_CHECKLIST.md
 └── TESTING.md
 ```
 
@@ -270,6 +284,7 @@ docs/
 | `BUSINESS_RULES.md`   | Regras funcionais do domínio                                |
 | `ENVIRONMENT.md`      | Variáveis de ambiente, `.env`, cookies, CORS e produção     |
 | `MAINTENANCE_JOBS.md` | Jobs automáticos, previews, runs e cuidados operacionais    |
+| `PRODUCTION_CHECKLIST.md` | Checklist de staging/produção, deploy, cookies e jobs   |
 | `TESTING.md`          | Estratégia, cobertura atual e comandos de testes            |
 
 O `README.md` é a porta de entrada. Os detalhes profundos devem ficar nos ficheiros acima.
@@ -368,25 +383,28 @@ O `.env` real nunca deve ser versionado.
 
 ### Variáveis principais
 
-| Variável                 | Obrigatória | Descrição                                 |
-| ------------------------ | ----------: | ----------------------------------------- |
-| `DATABASE_URL`           |         Sim | URL PostgreSQL usada pelo Prisma          |
-| `NODE_ENV`               |         Sim | Ambiente atual                            |
-| `PORT`                   |         Sim | Porta do servidor                         |
-| `TZ`                     |         Sim | Timezone dos jobs                         |
-| `JSON_LIMIT`             |         Sim | Limite de payload JSON                    |
-| `ALLOWED_ORIGINS`        |         Sim | Origins permitidas para CORS/origin guard |
-| `AUTH_JWT_SECRET`        |         Sim | Segredo para assinar JWT                  |
-| `AUTH_COOKIE_NAME`       |         Sim | Nome do cookie de sessão                  |
-| `AUTH_TOKEN_EXPIRES_IN`  |         Sim | Duração do token                          |
-| `AUTH_COOKIE_MAX_AGE_MS` |         Sim | Duração do cookie em milissegundos        |
-| `AUTH_COOKIE_SECURE`     |         Sim | Define se o cookie exige HTTPS            |
-| `AUTH_COOKIE_SAME_SITE`  |         Sim | Política SameSite do cookie               |
-
+| Variável                 | Obrigatória | Descrição                                      |
+| ------------------------ | ----------: | ---------------------------------------------- |
+| `DATABASE_URL`           |         Sim | URL PostgreSQL usada pelo Prisma               |
+| `NODE_ENV`               |         Sim | Ambiente atual: `development`, `test`, `production` |
+| `PORT`                   |         Sim | Porta do servidor                              |
+| `TZ`                     |         Sim | Timezone dos jobs                              |
+| `JSON_LIMIT`             |         Sim | Limite de payload JSON                         |
+| `TRUST_PROXY`            |         Não | Configuração `trust proxy` do Express          |
+| `ALLOWED_ORIGINS`        |         Sim | Origins permitidas para CORS/origin guard      |
+| `AUTH_JWT_SECRET`        |         Sim | Segredo para assinar JWT                       |
+| `AUTH_COOKIE_NAME`       |         Sim | Nome do cookie de sessão                       |
+| `AUTH_TOKEN_EXPIRES_IN`  |         Sim | Duração do token                               |
+| `AUTH_COOKIE_MAX_AGE_MS` |         Sim | Duração do cookie em milissegundos             |
+| `AUTH_COOKIE_SECURE`     |         Sim | Define se o cookie exige HTTPS                 |
+| `AUTH_COOKIE_SAME_SITE`  |         Sim | Política SameSite do cookie                    |
+| `AUTH_LOGIN_RATE_LIMIT_WINDOW_MS` | Sim | Janela do rate limit de login                  |
+| `AUTH_LOGIN_RATE_LIMIT_MAX`       | Sim | Número máximo de tentativas falhadas           |
 ### Variáveis de jobs
 
 | Variável                  | Descrição                                              |
 | ------------------------- | ------------------------------------------------------ |
+| `ENABLE_JOBS`             | Ativa/desativa globalmente o registo automático de jobs |
 | `ENABLE_HIGIENE`          | Ativa/desativa job automático de higiene               |
 | `ENABLE_PURGE_HISTORY`    | Ativa/desativa job automático de limpeza de histórico  |
 | `ENABLE_RECEITAS_EXPIRY`  | Ativa/desativa job automático de expiração de receitas |
@@ -396,6 +414,7 @@ O `.env` real nunca deve ser versionado.
 | `PURGE_OFFSET_MONTHS`     | Meses mínimos para purge histórico                     |
 | `CRON_MONTHLY_03H`        | Cron mensal                                            |
 | `CRON_DAILY_03H`          | Cron diário                                            |
+### Local development recomendado
 
 ### Local development recomendado
 
@@ -403,9 +422,11 @@ O `.env` real nunca deve ser versionado.
 NODE_ENV=development
 PORT=3001
 TZ=Europe/Lisbon
+TRUST_PROXY=false
 AUTH_COOKIE_SECURE=false
 AUTH_COOKIE_SAME_SITE=lax
 ALLOWED_ORIGINS=http://localhost:5173,http://localhost:5174
+ENABLE_JOBS=true
 ```
 
 ### Produção
@@ -415,6 +436,13 @@ Em produção, usar obrigatoriamente:
 ```env
 NODE_ENV=production
 AUTH_COOKIE_SECURE=true
+ALLOWED_ORIGINS=https://dominio-real-do-frontend.pt
+```
+
+Se a API estiver atrás de um proxy/load balancer, definir normalmente:
+
+```env
+TRUST_PROXY=1
 ```
 
 Se `AUTH_COOKIE_SAME_SITE=none`, então `AUTH_COOKIE_SECURE` também tem de ser `true`.
@@ -475,7 +503,21 @@ ENABLE_RECEITAS_EXPIRY=false
 
 ## 10. Seed inicial
 
-O seed cria/atualiza três utilizadores:
+O seed é executado por:
+
+```bash
+npm run prisma:seed
+```
+
+ou diretamente:
+
+```bash
+npx prisma db seed
+```
+
+### Desenvolvimento e testes
+
+Em `development` e `test`, o seed cria/atualiza três utilizadores:
 
 | Role        | Email padrão              |
 | ----------- | ------------------------- |
@@ -491,16 +533,32 @@ SEED_SANTACASA_PASSWORD
 SEED_FARMACIA_PASSWORD
 ```
 
-Em desenvolvimento podem ser simples.
+### Produção
 
-Em produção:
+Em `production`, o seed é bloqueado por defeito.
 
-* usar passwords fortes;
-* alterar após primeiro login;
-* controlar quando o seed corre;
-* evitar passwords padrão.
+Só pode correr se:
 
----
+```env
+ALLOW_PRODUCTION_SEED=true
+SEED_ADMIN_EMAIL="admin@dominio.pt"
+SEED_ADMIN_PASSWORD="password forte com pelo menos 10 caracteres"
+```
+
+Em produção, o seed:
+
+* cria apenas o `ADMIN` inicial;
+* não cria utilizadores `SANTACASA` ou `FARMACIA`;
+* não aceita passwords padrão;
+* não redefine password de admin já existente;
+* não altera role, nome ou estado de admin já existente.
+
+Depois do `ADMIN` inicial, as contas Santa Casa e Farmácia devem ser criadas pela UI:
+
+```txt
+Sistema > Utilizadores
+```
+## 11. Scripts NPM
 
 ## 11. Scripts NPM
 
@@ -516,6 +574,7 @@ npm start
 ```bash
 npm run prisma:generate
 npm run prisma:migrate
+npm run prisma:migrate:deploy
 npm run prisma:studio
 npm run prisma:seed
 ```
@@ -585,17 +644,27 @@ http://localhost:3001/api
 npm start
 ```
 
-### Health check global
+### Health checks
 
 ```txt
+GET /api/health/live
+GET /api/health/ready
 GET /api/health
 ```
 
 Acesso:
 
 ```txt
-ADMIN
+/api/health/live   público
+/api/health/ready  público
+/api/health        ADMIN
 ```
+
+Uso recomendado:
+
+* `/api/health/live` para confirmar processo Node ativo;
+* `/api/health/ready` para confirmar API pronta e base de dados acessível;
+* `/api/health` para health administrativo autenticado.
 
 ---
 
@@ -646,8 +715,10 @@ A API está organizada por contexto:
 | `/api/santacasa`  | `SANTACASA`, `ADMIN`                        |
 | `/api/farmacia`   | `FARMACIA`, `ADMIN`                         |
 | `/api/admin`      | `ADMIN`                                     |
-| `/api/manutencao` | `ADMIN`                                     |
-| `/api/health`     | `ADMIN`                                     |
+| `/api/manutencao`   | `ADMIN`                                   |
+| `/api/health/live`  | Público                                   |
+| `/api/health/ready` | Público                                   |
+| `/api/health`       | `ADMIN`                                  |
 
 ---
 
@@ -896,7 +967,19 @@ GET  /api/manutencao/jobs/purge-history/preview
 POST /api/manutencao/jobs/purge-history/run
 ```
 
-Os endpoints `run` alteram dados reais.
+Os endpoints `run` alteram dados reais e exigem confirmação forte no body:
+
+```json
+{ "confirm": "RUN_RECEITA_EXPIRY" }
+```
+
+```json
+{ "confirm": "RUN_HIGIENE", "offsetMonths": 12, "anonymize": false }
+```
+
+```json
+{ "confirm": "RUN_PURGE_HISTORY", "backupConfirmed": true, "offsetMonths": 6 }
+```
 
 ### Regra importante de validade
 
@@ -1030,6 +1113,10 @@ tests/e2e/
 ├── extras.e2e.test.js
 ├── farmacia.e2e.test.js
 ├── farmaciaPedidos.e2e.test.js
+├── health.e2e.test.js
+├── loginRateLimit.e2e.test.js
+├── requestId.e2e.test.js
+├── securityHeaders.e2e.test.js
 ├── manutencao.e2e.test.js
 ├── medicacaoHabitual.e2e.test.js
 ├── pedidos.e2e.test.js
@@ -1056,7 +1143,10 @@ Cobrem:
 * regularizações;
 * alertas;
 * manutenção;
-* jobs via endpoints administrativos.
+* jobs via endpoints administrativos;
+* health checks de produção;
+* security headers HTTP;
+* header `X-Request-Id`.
 
 ---
 
@@ -1169,6 +1259,23 @@ AUTH_COOKIE_SECURE=true
 ```
 
 `AUTH_JWT_SECRET` deve ser longo, aleatório e privado.
+
+### Segurança HTTP e request ID
+
+A API aplica headers de segurança através de `helmet`.
+
+Todas as respostas incluem:
+
+```txt
+X-Request-Id
+```
+
+Regras:
+
+* se o cliente enviar `X-Request-Id` válido, o backend preserva esse valor;
+* se não enviar, o backend gera um identificador;
+* o header é exposto em CORS através de `Access-Control-Expose-Headers`;
+* os logs de erro incluem `requestId` para facilitar diagnóstico em produção.
 
 ### CORS e cookies
 
@@ -1454,6 +1561,10 @@ Antes de deploy:
 * [ ] Definir `AUTH_COOKIE_SECURE=true`.
 * [ ] Confirmar `AUTH_COOKIE_SAME_SITE`.
 * [ ] Confirmar `ALLOWED_ORIGINS`.
+* [ ] Confirmar `TRUST_PROXY` conforme a infraestrutura.
+* [ ] Confirmar security headers com `helmet`.
+* [ ] Confirmar `X-Request-Id` nas respostas.
+* [ ] Confirmar graceful shutdown em logs de arranque/paragem.
 * [ ] Confirmar se jobs devem estar ativos.
 * [ ] Confirmar `PURGE_OFFSET_MONTHS`.
 * [ ] Confirmar `HIGIENE_OFFSET_MONTHS`.
@@ -1473,7 +1584,7 @@ Antes de deploy:
 O backend está estável para esta fase, mas existem limites conscientes:
 
 * testes não usam ainda base isolada `.env.test`;
-* não existe relatório formal de coverage;
+* coverage está configurado, mas ainda sem threshold obrigatório;
 * rate limit de login usa memória local;
 * jobs correm no mesmo processo da API;
 * em produção multi-instância será necessário rever scheduler/jobs;
@@ -1507,34 +1618,12 @@ Adicionar testes quando houver alterações críticas em:
 
 ### Futuro
 
-Adicionar coverage quando fizer sentido:
-
-```bash
-npm install -D @vitest/coverage-v8
-```
-
-Adicionar ao `package.json`:
-
-```json
-{
-  "scripts": {
-    "test:coverage": "vitest --coverage"
-  }
-}
-```
-
-Correr:
-
-```bash
-npm run test:coverage
-```
-
 Também pode ser considerado no futuro:
 
 * `.env.test`;
 * base de dados dedicada para testes;
-* logs estruturados;
-* request ID;
+* thresholds mínimos de coverage;
+* logs estruturados persistentes;
 * scheduler externo para jobs;
 * Redis para rate limit;
 * CI/CD com `npm run validate`.

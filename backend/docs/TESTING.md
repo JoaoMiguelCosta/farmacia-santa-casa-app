@@ -4,7 +4,7 @@ Documentação de testes do backend **Farmácia Santa Casa**.
 
 Este ficheiro descreve a estratégia de testes, a estrutura atual, os comandos disponíveis, o que está coberto e as regras a seguir quando forem criados ou alterados testes.
 
-**Última atualização:** 2026-06-16
+**Última atualização:** 2026-06-17
 **Estado atual:** suite de testes backend fechada por agora.
 
 ---
@@ -16,6 +16,7 @@ O backend tem testes automatizados com:
 * **Vitest** como test runner;
 * **Supertest** para testes E2E/API;
 * **Prisma** nos testes de integração dos jobs e em alguns cenários E2E controlados;
+* **coverage V8** para relatório de cobertura;
 * helpers e fixtures reutilizáveis para autenticação e criação de dados.
 
 Comandos validados nesta fase:
@@ -25,6 +26,7 @@ npm run test:unit -- --run
 npm run test:integration -- --run
 npm run test:e2e -- --run
 npm run test:all
+npm run test:coverage
 npm run validate
 ```
 
@@ -35,6 +37,7 @@ Unit tests        ✅ passam
 Integration tests ✅ passam
 E2E tests         ✅ passam
 test:all          ✅ passa
+test:coverage     ✅ configurado
 validate          ✅ passa
 npm audit         ✅ sem vulnerabilidades conhecidas nesta validação
 ```
@@ -83,6 +86,8 @@ Os testes protegem principalmente:
 * alertas operacionais;
 * jobs de manutenção;
 * erros esperados;
+* security headers com `helmet`;
+* request ID;
 * integridade dos dados na base de dados.
 
 ---
@@ -156,6 +161,12 @@ export default defineConfig({
       concurrent: false,
       shuffle: false,
     },
+
+    coverage: {
+      provider: "v8",
+      reporter: ["text", "html", "lcov"],
+      reportsDirectory: "coverage",
+    },
   },
 });
 ```
@@ -204,6 +215,8 @@ backend/
     │   ├── extras.e2e.test.js
     │   ├── farmacia.e2e.test.js
     │   ├── farmaciaPedidos.e2e.test.js
+    │   ├── health.e2e.test.js
+    │   ├── loginRateLimit.e2e.test.js
     │   ├── manutencao.e2e.test.js
     │   ├── medicacaoHabitual.e2e.test.js
     │   ├── pedidos.e2e.test.js
@@ -247,6 +260,7 @@ Scripts automatizados:
   "test:integration": "vitest tests/integration",
   "test:e2e": "vitest tests/e2e",
   "test:all": "npm run test:unit -- --run && npm run test:integration -- --run && npm run test:e2e -- --run",
+  "test:coverage": "vitest --coverage --run",
   "audit": "npm audit",
   "validate": "npm run test:all && npm run audit"
 }
@@ -334,6 +348,7 @@ npm run test:unit -- --run tests/unit/validators/pedidos.validators.test.js
 
 ```bash
 npm run test:all
+npm run test:coverage
 npm run validate
 ```
 
@@ -845,7 +860,83 @@ Cobre:
 * logout;
 * logout sem sessão;
 * rotas protegidas;
-* bloqueios por role.
+* bloqueios por role;
+* `/api/health` protegido por `ADMIN`.
+
+---
+
+## 10.1.1 Health E2E
+
+Ficheiro:
+
+```txt
+tests/e2e/health.e2e.test.js
+```
+
+Cobre:
+
+* `/api/health/live` público;
+* `/api/health/ready` público com validação de base de dados;
+* `/api/health` protegido sem sessão;
+* `/api/health` permitido com `ADMIN`;
+* `/api/health` bloqueado para `SANTACASA`;
+* `/api/health` bloqueado para `FARMACIA`.
+
+---
+
+## 10.1.2 Login Rate Limit E2E
+
+Ficheiro:
+
+```txt
+tests/e2e/loginRateLimit.e2e.test.js
+```
+
+Cobre:
+
+* limite de tentativas falhadas de login;
+* resposta `429 TOO_MANY_REQUESTS`;
+* header `Retry-After`;
+* proteção contra bypass por `X-Forwarded-For` manipulado quando `TRUST_PROXY=false`.
+
+---
+
+## 10.1.3 Security Headers E2E
+
+Ficheiro:
+
+```txt
+tests/e2e/securityHeaders.e2e.test.js
+```
+
+Cobre:
+
+* aplicação de headers de segurança em respostas públicas com `helmet`;
+* remoção de `x-powered-by`;
+* `X-Content-Type-Options`;
+* `Referrer-Policy`;
+* `X-Frame-Options`;
+* `Cross-Origin-Resource-Policy`;
+* `Content-Security-Policy`;
+* manutenção do CORS para origins permitidas.
+
+---
+
+## 10.1.4 Request ID E2E
+
+Ficheiro:
+
+```txt
+tests/e2e/requestId.e2e.test.js
+```
+
+Cobre:
+
+* geração automática de `X-Request-Id`;
+* preservação de `X-Request-Id` válido enviado pelo cliente;
+* exposição do header em CORS;
+* presença de `X-Request-Id` em respostas de erro.
+
 
 ---
 
@@ -864,6 +955,9 @@ Cobre:
 * bloqueio de `FARMACIA`;
 * listagem por `ADMIN`;
 * criação de utilizador;
+* password mínima de 10 caracteres;
+* email com formato válido;
+* bloqueio de alteração da própria role;
 * listagem com pesquisa/filtros;
 * atualização de nome/email/role;
 * alteração de password;
@@ -995,11 +1089,14 @@ Cobre:
 * acesso de `ADMIN`;
 * listagem de jobs;
 * preview de `receita-expiry`;
-* run de `receita-expiry`;
+* run de `receita-expiry` com confirmação;
+* rejeição de `receita-expiry` sem confirmação;
 * preview de `higiene`;
-* run de `higiene`;
+* run de `higiene` com confirmação;
+* rejeição de `higiene` sem confirmação;
 * preview de `purge-history`;
-* run de `purge-history`;
+* run de `purge-history` com confirmação e backup confirmado;
+* rejeição de `purge-history` sem confirmação ou sem `backupConfirmed`;
 * validação de `offsetMonths` inválido;
 * job inexistente;
 * ação inexistente.
@@ -1765,3 +1862,31 @@ Próximo passo recomendado:
 ```txt
 Manter backend estável, fazer commit e avançar para frontend ou documentação complementar.
 ```
+
+
+---
+
+## Anexo — Coverage
+
+O comando:
+
+```bash
+npm run test:coverage
+```
+
+gera relatório de cobertura com Vitest/V8.
+
+Relatórios esperados:
+
+```txt
+coverage/
+├── index.html
+└── lcov.info
+```
+
+Notas:
+
+* coverage mede linhas/funções/branches executadas pelos testes;
+* coverage alto não prova que a regra de negócio está correta;
+* nesta fase, o coverage serve sobretudo para identificar zonas sem testes;
+* thresholds obrigatórios podem ser adicionados mais tarde.

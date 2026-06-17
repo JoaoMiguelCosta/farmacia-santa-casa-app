@@ -1,10 +1,12 @@
 // src/app/app.js
 const express = require("express");
 const cookieParser = require("cookie-parser");
+const helmet = require("helmet");
 
 const routes = require("../routes");
 const { env } = require("../config/env");
 const { originGuard } = require("../middlewares/originGuard");
+const { requestId } = require("../middlewares/requestId");
 const { notFoundHandler } = require("../middlewares/notFoundHandler");
 const { errorHandler } = require("../middlewares/errorHandler");
 
@@ -24,8 +26,9 @@ function corsMiddleware(req, res, next) {
   res.setHeader(
     "Access-Control-Allow-Headers",
     req.headers["access-control-request-headers"] ||
-      "Content-Type, Authorization",
+      "Content-Type, Authorization, X-Request-Id",
   );
+  res.setHeader("Access-Control-Expose-Headers", "X-Request-Id");
 
   if (req.method === "OPTIONS") {
     return res.sendStatus(204);
@@ -39,6 +42,9 @@ function createApp() {
 
   app.disable("x-powered-by");
   app.set("trust proxy", env.TRUST_PROXY);
+
+  app.use(requestId);
+  app.use(helmet());
 
   app.use(corsMiddleware);
   app.use(originGuard);

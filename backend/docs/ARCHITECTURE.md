@@ -40,6 +40,7 @@ O backend usa uma stack simples, explícita e adequada ao tamanho atual do proje
 * **Cookie HTTP-only** para transporte do token
 * **bcryptjs** para hashing de passwords
 * **cookie-parser** para leitura de cookies
+* **helmet** para security headers HTTP
 * **node-cron** para jobs agendados
 * **dotenv** para configuração por ambiente
 * **Vitest** para testes unitários, integração e E2E
@@ -56,6 +57,7 @@ Dependências principais:
   "bcryptjs": "^3.0.3",
   "cookie": "^1.1.1",
   "cookie-parser": "^1.4.7",
+  "helmet": "^8.2.0",
   "node-cron": "^4.2.1",
   "dotenv": "^16.6.1"
 }
@@ -138,7 +140,8 @@ backend/
 │   │   ├── errorHandler.js
 │   │   ├── loginRateLimit.js
 │   │   ├── notFoundHandler.js
-│   │   └── originGuard.js
+│   │   ├── originGuard.js
+│   │   └── requestId.js
 │   │
 │   ├── modules/
 │   │   ├── admin-users/
@@ -202,6 +205,8 @@ Fluxo simplificado:
 server.js
 └── createApp()
     └── app.js
+        ├── requestId
+        ├── helmet
         ├── corsMiddleware
         ├── originGuard
         ├── cookieParser
@@ -227,11 +232,13 @@ O servidor também trata encerramento controlado:
 * `unhandledRejection`
 * `uncaughtException`
 
-Durante shutdown, fecha a ligação Prisma através de:
+Durante shutdown, o servidor:
 
-```txt
-disconnectPrisma()
-```
+* evita shutdown duplicado;
+* tenta parar jobs registados;
+* fecha o servidor HTTP;
+* fecha a ligação Prisma através de `disconnectPrisma()`;
+* força encerramento se o processo não terminar dentro do timeout definido.
 
 ---
 
@@ -247,6 +254,8 @@ Responsabilidades:
 
 * criar a instância Express;
 * remover o header `x-powered-by`;
+* adicionar `X-Request-Id` a todas as respostas;
+* aplicar security headers HTTP com `helmet`;
 * aplicar CORS manual;
 * proteger pedidos de escrita por origem;
 * ativar cookies;
@@ -259,6 +268,9 @@ Ordem dos middlewares:
 
 ```txt
 app.disable("x-powered-by")
+app.set("trust proxy", env.TRUST_PROXY)
+app.use(requestId)
+app.use(helmet())
 app.use(corsMiddleware)
 app.use(originGuard)
 app.use(cookieParser())
@@ -269,6 +281,10 @@ app.use(errorHandler)
 ```
 
 Esta ordem é importante.
+
+O `requestId` corre no início para garantir `X-Request-Id` em todas as respostas.
+
+O `helmet` corre antes das rotas para aplicar security headers HTTP.
 
 O `originGuard` corre antes das rotas para bloquear operações de escrita vindas de origens não autorizadas.
 
@@ -301,6 +317,7 @@ Configurações principais:
 | `NODE_ENV`               | Ambiente de execução                      |
 | `TZ`                     | Timezone dos jobs e datas locais          |
 | `JSON_LIMIT`             | Limite do body JSON                       |
+| `TRUST_PROXY`            | Configuração de proxy confiável do Express |
 | `AUTH_JWT_SECRET`        | Segredo JWT                               |
 | `AUTH_COOKIE_NAME`       | Nome do cookie de sessão                  |
 | `AUTH_TOKEN_EXPIRES_IN`  | Duração do JWT                            |
@@ -325,7 +342,9 @@ Em produção:
 * `AUTH_JWT_SECRET` deve ter pelo menos 32 caracteres;
 * `AUTH_COOKIE_SECURE` tem de ser `true`;
 * `AUTH_COOKIE_SAME_SITE=none` exige `AUTH_COOKIE_SECURE=true`;
-* `ALLOWED_ORIGINS` não pode conter `*`.
+* `ALLOWED_ORIGINS` não pode conter `*`;
+* `ALLOWED_ORIGINS` não pode conter localhost/127.0.0.1;
+* `AUTH_COOKIE_SAME_SITE=none` exige `AUTH_COOKIE_SECURE=true`.
 
 ---
 
@@ -433,9 +452,11 @@ Tabela de acesso:
 | `/api/auth`       | Público para login/logout; `/me` exige autenticação |
 | `/api/santacasa`  | `SANTACASA`, `ADMIN`                                |
 | `/api/farmacia`   | `FARMACIA`, `ADMIN`                                 |
-| `/api/manutencao` | `ADMIN`                                             |
-| `/api/admin`      | `ADMIN`                                             |
-| `/api/health`     | `ADMIN`                                             |
+| `/api/manutencao`   | `ADMIN`                                           |
+| `/api/admin`        | `ADMIN`                                           |
+| `/api/health/live`  | Público                                           |
+| `/api/health/ready` | Público                                           |
+| `/api/health`       | `ADMIN`                                          |
 
 A autorização é feita por dois middlewares:
 
@@ -520,6 +541,10 @@ A chave do rate limit combina:
 IP + email normalizado
 ```
 
+O IP vem de `req.ip`, respeitando a configuração `TRUST_PROXY` do Express.
+
+Isto evita ler `x-forwarded-for` manualmente dentro do middleware e reduz o risco de bypass quando `TRUST_PROXY=false`.
+
 Quando o login falha com `401`, o contador aumenta.
 
 Quando o login tem sucesso, o contador é limpo.
@@ -531,6 +556,30 @@ A implementação usa `Map` em memória.
 Como o rate limit usa memória local, ele não é persistente nem partilhado entre múltiplas instâncias do servidor.
 
 Para produção multi-instância, o ideal seria migrar para uma solução com Redis ou serviço externo de rate limiting.
+
+---
+
+## 11.1 Request ID e headers de segurança
+
+O middleware de request ID está em:
+
+```txt
+src/middlewares/requestId.js
+```
+
+Responsabilidades:
+
+* ler `X-Request-Id` enviado pelo cliente, quando válido;
+* gerar um identificador quando o cliente não envia;
+* guardar o valor em `req.requestId`;
+* devolver `X-Request-Id` em todas as respostas;
+* expor `X-Request-Id` em CORS para apoio a diagnóstico no frontend.
+
+O `errorHandler` inclui `requestId` nos logs de erro, sobretudo para facilitar análise de incidentes em produção.
+
+Os security headers HTTP são aplicados por `helmet` em `src/app/app.js`.
+
+O body das respostas de erro não foi alterado. O identificador fica no header para não quebrar contratos existentes da API.
 
 ---
 
@@ -552,6 +601,8 @@ Monta:
 /api/farmacia
 /api/manutencao
 /api/admin
+/api/health/live
+/api/health/ready
 /api/health
 ```
 
@@ -1531,18 +1582,21 @@ Principais decisões de segurança:
 * CORS restrito a `ALLOWED_ORIGINS`;
 * proteção de origem para operações de escrita;
 * rate limit no login;
+* security headers HTTP com `helmet`;
+* `X-Request-Id` em todas as respostas;
+* request ID nos logs de erro;
 * roles aplicadas por prefixo de rota;
 * erro genérico em login inválido;
 * não exposição de `passwordHash`;
+* password mínima de utilizadores com 10 caracteres;
+* bloqueio de alteração da própria role pelo ADMIN autenticado;
 * validação de utilizador ativo em sessão;
 * bloqueio de utilizadores inativos.
 
 ### Pontos a melhorar no futuro
 
-* substituir rate limit em memória por Redis;
-* adicionar logs estruturados;
-* adicionar request ID;
-* adicionar helmet;
+* substituir rate limit em memória por Redis em produção multi-instância;
+* adicionar logs estruturados persistentes;
 * adicionar CSRF token se o contexto de deployment exigir proteção adicional.
 
 ---

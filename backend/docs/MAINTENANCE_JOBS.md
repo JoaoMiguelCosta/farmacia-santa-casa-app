@@ -10,8 +10,8 @@ Este ficheiro descreve os processos automáticos e manuais responsáveis por:
 * limpar histórico antigo de pedidos e regularizações;
 * permitir preview e execução manual controlada por utilizadores `ADMIN`.
 
-**Última atualização:** 2026-06-16
-**Estado atual:** jobs implementados, endpoints protegidos, testes de integração e E2E fechados por agora.
+**Última atualização:** 2026-06-17
+**Estado atual:** jobs implementados, endpoints protegidos, confirmação forte nos runs, testes de integração e E2E fechados por agora.
 
 ---
 
@@ -142,6 +142,7 @@ src/config/env.js
 ## 5.1 Ativação/desativação dos jobs
 
 ```env id="bhz61a"
+ENABLE_JOBS=true
 ENABLE_HIGIENE=true
 ENABLE_PURGE_HISTORY=true
 ENABLE_RECEITAS_EXPIRY=true
@@ -149,6 +150,7 @@ ENABLE_RECEITAS_EXPIRY=true
 
 | Variável                 | Valor padrão | Função                                                   |
 | ------------------------ | -----------: | -------------------------------------------------------- |
+| `ENABLE_JOBS`            |       `true` | ativa/desativa globalmente o registo automático de jobs  |
 | `ENABLE_HIGIENE`         |       `true` | ativa/desativa o job automático de higiene               |
 | `ENABLE_PURGE_HISTORY`   |       `true` | ativa/desativa o job automático de limpeza de histórico  |
 | `ENABLE_RECEITAS_EXPIRY` |       `true` | ativa/desativa o job automático de expiração de receitas |
@@ -160,6 +162,8 @@ ENABLE_HIGIENE=false
 ENABLE_PURGE_HISTORY=false
 ENABLE_RECEITAS_EXPIRY=false
 ```
+
+Quando `ENABLE_JOBS=false`, nenhum job automático é registado no arranque.
 
 Isto não impede a execução direta via endpoints de manutenção ou scripts, se forem chamados manualmente.
 
@@ -724,6 +728,10 @@ Prefixo:
 /api/manutencao
 ```
 
+Os endpoints `preview` não alteram dados.
+
+Os endpoints `run` alteram dados reais e exigem confirmação forte no body.
+
 ---
 
 ## 9.1 Listar jobs
@@ -768,6 +776,14 @@ GET  /api/manutencao/jobs/receita-expiry/preview
 POST /api/manutencao/jobs/receita-expiry/run
 ```
 
+Body obrigatório para execução:
+
+```json id="a92ooa"
+{
+  "confirm": "RUN_RECEITA_EXPIRY"
+}
+```
+
 ---
 
 ## 9.3 Higiene
@@ -777,10 +793,20 @@ GET  /api/manutencao/jobs/higiene/preview
 POST /api/manutencao/jobs/higiene/run
 ```
 
-Query/body pode aceitar:
+Query de preview e body de execução podem aceitar:
 
 ```json id="ea06p0"
 {
+  "offsetMonths": 12,
+  "anonymize": false
+}
+```
+
+Body obrigatório para execução:
+
+```json id="zt8q24"
+{
+  "confirm": "RUN_HIGIENE",
   "offsetMonths": 12,
   "anonymize": false
 }
@@ -795,7 +821,7 @@ GET  /api/manutencao/jobs/purge-history/preview
 POST /api/manutencao/jobs/purge-history/run
 ```
 
-Query/body pode aceitar:
+Query de preview pode aceitar:
 
 ```json id="t6jkhj"
 {
@@ -803,20 +829,37 @@ Query/body pode aceitar:
 }
 ```
 
+Body obrigatório para execução:
+
+```json id="f73bda"
+{
+  "confirm": "RUN_PURGE_HISTORY",
+  "backupConfirmed": true,
+  "offsetMonths": 6
+}
+```
+
+Regra crítica:
+
+```txt id="fq6w79"
+Purge history só deve ser executado depois de backup confirmado.
+```
+
 ---
 
 ## 9.5 Erros esperados
 
-| Caso                           |  HTTP |
-| ------------------------------ | ----: |
-| Sem sessão                     | `401` |
-| Role `SANTACASA` ou `FARMACIA` | `403` |
-| Job inexistente                | `404` |
-| Ação inexistente               | `404` |
-| `offsetMonths` inválido        | `400` |
-| Payload inválido               | `400` |
+| Caso                                      |  HTTP |
+| ----------------------------------------- | ----: |
+| Sem sessão                                | `401` |
+| Role `SANTACASA` ou `FARMACIA`            | `403` |
+| Job inexistente                           | `404` |
+| Ação inexistente                          | `404` |
+| `offsetMonths` inválido                   | `400` |
+| `confirm` inválido ou ausente             | `400` |
+| `backupConfirmed` ausente em purge-history | `400` |
 
----
+# 10. Testes E2E de manutenção
 
 # 10. Testes E2E de manutenção
 
@@ -834,11 +877,14 @@ Cobre:
 * acesso permitido a `ADMIN`;
 * listagem de jobs;
 * preview de `receita-expiry`;
-* run de `receita-expiry`;
+* run de `receita-expiry` com `confirm`;
+* rejeição de `receita-expiry` sem confirmação;
 * preview de `higiene`;
-* run de `higiene`;
+* run de `higiene` com `confirm`;
+* rejeição de `higiene` sem confirmação;
 * preview de `purge-history`;
-* run de `purge-history`;
+* run de `purge-history` com `confirm` e `backupConfirmed`;
+* rejeição de `purge-history` sem confirmação ou sem backup confirmado;
 * validação de parâmetros inválidos;
 * job inexistente;
 * ação inexistente.
@@ -1030,6 +1076,8 @@ Antes de executar manualmente:
 5. guardar output do preview;
 6. confirmar contadores;
 7. garantir backup;
+8. enviar `confirm` correto no endpoint `run`;
+9. em `purge-history`, enviar `backupConfirmed=true`;
 8. só depois executar.
 
 ## 13.3 Atenção à higiene com anonimização
@@ -1215,7 +1263,7 @@ Guardar:
 * resultado;
 * erro, se existir.
 
-## 18.4 Confirmação forte para jobs destrutivos
+## 18.4 Confirmação forte para jobs destrutivos e sensíveis
 
 Para `purge-history`, considerar payload obrigatório:
 

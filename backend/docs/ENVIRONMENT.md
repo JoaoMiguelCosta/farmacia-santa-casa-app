@@ -8,6 +8,7 @@ O backend usa:
 
 * Node.js
 * Express
+* Helmet
 * Prisma
 * PostgreSQL
 * JWT
@@ -125,6 +126,9 @@ O ficheiro `.env.example` não deve ser ignorado.
 # -----------------------------------------------------------------------------
 # Base de dados
 # -----------------------------------------------------------------------------
+# PostgreSQL + Prisma
+# Formato:
+# DATABASE_URL="postgresql://USER:PASSWORD@HOST:PORT/DATABASE?schema=public"
 
 DATABASE_URL="postgresql://postgres:password@localhost:5432/farmacia_santacasa?schema=public"
 
@@ -138,15 +142,42 @@ TZ="Europe/Lisbon"
 JSON_LIMIT="1mb"
 
 # -----------------------------------------------------------------------------
+# Reverse proxy / infraestrutura
+# -----------------------------------------------------------------------------
+# TRUST_PROXY controla `app.set("trust proxy", ...)` no Express.
+#
+# Desenvolvimento local direto:
+#   TRUST_PROXY=false
+#
+# Produção atrás de 1 proxy/load balancer:
+#   TRUST_PROXY=1
+#
+# Evitar TRUST_PROXY=true salvo se a infraestrutura controlar corretamente os
+# headers X-Forwarded-*.
+
+TRUST_PROXY=false
+
+# -----------------------------------------------------------------------------
 # CORS / Frontend origins permitidas
 # -----------------------------------------------------------------------------
+# Separar múltiplas origins por vírgula.
+# Em desenvolvimento, normalmente:
+# - http://localhost:5173
+# - http://localhost:5174
 
 ALLOWED_ORIGINS="http://localhost:5173,http://localhost:5174"
 
 # -----------------------------------------------------------------------------
 # Jobs automáticos
 # -----------------------------------------------------------------------------
+# ENABLE_JOBS controla o registo global dos jobs no arranque.
+# Se estiver false, nenhum job automático é registado.
+#
+# Os toggles individuais só têm efeito quando ENABLE_JOBS=true.
+#
+# Para testes automatizados, recomenda-se usar false.
 
+ENABLE_JOBS=true
 ENABLE_HIGIENE=true
 ENABLE_PURGE_HISTORY=true
 ENABLE_RECEITAS_EXPIRY=true
@@ -154,6 +185,17 @@ ENABLE_RECEITAS_EXPIRY=true
 # -----------------------------------------------------------------------------
 # Job de higiene
 # -----------------------------------------------------------------------------
+# HIGIENE_OFFSET_MONTHS:
+#   Número de meses após deletedAt para o utente ser tratado pela rotina.
+#
+# HIGIENE_ANONYMIZE:
+#   Pedido de anonimização.
+#
+# ALLOW_HIGIENE_ANONYMIZE:
+#   Confirmação explícita para permitir anonimização.
+#
+# A anonimização só acontece se HIGIENE_ANONYMIZE=true
+# e ALLOW_HIGIENE_ANONYMIZE=true.
 
 HIGIENE_OFFSET_MONTHS=12
 HIGIENE_ANONYMIZE=false
@@ -162,12 +204,18 @@ ALLOW_HIGIENE_ANONYMIZE=false
 # -----------------------------------------------------------------------------
 # Job de limpeza de histórico
 # -----------------------------------------------------------------------------
+# Remove histórico fechado antigo de pedidos e regularizações concluídas.
 
 PURGE_OFFSET_MONTHS=6
 
 # -----------------------------------------------------------------------------
 # Agendamento cron
 # -----------------------------------------------------------------------------
+# CRON_MONTHLY_03H:
+#   Dia 1 de cada mês às 03:00.
+#
+# CRON_DAILY_03H:
+#   Todos os dias às 03:00.
 
 CRON_MONTHLY_03H="0 3 1 * *"
 CRON_DAILY_03H="0 3 * * *"
@@ -175,6 +223,13 @@ CRON_DAILY_03H="0 3 * * *"
 # -----------------------------------------------------------------------------
 # Autenticação
 # -----------------------------------------------------------------------------
+# AUTH_JWT_SECRET:
+#   Obrigatório.
+#   Em produção deve ter pelo menos 32 caracteres.
+#   Usa um valor longo, aleatório e secreto.
+#
+# Exemplo para gerar:
+#   node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
 
 AUTH_JWT_SECRET="replace_with_a_long_random_secret_at_least_32_characters"
 
@@ -182,12 +237,22 @@ AUTH_COOKIE_NAME="farmacia_santacasa_session"
 AUTH_TOKEN_EXPIRES_IN="8h"
 AUTH_COOKIE_MAX_AGE_MS=28800000
 
+# Desenvolvimento local:
+#   AUTH_COOKIE_SECURE=false
+#   AUTH_COOKIE_SAME_SITE=lax
+#
+# Produção HTTPS cross-site:
+#   AUTH_COOKIE_SECURE=true
+#   AUTH_COOKIE_SAME_SITE=none
+
 AUTH_COOKIE_SECURE=false
 AUTH_COOKIE_SAME_SITE=lax
 
 # -----------------------------------------------------------------------------
 # Rate limit de login
 # -----------------------------------------------------------------------------
+# O rate limit usa IP + email.
+# O IP é obtido por req.ip, respeitando TRUST_PROXY.
 
 AUTH_LOGIN_RATE_LIMIT_WINDOW_MS=900000
 AUTH_LOGIN_RATE_LIMIT_MAX=10
@@ -195,6 +260,15 @@ AUTH_LOGIN_RATE_LIMIT_MAX=10
 # -----------------------------------------------------------------------------
 # Seed inicial
 # -----------------------------------------------------------------------------
+# Usado por:
+#   npm run prisma:seed
+#
+# Em development/test cria ADMIN, SANTACASA e FARMACIA.
+# Em production só cria ADMIN e apenas com ALLOW_PRODUCTION_SEED=true.
+#
+# Trocar passwords antes de usar fora do desenvolvimento local.
+
+ALLOW_PRODUCTION_SEED=false
 
 SEED_ADMIN_EMAIL="admin@sistema.local"
 SEED_ADMIN_PASSWORD="ChangeMeAdmin123!"
@@ -208,6 +282,10 @@ SEED_FARMACIA_PASSWORD="ChangeMeFarmacia123!"
 # -----------------------------------------------------------------------------
 # Segurança adicional para scripts manuais
 # -----------------------------------------------------------------------------
+# Os scripts manuais ficam bloqueados em NODE_ENV=production,
+# exceto se esta variável for definida explicitamente como true.
+#
+# Não usar em produção salvo caso excecional e consciente.
 
 ALLOW_TEST_SCRIPTS_IN_PRODUCTION=false
 ```
@@ -359,6 +437,41 @@ Valor por defeito:
 ```env
 1mb
 ```
+
+---
+
+### `TRUST_PROXY`
+
+Configura o `trust proxy` do Express.
+
+Exemplo local:
+
+```env
+TRUST_PROXY=false
+```
+
+Exemplo produção atrás de um proxy/load balancer:
+
+```env
+TRUST_PROXY=1
+```
+
+Valores aceites:
+
+```env
+TRUST_PROXY=false
+TRUST_PROXY=true
+TRUST_PROXY=1
+TRUST_PROXY=2
+```
+
+Recomendação:
+
+* usar `false` quando a API está exposta diretamente;
+* usar `1` quando a API está atrás de um proxy/load balancer confiável;
+* evitar `true` salvo se a infraestrutura controlar corretamente os headers `X-Forwarded-*`.
+
+Esta variável é importante para `req.ip` e, por consequência, para o rate limit de login.
 
 ---
 
@@ -562,6 +675,12 @@ Se ultrapassar o limite, o backend responde com `429 TOO_MANY_REQUESTS`.
 
 ### Limitação técnica
 
+O rate limit usa `Map` em memória e identifica tentativas por IP + email.
+
+O IP é obtido através de `req.ip`, respeitando `TRUST_PROXY`.
+
+Se a API estiver atrás de reverse proxy/load balancer, `TRUST_PROXY` deve estar configurado corretamente para que o IP do cliente seja interpretado de forma segura.
+
 O rate limit usa `Map` em memória.
 
 Isto significa que:
@@ -650,7 +769,29 @@ Em produção, pedidos mutáveis sem origem válida devem ser bloqueados.
 
 O backend tem jobs automáticos com `node-cron`.
 
-Os jobs são registados no arranque do servidor.
+Os jobs são registados no arranque do servidor apenas se `ENABLE_JOBS=true`.
+
+### `ENABLE_JOBS`
+
+Ativa ou desativa globalmente o registo automático de jobs.
+
+```env
+ENABLE_JOBS=true
+```
+
+Valor por defeito:
+
+```env
+true
+```
+
+Quando está `false`, nenhum job automático é registado, mesmo que os toggles individuais estejam `true`.
+
+Isto é útil para:
+
+* ambientes de teste;
+* produção com múltiplas instâncias;
+* separar instância web e instância worker.
 
 ### `ENABLE_HIGIENE`
 
@@ -703,6 +844,7 @@ true
 Para testes automatizados ou ambientes temporários, pode ser preferível usar:
 
 ```env
+ENABLE_JOBS=false
 ENABLE_HIGIENE=false
 ENABLE_PURGE_HISTORY=false
 ENABLE_RECEITAS_EXPIRY=false
@@ -882,37 +1024,62 @@ Valor por defeito:
 
 ## 16. Variáveis de seed
 
-O seed cria ou atualiza utilizadores iniciais.
+O seed é executado por:
 
-### Admin
+```bash
+npm run prisma:seed
+```
+
+ou diretamente:
+
+```bash
+npx prisma db seed
+```
+
+### Desenvolvimento e testes
+
+Em `development` e `test`, o seed cria/atualiza os utilizadores iniciais:
 
 ```env
 SEED_ADMIN_EMAIL=admin@sistema.local
 SEED_ADMIN_PASSWORD=ChangeMeAdmin123!
-```
 
-### Santa Casa
-
-```env
 SEED_SANTACASA_EMAIL=santacasa@sistema.local
 SEED_SANTACASA_PASSWORD=ChangeMeSantaCasa123!
-```
 
-### Farmácia
-
-```env
 SEED_FARMACIA_EMAIL=farmacia@sistema.local
 SEED_FARMACIA_PASSWORD=ChangeMeFarmacia123!
 ```
 
-### Regras
+### Produção
 
-* O seed usa `upsert`, por isso pode ser executado várias vezes sem duplicar emails.
-* Passwords são guardadas com bcrypt.
-* Em produção, não usar passwords fracas ou previsíveis.
-* Depois do setup inicial, confirmar que os utilizadores reais têm passwords seguras.
+Em `production`, o seed é bloqueado por defeito:
 
-O seed pode atualizar utilizadores existentes com os mesmos emails.
+```env
+ALLOW_PRODUCTION_SEED=false
+```
+
+Só deve ser ativado em setup inicial controlado:
+
+```env
+ALLOW_PRODUCTION_SEED=true
+SEED_ADMIN_EMAIL=admin@exemplo.pt
+SEED_ADMIN_PASSWORD=password forte com pelo menos 10 caracteres
+```
+
+Em produção, o seed:
+
+* cria apenas o `ADMIN` inicial;
+* não cria `SANTACASA` nem `FARMACIA`;
+* não aceita passwords padrão;
+* não redefine password de admin já existente;
+* não altera role, nome ou estado de admin já existente.
+
+Depois do admin inicial, as contas Santa Casa/Farmácia devem ser criadas na UI:
+
+```txt
+Sistema > Utilizadores
+```
 
 ---
 
@@ -956,6 +1123,7 @@ NODE_ENV=development
 PORT=3001
 TZ=Europe/Lisbon
 JSON_LIMIT=1mb
+TRUST_PROXY=false
 
 DATABASE_URL="postgresql://postgres:postgres@localhost:5432/farmacia_santa_casa?schema=public"
 
@@ -971,6 +1139,7 @@ AUTH_LOGIN_RATE_LIMIT_MAX=10
 
 ALLOWED_ORIGINS=http://localhost:5173,http://localhost:5174
 
+ENABLE_JOBS=true
 ENABLE_HIGIENE=true
 ENABLE_PURGE_HISTORY=true
 ENABLE_RECEITAS_EXPIRY=true
@@ -983,6 +1152,8 @@ PURGE_OFFSET_MONTHS=6
 
 CRON_MONTHLY_03H="0 3 1 * *"
 CRON_DAILY_03H="0 3 * * *"
+
+ALLOW_PRODUCTION_SEED=false
 
 SEED_ADMIN_EMAIL=admin@sistema.local
 SEED_ADMIN_PASSWORD=ChangeMeAdmin123!
@@ -1005,7 +1176,9 @@ Em testes automatizados, recomenda-se:
 ```env
 NODE_ENV=test
 TZ=Europe/Lisbon
+TRUST_PROXY=false
 
+ENABLE_JOBS=false
 ENABLE_HIGIENE=false
 ENABLE_PURGE_HISTORY=false
 ENABLE_RECEITAS_EXPIRY=false
@@ -1024,6 +1197,7 @@ npm run test:unit -- --run
 npm run test:integration -- --run
 npm run test:e2e -- --run
 npm run test:all
+npm run test:coverage
 npm run validate
 ```
 
@@ -1038,6 +1212,7 @@ NODE_ENV=production
 PORT=3001
 TZ=Europe/Lisbon
 JSON_LIMIT=1mb
+TRUST_PROXY=1
 
 DATABASE_URL="postgresql://USER:PASSWORD@HOST:PORT/DATABASE?schema=public"
 
@@ -1053,8 +1228,9 @@ AUTH_LOGIN_RATE_LIMIT_MAX=10
 
 ALLOWED_ORIGINS=https://your-frontend-domain.com
 
-ENABLE_HIGIENE=true
-ENABLE_PURGE_HISTORY=true
+ENABLE_JOBS=false
+ENABLE_HIGIENE=false
+ENABLE_PURGE_HISTORY=false
 ENABLE_RECEITAS_EXPIRY=true
 
 HIGIENE_OFFSET_MONTHS=12
@@ -1066,6 +1242,7 @@ PURGE_OFFSET_MONTHS=6
 CRON_MONTHLY_03H="0 3 1 * *"
 CRON_DAILY_03H="0 3 * * *"
 
+ALLOW_PRODUCTION_SEED=false
 ALLOW_TEST_SCRIPTS_IN_PRODUCTION=false
 ```
 
@@ -1088,6 +1265,56 @@ AUTH_COOKIE_SECURE=true
 ```
 
 O frontend também deve enviar cookies com credenciais.
+
+---
+
+## 20.1 Health checks de produção
+
+Endpoints disponíveis:
+
+```txt
+GET /api/health/live
+GET /api/health/ready
+GET /api/health
+```
+
+Acesso:
+
+| Endpoint | Acesso | Uso recomendado |
+| -------- | ------ | --------------- |
+| `/api/health/live` | Público | Liveness/processo Node ativo |
+| `/api/health/ready` | Público | Readiness/API + base de dados |
+| `/api/health` | `ADMIN` | Verificação administrativa autenticada |
+
+Recomendação:
+
+* usar `/api/health/live` para probes simples;
+* usar `/api/health/ready` quando a plataforma suportar readiness;
+* manter `/api/health` para a área administrativa.
+
+
+---
+
+## 20.2 Security headers e request ID
+
+Estes pontos não exigem variáveis de ambiente novas.
+
+A API aplica security headers HTTP através de `helmet`.
+
+Todas as respostas incluem:
+
+```txt
+X-Request-Id
+```
+
+Regras:
+
+* se o cliente enviar `X-Request-Id` válido, o backend preserva esse valor;
+* se o cliente não enviar, o backend gera um identificador;
+* o header é exposto em CORS;
+* os logs de erro incluem `requestId`.
+
+Isto permite cruzar uma falha vista no frontend com os logs do backend.
 
 ---
 
@@ -1139,6 +1366,7 @@ npm run test:unit -- --run
 npm run test:integration -- --run
 npm run test:e2e -- --run
 npm run test:all
+npm run test:coverage
 npm run validate
 ```
 
@@ -1149,6 +1377,7 @@ npm run validate
 Antes de publicar:
 
 * [ ] `NODE_ENV=production`.
+* [ ] `TRUST_PROXY` definido conforme a infraestrutura (`false` direto, `1` atrás de um proxy).
 * [ ] `AUTH_JWT_SECRET` forte, aleatório e com pelo menos 32 caracteres.
 * [ ] `AUTH_COOKIE_SECURE=true`.
 * [ ] `AUTH_COOKIE_SAME_SITE=none`, se frontend e backend estiverem em domínios diferentes.
@@ -1160,6 +1389,10 @@ Antes de publicar:
 * [ ] `HIGIENE_OFFSET_MONTHS` confirmado.
 * [ ] `HIGIENE_ANONYMIZE=false`, salvo decisão explícita.
 * [ ] `ALLOW_HIGIENE_ANONYMIZE=false`, salvo decisão explícita.
+* [ ] `ENABLE_JOBS` definido conscientemente.
+* [ ] Security headers confirmados numa resposta real.
+* [ ] `X-Request-Id` confirmado numa resposta real.
+* [ ] `ALLOW_PRODUCTION_SEED=false`, salvo setup inicial controlado.
 * [ ] `ALLOW_TEST_SCRIPTS_IN_PRODUCTION=false`.
 * [ ] Backups da base de dados configurados.
 * [ ] Seed com passwords seguras ou desativado/controlado após setup inicial.
@@ -1202,6 +1435,31 @@ O backend bloqueia arranque quando:
 ```txt
 [env] AUTH_COOKIE_SAME_SITE=none exige AUTH_COOKIE_SECURE=true.
 ```
+
+### `TRUST_PROXY` mal configurado
+
+Sintomas possíveis:
+
+* rate limit por IP não funciona como esperado;
+* todos os pedidos parecem vir do proxy;
+* `X-Forwarded-For` não é respeitado quando deveria ser;
+* ou, no sentido oposto, headers externos são confiados indevidamente.
+
+Solução:
+
+```env
+TRUST_PROXY=false
+```
+
+para API exposta diretamente, ou:
+
+```env
+TRUST_PROXY=1
+```
+
+para API atrás de um proxy/load balancer confiável.
+
+---
 
 ### `ALLOWED_ORIGINS=*` em produção
 
@@ -1382,6 +1640,7 @@ Jobs automáticos ativos num ambiente onde estão a correr testes.
 Solução:
 
 ```env
+ENABLE_JOBS=false
 ENABLE_HIGIENE=false
 ENABLE_PURGE_HISTORY=false
 ENABLE_RECEITAS_EXPIRY=false

@@ -2,7 +2,7 @@
 
 ## Farmácia Santa Casa — Regras de Negócio do Backend
 
-**Última atualização:** 2026-06-16
+**Última atualização:** 2026-06-17
 **Âmbito:** Backend Express + Prisma + PostgreSQL
 **Objetivo:** Documentar as regras funcionais do domínio, independentemente da implementação concreta das rotas.
 
@@ -85,6 +85,7 @@ O sistema tem três grandes áreas funcionais:
 | Farmácia                      | `FARMACIA`, `ADMIN`                                     |
 | Manutenção                    | `ADMIN`                                                 |
 | Administração de utilizadores | `ADMIN`                                                 |
+| Health check live/ready       | Público                                                 |
 | Health check global           | `ADMIN`                                                 |
 
 ### 3.3 Regras gerais de autenticação
@@ -116,7 +117,7 @@ Um utilizador deve ter:
 * `email` válido.
 * `email` único.
 * `password` obrigatória.
-* `password` com pelo menos 8 caracteres.
+* `password` com pelo menos 10 caracteres.
 * `role` válida: `SANTACASA`, `FARMACIA` ou `ADMIN`.
 
 Ao criar um utilizador:
@@ -158,6 +159,7 @@ Regras:
 * O email atualizado não pode colidir com outro utilizador.
 * A password nova deve respeitar as regras mínimas.
 * O estado ativo/inativo deve ser booleano real.
+* Um utilizador não pode alterar a role da sua própria conta.
 * Um utilizador não pode alterar o estado da sua própria conta.
 
 ### 4.4 Remoção de utilizadores

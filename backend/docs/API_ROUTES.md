@@ -22,10 +22,37 @@ A aplicação está organizada por contextos funcionais:
 /api/farmacia
 /api/admin
 /api/manutencao
+/api/health/live
+/api/health/ready
 /api/health
 ```
 
 A autenticação é feita através de **JWT guardado em cookie HTTP-only**.
+
+### Headers transversais
+
+Todas as respostas incluem o header:
+
+```txt
+X-Request-Id
+```
+
+Regras:
+
+* se o cliente enviar `X-Request-Id` válido, o backend preserva esse valor;
+* se o cliente não enviar, o backend gera um identificador;
+* o header também é devolvido em respostas de erro;
+* em CORS, o backend expõe o header através de `Access-Control-Expose-Headers`.
+
+A API também aplica security headers HTTP através de `helmet`, incluindo proteções base como:
+
+```txt
+X-Content-Type-Options
+Referrer-Policy
+X-Frame-Options
+Cross-Origin-Resource-Policy
+Content-Security-Policy
+```
 
 ---
 
@@ -86,7 +113,9 @@ FARMACIA
 | `/api/farmacia`   | `FARMACIA`, `ADMIN`                                |
 | `/api/admin`      | `ADMIN`                                            |
 | `/api/manutencao` | `ADMIN`                                            |
-| `/api/health`     | `ADMIN`                                            |
+| `/api/health/live`  | Público                                         |
+| `/api/health/ready` | Público                                         |
+| `/api/health`       | `ADMIN`                                        |
 
 ---
 
@@ -102,6 +131,8 @@ A API devolve erros neste formato:
 ```
 
 Em ambiente de desenvolvimento, alguns erros podem incluir `details`.
+
+O header `X-Request-Id` é sempre devolvido, incluindo em respostas de erro, para apoio a diagnóstico técnico.
 
 Rotas inexistentes devolvem também o `path`:
 
@@ -246,11 +277,89 @@ Sessão válida.
 
 ---
 
-## 6. Health check global
+## 6. Health checks
+
+Existem três endpoints de health:
+
+```txt
+/api/health/live
+/api/health/ready
+/api/health
+```
+
+---
+
+### GET `/api/health/live`
+
+Confirma que o processo Node está vivo.
+
+#### Acesso
+
+Público.
+
+#### Resposta `200`
+
+```json
+{
+  "status": "ok",
+  "service": "farmacia-santacasa-api",
+  "check": "live",
+  "timestamp": "2026-06-17T00:00:00.000Z"
+}
+```
+
+Uso recomendado:
+
+* liveness probe;
+* reverse proxy;
+* plataforma de deploy;
+* confirmação simples de processo ativo.
+
+---
+
+### GET `/api/health/ready`
+
+Confirma que a API está pronta e que consegue comunicar com a base de dados.
+
+#### Acesso
+
+Público.
+
+#### Resposta `200`
+
+```json
+{
+  "status": "ok",
+  "service": "farmacia-santacasa-api",
+  "check": "ready",
+  "database": "ok",
+  "timestamp": "2026-06-17T00:00:00.000Z"
+}
+```
+
+#### Resposta `503`
+
+```json
+{
+  "status": "error",
+  "service": "farmacia-santacasa-api",
+  "check": "ready",
+  "database": "unavailable",
+  "timestamp": "2026-06-17T00:00:00.000Z"
+}
+```
+
+Uso recomendado:
+
+* readiness probe;
+* validação após deploy;
+* confirmação de ligação à base de dados.
+
+---
 
 ### GET `/api/health`
 
-Verifica estado geral da API.
+Verifica estado geral da API para uso administrativo.
 
 #### Acesso
 
@@ -262,11 +371,11 @@ Verifica estado geral da API.
 {
   "status": "ok",
   "service": "farmacia-santacasa-api",
-  "timestamp": "2026-06-16T00:00:00.000Z"
+  "timestamp": "2026-06-17T00:00:00.000Z"
 }
 ```
 
----
+# 7. Rotas Santa Casa
 
 # 7. Rotas Santa Casa
 
@@ -1997,8 +2106,8 @@ Cria utilizador.
 #### Validações
 
 * Nome obrigatório.
-* Email obrigatório e deve conter `@`.
-* Password obrigatória com pelo menos 8 caracteres.
+* Email obrigatório e com formato válido.
+* Password obrigatória com pelo menos 10 caracteres.
 * Role válida: `SANTACASA`, `FARMACIA`, `ADMIN`.
 * Email único.
 
@@ -2023,6 +2132,13 @@ Cria utilizador.
 ### PATCH `/api/admin/users/:userId`
 
 Atualiza dados principais do utilizador.
+
+#### Regras
+
+* Nome obrigatório.
+* Email obrigatório e com formato válido.
+* Role válida.
+* Não é permitido ao utilizador autenticado alterar a role da própria conta.
 
 #### Body
 
@@ -2053,6 +2169,11 @@ Atualiza dados principais do utilizador.
 ### PATCH `/api/admin/users/:userId/password`
 
 Atualiza password de utilizador.
+
+#### Regras
+
+* Password obrigatória.
+* Password com pelo menos 10 caracteres.
 
 #### Body
 
@@ -2145,6 +2266,8 @@ Prefixo protegido:
 ADMIN
 ```
 
+Todas as execuções reais exigem confirmação forte no body. A pré-visualização continua obrigatória no fluxo recomendado da UI.
+
 ---
 
 ## 10.1 Jobs
@@ -2193,7 +2316,7 @@ Pré-visualiza expiração de receitas.
   "job": "receita-expiry",
   "mode": "preview",
   "result": {
-    "checkedAt": "2026-06-16T00:00:00.000Z",
+    "checkedAt": "2026-06-17T00:00:00.000Z",
     "expiredLines": 0,
     "pendingItemsFromExpiredLines": 0,
     "affectedPedidos": 0,
@@ -2208,6 +2331,14 @@ Pré-visualiza expiração de receitas.
 
 Executa expiração de receitas.
 
+#### Body obrigatório
+
+```json
+{
+  "confirm": "RUN_RECEITA_EXPIRY"
+}
+```
+
 #### Resposta `200`
 
 ```json
@@ -2215,7 +2346,7 @@ Executa expiração de receitas.
   "job": "receita-expiry",
   "mode": "run",
   "result": {
-    "checkedAt": "2026-06-16T00:00:00.000Z",
+    "checkedAt": "2026-06-17T00:00:00.000Z",
     "expiredLines": 0,
     "pendingItemsFromExpiredLines": 0,
     "affectedPedidos": 0,
@@ -2249,7 +2380,7 @@ Pré-visualiza rotina de higiene.
     "offsetMonths": 12
   },
   "result": {
-    "cutoffDate": "2025-06-16T00:00:00.000Z",
+    "cutoffDate": "2025-06-17T00:00:00.000Z",
     "offsetMonths": 12,
     "candidatos": 0
   }
@@ -2262,10 +2393,11 @@ Pré-visualiza rotina de higiene.
 
 Executa rotina de higiene.
 
-#### Body
+#### Body obrigatório
 
 ```json
 {
+  "confirm": "RUN_HIGIENE",
   "offsetMonths": 12,
   "anonymize": false
 }
@@ -2282,8 +2414,8 @@ Executa rotina de higiene.
     "anonymize": false
   },
   "result": {
-    "checkedAt": "2026-06-16T00:00:00.000Z",
-    "cutoffDate": "2025-06-16T00:00:00.000Z",
+    "checkedAt": "2026-06-17T00:00:00.000Z",
+    "cutoffDate": "2025-06-17T00:00:00.000Z",
     "offsetMonths": 12,
     "anonymizeRequested": false,
     "anonymizeApplied": false,
@@ -2314,7 +2446,7 @@ Pré-visualiza limpeza de histórico.
     "offsetMonths": 6
   },
   "result": {
-    "cutoffDate": "2025-12-16T00:00:00.000Z",
+    "cutoffDate": "2025-12-17T00:00:00.000Z",
     "offsetMonths": 6,
     "regularizacoes": 0,
     "eventos": 0,
@@ -2331,13 +2463,21 @@ Pré-visualiza limpeza de histórico.
 
 Executa limpeza de histórico.
 
-#### Body
+#### Body obrigatório
 
 ```json
 {
+  "confirm": "RUN_PURGE_HISTORY",
+  "backupConfirmed": true,
   "offsetMonths": 6
 }
 ```
+
+#### Regras adicionais
+
+* `confirm` tem de ser exatamente `RUN_PURGE_HISTORY`.
+* `backupConfirmed` tem de ser `true`.
+* Este endpoint é destrutivo e não deve ser executado sem backup atualizado.
 
 #### Resposta `200`
 
@@ -2349,8 +2489,8 @@ Executa limpeza de histórico.
     "offsetMonths": 6
   },
   "result": {
-    "checkedAt": "2026-06-16T00:00:00.000Z",
-    "cutoffDate": "2025-12-16T00:00:00.000Z",
+    "checkedAt": "2026-06-17T00:00:00.000Z",
+    "cutoffDate": "2025-12-17T00:00:00.000Z",
     "offsetMonths": 6,
     "regularizacoes": 0,
     "eventos": 0,
@@ -2363,6 +2503,20 @@ Executa limpeza de histórico.
 ```
 
 ---
+
+## 10.2 Erros esperados de manutenção
+
+| Caso                                      | HTTP |
+| ----------------------------------------- | ---: |
+| Sem sessão                                |  401 |
+| Role `SANTACASA` ou `FARMACIA`            |  403 |
+| Job inexistente                           |  404 |
+| Ação inexistente                          |  404 |
+| `offsetMonths` inválido                   |  400 |
+| `confirm` inválido ou ausente             |  400 |
+| `backupConfirmed` ausente em purge-history | 400 |
+
+# 11. Estados principais
 
 # 11. Estados principais
 
