@@ -61,7 +61,7 @@ export const SYSTEM_MANUTENCAO_PAGE = Object.freeze({
       scheduleLabel: "Mensal",
       risk: "Crítico",
       warning:
-        "Ação destrutiva. Pode apagar histórico antigo. Nunca executes sem confirmar a pré-visualização.",
+        "Ação destrutiva. Pode apagar histórico antigo. Nunca executes sem confirmar a pré-visualização e sem garantir que existe backup atualizado.",
     },
   },
 
@@ -142,8 +142,18 @@ export const SYSTEM_MANUTENCAO_PAGE = Object.freeze({
     title: "Executar tarefa de manutenção?",
     description:
       "Esta ação pode alterar ou remover dados. Confirma apenas depois de analisares a pré-visualização.",
+    selectedJobPrefix: "Tarefa selecionada",
     confirmLabel: "Executar tarefa",
     cancelLabel: "Cancelar",
+
+    byJob: {
+      "receita-expiry":
+        "Ao confirmar, autorizas a expiração de linhas vencidas e o cancelamento dos itens pendentes associados.",
+      higiene:
+        "Ao confirmar, autorizas a execução da higiene sobre utentes removidos antigos de acordo com as opções selecionadas.",
+      "purge-history":
+        "Ao confirmar, assumes que existe backup atualizado e autorizas a remoção de histórico antigo elegível.",
+    },
   },
 
   feedback: {

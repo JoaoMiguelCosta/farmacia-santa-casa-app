@@ -3,6 +3,12 @@ import { SYSTEM_MANUTENCAO_PAGE } from "../config/systemManutencaoPage.config";
 
 const UNKNOWN_LABEL = "—";
 
+export const MAINTENANCE_RUN_CONFIRMATIONS = Object.freeze({
+  "receita-expiry": "RUN_RECEITA_EXPIRY",
+  higiene: "RUN_HIGIENE",
+  "purge-history": "RUN_PURGE_HISTORY",
+});
+
 function toText(value) {
   return String(value || "").trim();
 }
@@ -52,6 +58,14 @@ export function hasJobOptions(jobKey) {
 
 export function supportsAnonymizeOption(jobKey) {
   return jobKey === "higiene";
+}
+
+export function requiresBackupConfirmation(jobKey) {
+  return jobKey === "purge-history";
+}
+
+export function getRunConfirmationValue(jobKey) {
+  return MAINTENANCE_RUN_CONFIRMATIONS[jobKey] || "";
 }
 
 export function sortMaintenanceJobs(jobs = []) {
@@ -116,6 +130,17 @@ export function buildMaintenanceOptions(jobKey, values = {}) {
   return {};
 }
 
+export function buildMaintenanceRunPayload(jobKey, values = {}) {
+  const options = buildMaintenanceOptions(jobKey, values);
+  const confirm = getRunConfirmationValue(jobKey);
+
+  return {
+    confirm,
+    ...options,
+    ...(requiresBackupConfirmation(jobKey) ? { backupConfirmed: true } : {}),
+  };
+}
+
 export function canRunMaintenanceJob({
   jobKey,
   latestResult,
@@ -125,6 +150,19 @@ export function canRunMaintenanceJob({
   if (runningJobKey) return false;
 
   return latestResult?.job === jobKey && latestResult?.mode === "preview";
+}
+
+export function getRunConfirmationDescription(jobKey, jobLabel) {
+  const baseDescription = SYSTEM_MANUTENCAO_PAGE.confirmDialog.description;
+  const jobDescription =
+    SYSTEM_MANUTENCAO_PAGE.confirmDialog.byJob?.[jobKey] || "";
+  const selectedJob = jobLabel
+    ? `${SYSTEM_MANUTENCAO_PAGE.confirmDialog.selectedJobPrefix}: ${jobLabel}.`
+    : "";
+
+  return [baseDescription, jobDescription, selectedJob]
+    .filter(Boolean)
+    .join(" ");
 }
 
 export function getResultModeLabel(mode) {

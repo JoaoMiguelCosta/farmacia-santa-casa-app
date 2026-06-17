@@ -16,6 +16,7 @@ import { SYSTEM_MANUTENCAO_PAGE } from "../config/systemManutencaoPage.config";
 
 import {
   buildMaintenanceOptions,
+  buildMaintenanceRunPayload,
   canRunMaintenanceJob,
   getMaintenanceErrorMessage,
   normalizeMaintenanceJobs,
@@ -203,14 +204,14 @@ export function useSystemManutencao() {
         return;
       }
 
-      const options = buildMaintenanceOptions(jobKey, jobOptions[jobKey]);
+      const payload = buildMaintenanceRunPayload(jobKey, jobOptions[jobKey]);
 
       setRunningJobKey(jobKey);
       setError(null);
       setFeedback(null);
 
       try {
-        const result = await action(options);
+        const result = await action(payload);
 
         setLatestResult(result);
         setFeedback({

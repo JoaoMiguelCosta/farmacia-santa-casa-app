@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 
-import PageHeader from "../../../../../shared/ui/PageHeader/PageHeader";
 import ConfirmDialog from "../../../../../shared/ui/ConfirmDialog/ConfirmDialog";
+import PageHeader from "../../../../../shared/ui/PageHeader/PageHeader";
 
 import SystemManutencaoJobs from "../SystemManutencaoJobs/SystemManutencaoJobs";
 import SystemManutencaoResult from "../SystemManutencaoResult/SystemManutencaoResult";
@@ -9,7 +9,10 @@ import SystemManutencaoResult from "../SystemManutencaoResult/SystemManutencaoRe
 import { SYSTEM_MANUTENCAO_PAGE } from "../../config/systemManutencaoPage.config";
 import { useSystemManutencao } from "../../hooks/useSystemManutencao";
 import { useSystemManutencaoDialogs } from "../../hooks/useSystemManutencaoDialogs";
-import { getJobLabel } from "../../utils/systemManutencao.utils";
+import {
+  getJobLabel,
+  getRunConfirmationDescription,
+} from "../../utils/systemManutencao.utils";
 
 import styles from "./SystemManutencaoPageContent.module.css";
 
@@ -48,6 +51,10 @@ export default function SystemManutencaoPageContent() {
   } = useSystemManutencaoDialogs({ runJob });
 
   const pendingRunJobLabel = getJobLabel(pendingRunJobKey);
+  const pendingRunDescription = getRunConfirmationDescription(
+    pendingRunJobKey,
+    pendingRunJobLabel,
+  );
 
   useEffect(() => {
     if (!hasMountedRef.current) {
@@ -95,7 +102,7 @@ export default function SystemManutencaoPageContent() {
       <ConfirmDialog
         isOpen={Boolean(pendingRunJobKey)}
         title={SYSTEM_MANUTENCAO_PAGE.confirmDialog.title}
-        description={`${SYSTEM_MANUTENCAO_PAGE.confirmDialog.description} Job selecionado: ${pendingRunJobLabel}.`}
+        description={pendingRunDescription}
         confirmLabel={SYSTEM_MANUTENCAO_PAGE.confirmDialog.confirmLabel}
         cancelLabel={SYSTEM_MANUTENCAO_PAGE.confirmDialog.cancelLabel}
         isLoading={Boolean(runningJobKey)}

@@ -9,8 +9,8 @@ export async function previewReceitaExpiry() {
   return httpClient.get(API_ENDPOINTS.manutencao.receitaExpiryPreview);
 }
 
-export async function runReceitaExpiry() {
-  return httpClient.post(API_ENDPOINTS.manutencao.receitaExpiryRun, {});
+export async function runReceitaExpiry(payload = {}) {
+  return httpClient.post(API_ENDPOINTS.manutencao.receitaExpiryRun, payload);
 }
 
 export async function previewHigiene(options = {}) {
@@ -19,8 +19,8 @@ export async function previewHigiene(options = {}) {
   });
 }
 
-export async function runHigiene(options = {}) {
-  return httpClient.post(API_ENDPOINTS.manutencao.higieneRun, options);
+export async function runHigiene(payload = {}) {
+  return httpClient.post(API_ENDPOINTS.manutencao.higieneRun, payload);
 }
 
 export async function previewPurgeHistory(options = {}) {
@@ -29,6 +29,6 @@ export async function previewPurgeHistory(options = {}) {
   });
 }
 
-export async function runPurgeHistory(options = {}) {
-  return httpClient.post(API_ENDPOINTS.manutencao.purgeHistoryRun, options);
+export async function runPurgeHistory(payload = {}) {
+  return httpClient.post(API_ENDPOINTS.manutencao.purgeHistoryRun, payload);
 }
