@@ -55,6 +55,29 @@ function getCookieSameSite(name, fallback = "lax") {
   return fallback;
 }
 
+function getTrustProxy(name, fallback = false) {
+  const rawValue = String(process.env[name] ?? "").trim();
+
+  if (!rawValue) return fallback;
+
+  const normalized = rawValue.toLowerCase();
+
+  if (["true", "yes", "on"].includes(normalized)) return true;
+  if (["false", "no", "off"].includes(normalized)) return false;
+
+  const numericValue = Number(normalized);
+
+  if (
+    Number.isFinite(numericValue) &&
+    Number.isInteger(numericValue) &&
+    numericValue >= 0
+  ) {
+    return numericValue;
+  }
+
+  return rawValue;
+}
+
 function getNodeEnv() {
   const value = String(process.env.NODE_ENV || "development")
     .trim()
@@ -103,6 +126,7 @@ const env = Object.freeze({
 
   DATABASE_URL: process.env.DATABASE_URL,
   JSON_LIMIT: process.env.JSON_LIMIT || "1mb",
+  TRUST_PROXY: getTrustProxy("TRUST_PROXY", false),
 
   AUTH_JWT_SECRET: process.env.AUTH_JWT_SECRET,
   AUTH_COOKIE_NAME:

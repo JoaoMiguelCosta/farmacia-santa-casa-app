@@ -38,6 +38,7 @@ function createApp() {
   const app = express();
 
   app.disable("x-powered-by");
+  app.set("trust proxy", env.TRUST_PROXY);
 
   app.use(corsMiddleware);
   app.use(originGuard);
