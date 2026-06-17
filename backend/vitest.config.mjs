@@ -23,5 +23,21 @@ export default defineConfig({
       concurrent: false,
       shuffle: false,
     },
+
+    coverage: {
+      provider: "v8",
+      reporter: ["text", "html", "lcov"],
+      reportsDirectory: "coverage",
+      include: ["src/**/*.js"],
+      exclude: [
+        "coverage/**",
+        "dist/**",
+        "build/**",
+        "prisma/**",
+        "scripts/**",
+        "tests/**",
+        "src/app/server.js",
+      ],
+    },
   },
 });

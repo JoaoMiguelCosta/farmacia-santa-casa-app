@@ -6,6 +6,15 @@ dotenv.config({
   path: path.resolve(__dirname, "../../.env"),
 });
 
+const VALID_NODE_ENVS = new Set(["development", "test", "production"]);
+
+const DEVELOPMENT_ALLOWED_ORIGINS = Object.freeze([
+  "http://localhost:5173",
+  "http://localhost:5174",
+]);
+
+const LOCALHOST_VALUES = new Set(["localhost", "127.0.0.1", "0.0.0.0", "::1"]);
+
 function getBoolean(name, fallback = false) {
   const value = String(process.env[name] ?? "")
     .trim()
@@ -46,15 +55,49 @@ function getCookieSameSite(name, fallback = "lax") {
   return fallback;
 }
 
+function getNodeEnv() {
+  const value = String(process.env.NODE_ENV || "development")
+    .trim()
+    .toLowerCase();
+
+  if (!VALID_NODE_ENVS.has(value)) {
+    console.error(
+      "[env] NODE_ENV inválido. Usa: development, test ou production.",
+    );
+    process.exit(1);
+  }
+
+  return value;
+}
+
+function hasExplicitEnvValue(name) {
+  return String(process.env[name] ?? "").trim().length > 0;
+}
+
+function getOriginHostname(origin) {
+  try {
+    return new URL(origin).hostname.toLowerCase();
+  } catch {
+    return "";
+  }
+}
+
+function isLocalOrigin(origin) {
+  const hostname = getOriginHostname(origin);
+
+  return LOCALHOST_VALUES.has(hostname);
+}
+
 if (!process.env.DATABASE_URL) {
   console.error("[env] DATABASE_URL em falta.");
   process.exit(1);
 }
 
-const isProduction = process.env.NODE_ENV === "production";
+const nodeEnv = getNodeEnv();
+const isProduction = nodeEnv === "production";
 
 const env = Object.freeze({
-  NODE_ENV: process.env.NODE_ENV || "development",
+  NODE_ENV: nodeEnv,
   PORT: getNumber("PORT", 3001),
   TZ: process.env.TZ || "Europe/Lisbon",
 
@@ -81,11 +124,12 @@ const env = Object.freeze({
   ),
   AUTH_LOGIN_RATE_LIMIT_MAX: getNumber("AUTH_LOGIN_RATE_LIMIT_MAX", 10),
 
-  ALLOWED_ORIGINS: getList("ALLOWED_ORIGINS", [
-    "http://localhost:5173",
-    "http://localhost:5174",
-  ]),
+  ALLOWED_ORIGINS: getList(
+    "ALLOWED_ORIGINS",
+    isProduction ? [] : DEVELOPMENT_ALLOWED_ORIGINS,
+  ),
 
+  ENABLE_JOBS: getBoolean("ENABLE_JOBS", true),
   ENABLE_HIGIENE: getBoolean("ENABLE_HIGIENE", true),
   ENABLE_PURGE_HISTORY: getBoolean("ENABLE_PURGE_HISTORY", true),
   ENABLE_RECEITAS_EXPIRY: getBoolean("ENABLE_RECEITAS_EXPIRY", true),
@@ -98,6 +142,8 @@ const env = Object.freeze({
 
   CRON_MONTHLY_03H: process.env.CRON_MONTHLY_03H || "0 3 1 * *",
   CRON_DAILY_03H: process.env.CRON_DAILY_03H || "0 3 * * *",
+
+  ALLOW_PRODUCTION_SEED: getBoolean("ALLOW_PRODUCTION_SEED", false),
 });
 
 if (!env.AUTH_JWT_SECRET) {
@@ -124,8 +170,25 @@ if (env.AUTH_COOKIE_SAME_SITE === "none" && !env.AUTH_COOKIE_SECURE) {
   process.exit(1);
 }
 
+if (isProduction && !hasExplicitEnvValue("ALLOWED_ORIGINS")) {
+  console.error("[env] ALLOWED_ORIGINS é obrigatório em produção.");
+  process.exit(1);
+}
+
+if (isProduction && env.ALLOWED_ORIGINS.length === 0) {
+  console.error("[env] ALLOWED_ORIGINS não pode estar vazio em produção.");
+  process.exit(1);
+}
+
 if (isProduction && env.ALLOWED_ORIGINS.includes("*")) {
   console.error("[env] ALLOWED_ORIGINS não pode conter '*' em produção.");
+  process.exit(1);
+}
+
+if (isProduction && env.ALLOWED_ORIGINS.some(isLocalOrigin)) {
+  console.error(
+    "[env] ALLOWED_ORIGINS não pode conter localhost/127.0.0.1 em produção.",
+  );
   process.exit(1);
 }
 
