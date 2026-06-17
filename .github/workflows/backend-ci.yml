@@ -1,4 +1,4 @@
-name: Backend CI
+﻿name: Backend CI
 
 on:
   push:
@@ -80,7 +80,7 @@ jobs:
         run: npm run prisma:generate
 
       - name: Apply database migrations
-        run: npm run prisma:migrate:deploy
+        run: npx prisma migrate deploy
 
       - name: Run unit tests
         run: npm run test:unit -- --run
