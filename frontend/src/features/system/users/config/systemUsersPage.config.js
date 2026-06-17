@@ -77,16 +77,17 @@ export const SYSTEM_USERS_PAGE = Object.freeze({
 
     email: {
       label: "Email",
-      placeholder: "email@sistema.local",
+      placeholder: "email@sistema.pt",
     },
 
     role: {
       label: "Perfil",
+      selfEditHint: "Não podes alterar o perfil da tua própria conta.",
     },
 
     password: {
       label: "Password",
-      placeholder: "Mínimo 8 caracteres",
+      placeholder: "Mínimo 10 caracteres",
     },
   },
 
@@ -170,6 +171,11 @@ export const SYSTEM_USERS_PAGE = Object.freeze({
     deleteActiveBlocked: "Só podes remover utilizadores desativados.",
     selfDeactivateBlocked: "Não podes desativar a tua própria conta.",
     selfDeleteBlocked: "Não podes remover a tua própria conta.",
+    selfRoleChangeBlocked: "Não podes alterar o perfil da tua própria conta.",
     missingRequiredFields: "Preenche todos os campos obrigatórios.",
+    invalidEmail: "Email inválido.",
+    invalidRole: "Perfil inválido.",
+    passwordRequired: "Password obrigatória.",
+    passwordMinLength: "A password deve ter pelo menos 10 caracteres.",
   },
 });

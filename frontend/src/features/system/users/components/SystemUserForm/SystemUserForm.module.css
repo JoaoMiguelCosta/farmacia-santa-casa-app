@@ -98,6 +98,14 @@
     text-transform: uppercase;
 }
 
+.field small {
+    color: var(--clinic-muted);
+
+    font-size: 0.82rem;
+    font-weight: 550;
+    line-height: 1.45;
+}
+
 .field input,
 .field select {
     width: 100%;
@@ -188,7 +196,7 @@
         flex-direction: column;
     }
 
-    .header > button {
+    .header>button {
         width: 100%;
     }
 
@@ -196,7 +204,7 @@
         flex-direction: column-reverse;
     }
 
-    .actions > * {
+    .actions>* {
         width: 100%;
     }
 }

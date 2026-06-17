@@ -5,6 +5,8 @@ import {
 } from "../config/systemUsersPage.config";
 
 const UNKNOWN_LABEL = "—";
+const MIN_PASSWORD_LENGTH = 10;
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export const SYSTEM_USERS_DEFAULT_FILTERS = Object.freeze({
   search: "",
@@ -91,6 +93,20 @@ export function getSystemUserStatusLabel(isActive) {
 
 export function isValidSystemUserRole(role) {
   return Object.values(SYSTEM_USERS_ROLES).includes(role);
+}
+
+export function isValidSystemUserEmail(email) {
+  return EMAIL_PATTERN.test(normalizeEmail(email));
+}
+
+export function isCurrentSystemUser(user, currentUser) {
+  if (!user?.id || !currentUser?.id) return false;
+
+  return user.id === currentUser.id;
+}
+
+export function canChangeSystemUserRole(user, currentUser) {
+  return !isCurrentSystemUser(user, currentUser);
 }
 
 export function normalizeSystemUser(user) {
@@ -191,16 +207,16 @@ export function validateCreateSystemUserForm(values = {}) {
     return SYSTEM_USERS_PAGE.feedback.missingRequiredFields;
   }
 
-  if (!payload.email.includes("@")) {
-    return "Email inválido.";
+  if (!isValidSystemUserEmail(payload.email)) {
+    return SYSTEM_USERS_PAGE.feedback.invalidEmail;
   }
 
-  if (payload.password.length < 8) {
-    return "A password deve ter pelo menos 8 caracteres.";
+  if (payload.password.length < MIN_PASSWORD_LENGTH) {
+    return SYSTEM_USERS_PAGE.feedback.passwordMinLength;
   }
 
   if (!isValidSystemUserRole(payload.role)) {
-    return "Perfil inválido.";
+    return SYSTEM_USERS_PAGE.feedback.invalidRole;
   }
 
   return null;
@@ -213,12 +229,12 @@ export function validateUpdateSystemUserForm(values = {}) {
     return SYSTEM_USERS_PAGE.feedback.missingRequiredFields;
   }
 
-  if (!payload.email.includes("@")) {
-    return "Email inválido.";
+  if (!isValidSystemUserEmail(payload.email)) {
+    return SYSTEM_USERS_PAGE.feedback.invalidEmail;
   }
 
   if (!isValidSystemUserRole(payload.role)) {
-    return "Perfil inválido.";
+    return SYSTEM_USERS_PAGE.feedback.invalidRole;
   }
 
   return null;
@@ -228,14 +244,26 @@ export function validatePasswordForm(values = {}) {
   const password = String(values.password || "");
 
   if (!password) {
-    return "Password obrigatória.";
+    return SYSTEM_USERS_PAGE.feedback.passwordRequired;
   }
 
-  if (password.length < 8) {
-    return "A password deve ter pelo menos 8 caracteres.";
+  if (password.length < MIN_PASSWORD_LENGTH) {
+    return SYSTEM_USERS_PAGE.feedback.passwordMinLength;
   }
 
   return null;
+}
+
+export function validateSelfRoleChange({
+  selectedUser,
+  currentUser,
+  nextRole,
+} = {}) {
+  if (!isCurrentSystemUser(selectedUser, currentUser)) return null;
+
+  if (selectedUser?.role === nextRole) return null;
+
+  return SYSTEM_USERS_PAGE.feedback.selfRoleChangeBlocked;
 }
 
 export function canToggleSystemUserStatus(user, currentUser) {

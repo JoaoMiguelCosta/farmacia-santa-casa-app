@@ -3,7 +3,10 @@ import Button from "../../../../../shared/ui/Button/Button";
 import styles from "./SystemUserForm.module.css";
 
 import { SYSTEM_USERS_PAGE } from "../../config/systemUsersPage.config";
-import { SYSTEM_USERS_ROLE_OPTIONS } from "../../utils/systemUsers.utils";
+import {
+  SYSTEM_USERS_ROLE_OPTIONS,
+  canChangeSystemUserRole,
+} from "../../utils/systemUsers.utils";
 
 function getFormTitle({ isCreateMode, isEditMode, isPasswordMode }) {
   if (isCreateMode) return SYSTEM_USERS_PAGE.sections.form.createTitle;
@@ -42,6 +45,7 @@ function getSubmitLabel({
 
 export default function SystemUserForm({
   formState,
+  currentUser = null,
   isCreateMode = false,
   isEditMode = false,
   isPasswordMode = false,
@@ -60,6 +64,9 @@ export default function SystemUserForm({
     isEditMode,
     isPasswordMode,
   });
+
+  const canEditRole =
+    !isEditMode || canChangeSystemUserRole(selectedUser, currentUser);
 
   function handleSubmit(event) {
     event.preventDefault();
@@ -138,7 +145,12 @@ export default function SystemUserForm({
 
               <select
                 value={values.role ?? ""}
-                disabled={isSubmitting}
+                disabled={isSubmitting || !canEditRole}
+                title={
+                  canEditRole
+                    ? undefined
+                    : SYSTEM_USERS_PAGE.fields.role.selfEditHint
+                }
                 onChange={(event) =>
                   onValueChange?.("role", event.target.value)
                 }
@@ -149,6 +161,10 @@ export default function SystemUserForm({
                   </option>
                 ))}
               </select>
+
+              {!canEditRole ? (
+                <small>{SYSTEM_USERS_PAGE.fields.role.selfEditHint}</small>
+              ) : null}
             </label>
           </>
         ) : null}

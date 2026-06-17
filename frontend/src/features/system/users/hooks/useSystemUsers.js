@@ -27,6 +27,7 @@ import {
   normalizeSystemUsersResponse,
   validateCreateSystemUserForm,
   validatePasswordForm,
+  validateSelfRoleChange,
   validateUpdateSystemUserForm,
 } from "../utils/systemUsers.utils";
 
@@ -266,7 +267,8 @@ export function useSystemUsers() {
   }, [closeForm, formState.values, handleAuthError]);
 
   const submitUpdateUser = useCallback(async () => {
-    const selectedUserId = formState.selectedUser?.id;
+    const selectedUser = formState.selectedUser;
+    const selectedUserId = selectedUser?.id;
 
     if (!selectedUserId) {
       setFeedback({
@@ -288,12 +290,26 @@ export function useSystemUsers() {
       return;
     }
 
+    const payload = buildUpdateSystemUserPayload(formState.values);
+    const selfRoleError = validateSelfRoleChange({
+      selectedUser,
+      currentUser,
+      nextRole: payload.role,
+    });
+
+    if (selfRoleError) {
+      setFeedback({
+        type: "error",
+        message: selfRoleError,
+      });
+
+      return;
+    }
+
     setIsSubmitting(true);
     setFeedback(null);
 
     try {
-      const payload = buildUpdateSystemUserPayload(formState.values);
-
       await updateSystemUser(selectedUserId, payload);
 
       setFeedback({
@@ -315,7 +331,8 @@ export function useSystemUsers() {
     }
   }, [
     closeForm,
-    formState.selectedUser?.id,
+    currentUser,
+    formState.selectedUser,
     formState.values,
     handleAuthError,
     loadUsers,

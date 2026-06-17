@@ -114,6 +114,7 @@ export default function SystemUsersPageContent() {
       {isFormOpen ? (
         <SystemUserForm
           formState={formState}
+          currentUser={currentUser}
           isCreateMode={isCreateMode}
           isEditMode={isEditMode}
           isPasswordMode={isPasswordMode}
