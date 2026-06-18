@@ -4,6 +4,9 @@
   "private": true,
   "main": "src/app/server.js",
   "license": "ISC",
+  "engines": {
+    "node": "20.x"
+  },
   "scripts": {
     "dev": "nodemon --watch src --watch prisma --ext js,json,prisma --exec node src/app/server.js",
     "start": "node src/app/server.js",
