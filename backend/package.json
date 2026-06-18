@@ -7,6 +7,7 @@
   "scripts": {
     "dev": "nodemon --watch src --watch prisma --ext js,json,prisma --exec node src/app/server.js",
     "start": "node src/app/server.js",
+    "postinstall": "npm run prisma:generate",
     "prisma:generate": "npx prisma generate",
     "prisma:studio": "npx prisma studio",
     "prisma:migrate": "npx prisma migrate dev",
