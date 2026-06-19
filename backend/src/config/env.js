@@ -97,18 +97,20 @@ function hasExplicitEnvValue(name) {
   return String(process.env[name] ?? "").trim().length > 0;
 }
 
-function getOriginHostname(origin) {
+function getUrlHostname(value) {
   try {
-    return new URL(origin).hostname.toLowerCase();
+    return new URL(value).hostname.toLowerCase().replace(/^\[(.*)\]$/, "$1");
   } catch {
     return "";
   }
 }
 
 function isLocalOrigin(origin) {
-  const hostname = getOriginHostname(origin);
+  return LOCALHOST_VALUES.has(getUrlHostname(origin));
+}
 
-  return LOCALHOST_VALUES.has(hostname);
+function isLocalDatabaseUrl(databaseUrl) {
+  return LOCALHOST_VALUES.has(getUrlHostname(databaseUrl));
 }
 
 if (!process.env.DATABASE_URL) {
@@ -153,7 +155,7 @@ const env = Object.freeze({
     isProduction ? [] : DEVELOPMENT_ALLOWED_ORIGINS,
   ),
 
-  ENABLE_JOBS: getBoolean("ENABLE_JOBS", true),
+  ENABLE_JOBS: getBoolean("ENABLE_JOBS", !isProduction),
   ENABLE_HIGIENE: getBoolean("ENABLE_HIGIENE", true),
   ENABLE_PURGE_HISTORY: getBoolean("ENABLE_PURGE_HISTORY", true),
   ENABLE_RECEITAS_EXPIRY: getBoolean("ENABLE_RECEITAS_EXPIRY", true),
@@ -169,6 +171,13 @@ const env = Object.freeze({
 
   ALLOW_PRODUCTION_SEED: getBoolean("ALLOW_PRODUCTION_SEED", false),
 });
+
+if (isProduction && isLocalDatabaseUrl(env.DATABASE_URL)) {
+  console.error(
+    "[env] DATABASE_URL não pode apontar para localhost/127.0.0.1 em produção.",
+  );
+  process.exit(1);
+}
 
 if (!env.AUTH_JWT_SECRET) {
   console.error("[env] AUTH_JWT_SECRET em falta.");
