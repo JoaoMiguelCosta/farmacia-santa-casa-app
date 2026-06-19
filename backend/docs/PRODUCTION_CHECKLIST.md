@@ -1,378 +1,1114 @@
-# Production Checklist — Farmácia Santa Casa API
+# Production Checklist — Farmácia Santa Casa
 
-Checklist para preparar o backend da aplicação **Farmácia Santa Casa** para staging/produção.
+Checklist final para validar o backend da aplicação **Farmácia Santa Casa** em:
 
-> Produção real só deve avançar depois de validar infraestrutura, ambiente, HTTPS, cookies, CORS, security headers, request ID, base de dados, backups, jobs, seed e testes.
+* desenvolvimento;
+* CI;
+* staging público de portefólio;
+* futura produção real.
 
 **Última atualização:** 2026-06-19
+**Runtime oficial:** Node.js 24 LTS
+**Estado atual:** staging publicado, validado e funcional; produção real ainda não criada.
 
 ---
 
-## 1. Estado funcional
+## 1. Objetivo
 
-Antes de preparar produção, confirmar:
+Este documento serve para:
 
-- [ ] Backend funcionalmente estável.
-- [ ] Frontend compatível com as rotas atuais.
-- [ ] Frontend alinhado com manutenção: `confirm` e `backupConfirmed`.
-- [ ] Frontend alinhado com utilizadores: password mínima 10, email válido e role própria bloqueada.
-- [ ] Testes unitários passam.
-- [ ] Testes de integração passam.
-- [ ] Testes E2E passam.
-- [ ] `npm run test:all` passa.
-- [ ] `npm run test:coverage` passa.
-- [ ] `npm run validate` passa.
-- [ ] Documentação principal atualizada.
+* registar o estado atual do projeto;
+* distinguir staging de produção;
+* evitar configuração insegura;
+* preparar um futuro deploy real;
+* documentar validações obrigatórias;
+* garantir que seeds, jobs, backups e secrets são tratados conscientemente;
+* permitir criar produção sem reconstruir a aplicação.
 
 ---
 
-## 2. Ambiente
+## 2. Estado atual do projeto
 
-Confirmar variáveis de ambiente:
+### Staging de portefólio
 
-- [ ] `NODE_ENV=production`.
-- [ ] `DATABASE_URL` aponta para PostgreSQL real de produção/staging.
-- [ ] `DATABASE_URL` não aponta para localhost.
-- [ ] `PORT` definido conforme a plataforma.
-- [ ] `TZ=Europe/Lisbon`.
-- [ ] `JSON_LIMIT` adequado.
-- [ ] `TRUST_PROXY` definido conforme a infraestrutura.
-- [ ] `.env` real não está versionado no Git.
-- [ ] `.env.production.example` não contém secrets reais.
+Estado atual:
 
-Regras para `TRUST_PROXY`:
+* [x] Backend publicado.
+* [x] Frontend publicado.
+* [x] PostgreSQL de staging criado.
+* [x] Node.js 24 configurado.
+* [x] Migrations aplicadas.
+* [x] Seed demo protegido e executado.
+* [x] Contas demo criadas.
+* [x] Dataset demo reposto e verificado.
+* [x] Login das três roles validado.
+* [x] CORS validado.
+* [x] Cookies cross-site validados.
+* [x] Sessão após refresh validada.
+* [x] Logout validado.
+* [x] Permissões por role validadas.
+* [x] Smoke test remoto read-only criado.
+* [x] Smoke test remoto passou.
+* [x] Fluxo funcional completo validado.
+* [x] Jobs automáticos desativados.
+* [x] Build Command restaurado sem seed.
+* [x] Seed demo bloqueado durante operação normal.
+* [x] Hardening de ambiente aplicado.
+* [x] Frontend bloqueia build inseguro.
+* [x] Backend bloqueia base local em produção.
+* [x] CI alinhado com as variáveis reais.
 
-```env
-TRUST_PROXY=false
-```
+### Produção real
 
-usar quando a API está exposta diretamente.
+Estado atual:
 
-```env
-TRUST_PROXY=1
-```
+* [ ] Base de produção criada.
+* [ ] Backend de produção criado.
+* [ ] Frontend de produção criado.
+* [ ] Domínios finais configurados.
+* [ ] Backups automáticos configurados.
+* [ ] Restore testado.
+* [ ] Secrets reais gerados.
+* [ ] Utilizadores reais criados.
+* [ ] Estratégia de jobs aprovada.
+* [ ] Monitorização configurada.
+* [ ] Plano de rollback executado/testado.
 
-usar quando a API está atrás de um proxy/load balancer confiável.
+A produção real não foi criada por decisão consciente.
 
-Evitar:
-
-```env
-TRUST_PROXY=true
-```
-
-salvo se a infraestrutura controlar corretamente os headers `X-Forwarded-*`.
-
----
-
-## 2.1 Runtime Node.js
-
-Confirmar:
-
-- [ ] Node.js 24 LTS é o runtime oficial.
-- [ ] `backend/package.json` contém `>=24.0.0 <25.0.0`.
-- [ ] `backend/package-lock.json` contém o mesmo intervalo no pacote raiz.
-- [ ] `backend/.node-version` contém `24`.
-- [ ] GitHub Actions usa `node-version: "24.x"`.
-- [ ] Render tem `NODE_VERSION=24`.
-- [ ] `node --version` apresenta `v24.x` no ambiente local.
-- [ ] O deploy confirma a versão Node 24 nos logs de build.
-
----
-
-## 3. CORS e origins
-
-Confirmar:
-
-- [ ] `ALLOWED_ORIGINS` está definido em produção.
-- [ ] `ALLOWED_ORIGINS` não contém `*`.
-- [ ] `ALLOWED_ORIGINS` não contém `localhost`.
-- [ ] `ALLOWED_ORIGINS` não contém `127.0.0.1`.
-- [ ] `ALLOWED_ORIGINS` inclui apenas domínios reais do frontend.
-- [ ] `ALLOWED_ORIGINS` não tem slash final.
-- [ ] Frontend consegue fazer login/logout/me com cookies.
+O projeto fica preparado para a criar futuramente.
 
 ---
 
-## 4. Cookies e autenticação
+## 3. Separação obrigatória de ambientes
 
-Confirmar:
-
-- [ ] `AUTH_JWT_SECRET` é longo, aleatório e secreto.
-- [ ] `AUTH_JWT_SECRET` tem pelo menos 32 caracteres.
-- [ ] `AUTH_COOKIE_SECURE=true` em produção.
-- [ ] `AUTH_COOKIE_SAME_SITE=none` se frontend/backend estiverem em domínios diferentes.
-- [ ] `AUTH_COOKIE_SAME_SITE=lax` se frontend/backend estiverem no mesmo site.
-- [ ] Login funciona.
-- [ ] Logout limpa o cookie.
-- [ ] `/api/auth/me` funciona após refresh.
-- [ ] Roles `ADMIN`, `SANTACASA` e `FARMACIA` estão corretas.
-- [ ] Utilizadores inativos não conseguem fazer login.
-- [ ] Rate limit de login responde `429` após tentativas falhadas excessivas.
-
----
-
-## 5. Base de dados e Prisma
-
-Antes do deploy:
-
-- [ ] PostgreSQL de produção/staging criado.
-- [ ] Backups configurados.
-- [ ] Acesso à base testado.
-- [ ] `npx prisma generate` executado.
-- [ ] Migrations revistas.
-- [ ] Não usar `prisma migrate dev` em produção.
-- [ ] Usar `prisma migrate deploy` em produção/staging.
-
-Comando recomendado em produção/staging:
-
-```bash
-npm run prisma:migrate:deploy
-```
-
----
-
-## 6. Seed de produção
-
-Confirmar:
-
-- [ ] `ALLOW_PRODUCTION_SEED=false` por defeito.
-- [ ] O seed de produção só será executado em setup inicial controlado.
-- [ ] `SEED_ADMIN_EMAIL` é email real do admin inicial.
-- [ ] `SEED_ADMIN_PASSWORD` é forte e não é valor default.
-- [ ] Password do admin inicial tem pelo menos 10 caracteres.
-- [ ] Santa Casa e Farmácia serão criados depois em `Sistema > Utilizadores`.
-- [ ] Depois do setup, `ALLOW_PRODUCTION_SEED` volta para `false`.
-
-Notas:
+Os ambientes devem permanecer separados:
 
 ```txt
-Em produção, o seed só cria ADMIN.
-Não cria SANTACASA nem FARMACIA.
-Não redefine password de ADMIN existente.
+development ≠ test ≠ staging ≠ production
+```
+
+Confirmar:
+
+* [ ] Base de development separada.
+* [ ] Base de test separada.
+* [x] Base de staging separada.
+* [ ] Base de production separada.
+* [ ] Secrets exclusivos por ambiente.
+* [ ] Domínios exclusivos por ambiente.
+* [ ] Utilizadores exclusivos por ambiente.
+* [ ] Dados demo ausentes de produção.
+* [ ] Contas demo ausentes de produção.
+
+Nunca reutilizar:
+
+* base de staging em produção;
+* segredo JWT de staging em produção;
+* passwords demo em produção;
+* contas demo em produção;
+* dados fictícios no ambiente real;
+* backups de staging como backups de produção.
+
+---
+
+## 4. Runtime Node.js
+
+Confirmar:
+
+* [x] Node.js 24 LTS é o runtime oficial.
+* [x] `backend/package.json` contém:
+
+```json
+"engines": {
+  "node": ">=24.0.0 <25.0.0"
+}
+```
+
+* [x] `backend/.node-version` contém:
+
+```txt
+24
+```
+
+* [x] GitHub Actions usa:
+
+```yaml
+node-version: "24.x"
+```
+
+* [x] Render staging usa:
+
+```env
+NODE_VERSION=24
+```
+
+* [x] O build de staging confirmou Node.js 24.
+* [ ] A futura produção deve usar igualmente Node.js 24.
+
+---
+
+## 5. Variáveis de ambiente
+
+### Desenvolvimento
+
+Template:
+
+```txt
+backend/.env.example
+```
+
+Confirmar:
+
+* [ ] `NODE_ENV=development`.
+* [ ] `DATABASE_URL` local.
+* [ ] `AUTH_COOKIE_SECURE=false`.
+* [ ] `AUTH_COOKIE_SAME_SITE=lax`.
+* [ ] `TRUST_PROXY=false`.
+* [ ] Origins locais.
+* [ ] Secrets apenas de desenvolvimento.
+
+### Staging
+
+Template:
+
+```txt
+backend/.env.staging.example
+```
+
+Confirmado:
+
+* [x] `NODE_ENV=production`.
+* [x] `NODE_VERSION=24`.
+* [x] `DATABASE_URL` remota.
+* [x] `TRUST_PROXY=1`.
+* [x] `AUTH_COOKIE_SECURE=true`.
+* [x] `AUTH_COOKIE_SAME_SITE=none`.
+* [x] `ALLOWED_ORIGINS` exata.
+* [x] `ENABLE_JOBS=false`.
+* [x] `ALLOW_PRODUCTION_SEED=false`.
+* [x] Seed demo bloqueado durante operação normal.
+* [x] Scripts manuais bloqueados.
+* [x] Secrets guardados no Render.
+
+### Produção
+
+Template:
+
+```txt
+backend/.env.production.example
+```
+
+Antes de criar produção:
+
+* [ ] `NODE_ENV=production`.
+* [ ] `DATABASE_URL` exclusiva de produção.
+* [ ] `DATABASE_URL` não aponta para localhost.
+* [ ] `AUTH_JWT_SECRET` exclusivo.
+* [ ] `AUTH_COOKIE_SECURE=true`.
+* [ ] `AUTH_COOKIE_SAME_SITE` definido conscientemente.
+* [ ] `ALLOWED_ORIGINS` exata.
+* [ ] `TRUST_PROXY` ajustado à infraestrutura.
+* [ ] `ENABLE_JOBS` definido explicitamente.
+* [ ] `ALLOW_PRODUCTION_SEED=false`.
+* [ ] `ALLOW_TEST_SCRIPTS_IN_PRODUCTION=false`.
+* [ ] Nenhuma variável `DEMO_*`.
+* [ ] Nenhuma variável `STAGING_*`.
+
+---
+
+## 6. Base de dados e Prisma
+
+### Staging
+
+Confirmado:
+
+* [x] PostgreSQL de staging criado.
+* [x] `DATABASE_URL` remota.
+* [x] Prisma Client gerado.
+* [x] 12 migrations encontradas.
+* [x] Nenhuma migration pendente.
+* [x] Build Command usa:
+
+```bash
+npm ci && npm run prisma:migrate:deploy
+```
+
+* [x] `prisma migrate dev` não é usado em staging.
+
+### Produção futura
+
+Confirmar:
+
+* [ ] PostgreSQL exclusivo.
+* [ ] Plano adequado.
+* [ ] Região escolhida.
+* [ ] Ligação segura.
+* [ ] Backups automáticos.
+* [ ] Política de retenção.
+* [ ] Restore testado.
+* [ ] Credenciais guardadas em secrets.
+* [ ] Migrations revistas.
+* [ ] `prisma migrate deploy` usado.
+* [ ] Nunca usar `prisma migrate dev`.
+* [ ] Nunca apontar testes para produção.
+
+---
+
+## 7. Proteções de ambiente
+
+O backend deve bloquear:
+
+* [x] `DATABASE_URL` ausente.
+* [x] `DATABASE_URL` local em produção.
+* [x] `AUTH_JWT_SECRET` ausente.
+* [x] Secret curto em produção.
+* [x] Cookie inseguro em produção.
+* [x] `SameSite=None` sem `Secure`.
+* [x] `ALLOWED_ORIGINS` ausente.
+* [x] Origins vazias.
+* [x] Wildcard em produção.
+* [x] Localhost nas origins.
+* [x] `NODE_ENV` inválido.
+
+Mensagens esperadas:
+
+```txt
+[env] DATABASE_URL em falta.
+[env] DATABASE_URL não pode apontar para localhost/127.0.0.1 em produção.
+[env] AUTH_JWT_SECRET em falta.
+[env] AUTH_JWT_SECRET deve ter pelo menos 32 caracteres em produção.
+[env] AUTH_COOKIE_SECURE deve ser true em produção.
+[env] AUTH_COOKIE_SAME_SITE=none exige AUTH_COOKIE_SECURE=true.
+[env] ALLOWED_ORIGINS é obrigatório em produção.
+[env] ALLOWED_ORIGINS não pode estar vazio em produção.
+[env] ALLOWED_ORIGINS não pode conter '*' em produção.
+[env] ALLOWED_ORIGINS não pode conter localhost/127.0.0.1 em produção.
 ```
 
 ---
 
-## 7. Jobs automáticos
+## 8. CORS e origins
+
+### Staging
+
+Confirmado:
+
+* [x] Origin exata:
+
+```env
+ALLOWED_ORIGINS="https://farmacia-santacasa-frontend-staging.onrender.com"
+```
+
+* [x] Sem `*`.
+* [x] Sem localhost.
+* [x] Sem slash final.
+* [x] Sem caminhos.
+* [x] `Access-Control-Allow-Origin` validado.
+* [x] `Access-Control-Allow-Credentials=true`.
+* [x] `X-Request-Id` exposto.
+* [x] Preflight responde `204`.
+* [x] Origem não autorizada é bloqueada.
+
+### Produção futura
 
 Confirmar:
 
-- [ ] Decidir se a produção terá uma ou várias instâncias.
-- [ ] `ENABLE_JOBS` definido conscientemente.
-- [ ] Em múltiplas instâncias, jobs automáticos não correm em todas as instâncias.
-- [ ] `ENABLE_RECEITAS_EXPIRY` revisto.
-- [ ] `ENABLE_HIGIENE` revisto.
-- [ ] `ENABLE_PURGE_HISTORY` revisto.
-- [ ] `CRON_DAILY_03H` confirmado.
-- [ ] `CRON_MONTHLY_03H` confirmado.
-- [ ] Timezone confirmada com `TZ=Europe/Lisbon`.
+* [ ] Apenas domínios finais.
+* [ ] Sem wildcard.
+* [ ] Sem localhost.
+* [ ] Sem URLs de staging.
+* [ ] Sem `/login` ou outros caminhos.
+* [ ] Sem slash final.
+* [ ] Login real validado.
+* [ ] Logout validado.
+* [ ] Sessão após refresh validada.
 
-Recomendação inicial para instância web:
+---
+
+## 9. Cookies e autenticação
+
+Confirmar:
+
+* [x] Cookie HTTP-only.
+* [x] Cookie `Secure` em staging.
+* [x] Cookie `SameSite=None` em staging cross-site.
+* [x] Cookie com `Path=/`.
+* [x] Login `ADMIN`.
+* [x] Login `SANTACASA`.
+* [x] Login `FARMACIA`.
+* [x] `/api/auth/me`.
+* [x] Sessão após `F5`.
+* [x] Logout limpa cookie.
+* [x] Roles corretas.
+* [x] Bloqueios cruzados.
+* [x] Origem inválida bloqueada.
+* [x] Sessão inexistente responde `401`.
+
+Para produção futura:
+
+* [ ] Secret JWT novo.
+* [ ] Cookie name confirmado.
+* [ ] Tempo do JWT confirmado.
+* [ ] Tempo do cookie alinhado.
+* [ ] `SameSite` revisto conforme domínios finais.
+* [ ] Login dos utilizadores reais validado.
+* [ ] Utilizadores inativos bloqueados.
+
+---
+
+## 10. Rate limit
+
+Confirmar:
+
+* [x] Rate limit de login ativo.
+* [x] Usa IP + email.
+* [x] `TRUST_PROXY` considerado.
+* [x] CI inclui configuração explícita.
+* [ ] Em produção futura, validar resposta `429`.
+* [ ] Em múltiplas instâncias, considerar Redis.
+* [ ] Rever limites conforme utilização real.
+
+Configuração atual:
+
+```env
+AUTH_LOGIN_RATE_LIMIT_WINDOW_MS=900000
+AUTH_LOGIN_RATE_LIMIT_MAX=10
+```
+
+Limitação consciente:
+
+```txt
+O rate limit atual usa memória da instância.
+```
+
+---
+
+## 11. Jobs automáticos
+
+Jobs existentes:
+
+```txt
+receita-expiry
+higiene
+purge-history
+```
+
+### Staging
+
+Confirmado:
+
+* [x] `ENABLE_JOBS=false`.
+* [x] `ENABLE_RECEITAS_EXPIRY=false`.
+* [x] `ENABLE_HIGIENE=false`.
+* [x] `ENABLE_PURGE_HISTORY=false`.
+* [x] Logs confirmam jobs desativados.
+* [x] Dataset demo não é alterado automaticamente.
+
+### Produção futura
+
+Antes de ativar:
+
+* [ ] Definir se existe uma ou várias instâncias.
+* [ ] Evitar execução duplicada.
+* [ ] Decidir worker único ou scheduler externo.
+* [ ] Configurar monitorização.
+* [ ] Configurar logs persistentes.
+* [ ] Confirmar timezone.
+* [ ] Confirmar crons.
+* [ ] Confirmar backups.
+* [ ] Confirmar preview.
+* [ ] Confirmar responsáveis operacionais.
+
+Configuração inicial recomendada:
 
 ```env
 ENABLE_JOBS=false
+ENABLE_RECEITAS_EXPIRY=false
+ENABLE_HIGIENE=false
+ENABLE_PURGE_HISTORY=false
 ```
-
-Para execução automática, preferir instância worker única ou scheduler externo.
 
 ---
 
-## 8. Manutenção manual
+## 12. Job de higiene
+
+Antes de executar:
+
+* [ ] Confirmar `HIGIENE_OFFSET_MONTHS`.
+* [ ] Confirmar preview.
+* [ ] Confirmar ambiente.
+* [ ] Confirmar base.
+* [ ] Confirmar política de retenção.
+* [ ] Confirmar base legal.
+* [ ] Confirmar backup.
+* [ ] Testar restore.
+* [ ] Manter anonimização desativada por defeito.
+
+Configuração segura:
+
+```env
+HIGIENE_OFFSET_MONTHS=12
+HIGIENE_ANONYMIZE=false
+ALLOW_HIGIENE_ANONYMIZE=false
+```
+
+A anonimização exige ambas:
+
+```env
+HIGIENE_ANONYMIZE=true
+ALLOW_HIGIENE_ANONYMIZE=true
+```
+
+---
+
+## 13. Purge de histórico
+
+Esta operação é destrutiva.
+
+Antes de executar:
+
+* [ ] Backup automático disponível.
+* [ ] Backup manual recente.
+* [ ] Restore testado.
+* [ ] `PURGE_OFFSET_MONTHS` aprovado.
+* [ ] Preview executado.
+* [ ] Quantidades revistas.
+* [ ] Ambiente confirmado.
+* [ ] Base confirmada.
+* [ ] `backupConfirmed=true`.
+* [ ] Responsável autorizado.
+
+Payload:
+
+```json
+{
+  "confirm": "RUN_PURGE_HISTORY",
+  "backupConfirmed": true,
+  "offsetMonths": 6
+}
+```
+
+Não ativar automaticamente numa primeira produção sem estes pontos.
+
+---
+
+## 14. Manutenção manual
 
 Confirmar:
 
-- [ ] Apenas `ADMIN` acede a `/api/manutencao`.
-- [ ] Endpoints `preview` funcionam.
-- [ ] Endpoints `run` exigem `confirm`.
-- [ ] `purge-history` exige `backupConfirmed=true`.
-- [ ] UI de manutenção envia `confirm` correto.
-- [ ] UI de manutenção envia `backupConfirmed=true` no purge.
-- [ ] Operadores sabem que `purge-history` é destrutivo.
+* [x] Apenas `ADMIN` acede.
+* [x] Endpoints de preview existem.
+* [x] Endpoints run exigem confirmação forte.
+* [x] Purge exige `backupConfirmed`.
+* [x] UI envia confirmação adequada.
+* [x] Jobs podem ser executados manualmente.
 
-Payloads obrigatórios:
+Payloads:
 
 ```json
-{ "confirm": "RUN_RECEITA_EXPIRY" }
+{
+  "confirm": "RUN_RECEITA_EXPIRY"
+}
 ```
 
 ```json
-{ "confirm": "RUN_HIGIENE", "offsetMonths": 12, "anonymize": false }
+{
+  "confirm": "RUN_HIGIENE",
+  "offsetMonths": 12,
+  "anonymize": false
+}
 ```
 
 ```json
-{ "confirm": "RUN_PURGE_HISTORY", "backupConfirmed": true, "offsetMonths": 6 }
+{
+  "confirm": "RUN_PURGE_HISTORY",
+  "backupConfirmed": true,
+  "offsetMonths": 6
+}
 ```
 
 ---
 
-## 9. Health checks
+## 15. Seed inicial de produção
+
+Por defeito:
+
+```env
+ALLOW_PRODUCTION_SEED=false
+```
+
+Antes do setup:
+
+* [ ] Criar base de produção.
+* [ ] Aplicar migrations.
+* [ ] Definir admin real.
+* [ ] Usar email real.
+* [ ] Usar password forte.
+* [ ] Não usar passwords padrão.
+* [ ] Ativar seed temporariamente.
+* [ ] Executar seed uma única vez.
+* [ ] Confirmar admin.
+* [ ] Voltar a `false`.
+* [ ] Remover variáveis temporárias.
+* [ ] Criar Santa Casa e Farmácia pela UI.
+
+Em produção, o seed:
+
+* cria apenas `ADMIN`;
+* não cria `SANTACASA`;
+* não cria `FARMACIA`;
+* não redefine password de admin existente;
+* não altera role;
+* não altera nome;
+* não altera estado.
+
+---
+
+## 16. Seed demo
+
+O seed demo é exclusivo de staging/portefólio.
+
+Comando:
+
+```bash
+npm run prisma:seed:demo
+```
+
+Proteção:
+
+```env
+ALLOW_DEMO_SEED=true
+DEMO_SEED_CONFIRMATION=PORTFOLIO_DEMO
+```
+
+Confirmado:
+
+* [x] Seed transacional.
+* [x] Guardas obrigatórias.
+* [x] Passwords sem fallback.
+* [x] Mínimo de 12 caracteres.
+* [x] Emails demo separados.
+* [x] Contas iniciais protegidas.
+* [x] Idempotência validada.
+* [x] Dataset reposto.
+* [x] Passwords sincronizadas.
+* [x] Build Command restaurado.
+* [x] Guardas removidas após reposição.
+* [x] Seed não corre automaticamente.
+
+Produção futura:
+
+* [ ] Nenhuma variável `DEMO_*`.
+* [ ] Nenhum seed demo.
+* [ ] Nenhuma conta demo.
+* [ ] Nenhum dado fictício.
+
+---
+
+## 17. Smoke test remoto
+
+Script:
+
+```txt
+backend/scripts/smoke/staging-auth-smoke.js
+```
+
+Comando:
+
+```bash
+npm run test:staging:auth
+```
+
+Confirmado:
+
+* [x] Read-only.
+* [x] Proteção por confirmação.
+* [x] Health live.
+* [x] Health ready.
+* [x] CORS.
+* [x] Preflight.
+* [x] Security headers.
+* [x] Request ID.
+* [x] Sessão inexistente.
+* [x] Origem inválida.
+* [x] Login das três roles.
+* [x] `/auth/me`.
+* [x] Permissões por role.
+* [x] Bloqueios cruzados.
+* [x] Logout.
+* [x] Cookies seguros.
+* [x] Não cria dados operacionais.
+
+Resultado validado:
+
+```txt
+STAGING AUTH SMOKE PASSOU
+```
+
+---
+
+## 18. Health checks
+
+Endpoints:
+
+```txt
+GET /api/health/live
+GET /api/health/ready
+GET /api/health
+```
+
+Confirmado:
+
+* [x] `/live` responde `200`.
+* [x] `/ready` responde `200`.
+* [x] `/health` protegido por `ADMIN`.
+* [x] Request ID presente.
+* [x] Plataforma iniciou corretamente.
+
+Produção futura:
+
+* [ ] Liveness configurado.
+* [ ] Readiness configurado, se suportado.
+* [ ] Alertas de indisponibilidade.
+* [ ] Monitorização externa.
+* [ ] Teste de base indisponível.
+* [ ] `/ready` devolve `503` sem base.
+
+---
+
+## 19. Segurança HTTP
+
+Confirmado:
+
+* [x] `helmet` ativo.
+* [x] `x-powered-by` removido.
+* [x] Security headers presentes.
+* [x] `X-Request-Id` presente.
+* [x] `X-Request-Id` exposto em CORS.
+* [x] Origin guard ativo.
+* [x] Cookies HTTP-only.
+* [x] Cookies secure.
+* [x] Rate limit ativo.
+* [x] Erros não expõem stack em produção.
+* [x] Logs incluem request ID.
+
+Produção futura:
+
+* [ ] Rever CSP conforme domínios finais.
+* [ ] Rever headers no domínio final.
+* [ ] Configurar logs persistentes.
+* [ ] Configurar retenção de logs.
+* [ ] Configurar alertas.
+
+---
+
+## 20. Graceful shutdown
+
+Confirmado:
+
+* [x] `SIGINT` tratado.
+* [x] `SIGTERM` tratado.
+* [x] HTTP fecha antes do Prisma.
+* [x] Jobs são parados.
+* [x] Prisma é desligado.
+* [x] Timeout de shutdown existe.
+* [x] `unhandledRejection` tratado.
+* [x] `uncaughtException` tratado.
+* [x] Logs de shutdown existem.
+
+Produção futura:
+
+* [ ] Validar shutdown real na plataforma final.
+* [ ] Confirmar tempo de grace period.
+* [ ] Confirmar que pedidos ativos terminam adequadamente.
+* [ ] Confirmar que jobs não ficam duplicados.
+
+---
+
+## 21. Frontend
+
+### Desenvolvimento
 
 Confirmar:
 
-- [ ] `GET /api/health/live` responde `200` sem sessão.
-- [ ] `GET /api/health/ready` responde `200` quando a base está acessível.
-- [ ] `GET /api/health/ready` responde `503` se a base não estiver disponível.
-- [ ] `GET /api/health` continua protegido por `ADMIN`.
-- [ ] Plataforma de deploy usa `/api/health/live` para liveness.
-- [ ] Plataforma de deploy usa `/api/health/ready` para readiness, se aplicável.
+* [x] `frontend/.env.example` aponta para localhost.
+* [x] `npm run dev` permite API local.
+* [x] Fallback local só existe em desenvolvimento.
+
+### Build
+
+Confirmado:
+
+* [x] `VITE_API_BASE_URL` é obrigatória.
+* [x] HTTPS obrigatório.
+* [x] Localhost bloqueado.
+* [x] Query string bloqueada.
+* [x] Fragmento bloqueado.
+* [x] URL tem de terminar exatamente em `/api`.
+* [x] Build com staging passou.
+* [x] Build local inseguro falhou de propósito.
+* [x] Lint passou.
+
+### Produção futura
+
+* [ ] Configurar `VITE_API_BASE_URL` real.
+* [ ] Executar rebuild.
+* [ ] Confirmar API embebida no bundle.
+* [ ] Confirmar login.
+* [ ] Confirmar refresh.
+* [ ] Confirmar logout.
+* [ ] Confirmar rotas SPA.
+* [ ] Configurar rewrite para `/index.html`.
 
 ---
 
-## 10. Segurança HTTP
+## 22. CI
 
-Confirmar:
+Confirmado:
 
-- [ ] `x-powered-by` removido.
-- [ ] `helmet` ativo.
-- [ ] Security headers presentes nas respostas.
-- [ ] `X-Request-Id` presente em respostas `200`, `4xx` e `5xx`.
-- [ ] `X-Request-Id` exposto em CORS.
-- [ ] Origin guard ativo para métodos mutáveis.
-- [ ] CORS restrito a origins reais.
-- [ ] Cookies HTTP-only.
-- [ ] Cookies secure em produção.
-- [ ] Rate limit de login ativo.
-- [ ] `TRUST_PROXY` testado com a infraestrutura real.
-- [ ] Erros 500 não expõem stack trace em produção.
-- [ ] Logs de erro incluem `requestId`.
+* [x] Workflow existe.
+* [x] PostgreSQL service.
+* [x] Node.js 24.
+* [x] `npm ci`.
+* [x] Prisma Client.
+* [x] Migrations.
+* [x] Unit tests.
+* [x] Integration tests.
+* [x] Seed para E2E.
+* [x] E2E tests.
+* [x] Seed para coverage.
+* [x] Coverage.
+* [x] Audit.
+* [x] Jobs desativados.
+* [x] Variáveis antigas removidas.
+* [x] Variáveis atuais alinhadas.
 
-Melhorias futuras possíveis:
+Workflow:
 
-- [ ] Logs estruturados persistentes.
-- [ ] Rate limit com Redis para múltiplas instâncias.
+```txt
+.github/workflows/backend-ci.yml
+```
 
 ---
 
-## 11. Testes antes do deploy
+## 23. Testes
 
-Executar:
+Antes de merge relevante:
 
 ```bash
 npm run prisma:generate
 npm run test:unit -- --run
 npm run test:integration -- --run
 npm run test:e2e -- --run
-npm run test:coverage
 npm run test:all
+npm run test:coverage
+npm run audit
 npm run validate
 ```
 
-Testes específicos críticos:
+Confirmado nesta fase:
 
-```bash
-npm run test:e2e -- --run tests/e2e/health.e2e.test.js
-npm run test:e2e -- --run tests/e2e/loginRateLimit.e2e.test.js
-npm run test:e2e -- --run tests/e2e/securityHeaders.e2e.test.js
-npm run test:e2e -- --run tests/e2e/requestId.e2e.test.js
-npm run test:e2e -- --run tests/e2e/manutencao.e2e.test.js
-npm run test:e2e -- --run tests/e2e/adminUsers.e2e.test.js
-```
+* [x] Unit passam.
+* [x] Integration passam.
+* [x] E2E passam.
+* [x] `test:all` passa.
+* [x] Coverage passa.
+* [x] Audit passa.
+* [x] CI passa.
 
----
-
-## 12. Deploy
-
-Antes de arrancar a app:
-
-- [ ] `NODE_VERSION=24` configurado na plataforma.
-- [ ] `Root Directory` definido como `backend`.
-- [ ] `Build Command` definido como `npm ci && npm run prisma:migrate:deploy`.
-- [ ] `Start Command` definido como `npm start`.
-- [ ] Variáveis reais configuradas na plataforma.
-- [ ] `npm install` ou build da imagem concluído.
-- [ ] `npm run prisma:generate` executado.
-- [ ] `npm run prisma:migrate:deploy` executado.
-- [ ] Seed só executado se for setup inicial controlado.
-- [ ] API arranca com `npm start`.
-- [ ] Logs iniciais revistos.
-- [ ] Jobs não duplicados.
-
----
-
-## 12.1 Server runtime e shutdown
-
-Confirmar:
-
-- [ ] API arranca sem expor secrets nos logs.
-- [ ] Jobs são registados apenas depois de o servidor estar a escutar.
-- [ ] `SIGINT` encerra de forma controlada.
-- [ ] `SIGTERM` encerra de forma controlada.
-- [ ] Shutdown tenta parar jobs registados.
-- [ ] Shutdown fecha servidor HTTP antes de desligar Prisma.
-- [ ] `unhandledRejection` e `uncaughtException` são tratados com encerramento controlado.
-
----
-
-## 13. Smoke test pós-deploy
-
-Validar:
+Limitação consciente:
 
 ```txt
-GET /api/health/live
-GET /api/health/ready
-POST /api/auth/login
-GET /api/auth/me
-POST /api/auth/logout
+Coverage configurado sem threshold obrigatório.
 ```
 
-Depois, com `ADMIN`:
+---
+
+## 24. Build e deploy no Render
+
+### Backend de staging
+
+Configuração validada:
 
 ```txt
-GET /api/health
-GET /api/manutencao/jobs
-GET /api/admin/users
+Root Directory: backend
+Build Command: npm ci && npm run prisma:migrate:deploy
+Start Command: npm start
+Auto-Deploy: On Commit
+Included Paths: backend/**
 ```
 
-Depois validar fluxos reais:
+Confirmado:
 
-- [ ] Login Santa Casa.
-- [ ] Login Farmácia.
-- [ ] Login Admin.
-- [ ] Criar utilizador de teste.
-- [ ] Desativar utilizador de teste.
-- [ ] Confirmar bloqueio de role/contexto.
-- [ ] Confirmar frontend mantém sessão após refresh.
+* [x] Node 24.
+* [x] `npm ci`.
+* [x] Prisma generate.
+* [x] Migrations.
+* [x] Zero vulnerabilidades no build validado.
+* [x] Serviço live.
+* [x] Jobs desativados.
+* [x] Seed demo não executa automaticamente.
+
+### Frontend de staging
+
+Confirmado:
+
+* [x] `VITE_API_BASE_URL` configurada.
+* [x] Build passou.
+* [x] Rewrite SPA configurado.
+* [x] `/login` funciona.
+* [x] Rotas internas funcionam.
+* [x] Refresh funciona.
 
 ---
 
-## 14. Backups e recuperação
+## 25. Validação funcional de staging
 
-Confirmar:
+Confirmado:
 
-- [ ] Backup automático da base configurado.
-- [ ] Processo de restore documentado.
-- [ ] Restore testado pelo menos em staging.
-- [ ] Backup confirmado antes de qualquer `purge-history`.
-- [ ] Política de retenção de backups definida.
+### Santa Casa
+
+* [x] Home.
+* [x] Dashboard.
+* [x] Utentes.
+* [x] Operação.
+* [x] Medicação habitual.
+* [x] Receitas.
+* [x] Medicamentos não sujeitos a receita médica.
+* [x] Vendas Suspensas.
+* [x] Pedidos.
+* [x] Histórico.
+* [x] Regularizações.
+
+### Farmácia
+
+* [x] Home.
+* [x] Dashboard.
+* [x] Pedidos.
+* [x] Validação.
+* [x] Rejeição.
+* [x] Histórico.
+* [x] Regularizações.
+* [x] Alertas.
+
+### Sistema
+
+* [x] Login ADMIN.
+* [x] Utilizadores.
+* [x] Health.
+* [x] Manutenção.
+* [x] Permissões.
+
+### Fluxo ponta a ponta
+
+* [x] Criação operacional.
+* [x] Pedido.
+* [x] Tratamento pela Farmácia.
+* [x] Regularização.
+* [x] Histórico.
+* [x] Persistência após refresh.
+* [x] Dataset demo reposto após validação.
 
 ---
 
-## 15. Estado recomendado para primeiro deploy
+## 26. Backups
 
-Configuração conservadora inicial:
+### Staging
+
+Estado atual:
+
+* [ ] Backups automáticos confirmados.
+* [ ] Restore testado.
+
+Como staging é apenas portefólio/demo, estes pontos não bloquearam esta fase.
+
+### Produção futura
+
+Obrigatório:
+
+* [ ] Backup automático.
+* [ ] Retenção definida.
+* [ ] Backup antes de purge.
+* [ ] Restore documentado.
+* [ ] Restore testado.
+* [ ] Responsáveis definidos.
+* [ ] RTO definido.
+* [ ] RPO definido.
+
+Sem restore testado, não ativar `purge-history`.
+
+---
+
+## 27. Logs e monitorização
+
+### Staging
+
+Confirmado:
+
+* [x] Logs de build.
+* [x] Logs de arranque.
+* [x] Request ID.
+* [x] Logs de erros.
+* [x] Estado dos jobs.
+
+### Produção futura
+
+Necessário:
+
+* [ ] Logs persistentes.
+* [ ] Retenção de logs.
+* [ ] Alertas de erro.
+* [ ] Alertas de indisponibilidade.
+* [ ] Métricas de latência.
+* [ ] Métricas de base.
+* [ ] Monitorização dos jobs.
+* [ ] Correlação por request ID.
+* [ ] Proteção de dados nos logs.
+
+---
+
+## 28. Rollback
+
+Antes da produção real:
+
+* [ ] Identificar versão estável anterior.
+* [ ] Manter artefacto/commit anterior.
+* [ ] Documentar rollback do backend.
+* [ ] Documentar rollback do frontend.
+* [ ] Rever compatibilidade das migrations.
+* [ ] Evitar migrations destrutivas sem plano.
+* [ ] Criar backup antes de mudança crítica.
+* [ ] Testar rollback em staging.
+* [ ] Definir responsável.
+
+Rollback de código não substitui rollback de dados.
+
+---
+
+## 29. Procedimento futuro para criar produção
+
+### Infraestrutura
+
+1. Criar PostgreSQL de produção.
+2. Configurar backups.
+3. Testar restore.
+4. Criar serviço backend.
+5. Criar frontend.
+6. Configurar domínios.
+7. Configurar HTTPS.
+
+### Backend
+
+1. Usar `backend/.env.production.example`.
+2. Gerar `AUTH_JWT_SECRET`.
+3. Definir `DATABASE_URL`.
+4. Definir `ALLOWED_ORIGINS`.
+5. Confirmar cookies.
+6. Definir jobs como `false`.
+7. Aplicar migrations.
+8. Executar seed inicial controlado.
+9. Voltar a bloquear seed.
+10. Criar utilizadores reais.
+
+### Frontend
+
+1. Definir `VITE_API_BASE_URL`.
+2. Executar build.
+3. Configurar rewrite SPA.
+4. Confirmar login.
+5. Confirmar refresh.
+6. Confirmar logout.
+
+### Validação
+
+1. Health live.
+2. Health ready.
+3. Smoke test.
+4. Login ADMIN.
+5. Login Santa Casa.
+6. Login Farmácia.
+7. Fluxo operacional.
+8. Logs.
+9. Backups.
+10. Rollback.
+
+---
+
+## 30. Critérios de conclusão do projeto para portefólio
+
+O projeto pode ser considerado concluído quando:
+
+* [x] Backend funcional.
+* [x] Frontend funcional.
+* [x] Base de staging.
+* [x] Demo pública.
+* [x] Contas demo.
+* [x] Dados fictícios.
+* [x] Testes automatizados.
+* [x] CI.
+* [x] Coverage.
+* [x] Audit.
+* [x] Segurança HTTP.
+* [x] Cookies seguros.
+* [x] CORS.
+* [x] Roles.
+* [x] Smoke test.
+* [x] Fluxo completo validado.
+* [x] Templates separados.
+* [x] Hardening de ambiente.
+* [x] Produção futura documentada.
+
+Não é necessário para o portefólio:
+
+* [ ] Criar produção real.
+* [ ] Comprar domínio.
+* [ ] Contratar backups pagos.
+* [ ] Configurar Redis.
+* [ ] Configurar observabilidade paga.
+* [ ] Ativar jobs automáticos.
+
+---
+
+## 31. Estado final recomendado
+
+Para portefólio:
+
+```txt
+Aplicação full-stack funcional, testada, publicada em staging,
+com ambiente demo reproduzível e preparada tecnicamente para produção.
+```
+
+Para uma futura utilização real:
+
+```txt
+Criar infraestrutura exclusiva, configurar backups, secrets,
+domínios, utilizadores reais, jobs, monitorização e rollback.
+```
+
+---
+
+## 32. Regra final
+
+Antes de qualquer deploy real:
+
+```txt
+Confirmar ambiente, base de dados, secrets, origins, cookies,
+migrations, backups, jobs, seed, logs, smoke test e rollback.
+```
+
+Nunca assumir que staging e produção são equivalentes apenas porque ambos usam:
 
 ```env
-NODE_VERSION=24
 NODE_ENV=production
-AUTH_COOKIE_SECURE=true
-AUTH_COOKIE_SAME_SITE=none
-TRUST_PROXY=1
-ENABLE_JOBS=false
-ENABLE_HIGIENE=false
-ENABLE_PURGE_HISTORY=false
-ENABLE_RECEITAS_EXPIRY=true
-ALLOW_PRODUCTION_SEED=false
-ALLOW_TEST_SCRIPTS_IN_PRODUCTION=false
 ```
 
-Depois de validar infraestrutura, decidir se jobs ficam:
+O staging é uma demonstração isolada.
 
-```txt
-manual via Sistema > Manutenção
-```
+A produção deverá ser criada com:
 
-ou:
-
-```txt
-automáticos numa única instância worker/scheduler externo
-```
+* infraestrutura própria;
+* secrets próprios;
+* base própria;
+* utilizadores reais;
+* dados reais;
+* política operacional aprovada.
