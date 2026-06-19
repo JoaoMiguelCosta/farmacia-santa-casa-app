@@ -4,7 +4,7 @@ Documentação de testes do backend **Farmácia Santa Casa**.
 
 Este ficheiro descreve a estratégia de testes, a estrutura atual, os comandos disponíveis, o que está coberto e as regras a seguir quando forem criados ou alterados testes.
 
-**Última atualização:** 2026-06-17
+**Última atualização:** 2026-06-19
 **Estado atual:** suite de testes backend fechada por agora.
 
 ---
@@ -61,6 +61,34 @@ Novos testes devem ser adicionados quando existir:
 * alteração de estados;
 * alteração em jobs;
 * refatoração interna com risco funcional.
+
+---
+
+## 1.1 Runtime de testes e CI
+
+A suite deve correr com **Node.js 24 LTS**.
+
+Configuração alinhada:
+
+```txt
+package.json: >=24.0.0 <25.0.0
+.node-version: 24
+GitHub Actions: node-version 24.x
+```
+
+Antes de executar testes localmente:
+
+```bash
+node --version
+```
+
+O resultado deve começar por:
+
+```txt
+v24.
+```
+
+O workflow `.github/workflows/backend-ci.yml` usa PostgreSQL e executa instalação limpa, Prisma, migrations, testes unitários, integração, E2E, coverage e audit com Node 24.
 
 ---
 
@@ -345,6 +373,14 @@ npm run test:unit -- --run tests/unit/validators/pedidos.validators.test.js
 ```
 
 ### 7.6 Validação completa recomendada
+
+Confirmar primeiro o runtime:
+
+```bash
+node --version
+```
+
+Depois:
 
 ```bash
 npm run test:all
@@ -1789,7 +1825,7 @@ Prioridade futura, apenas se houver necessidade real:
 3. Testes específicos para regressões reais encontradas no frontend
 4. Testes unitários de services críticos se houver refatoração profunda
 5. Testes de concorrência/reservas se o backend passar a ter maior carga
-6. Testes de CI/CD em pipeline
+6. Testes de compatibilidade quando existir futura mudança de runtime Node
 7. Testes de cookies/CORS em ambiente de staging
 ```
 

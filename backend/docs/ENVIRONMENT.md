@@ -25,6 +25,8 @@ src/config/env.js
 
 O ficheiro `.env` deve existir na raiz do backend.
 
+**Última atualização:** 2026-06-19
+
 ---
 
 ## 1. Objetivo deste ficheiro
@@ -67,6 +69,7 @@ Estrutura recomendada:
 backend/
 ├── .env
 ├── .env.example
+├── .node-version
 ├── docs/
 │   └── ENVIRONMENT.md
 └── src/
@@ -108,6 +111,54 @@ coverage/
 ```
 
 O ficheiro `.env.example` não deve ser ignorado.
+
+---
+
+## 4.1 Runtime Node.js
+
+O backend usa **Node.js 24 LTS**.
+
+A versão suportada está definida em `backend/package.json`:
+
+```json
+"engines": {
+  "node": ">=24.0.0 <25.0.0"
+}
+```
+
+O ficheiro de seleção local é:
+
+```txt
+backend/.node-version
+```
+
+Conteúdo:
+
+```txt
+24
+```
+
+O GitHub Actions deve usar:
+
+```yaml
+node-version: "24.x"
+```
+
+No Render, definir a variável de infraestrutura:
+
+```env
+NODE_VERSION=24
+```
+
+`NODE_VERSION` é usada pela plataforma para selecionar o runtime. Não é uma variável lida por `src/config/env.js` e não precisa de existir no `.env` local.
+
+Antes de instalar dependências ou executar testes:
+
+```bash
+node --version
+```
+
+O resultado deve começar por `v24.`.
 
 ---
 
@@ -1318,10 +1369,53 @@ Isto permite cruzar uma falha vista no frontend com os logs do backend.
 
 ---
 
+## 20.3 Runtime e configuração no Render
+
+Configuração atual/recomendada do serviço backend no Render:
+
+```txt
+Root Directory: backend
+Build Command: npm ci && npm run prisma:migrate:deploy
+Start Command: npm start
+Auto-Deploy: On Commit
+Included Path: backend/**
+```
+
+Runtime da plataforma:
+
+```env
+NODE_VERSION=24
+```
+
+Configuração operacional conservadora para staging/demo:
+
+```env
+NODE_ENV=production
+TZ=Europe/Lisbon
+TRUST_PROXY=1
+ENABLE_JOBS=false
+ENABLE_HIGIENE=false
+ENABLE_PURGE_HISTORY=false
+ENABLE_RECEITAS_EXPIRY=false
+```
+
+Os logs de arranque devem confirmar:
+
+```txt
+[server] listening on port <PORT> (production)
+[jobs] todos os jobs DESATIVADOS por ENABLE_JOBS=false
+```
+
+A porta é fornecida pelo Render através de `PORT` e não deve ser fixada manualmente no código.
+
+---
+
 ## 21. Checklist antes de arrancar localmente
 
 Antes de correr o backend:
 
+* [ ] Confirmar Node.js `v24.x`.
+* [ ] Confirmar que `.node-version` contém `24`.
 * [ ] Criar `.env`.
 * [ ] Confirmar `DATABASE_URL`.
 * [ ] Confirmar `AUTH_JWT_SECRET`.
@@ -1350,6 +1444,7 @@ npm run dev
 
 Antes de correr a suite:
 
+* [ ] Confirmar Node.js `v24.x`.
 * [ ] Confirmar que não estás ligado à base de produção.
 * [ ] Confirmar `DATABASE_URL`.
 * [ ] Confirmar utilizadores de seed.
@@ -1376,6 +1471,9 @@ npm run validate
 
 Antes de publicar:
 
+* [ ] Node.js 24 LTS confirmado.
+* [ ] `NODE_VERSION=24` definido na plataforma de deploy.
+* [ ] GitHub Actions usa `node-version: "24.x"`.
 * [ ] `NODE_ENV=production`.
 * [ ] `TRUST_PROXY` definido conforme a infraestrutura (`false` direto, `1` atrás de um proxy).
 * [ ] `AUTH_JWT_SECRET` forte, aleatório e com pelo menos 32 caracteres.

@@ -4,7 +4,7 @@ Checklist para preparar o backend da aplicação **Farmácia Santa Casa** para s
 
 > Produção real só deve avançar depois de validar infraestrutura, ambiente, HTTPS, cookies, CORS, security headers, request ID, base de dados, backups, jobs, seed e testes.
 
-**Última atualização:** 2026-06-17
+**Última atualização:** 2026-06-19
 
 ---
 
@@ -61,6 +61,21 @@ TRUST_PROXY=true
 ```
 
 salvo se a infraestrutura controlar corretamente os headers `X-Forwarded-*`.
+
+---
+
+## 2.1 Runtime Node.js
+
+Confirmar:
+
+- [ ] Node.js 24 LTS é o runtime oficial.
+- [ ] `backend/package.json` contém `>=24.0.0 <25.0.0`.
+- [ ] `backend/package-lock.json` contém o mesmo intervalo no pacote raiz.
+- [ ] `backend/.node-version` contém `24`.
+- [ ] GitHub Actions usa `node-version: "24.x"`.
+- [ ] Render tem `NODE_VERSION=24`.
+- [ ] `node --version` apresenta `v24.x` no ambiente local.
+- [ ] O deploy confirma a versão Node 24 nos logs de build.
 
 ---
 
@@ -259,6 +274,10 @@ npm run test:e2e -- --run tests/e2e/adminUsers.e2e.test.js
 
 Antes de arrancar a app:
 
+- [ ] `NODE_VERSION=24` configurado na plataforma.
+- [ ] `Root Directory` definido como `backend`.
+- [ ] `Build Command` definido como `npm ci && npm run prisma:migrate:deploy`.
+- [ ] `Start Command` definido como `npm start`.
 - [ ] Variáveis reais configuradas na plataforma.
 - [ ] `npm install` ou build da imagem concluído.
 - [ ] `npm run prisma:generate` executado.
@@ -333,6 +352,7 @@ Confirmar:
 Configuração conservadora inicial:
 
 ```env
+NODE_VERSION=24
 NODE_ENV=production
 AUTH_COOKIE_SECURE=true
 AUTH_COOKIE_SAME_SITE=none
