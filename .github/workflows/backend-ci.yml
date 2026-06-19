@@ -51,9 +51,8 @@ jobs:
       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/farmacia_santa_casa_ci?schema=public
 
       AUTH_JWT_SECRET: ci_auth_jwt_secret_with_enough_length_for_tests
-      AUTH_JWT_EXPIRES_IN: 1d
-      JWT_SECRET: ci_auth_jwt_secret_with_enough_length_for_tests
-      JWT_EXPIRES_IN: 1d
+      AUTH_TOKEN_EXPIRES_IN: 8h
+      AUTH_COOKIE_MAX_AGE_MS: "28800000"
 
       AUTH_COOKIE_NAME: farmacia_santa_casa_token
       AUTH_COOKIE_SECURE: "false"
@@ -61,7 +60,12 @@ jobs:
 
       ALLOWED_ORIGINS: http://localhost:5173
       TRUST_PROXY: "false"
+
       ENABLE_JOBS: "false"
+      ENABLE_HIGIENE: "false"
+      ENABLE_PURGE_HISTORY: "false"
+      ENABLE_RECEITAS_EXPIRY: "false"
+
       ALLOW_PRODUCTION_SEED: "false"
 
     steps:
