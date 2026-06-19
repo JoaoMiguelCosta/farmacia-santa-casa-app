@@ -1,243 +1,280 @@
 # Backend — Farmácia Santa Casa
 
-Backend da aplicação **Farmácia Santa Casa**, responsável pela gestão de utentes, medicação habitual, receitas, medicamentos não sujeitos a receita médica, Vendas Suspensas, pedidos, validações da Farmácia, rejeições, histórico, regularizações, alertas operacionais, autenticação, permissões e jobs de manutenção.
+Backend da aplicação **Farmácia Santa Casa**, responsável pela gestão de utentes, medicação habitual, receitas, medicamentos não sujeitos a receita médica, Vendas Suspensas, pedidos, validações da Farmácia, rejeições, histórico, regularizações, alertas operacionais, autenticação, permissões e manutenção.
 
-Este backend foi construído com **Node.js**, **Express**, **Prisma** e **PostgreSQL**.
+Construído com:
+
+* Node.js 24;
+* Express;
+* Prisma;
+* PostgreSQL;
+* JWT em cookies HTTP-only;
+* Vitest;
+* Supertest.
+
+**Estado atual:** funcional, testado, publicado em staging, com ambiente demo reproduzível e tecnicamente preparado para uma futura produção real.
 
 **Última atualização:** 2026-06-19
-**Estado atual:** backend estável; preparação inicial para produção reforçada; runtime Node.js 24 LTS alinhado entre desenvolvimento, CI e deploy; security headers, request ID, shutdown lifecycle, testes automatizados e documentação principal atualizados.
 
 ---
 
-## 1. Índice
+## 1. Estado do projeto
 
-* [1. Índice](#1-índice)
-* [2. Estado atual](#2-estado-atual)
-* [3. Objetivo do backend](#3-objetivo-do-backend)
-* [4. Stack técnica](#4-stack-técnica)
-* [5. Estrutura principal](#5-estrutura-principal)
-* [6. Documentação complementar](#6-documentação-complementar)
-* [7. Instalação local](#7-instalação-local)
-* [8. Variáveis de ambiente](#8-variáveis-de-ambiente)
-* [9. Base de dados e Prisma](#9-base-de-dados-e-prisma)
-* [10. Seed inicial](#10-seed-inicial)
-* [11. Scripts NPM](#11-scripts-npm)
-* [12. Como arrancar o backend](#12-como-arrancar-o-backend)
-* [13. Autenticação e autorização](#13-autenticação-e-autorização)
-* [14. Contextos principais da API](#14-contextos-principais-da-api)
-* [15. Modelo funcional resumido](#15-modelo-funcional-resumido)
-* [16. Fluxo principal da aplicação](#16-fluxo-principal-da-aplicação)
-* [17. Jobs de manutenção](#17-jobs-de-manutenção)
-* [18. Alertas operacionais](#18-alertas-operacionais)
-* [19. Testes](#19-testes)
-* [20. Scripts manuais](#20-scripts-manuais)
-* [21. Segurança](#21-segurança)
-* [22. Convenções de desenvolvimento](#22-convenções-de-desenvolvimento)
-* [23. Troubleshooting](#23-troubleshooting)
-* [24. Checklist antes de commit](#24-checklist-antes-de-commit)
-* [25. Checklist antes de deploy](#25-checklist-antes-de-deploy)
-* [26. Limites atuais](#26-limites-atuais)
-* [27. Próximos passos recomendados](#27-próximos-passos-recomendados)
-* [28. Estado final desta fase](#28-estado-final-desta-fase)
+### Concluído
+
+* backend funcionalmente estável;
+* frontend integrado com a API;
+* autenticação por roles;
+* gestão de utilizadores;
+* gestão de utentes;
+* medicação habitual;
+* receitas;
+* medicamentos não sujeitos a receita médica;
+* Vendas Suspensas;
+* pedidos Santa Casa;
+* validação e rejeição pela Farmácia;
+* histórico;
+* regularizações;
+* alertas operacionais;
+* manutenção manual;
+* jobs de manutenção;
+* testes unitários;
+* testes de integração;
+* testes E2E;
+* coverage;
+* audit de dependências;
+* GitHub Actions;
+* health checks;
+* security headers;
+* request ID;
+* graceful shutdown;
+* staging público;
+* seed demo protegido;
+* smoke test remoto read-only;
+* validação funcional ponta a ponta;
+* hardening de variáveis de ambiente;
+* templates separados para staging e produção;
+* documentação de preparação para produção.
+
+### Não criado por opção
+
+A aplicação ainda não possui uma produção real.
+
+Não foram criados:
+
+* base de dados real de produção;
+* serviços reais de produção;
+* domínio final;
+* backups pagos;
+* utilizadores reais;
+* monitorização paga;
+* scheduler externo.
+
+O staging atual serve como demonstração pública de portefólio.
 
 ---
 
-## 2. Estado atual
+## 2. Staging público
 
-Estado validado nesta fase:
-
-* documentação técnica e funcional atualizada;
-* `.env.example` criado/atualizado;
-* arquitetura backend documentada;
-* contratos de API documentados;
-* regras de negócio documentadas;
-* jobs de manutenção documentados;
-* estratégia de testes documentada;
-* Vitest e Supertest configurados;
-* testes unitários criados e validados;
-* testes de integração criados e validados;
-* testes E2E criados e validados;
-* scripts manuais mantidos como apoio/smoke tests;
-* alertas operacionais cobertos;
-* regularizações Santa Casa/Farmácia cobertas;
-* `npm audit` integrado no fluxo de validação;
-* coverage configurado com Vitest/V8;
-* health checks de produção adicionados (`/api/health/live` e `/api/health/ready`);
-* `TRUST_PROXY` configurável para deploy atrás de reverse proxy;
-* rate limit de login alinhado com `req.ip`;
-* seed de produção endurecido;
-* endpoints de manutenção exigem confirmação forte;
-* security headers HTTP aplicados com `helmet`;
-* `X-Request-Id` devolvido em todas as respostas;
-* shutdown lifecycle reforçado para fechar HTTP, jobs e Prisma de forma controlada.
-* runtime Node.js 24 LTS definido no `package.json`, `.node-version`, GitHub Actions e configuração de deploy.
-
-Comandos validados:
-
-```bash
-npm run test:unit -- --run
-npm run test:integration -- --run
-npm run test:e2e -- --run
-npm run test:all
-npm run test:coverage
-npm run validate
-```
-
-Estado final:
+### Frontend
 
 ```txt
-Unit tests        ✅ passam
-Integration tests ✅ passam
-E2E tests         ✅ passam
-Coverage          ✅ configurado
-test:all          ✅ passa
-validate          ✅ passa
+https://farmacia-santacasa-frontend-staging.onrender.com
 ```
 
-Os testes atuais **não representam cobertura matemática de 100%** do backend. Representam uma matriz sólida e suficiente para dar esta fase de testes como fechada por agora.
+### Backend
+
+```txt
+https://farmacia-santacasa-backend-staging.onrender.com
+```
+
+### API
+
+```txt
+https://farmacia-santacasa-backend-staging.onrender.com/api
+```
+
+### Ambiente
+
+O staging:
+
+* usa PostgreSQL exclusivo;
+* usa `NODE_ENV=production`;
+* usa HTTPS;
+* usa cookies seguros;
+* tem jobs automáticos desativados;
+* contém apenas dados fictícios;
+* possui contas de demonstração;
+* pode ser reposto através do seed demo;
+* não representa uma produção real.
 
 ---
 
-## 3. Objetivo do backend
+## 3. Contas demo
 
-Este backend gere a comunicação entre dois contextos funcionais principais:
+Emails padrão:
 
-### Santa Casa
+| Role        | Email                          |
+| ----------- | ------------------------------ |
+| `ADMIN`     | `demo.admin@sistema.local`     |
+| `SANTACASA` | `demo.santacasa@sistema.local` |
+| `FARMACIA`  | `demo.farmacia@sistema.local`  |
 
-Responsável por:
+As passwords:
 
-* gerir utentes;
-* registar medicação habitual;
-* registar receitas;
-* registar medicamentos não sujeitos a receita médica;
-* registar medicamentos para Venda Suspensa;
-* criar pedidos para validação pela Farmácia;
-* cancelar pedidos pendentes antes da validação;
-* consultar histórico;
-* consultar regularizações;
-* acompanhar sinais/dashboard operacional.
-
-### Farmácia
-
-Responsável por:
-
-* consultar pedidos pendentes;
-* consultar detalhes de pedidos;
-* validar pedidos;
-* rejeitar pedidos;
-* consultar histórico;
-* consultar regularizações;
-* consultar alertas operacionais;
-* fechar alertas operacionais;
-* acompanhar sinais/dashboard operacional.
-
-### Administração
-
-Responsável por:
-
-* gestão de utilizadores;
-* acesso a manutenção;
-* preview e execução manual de jobs;
-* endpoints administrativos;
-* health check global.
+* não existem no código;
+* não existem nos templates;
+* são fornecidas através de variáveis de ambiente;
+* são guardadas como hash na base de dados;
+* podem ser sincronizadas pelo seed demo.
 
 ---
 
 ## 4. Stack técnica
 
-| Área                     | Tecnologia              |
-| ------------------------ | ----------------------- |
-| Runtime                  | Node.js 24 LTS          |
-| Framework HTTP           | Express 4               |
-| ORM                      | Prisma 5                |
-| Base de dados            | PostgreSQL              |
-| Autenticação             | JWT em cookie HTTP-only |
-| Password hashing         | bcryptjs                |
-| Cookies                  | cookie-parser           |
-| Segurança HTTP           | helmet                  |
-| Jobs                     | node-cron               |
-| Configuração             | dotenv                  |
-| Desenvolvimento          | nodemon                 |
-| Testes                   | Vitest + Supertest      |
-| Base de dados nos testes | Prisma                  |
+| Área             | Tecnologia         |
+| ---------------- | ------------------ |
+| Runtime          | Node.js 24 LTS     |
+| Framework HTTP   | Express 4          |
+| ORM              | Prisma 5           |
+| Base de dados    | PostgreSQL         |
+| Autenticação     | JWT                |
+| Sessão           | Cookie HTTP-only   |
+| Password hashing | bcryptjs           |
+| Segurança HTTP   | Helmet             |
+| Cookies          | cookie-parser      |
+| Jobs             | node-cron          |
+| Configuração     | dotenv             |
+| Testes           | Vitest + Supertest |
+| CI               | GitHub Actions     |
+| Deploy atual     | Render             |
 
 ---
 
-## 5. Estrutura principal
+## 5. Roles
 
-Estrutura simplificada do backend:
+A aplicação possui três roles.
+
+### `ADMIN`
+
+Pode:
+
+* gerir utilizadores;
+* consultar health administrativo;
+* aceder à manutenção;
+* executar jobs manualmente;
+* aceder aos contextos Santa Casa e Farmácia.
+
+### `SANTACASA`
+
+Pode:
+
+* gerir utentes;
+* gerir medicação habitual;
+* criar receitas;
+* criar medicamentos não sujeitos a receita médica;
+* criar medicamentos para Venda Suspensa;
+* criar pedidos;
+* consultar pedidos;
+* consultar histórico;
+* consultar regularizações;
+* acompanhar o dashboard operacional.
+
+### `FARMACIA`
+
+Pode:
+
+* consultar pedidos pendentes;
+* validar pedidos;
+* rejeitar pedidos;
+* consultar histórico;
+* consultar regularizações;
+* consultar alertas;
+* fechar alertas;
+* acompanhar o dashboard operacional.
+
+---
+
+## 6. Fluxo funcional principal
+
+```txt
+1. A Santa Casa seleciona ou cria um utente.
+
+2. Pode registar:
+   - medicação habitual;
+   - receita;
+   - medicamento não sujeito a receita médica;
+   - medicamento para Venda Suspensa.
+
+3. A Santa Casa cria um pedido.
+
+4. O backend cria um alerta para a Farmácia.
+
+5. A Farmácia consulta o pedido.
+
+6. A Farmácia valida ou rejeita.
+
+7. Quando valida:
+   - medicamentos com receita são dispensados;
+   - medicamentos não sujeitos a receita médica são processados;
+   - Vendas Suspensas geram regularizações.
+
+8. Quando surge uma receita compatível:
+   - a regularização pode ser aplicada;
+   - são criados eventos;
+   - são atualizadas quantidades;
+   - são criados alertas de regularização.
+```
+
+---
+
+## 7. Estrutura principal
 
 ```txt
 backend/
+├── docs/
+│   ├── API_ROUTES.md
+│   ├── ARCHITECTURE.md
+│   ├── BUSINESS_RULES.md
+│   ├── ENVIRONMENT.md
+│   ├── MAINTENANCE_JOBS.md
+│   ├── PRODUCTION_CHECKLIST.md
+│   └── TESTING.md
+│
 ├── prisma/
+│   ├── demo/
+│   │   ├── demo-dates.js
+│   │   ├── demo-dataset.js
+│   │   ├── demo-persist.js
+│   │   ├── demo-reset.js
+│   │   └── demo-verify.js
+│   ├── migrations/
 │   ├── schema.prisma
-│   └── seed.js
+│   ├── seed.js
+│   └── seed-demo.js
 │
 ├── scripts/
-│   └── manual/
-│       ├── test-current-api.js
-│       ├── test-higiene-job.js
-│       ├── test-purge-history-job.js
-│       └── test-receita-expiry-job.js
+│   ├── manual/
+│   │   ├── test-current-api.js
+│   │   ├── test-higiene-job.js
+│   │   ├── test-purge-history-job.js
+│   │   └── test-receita-expiry-job.js
+│   └── smoke/
+│       └── staging-auth-smoke.js
 │
 ├── src/
 │   ├── app/
 │   │   ├── app.js
 │   │   └── server.js
-│   │
 │   ├── config/
 │   │   ├── auth.config.js
 │   │   └── env.js
-│   │
 │   ├── db/
-│   │   └── prisma.js
-│   │
 │   ├── jobs/
-│   │   ├── higiene.job.js
-│   │   ├── index.js
-│   │   ├── purgeHistory.job.js
-│   │   └── receitaExpiry.job.js
-│   │
 │   ├── middlewares/
-│   │   ├── authMiddleware.js
-│   │   ├── errorHandler.js
-│   │   ├── loginRateLimit.js
-│   │   ├── notFoundHandler.js
-│   │   ├── originGuard.js
-│   │   └── requestId.js
-│   │
 │   ├── modules/
-│   │   ├── admin-users/
-│   │   ├── alertas/
-│   │   ├── auth/
-│   │   ├── extras/
-│   │   ├── farmacia/
-│   │   ├── manutencao/
-│   │   ├── medicacao-habitual/
-│   │   ├── pedidos/
-│   │   ├── receitas/
-│   │   ├── regularizacoes/
-│   │   ├── santa-casa/
-│   │   ├── sem-receita/
-│   │   └── utentes/
-│   │
 │   ├── routes/
-│   │   ├── admin.routes.js
-│   │   ├── auth.routes.js
-│   │   ├── farmacia.routes.js
-│   │   ├── index.js
-│   │   ├── manutencao.routes.js
-│   │   └── santacasa.routes.js
-│   │
 │   └── shared/
-│       ├── errors/
-│       │   └── AppError.js
-│       └── utils/
-│           ├── asyncHandler.js
-│           ├── date.js
-│           ├── http.js
-│           ├── normalize.js
-│           └── pagination.js
 │
 ├── tests/
 │   ├── e2e/
@@ -246,9 +283,9 @@ backend/
 │   ├── integration/
 │   └── unit/
 │
-├── docs/
-├── .env
 ├── .env.example
+├── .env.staging.example
+├── .env.production.example
 ├── .node-version
 ├── package.json
 ├── package-lock.json
@@ -258,48 +295,37 @@ backend/
 
 ---
 
-## 6. Documentação complementar
+## 8. Documentação
 
-A documentação técnica e funcional fica em:
+A documentação aprofundada encontra-se em:
 
 ```txt
 backend/docs/
 ```
 
-Ficheiros principais:
-
-```txt
-docs/
-├── API_ROUTES.md
-├── ARCHITECTURE.md
-├── BUSINESS_RULES.md
-├── ENVIRONMENT.md
-├── MAINTENANCE_JOBS.md
-├── PRODUCTION_CHECKLIST.md
-└── TESTING.md
-```
-
-| Documento             | Objetivo                                                    |
-| --------------------- | ----------------------------------------------------------- |
-| `API_ROUTES.md`       | Endpoints, payloads, respostas, permissões e contratos HTTP |
-| `ARCHITECTURE.md`     | Arquitetura interna do backend                              |
-| `BUSINESS_RULES.md`   | Regras funcionais do domínio                                |
-| `ENVIRONMENT.md`      | Variáveis de ambiente, `.env`, cookies, CORS e produção     |
-| `MAINTENANCE_JOBS.md` | Jobs automáticos, previews, runs e cuidados operacionais    |
-| `PRODUCTION_CHECKLIST.md` | Checklist de staging/produção, deploy, cookies e jobs   |
-| `TESTING.md`          | Estratégia, cobertura atual e comandos de testes            |
-
-O `README.md` é a porta de entrada. Os detalhes profundos devem ficar nos ficheiros acima.
+| Documento                 | Conteúdo                                    |
+| ------------------------- | ------------------------------------------- |
+| `API_ROUTES.md`           | Endpoints, permissões, payloads e respostas |
+| `ARCHITECTURE.md`         | Arquitetura interna                         |
+| `BUSINESS_RULES.md`       | Regras do domínio                           |
+| `ENVIRONMENT.md`          | Ambientes, variáveis, staging e produção    |
+| `MAINTENANCE_JOBS.md`     | Jobs, previews e execuções                  |
+| `PRODUCTION_CHECKLIST.md` | Checklist de staging e produção             |
+| `TESTING.md`              | Estratégia e comandos de testes             |
 
 ---
 
-## 7. Instalação local
+## 9. Requisitos locais
 
-### Requisito de runtime
+### Node.js
 
-O backend usa **Node.js 24 LTS**.
+O backend usa:
 
-A versão suportada está declarada em:
+```txt
+Node.js 24 LTS
+```
+
+Intervalo suportado:
 
 ```json
 "engines": {
@@ -307,292 +333,316 @@ A versão suportada está declarada em:
 }
 ```
 
-O ficheiro `backend/.node-version` contém:
-
-```txt
-24
-```
-
-Antes de instalar dependências, confirmar:
+Confirmar:
 
 ```bash
 node --version
 ```
 
-O resultado deve começar por:
+Resultado esperado:
 
 ```txt
-v24.
+v24.x.x
 ```
 
-### 7.1 Entrar na pasta do backend
+### PostgreSQL
+
+É necessário um PostgreSQL local ou remoto acessível através de:
+
+```env
+DATABASE_URL
+```
+
+---
+
+## 10. Instalação local
+
+### Entrar na pasta
 
 ```bash
 cd backend
 ```
 
-### 7.2 Instalar dependências
+### Instalar dependências
 
 ```bash
 npm install
 ```
 
-### 7.3 Criar `.env`
+### Criar o ambiente local
 
-Copiar o exemplo:
-
-```bash
-cp .env.example .env
-```
-
-No PowerShell:
+PowerShell:
 
 ```powershell
 Copy-Item .env.example .env
 ```
 
-Depois editar `.env` com os valores reais locais.
+Linux/macOS:
 
-### 7.4 Gerar Prisma Client
+```bash
+cp .env.example .env
+```
+
+Editar os valores no `.env`.
+
+### Gerar Prisma Client
 
 ```bash
 npm run prisma:generate
 ```
 
-Ou diretamente:
-
-```bash
-npx prisma generate
-```
-
-### 7.5 Aplicar migrations
+### Aplicar migrations em desenvolvimento
 
 ```bash
 npm run prisma:migrate
 ```
 
-Ou diretamente:
-
-```bash
-npx prisma migrate dev
-```
-
-### 7.6 Criar utilizadores iniciais
+### Executar seed local
 
 ```bash
 npm run prisma:seed
 ```
 
-Ou diretamente:
-
-```bash
-npx prisma db seed
-```
-
-### 7.7 Arrancar servidor
+### Arrancar
 
 ```bash
 npm run dev
 ```
 
----
-
-## 8. Variáveis de ambiente
-
-O backend usa `dotenv` e carrega variáveis a partir de:
+API local:
 
 ```txt
-.env
+http://localhost:3001/api
 ```
 
-Existe um ficheiro seguro de referência:
+---
+
+## 11. Variáveis de ambiente
+
+Templates disponíveis:
 
 ```txt
 .env.example
+.env.staging.example
+.env.production.example
 ```
 
-O `.env` real nunca deve ser versionado.
+### Desenvolvimento
 
-### Variáveis principais
-
-| Variável                 | Obrigatória | Descrição                                      |
-| ------------------------ | ----------: | ---------------------------------------------- |
-| `DATABASE_URL`           |         Sim | URL PostgreSQL usada pelo Prisma               |
-| `NODE_ENV`               |         Sim | Ambiente atual: `development`, `test`, `production` |
-| `PORT`                   |         Sim | Porta do servidor                              |
-| `TZ`                     |         Sim | Timezone dos jobs                              |
-| `JSON_LIMIT`             |         Sim | Limite de payload JSON                         |
-| `TRUST_PROXY`            |         Não | Configuração `trust proxy` do Express          |
-| `ALLOWED_ORIGINS`        |         Sim | Origins permitidas para CORS/origin guard      |
-| `AUTH_JWT_SECRET`        |         Sim | Segredo para assinar JWT                       |
-| `AUTH_COOKIE_NAME`       |         Sim | Nome do cookie de sessão                       |
-| `AUTH_TOKEN_EXPIRES_IN`  |         Sim | Duração do token                               |
-| `AUTH_COOKIE_MAX_AGE_MS` |         Sim | Duração do cookie em milissegundos             |
-| `AUTH_COOKIE_SECURE`     |         Sim | Define se o cookie exige HTTPS                 |
-| `AUTH_COOKIE_SAME_SITE`  |         Sim | Política SameSite do cookie                    |
-| `AUTH_LOGIN_RATE_LIMIT_WINDOW_MS` | Sim | Janela do rate limit de login                  |
-| `AUTH_LOGIN_RATE_LIMIT_MAX`       | Sim | Número máximo de tentativas falhadas           |
-### Variáveis de jobs
-
-| Variável                  | Descrição                                              |
-| ------------------------- | ------------------------------------------------------ |
-| `ENABLE_JOBS`             | Ativa/desativa globalmente o registo automático de jobs |
-| `ENABLE_HIGIENE`          | Ativa/desativa job automático de higiene               |
-| `ENABLE_PURGE_HISTORY`    | Ativa/desativa job automático de limpeza de histórico  |
-| `ENABLE_RECEITAS_EXPIRY`  | Ativa/desativa job automático de expiração de receitas |
-| `HIGIENE_OFFSET_MONTHS`   | Meses mínimos para higiene                             |
-| `HIGIENE_ANONYMIZE`       | Pede anonimização no job de higiene                    |
-| `ALLOW_HIGIENE_ANONYMIZE` | Confirmação adicional para permitir anonimização       |
-| `PURGE_OFFSET_MONTHS`     | Meses mínimos para purge histórico                     |
-| `CRON_MONTHLY_03H`        | Cron mensal                                            |
-| `CRON_DAILY_03H`          | Cron diário                                            |
-### Local development recomendado
-
-### Local development recomendado
-
-```env
-NODE_ENV=development
-PORT=3001
-TZ=Europe/Lisbon
-TRUST_PROXY=false
-AUTH_COOKIE_SECURE=false
-AUTH_COOKIE_SAME_SITE=lax
-ALLOWED_ORIGINS=http://localhost:5173,http://localhost:5174
-ENABLE_JOBS=true
+```txt
+backend/.env.example
 ```
 
-### Produção
+### Staging público
 
-Em produção, usar obrigatoriamente:
-
-```env
-NODE_ENV=production
-AUTH_COOKIE_SECURE=true
-ALLOWED_ORIGINS=https://dominio-real-do-frontend.pt
+```txt
+backend/.env.staging.example
 ```
 
-Se a API estiver atrás de um proxy/load balancer, definir normalmente:
+Inclui documentação para:
 
-```env
-TRUST_PROXY=1
+* Render;
+* contas demo;
+* seed demo;
+* cookies cross-site;
+* smoke test;
+* jobs desativados.
+
+### Produção futura
+
+```txt
+backend/.env.production.example
 ```
 
-Se `AUTH_COOKIE_SAME_SITE=none`, então `AUTH_COOKIE_SECURE` também tem de ser `true`.
+Não inclui:
+
+* contas demo;
+* passwords demo;
+* confirmação do seed demo;
+* variáveis do smoke test de staging.
+
+Documentação completa:
+
+```txt
+docs/ENVIRONMENT.md
+```
 
 ---
 
-## 9. Base de dados e Prisma
+## 12. Segurança de ambiente
 
-O backend usa Prisma com PostgreSQL.
+O backend bloqueia o arranque quando encontra configurações inseguras.
 
-### Comandos úteis
+### Base em falta
 
-Gerar Prisma Client:
+```txt
+[env] DATABASE_URL em falta.
+```
+
+### Base local em produção
+
+```txt
+[env] DATABASE_URL não pode apontar para localhost/127.0.0.1 em produção.
+```
+
+### JWT ausente
+
+```txt
+[env] AUTH_JWT_SECRET em falta.
+```
+
+### JWT curto
+
+```txt
+[env] AUTH_JWT_SECRET deve ter pelo menos 32 caracteres em produção.
+```
+
+### Cookie inseguro
+
+```txt
+[env] AUTH_COOKIE_SECURE deve ser true em produção.
+```
+
+### SameSite inválido
+
+```txt
+[env] AUTH_COOKIE_SAME_SITE=none exige AUTH_COOKIE_SECURE=true.
+```
+
+### CORS ausente ou inseguro
+
+```txt
+[env] ALLOWED_ORIGINS é obrigatório em produção.
+[env] ALLOWED_ORIGINS não pode estar vazio em produção.
+[env] ALLOWED_ORIGINS não pode conter '*' em produção.
+[env] ALLOWED_ORIGINS não pode conter localhost/127.0.0.1 em produção.
+```
+
+---
+
+## 13. Prisma
+
+### Gerar cliente
 
 ```bash
 npm run prisma:generate
 ```
 
-Criar/aplicar migration em desenvolvimento:
+### Desenvolvimento
 
 ```bash
 npm run prisma:migrate
 ```
 
-Abrir Prisma Studio:
+### Staging e produção
+
+```bash
+npm run prisma:migrate:deploy
+```
+
+### Prisma Studio
 
 ```bash
 npm run prisma:studio
 ```
 
-Executar seed:
+Nunca usar em staging ou produção:
 
 ```bash
-npm run prisma:seed
-```
-
-### Nota sobre testes
-
-Atualmente os testes usam a `DATABASE_URL` configurada no `.env`.
-
-Recomendação futura:
-
-```txt
-usar .env.test com base dedicada para testes
-```
-
-Exemplo:
-
-```env
-NODE_ENV=test
-DATABASE_URL="postgresql://postgres:postgres@localhost:5432/farmacia_santacasa_test?schema=public"
-ENABLE_HIGIENE=false
-ENABLE_PURGE_HISTORY=false
-ENABLE_RECEITAS_EXPIRY=false
+prisma migrate dev
 ```
 
 ---
 
-## 10. Seed inicial
+## 14. Seed inicial
 
-O seed é executado por:
+Comando:
 
 ```bash
 npm run prisma:seed
 ```
 
-ou diretamente:
+### Development e test
 
-```bash
-npx prisma db seed
-```
+Pode criar:
 
-### Desenvolvimento e testes
+* `ADMIN`;
+* `SANTACASA`;
+* `FARMACIA`.
 
-Em `development` e `test`, o seed cria/atualiza três utilizadores:
+### Production
 
-| Role        | Email padrão              |
-| ----------- | ------------------------- |
-| `ADMIN`     | `admin@sistema.local`     |
-| `SANTACASA` | `santacasa@sistema.local` |
-| `FARMACIA`  | `farmacia@sistema.local`  |
-
-As passwords vêm das variáveis:
+Por defeito:
 
 ```env
-SEED_ADMIN_PASSWORD
-SEED_SANTACASA_PASSWORD
-SEED_FARMACIA_PASSWORD
+ALLOW_PRODUCTION_SEED=false
 ```
 
-### Produção
+Quando autorizado temporariamente, cria apenas o `ADMIN` inicial.
 
-Em `production`, o seed é bloqueado por defeito.
+Não cria:
 
-Só pode correr se:
+* Santa Casa;
+* Farmácia;
+* dados demo.
+
+Depois do setup:
 
 ```env
-ALLOW_PRODUCTION_SEED=true
-SEED_ADMIN_EMAIL="admin@dominio.pt"
-SEED_ADMIN_PASSWORD="password forte com pelo menos 10 caracteres"
+ALLOW_PRODUCTION_SEED=false
 ```
 
-Em produção, o seed:
-
-* cria apenas o `ADMIN` inicial;
-* não cria utilizadores `SANTACASA` ou `FARMACIA`;
-* não aceita passwords padrão;
-* não redefine password de admin já existente;
-* não altera role, nome ou estado de admin já existente.
-
-Depois do `ADMIN` inicial, as contas Santa Casa e Farmácia devem ser criadas pela UI:
+As restantes contas devem ser criadas através de:
 
 ```txt
 Sistema > Utilizadores
 ```
-## 11. Scripts NPM
 
-## 11. Scripts NPM
+---
+
+## 15. Seed demo
+
+Comando:
+
+```bash
+npm run prisma:seed:demo
+```
+
+Proteção obrigatória:
+
+```env
+ALLOW_DEMO_SEED=true
+DEMO_SEED_CONFIRMATION=PORTFOLIO_DEMO
+```
+
+O seed demo:
+
+* cria ou atualiza as três contas demo;
+* sincroniza passwords;
+* repõe dados fictícios;
+* é transacional;
+* valida o resultado final;
+* pode ser executado novamente;
+* não deve ser usado em produção real.
+
+Durante operação normal:
+
+```env
+ALLOW_DEMO_SEED=false
+DEMO_SEED_CONFIRMATION=""
+```
+
+O seed nunca deve ficar permanentemente no Build Command.
+
+Documentação:
+
+```txt
+docs/ENVIRONMENT.md
+```
+
+---
+
+## 16. Scripts NPM
 
 ### Desenvolvimento
 
@@ -609,9 +659,10 @@ npm run prisma:migrate
 npm run prisma:migrate:deploy
 npm run prisma:studio
 npm run prisma:seed
+npm run prisma:seed:demo
 ```
 
-### Testes automatizados
+### Testes
 
 ```bash
 npm test
@@ -620,14 +671,14 @@ npm run test:unit
 npm run test:integration
 npm run test:e2e
 npm run test:all
+npm run test:coverage
 npm run validate
 ```
 
-Validação recomendada sem watch:
+### Staging
 
 ```bash
-npm run test:all
-npm run validate
+npm run test:staging:auth
 ```
 
 ### Scripts manuais
@@ -648,152 +699,53 @@ npm run job:higiene
 npm run job:purge-history
 ```
 
----
-
-## 12. Como arrancar o backend
-
-### Desenvolvimento
+### Segurança
 
 ```bash
-npm run dev
+npm run audit
 ```
-
-Por defeito, o backend fica em:
-
-```txt
-http://localhost:3001
-```
-
-A API fica em:
-
-```txt
-http://localhost:3001/api
-```
-
-### Produção
-
-```bash
-npm start
-```
-
-Configuração recomendada no Render para o backend:
-
-```txt
-Root Directory: backend
-Build Command: npm ci && npm run prisma:migrate:deploy
-Start Command: npm start
-Auto-Deploy: On Commit
-Included Path: backend/**
-```
-
-Variável de runtime da plataforma:
-
-```env
-NODE_VERSION=24
-```
-
-### Health checks
-
-```txt
-GET /api/health/live
-GET /api/health/ready
-GET /api/health
-```
-
-Acesso:
-
-```txt
-/api/health/live   público
-/api/health/ready  público
-/api/health        ADMIN
-```
-
-Uso recomendado:
-
-* `/api/health/live` para confirmar processo Node ativo;
-* `/api/health/ready` para confirmar API pronta e base de dados acessível;
-* `/api/health` para health administrativo autenticado.
 
 ---
 
-## 13. Autenticação e autorização
+## 17. Testes
 
-A autenticação usa:
-
-* login com email/password;
-* JWT assinado;
-* cookie HTTP-only;
-* middleware `requireAuth`;
-* middleware `requireRole`.
-
-### Rotas de auth
+Estrutura:
 
 ```txt
-POST /api/auth/login
-POST /api/auth/logout
-GET  /api/auth/me
+tests/
+├── unit/
+├── integration/
+└── e2e/
 ```
 
-### Roles
+### Unitários
 
-| Role        | Acesso                                   |
-| ----------- | ---------------------------------------- |
-| `ADMIN`     | Admin, manutenção, Santa Casa e Farmácia |
-| `SANTACASA` | Contexto Santa Casa                      |
-| `FARMACIA`  | Contexto Farmácia                        |
+Cobrem:
 
-### Proteção principal
+* validators;
+* mappers;
+* utils;
+* normalização;
+* paginação;
+* datas;
+* quantidades;
+* DTOs.
 
-A API está organizada por contexto:
+### Integração
 
-```txt
-/api/auth
-/api/santacasa
-/api/farmacia
-/api/admin
-/api/manutencao
-/api/health
-```
+Cobrem os jobs com Prisma e PostgreSQL:
 
-### Matriz resumida
+* receita expiry;
+* higiene;
+* purge de histórico.
 
-| Contexto          | Roles                                       |
-| ----------------- | ------------------------------------------- |
-| `/api/auth`       | Público em login/logout; `/me` exige sessão |
-| `/api/santacasa`  | `SANTACASA`, `ADMIN`                        |
-| `/api/farmacia`   | `FARMACIA`, `ADMIN`                         |
-| `/api/admin`      | `ADMIN`                                     |
-| `/api/manutencao`   | `ADMIN`                                   |
-| `/api/health/live`  | Público                                   |
-| `/api/health/ready` | Público                                   |
-| `/api/health`       | `ADMIN`                                  |
+### E2E
 
----
+Cobrem:
 
-## 14. Contextos principais da API
-
-### Auth
-
-```txt
-/api/auth
-```
-
-Responsável por:
-
-* login;
-* logout;
-* utilizador atual.
-
-### Santa Casa
-
-```txt
-/api/santacasa
-```
-
-Responsável por:
-
-* health;
-* dashboard/sinais;
+* autenticação;
+* roles;
+* utilizadores;
 * utentes;
 * medicação habitual;
 * receitas;
@@ -801,206 +753,186 @@ Responsável por:
 * Vendas Suspensas;
 * pedidos;
 * histórico;
-* regularizações.
+* regularizações;
+* alertas;
+* manutenção;
+* health checks;
+* security headers;
+* request ID;
+* rate limit.
 
-### Farmácia
-
-```txt
-/api/farmacia
-```
-
-Responsável por:
-
-* health;
-* dashboard/sinais;
-* alertas operacionais;
-* listar pedidos;
-* consultar detalhe de pedido;
-* validar pedidos;
-* rejeitar pedidos;
-* consultar histórico;
-* consultar regularizações.
-
-### Admin
-
-```txt
-/api/admin
-```
-
-Responsável por gestão de utilizadores.
-
-### Manutenção
-
-```txt
-/api/manutencao
-```
-
-Responsável por:
-
-* listar jobs;
-* fazer preview de jobs;
-* executar jobs manualmente.
-
----
-
-## 15. Modelo funcional resumido
-
-### Utente
-
-Pessoa associada à Santa Casa.
-
-Estados principais:
-
-```txt
-ATIVO
-ARQUIVADO
-```
-
-Também pode ficar removido logicamente através de `deletedAt`.
-
-### Medicação habitual
-
-Lista simples de medicamentos normalmente usados pelo utente.
-
-Não representa stock, receita, pedido nem dispensa.
-
-### Receita
-
-Documento com:
-
-* `numero19`;
-* `pinAcesso6`;
-* `pinOpcao4`;
-* linhas de medicamento.
-
-### Linha de receita
-
-Representa um medicamento numa receita.
-
-Estados:
-
-```txt
-ATIVA
-EXPIRADA
-```
-
-### Medicamento não sujeito a receita médica
-
-Medicamento disponível sem receita.
-
-Internamente, o modelo técnico chama-se `SemReceita`.
-
-### Venda Suspensa
-
-Medicamento que o utente precisa, mas ainda sem receita disponível.
-
-Internamente, o modelo técnico chama-se `Extra`.
-
-### Pedido
-
-Pedido enviado pela Santa Casa à Farmácia.
-
-Estados principais:
-
-```txt
-PENDENTE
-VALIDADO
-REJEITADO
-CANCELADO
-```
-
-### Item de pedido
-
-Pode ser:
-
-```txt
-COM_RECEITA
-SEM_RECEITA
-EXTRA
-```
-
-Estados:
-
-```txt
-PENDENTE
-VALIDADO
-REJEITADO
-CANCELADO
-CANCELADO_POR_EXPIRACAO
-```
-
-### Regularização
-
-Registo criado quando uma Venda Suspensa validada precisa de ser regularizada posteriormente com receita.
-
-Estados:
-
-```txt
-PENDENTE
-PARCIALMENTE_REGULARIZADO
-REGULARIZADO
-```
-
-### Alerta operacional
-
-Notificação operacional destinada à Farmácia.
-
-Tipos atuais:
-
-```txt
-PEDIDO_ENVIADO
-REGULARIZACAO_PARCIAL
-REGULARIZACAO_TOTAL
-```
-
----
-
-## 16. Fluxo principal da aplicação
-
-Fluxo funcional típico:
-
-```txt
-1. Santa Casa cria utente.
-2. Santa Casa pode registar medicação habitual.
-3. Santa Casa regista receita, medicamento não sujeito a receita médica ou Venda Suspensa.
-4. Santa Casa cria pedido.
-5. O backend cria alerta PEDIDO_ENVIADO para a Farmácia.
-6. Farmácia consulta pedidos pendentes.
-7. Farmácia valida ou rejeita pedido.
-8. Se validar:
-   - receita é dispensada;
-   - medicamento não sujeito a receita médica é debitado;
-   - Venda Suspensa gera regularização.
-9. Se nova receita cobrir regularização pendente:
-   - regularização é aplicada automaticamente;
-   - evento de regularização é criado;
-   - quantidade dispensada é atualizada;
-   - alerta REGULARIZACAO_PARCIAL ou REGULARIZACAO_TOTAL é criado.
-```
-
----
-
-## 17. Jobs de manutenção
-
-Existem três jobs principais:
-
-| Job              | Objetivo                                                           | Frequência padrão |
-| ---------------- | ------------------------------------------------------------------ | ----------------- |
-| `receita-expiry` | Expira linhas de receita vencidas e cancela itens/pedidos afetados | diária            |
-| `higiene`        | Trata utentes removidos antigos                                    | mensal            |
-| `purge-history`  | Remove histórico antigo fechado                                    | mensal            |
-
-### Comandos diretos
+### Comandos finais
 
 ```bash
-npm run job:receita-expiry
-npm run job:higiene
-npm run job:purge-history
+npm run test:all
+npm run test:coverage
+npm run validate
 ```
 
-### Rotas de manutenção
+Estado atual:
 
-Apenas `ADMIN`:
+```txt
+Unit tests        passam
+Integration tests passam
+E2E tests         passam
+Coverage          configurado
+Audit             passa
+CI                passa
+```
+
+Os testes não garantem cobertura matemática de 100%.
+
+Cobrem a matriz crítica do projeto.
+
+---
+
+## 18. Smoke test remoto
+
+Ficheiro:
+
+```txt
+scripts/smoke/staging-auth-smoke.js
+```
+
+Comando:
+
+```bash
+npm run test:staging:auth
+```
+
+É um teste read-only.
+
+Valida:
+
+* health live;
+* health ready;
+* CORS;
+* preflight;
+* security headers;
+* request ID;
+* login das três roles;
+* `/auth/me`;
+* permissões;
+* bloqueios cruzados;
+* logout;
+* origem não autorizada;
+* cookies seguros.
+
+Não cria nem altera dados operacionais.
+
+Confirmação obrigatória:
+
+```env
+STAGING_SMOKE_CONFIRMATION=STAGING_READ_ONLY
+```
+
+Resultado esperado:
+
+```txt
+STAGING AUTH SMOKE PASSOU
+```
+
+---
+
+## 19. Health checks
+
+### Liveness
+
+```txt
+GET /api/health/live
+```
+
+Público.
+
+Confirma que o processo está ativo.
+
+### Readiness
+
+```txt
+GET /api/health/ready
+```
+
+Público.
+
+Confirma API e PostgreSQL.
+
+### Administrativo
+
+```txt
+GET /api/health
+```
+
+Requer `ADMIN`.
+
+---
+
+## 20. Segurança HTTP
+
+A API usa:
+
+* Helmet;
+* cookie HTTP-only;
+* cookie Secure em produção;
+* SameSite configurável;
+* CORS restrito;
+* origin guard;
+* request ID;
+* rate limit de login;
+* erros sem stack em produção;
+* graceful shutdown.
+
+O header:
+
+```txt
+X-Powered-By
+```
+
+está desativado.
+
+Todas as respostas devem incluir:
+
+```txt
+X-Request-Id
+```
+
+---
+
+## 21. Jobs
+
+Jobs existentes:
+
+| Job              | Objetivo                         |
+| ---------------- | -------------------------------- |
+| `receita-expiry` | Expirar linhas de receita        |
+| `higiene`        | Tratar utentes removidos antigos |
+| `purge-history`  | Remover histórico fechado        |
+
+Configuração conservadora:
+
+```env
+ENABLE_JOBS=false
+ENABLE_RECEITAS_EXPIRY=false
+ENABLE_HIGIENE=false
+ENABLE_PURGE_HISTORY=false
+```
+
+Em produção, `ENABLE_JOBS` fica `false` por defeito quando não é definido.
+
+Para uma utilização real, preferir:
+
+* worker único;
+* scheduler externo;
+* monitorização;
+* backups;
+* logs persistentes.
+
+---
+
+## 22. Manutenção
+
+Apenas `ADMIN`.
+
+Rotas:
 
 ```txt
 GET  /api/manutencao/jobs
@@ -1015,693 +947,272 @@ GET  /api/manutencao/jobs/purge-history/preview
 POST /api/manutencao/jobs/purge-history/run
 ```
 
-Os endpoints `run` alteram dados reais e exigem confirmação forte no body:
+Confirmações:
 
 ```json
-{ "confirm": "RUN_RECEITA_EXPIRY" }
-```
-
-```json
-{ "confirm": "RUN_HIGIENE", "offsetMonths": 12, "anonymize": false }
+{
+  "confirm": "RUN_RECEITA_EXPIRY"
+}
 ```
 
 ```json
-{ "confirm": "RUN_PURGE_HISTORY", "backupConfirmed": true, "offsetMonths": 6 }
+{
+  "confirm": "RUN_HIGIENE",
+  "offsetMonths": 12,
+  "anonymize": false
+}
 ```
 
-### Regra importante de validade
+```json
+{
+  "confirm": "RUN_PURGE_HISTORY",
+  "backupConfirmed": true,
+  "offsetMonths": 6
+}
+```
+
+O purge é destrutivo.
+
+Não deve ser executado sem backup e restore testado.
+
+---
+
+## 23. Render
+
+### Backend
+
+Configuração validada:
 
 ```txt
-Receita com validade igual ao dia atual continua válida nesse dia.
-Só validade anterior ao dia atual deve expirar.
+Root Directory: backend
+Build Command: npm ci && npm run prisma:migrate:deploy
+Start Command: npm start
+Auto-Deploy: On Commit
+Included Paths: backend/**
+```
+
+Runtime:
+
+```env
+NODE_VERSION=24
+```
+
+O Build Command normal não contém:
+
+```txt
+prisma:seed
+prisma:seed:demo
+```
+
+### Logs esperados
+
+```txt
+[server] listening on port <PORT> (production)
+[jobs] todos os jobs DESATIVADOS por ENABLE_JOBS=false
 ```
 
 ---
 
-## 18. Alertas operacionais
+## 24. GitHub Actions
 
-Os alertas operacionais notificam a Farmácia sobre eventos importantes.
-
-Tipos atuais:
-
-| Tipo                    | Quando é criado                                             |
-| ----------------------- | ----------------------------------------------------------- |
-| `PEDIDO_ENVIADO`        | Quando a Santa Casa cria um pedido                          |
-| `REGULARIZACAO_PARCIAL` | Quando uma receita regulariza parte de uma Venda Suspensa   |
-| `REGULARIZACAO_TOTAL`   | Quando uma receita regulariza totalmente uma Venda Suspensa |
-
-Rotas principais:
+Workflow:
 
 ```txt
-GET  /api/farmacia/alertas
-POST /api/farmacia/alertas/:alertaId/dismiss
-POST /api/farmacia/alertas/dismiss-all
+.github/workflows/backend-ci.yml
 ```
 
-Acesso:
+Executa:
 
-```txt
-FARMACIA
-ADMIN
-```
+1. PostgreSQL service;
+2. Node.js 24;
+3. `npm ci`;
+4. Prisma Client;
+5. migrations;
+6. testes unitários;
+7. testes de integração;
+8. seed E2E;
+9. testes E2E;
+10. seed coverage;
+11. coverage;
+12. audit.
 
-Fechar alertas não altera pedidos, receitas, Vendas Suspensas ou regularizações.
+Os jobs ficam desativados no CI.
 
 ---
 
-## 19. Testes
+## 25. Staging validado
 
-### 19.1 Estado atual
+Foram validados:
 
-Existem testes automatizados organizados em:
+### Autenticação
 
-```txt
-tests/
-├── unit/
-├── integration/
-└── e2e/
-```
+* login `ADMIN`;
+* login `SANTACASA`;
+* login `FARMACIA`;
+* `/auth/me`;
+* sessão após refresh;
+* logout;
+* cookies;
+* CORS;
+* permissões.
 
-A suite está fechada por agora.
+### Santa Casa
 
-Comandos finais:
-
-```bash
-npm run test:unit -- --run
-npm run test:integration -- --run
-npm run test:e2e -- --run
-npm run test:all
-npm run validate
-```
-
----
-
-### 19.2 Unit tests
-
-Cobrem:
-
-* validators;
-* mappers;
-* utils.
-
-Pastas:
-
-```txt
-tests/unit/validators/
-tests/unit/mappers/
-tests/unit/utils/
-```
-
-Cobertura principal:
-
-* validação de payloads;
-* validação de query params;
-* normalização;
-* paginação;
-* datas;
-* DTOs;
-* cálculo de quantidades restantes;
-* campos de auditoria;
-* relações opcionais.
-
----
-
-### 19.3 Integration tests
-
-Cobrem jobs com Prisma/base de dados:
-
-```txt
-tests/integration/jobs/
-├── receitaExpiry.job.test.js
-├── higiene.job.test.js
-└── purgeHistory.job.test.js
-```
-
-Cobrem:
-
-* preview;
-* run;
-* efeitos reais;
-* idempotência;
-* validade de receita no dia atual;
-* purge de histórico;
-* higiene de utentes removidos.
-
----
-
-### 19.4 E2E tests
-
-Cobrem API Express com Supertest:
-
-```txt
-tests/e2e/
-├── adminUsers.e2e.test.js
-├── alertas.e2e.test.js
-├── auth.e2e.test.js
-├── extras.e2e.test.js
-├── farmacia.e2e.test.js
-├── farmaciaPedidos.e2e.test.js
-├── health.e2e.test.js
-├── loginRateLimit.e2e.test.js
-├── requestId.e2e.test.js
-├── securityHeaders.e2e.test.js
-├── manutencao.e2e.test.js
-├── medicacaoHabitual.e2e.test.js
-├── pedidos.e2e.test.js
-├── receitas.e2e.test.js
-├── regularizacoes.e2e.test.js
-├── santacasa.e2e.test.js
-├── semReceita.e2e.test.js
-└── utentes.e2e.test.js
-```
-
-Cobrem:
-
-* autenticação;
-* permissões;
-* utilizadores admin;
-* utentes;
-* medicação habitual;
-* receitas;
-* medicamentos não sujeitos a receita médica;
+* Home;
+* Dashboard;
+* Utentes;
+* Operação;
+* Medicação habitual;
+* Receitas;
+* Medicamentos não sujeitos a receita médica;
 * Vendas Suspensas;
-* pedidos Santa Casa;
-* pedidos Farmácia;
+* Pedidos;
+* Histórico;
+* Regularizações.
+
+### Farmácia
+
+* Home;
+* Dashboard;
+* Pedidos;
+* Validação;
+* Rejeição;
+* Histórico;
+* Regularizações;
+* Alertas.
+
+### Sistema
+
+* Utilizadores;
+* Health;
+* Manutenção;
+* Permissões.
+
+### Ponta a ponta
+
+* criação operacional;
+* envio de pedido;
+* tratamento pela Farmácia;
+* regularização;
 * histórico;
-* regularizações;
-* alertas;
-* manutenção;
-* jobs via endpoints administrativos;
-* health checks de produção;
-* security headers HTTP;
-* header `X-Request-Id`.
+* persistência;
+* reposição final do dataset demo.
 
 ---
 
-### 19.5 Limite da cobertura atual
+## 26. Preparação para produção
 
-Os testes atuais não garantem 100% de cobertura matemática.
+O projeto está tecnicamente preparado, mas a produção ainda requer:
 
-Mas cobrem a matriz crítica atual:
+* PostgreSQL exclusivo;
+* backups;
+* restore testado;
+* domínios finais;
+* HTTPS;
+* secrets exclusivos;
+* utilizadores reais;
+* política de jobs;
+* monitorização;
+* logs persistentes;
+* plano de rollback;
+* validação pós-deploy.
+
+Checklist:
 
 ```txt
-auth
-roles
-utentes
-medicação habitual
-receitas
-sem receita
-Vendas Suspensas
-pedidos
-Farmácia
-regularizações
-alertas
-jobs
-admin users
+docs/PRODUCTION_CHECKLIST.md
 ```
 
-Novos testes devem ser adicionados quando houver:
-
-* bug real;
-* regra nova;
-* endpoint novo;
-* alteração de payload;
-* alteração de permissões;
-* refatoração com risco.
-
----
-
-## 20. Scripts manuais
-
-Os scripts em `scripts/manual/` foram mantidos como smoke tests/manuais.
-
-Eles são úteis, mas não substituem os testes automatizados.
-
-```bash
-npm run test:manual
-```
-
-Atenção:
-
-* `test:api` precisa do servidor ligado com `npm run dev`;
-* os scripts dos jobs criam dados reais;
-* não devem ser executados contra produção;
-* usar Vitest como fonte principal de validação automatizada.
-
----
-
-## 21. Segurança
-
-### Não versionar
-
-Nunca versionar:
+Template:
 
 ```txt
-.env
-.env.local
-.env.*.local
+.env.production.example
 ```
 
-Exceto:
+A produção real nunca deve conter:
 
 ```txt
-.env.example
-```
-
-### Confirmar `.gitignore`
-
-```bash
-git check-ignore backend/.env
-```
-
-Deve devolver:
-
-```txt
-backend/.env
-```
-
-### Segredos
-
-Nunca expor:
-
-* `DATABASE_URL` real;
-* passwords reais;
-* `AUTH_JWT_SECRET`;
-* credenciais de produção;
-* dumps da base de dados.
-
-### Produção
-
-Em produção:
-
-```env
-NODE_ENV=production
-AUTH_COOKIE_SECURE=true
-```
-
-Se frontend e backend estiverem em domínios diferentes:
-
-```env
-AUTH_COOKIE_SAME_SITE=none
-AUTH_COOKIE_SECURE=true
-```
-
-`AUTH_JWT_SECRET` deve ser longo, aleatório e privado.
-
-### Segurança HTTP e request ID
-
-A API aplica headers de segurança através de `helmet`.
-
-Todas as respostas incluem:
-
-```txt
-X-Request-Id
-```
-
-Regras:
-
-* se o cliente enviar `X-Request-Id` válido, o backend preserva esse valor;
-* se não enviar, o backend gera um identificador;
-* o header é exposto em CORS através de `Access-Control-Expose-Headers`;
-* os logs de erro incluem `requestId` para facilitar diagnóstico em produção.
-
-### CORS e cookies
-
-O frontend deve enviar cookies com credenciais:
-
-```js
-fetch(url, {
-  credentials: "include",
-});
-```
-
-Com Axios:
-
-```js
-axios.create({
-  withCredentials: true,
-});
+DEMO_*
+ALLOW_DEMO_SEED
+DEMO_SEED_CONFIRMATION
+STAGING_*
 ```
 
 ---
 
-## 22. Convenções de desenvolvimento
+## 27. Limitações atuais
 
-### Arquitetura por módulo
+Limitações conscientes:
 
-Cada módulo segue a lógica:
+* coverage sem threshold obrigatório;
+* rate limit em memória;
+* jobs integrados no processo da API;
+* sem Redis;
+* sem logs estruturados persistentes;
+* sem `.env.test` dedicado obrigatório;
+* produção real ainda não criada;
+* backups e restore não testados numa infraestrutura real;
+* alguns formatos antigos de resposta ainda coexistem.
 
-```txt
-routes -> controller -> service -> repository
-```
+Estes pontos não bloqueiam o ambiente de portefólio.
 
-Exemplo:
-
-```txt
-src/modules/pedidos/
-├── pedidos.controller.js
-├── pedidos.mappers.js
-├── pedidos.repository.js
-├── pedidos.routes.js
-├── pedidos.service.js
-└── pedidos.validators.js
-```
-
-### Responsabilidades
-
-| Camada       | Responsabilidade                        |
-| ------------ | --------------------------------------- |
-| `routes`     | Define endpoints                        |
-| `controller` | Lê request e responde                   |
-| `service`    | Aplica regras de negócio                |
-| `repository` | Acede à base de dados                   |
-| `validators` | Valida payload/query                    |
-| `mappers`    | Converte dados para DTO                 |
-| `guards`     | Reutiliza regras de proteção de domínio |
-
-### Regra importante
-
-Não colocar regras de negócio diretamente em controllers.
-
-Controllers devem ser finos.
-
-### Transações
-
-Usar transação quando uma operação altera múltiplas entidades relacionadas.
-
-Exemplos:
-
-* criar pedido;
-* validar pedido;
-* rejeitar pedido;
-* cancelar pedido;
-* criar receita com regularizações;
-* expirar receitas;
-* purge de histórico.
-
-### Linguagem funcional
-
-No código técnico pode existir:
-
-```txt
-Extra
-SemReceita
-```
-
-Na UI e documentação funcional usar:
-
-```txt
-Venda Suspensa
-Medicamento não sujeito a receita médica
-```
+Devem ser revistos antes de uma utilização real com escala.
 
 ---
 
-## 23. Troubleshooting
-
-### Erro: `DATABASE_URL em falta`
-
-Verificar se existe `.env` e se tem:
-
-```env
-DATABASE_URL="..."
-```
-
----
-
-### Erro: `AUTH_JWT_SECRET em falta`
-
-Adicionar:
-
-```env
-AUTH_JWT_SECRET="..."
-```
-
----
-
-### Erro: `AUTH_JWT_SECRET deve ter pelo menos 32 caracteres em produção`
-
-Usar segredo longo:
-
-```env
-AUTH_JWT_SECRET="use-um-segredo-real-com-mais-de-32-caracteres"
-```
-
----
-
-### Erro: login devolve `401`
-
-Possíveis causas:
-
-* seed não correu;
-* email/password errados;
-* utilizador está inativo;
-* base de dados errada;
-* cookie não está a ser enviado pelo cliente;
-* token expirou;
-* `AUTH_JWT_SECRET` mudou.
-
----
-
-### Erro: CORS/origin
-
-Confirmar:
-
-```env
-ALLOWED_ORIGINS=http://localhost:5173,http://localhost:5174
-```
-
-E confirmar a porta real do frontend.
-
----
-
-### Erro: cookie não é guardado no browser
-
-Em local:
-
-```env
-AUTH_COOKIE_SECURE=false
-AUTH_COOKIE_SAME_SITE=lax
-```
-
-Em produção com HTTPS cross-site:
-
-```env
-AUTH_COOKIE_SECURE=true
-AUTH_COOKIE_SAME_SITE=none
-```
-
----
-
-### Erro de runtime Node incompatível
-
-Usar Node.js 24 LTS:
-
-```bash
-node --version
-```
-
-O resultado deve começar por `v24.`. O projeto bloqueia versões fora do intervalo `>=24.0.0 <25.0.0`.
-
----
-
-### `npm test` fica em watch
-
-Usar:
-
-```bash
-npm test -- --run
-```
-
-Ou comandos específicos:
-
-```bash
-npm run test:unit -- --run
-```
-
----
-
-### `test:api` devolve `fetch failed`
-
-O backend provavelmente não está ligado.
-
-Ligar o servidor:
-
-```bash
-npm run dev
-```
-
-Noutro terminal:
-
-```bash
-npm run test:api
-```
-
----
-
-### Testes E2E falham por login
-
-Confirmar:
-
-```bash
-npm run prisma:seed
-```
-
-Confirmar variáveis:
-
-```env
-SEED_ADMIN_EMAIL
-SEED_ADMIN_PASSWORD
-SEED_SANTACASA_EMAIL
-SEED_SANTACASA_PASSWORD
-SEED_FARMACIA_EMAIL
-SEED_FARMACIA_PASSWORD
-```
-
----
-
-### Jobs alteram dados durante testes
-
-Para ambiente de teste, considerar:
-
-```env
-ENABLE_HIGIENE=false
-ENABLE_PURGE_HISTORY=false
-ENABLE_RECEITAS_EXPIRY=false
-```
-
----
-
-## 24. Checklist antes de commit
-
-Antes de fazer commit:
+## 28. Checklist antes de commit
 
 ```bash
 git status
+git diff --check
+```
+
+Backend:
+
+```bash
+npm run test:all
+npm run test:coverage
+npm run audit
+```
+
+Frontend:
+
+```bash
+npm run lint
+npm run build
 ```
 
 Confirmar:
 
-* [ ] `.env` não aparece no Git.
-* [ ] `.env.example` aparece.
-* [ ] `docs/` atualizado.
-* [ ] `tests/` atualizado, se aplicável.
-* [ ] `scripts/` atualizado, se aplicável.
-* [ ] `node --version` apresenta `v24.x`.
-* [ ] `.node-version` contém `24`.
-* [ ] `package.json` coerente.
-* [ ] `package-lock.json` sincronizado com `package.json`.
-* [ ] `npm run test:all` passou.
-* [ ] `npm run validate` passou.
-
-Commit recomendado para esta fase:
-
-```bash
-git add .
-git commit -m "docs: update backend documentation after test stabilization"
-```
+* `.env` real não aparece;
+* passwords não aparecem;
+* templates aparecem;
+* package lock está sincronizado;
+* working tree contém apenas alterações esperadas.
 
 ---
 
-## 25. Checklist antes de deploy
-
-Antes de deploy:
-
-* [ ] Confirmar Node.js 24 LTS.
-* [ ] Confirmar `NODE_VERSION=24` na plataforma de deploy.
-* [ ] Confirmar GitHub Actions com `node-version: "24.x"`.
-* [ ] Definir `NODE_ENV=production`.
-* [ ] Definir `DATABASE_URL` de produção.
-* [ ] Usar `AUTH_JWT_SECRET` forte.
-* [ ] Definir `AUTH_COOKIE_SECURE=true`.
-* [ ] Confirmar `AUTH_COOKIE_SAME_SITE`.
-* [ ] Confirmar `ALLOWED_ORIGINS`.
-* [ ] Confirmar `TRUST_PROXY` conforme a infraestrutura.
-* [ ] Confirmar security headers com `helmet`.
-* [ ] Confirmar `X-Request-Id` nas respostas.
-* [ ] Confirmar graceful shutdown em logs de arranque/paragem.
-* [ ] Confirmar se jobs devem estar ativos.
-* [ ] Confirmar `PURGE_OFFSET_MONTHS`.
-* [ ] Confirmar `HIGIENE_OFFSET_MONTHS`.
-* [ ] Confirmar `HIGIENE_ANONYMIZE=false`, salvo decisão explícita.
-* [ ] Confirmar `ALLOW_HIGIENE_ANONYMIZE=false`, salvo decisão explícita.
-* [ ] Confirmar backups.
-* [ ] Correr migrations.
-* [ ] Correr seed apenas se fizer sentido.
-* [ ] Testar login.
-* [ ] Testar CORS/cookies com o frontend real.
-* [ ] Correr `npm run validate`.
-
----
-
-## 26. Limites atuais
-
-O backend está estável para esta fase, mas existem limites conscientes:
-
-* testes não usam ainda base isolada `.env.test`;
-* coverage está configurado, mas ainda sem threshold obrigatório;
-* rate limit de login usa memória local;
-* jobs correm no mesmo processo da API;
-* em produção multi-instância será necessário rever scheduler/jobs;
-* alguns formatos de resposta antigos ainda coexistem com formatos novos;
-* ainda existem oportunidades futuras de reduzir duplicação de parsers/selects.
-
-Nenhum destes pontos bloqueia a fase atual.
-
----
-
-## 27. Próximos passos recomendados
-
-### Curto prazo
-
-* fazer commit do estado atual;
-* manter backend estável;
-* avançar para frontend ou documentação complementar;
-* só voltar ao backend por bug real, nova regra ou ajuste necessário.
-
-### Médio prazo
-
-Adicionar testes quando houver alterações críticas em:
-
-* `services`;
-* regras de disponibilidade;
-* regularizações;
-* pedidos;
-* histórico;
-* permissões;
-* jobs.
-
-### Futuro
-
-Também pode ser considerado no futuro:
-
-* `.env.test`;
-* base de dados dedicada para testes;
-* thresholds mínimos de coverage;
-* logs estruturados persistentes;
-* scheduler externo para jobs;
-* Redis para rate limit;
-* CI/CD com `npm run validate`.
-
----
-
-## 28. Estado final desta fase
+## 29. Estado final
 
 Resumo:
 
 ```txt
 Backend funcionalmente estável.
-Documentação principal atualizada.
-Testes unitários passam.
-Testes de integração passam.
-Testes E2E passam.
-test:all passa.
-validate passa.
-Suite de testes fechada por agora.
+Frontend integrado.
+Testes automatizados passam.
+Coverage configurado.
+CI ativo.
+Staging publicado.
+Seed demo protegido.
+Smoke test remoto validado.
+Fluxo ponta a ponta validado.
+Configuração endurecida.
+Produção futura documentada.
 ```
 
-Recomendação final:
+Definição final:
 
 ```txt
-Fazer commit deste estado antes de iniciar nova fase.
+Aplicação full-stack funcional, testada, publicada em staging,
+com ambiente demo reproduzível e preparada tecnicamente para produção.
 ```
