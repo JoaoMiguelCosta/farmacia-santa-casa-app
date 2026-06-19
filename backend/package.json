@@ -16,6 +16,7 @@
     "prisma:migrate": "npx prisma migrate dev",
     "prisma:migrate:deploy": "npx prisma migrate deploy",
     "prisma:seed": "node prisma/seed.js",
+    "prisma:seed:demo": "node prisma/seed-demo.js",
     "test": "vitest",
     "test:watch": "vitest --watch",
     "test:unit": "vitest tests/unit",
