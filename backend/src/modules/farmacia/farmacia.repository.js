@@ -228,27 +228,12 @@ function ensurePedidoPending(pedido) {
   }
 }
 
-function ensurePedidoPending(pedido) {
-  if (pedido.status !== "PENDENTE") {
-    throw conflict("O pedido não está em estado PENDENTE.");
-  }
-}
-
 function findPedidoById(pedidoId) {
   return prisma.pedido.findUnique({
     where: {
       id: pedidoId,
     },
     select: pedidoSelect,
-  });
-}
-
-function findPedidoActionById(client, pedidoId) {
-  return client.pedido.findUnique({
-    where: {
-      id: pedidoId,
-    },
-    select: pedidoActionSelect,
   });
 }
 
