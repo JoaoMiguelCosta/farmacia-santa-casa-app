@@ -4,8 +4,8 @@ Backend da aplicação **Farmácia Santa Casa**, responsável pela gestão de ut
 
 Este backend foi construído com **Node.js**, **Express**, **Prisma** e **PostgreSQL**.
 
-**Última atualização:** 2026-06-17
-**Estado atual:** backend estável; preparação inicial para produção reforçada; security headers, request ID, shutdown lifecycle, testes automatizados e documentação principal atualizados.
+**Última atualização:** 2026-06-19
+**Estado atual:** backend estável; preparação inicial para produção reforçada; runtime Node.js 24 LTS alinhado entre desenvolvimento, CI e deploy; security headers, request ID, shutdown lifecycle, testes automatizados e documentação principal atualizados.
 
 ---
 
@@ -70,6 +70,7 @@ Estado validado nesta fase:
 * security headers HTTP aplicados com `helmet`;
 * `X-Request-Id` devolvido em todas as respostas;
 * shutdown lifecycle reforçado para fechar HTTP, jobs e Prisma de forma controlada.
+* runtime Node.js 24 LTS definido no `package.json`, `.node-version`, GitHub Actions e configuração de deploy.
 
 Comandos validados:
 
@@ -146,7 +147,7 @@ Responsável por:
 
 | Área                     | Tecnologia              |
 | ------------------------ | ----------------------- |
-| Runtime                  | Node.js                 |
+| Runtime                  | Node.js 24 LTS          |
 | Framework HTTP           | Express 4               |
 | ORM                      | Prisma 5                |
 | Base de dados            | PostgreSQL              |
@@ -248,6 +249,7 @@ backend/
 ├── docs/
 ├── .env
 ├── .env.example
+├── .node-version
 ├── package.json
 ├── package-lock.json
 ├── vitest.config.mjs
@@ -292,6 +294,36 @@ O `README.md` é a porta de entrada. Os detalhes profundos devem ficar nos fiche
 ---
 
 ## 7. Instalação local
+
+### Requisito de runtime
+
+O backend usa **Node.js 24 LTS**.
+
+A versão suportada está declarada em:
+
+```json
+"engines": {
+  "node": ">=24.0.0 <25.0.0"
+}
+```
+
+O ficheiro `backend/.node-version` contém:
+
+```txt
+24
+```
+
+Antes de instalar dependências, confirmar:
+
+```bash
+node --version
+```
+
+O resultado deve começar por:
+
+```txt
+v24.
+```
 
 ### 7.1 Entrar na pasta do backend
 
@@ -642,6 +674,22 @@ http://localhost:3001/api
 
 ```bash
 npm start
+```
+
+Configuração recomendada no Render para o backend:
+
+```txt
+Root Directory: backend
+Build Command: npm ci && npm run prisma:migrate:deploy
+Start Command: npm start
+Auto-Deploy: On Commit
+Included Path: backend/**
+```
+
+Variável de runtime da plataforma:
+
+```env
+NODE_VERSION=24
 ```
 
 ### Health checks
@@ -1445,13 +1493,15 @@ AUTH_COOKIE_SAME_SITE=none
 
 ---
 
-### Erro nos scripts com `fetch is not defined`
+### Erro de runtime Node incompatível
 
-Usar Node.js 18 ou superior:
+Usar Node.js 24 LTS:
 
 ```bash
-node -v
+node --version
 ```
+
+O resultado deve começar por `v24.`. O projeto bloqueia versões fora do intervalo `>=24.0.0 <25.0.0`.
 
 ---
 
@@ -1537,8 +1587,10 @@ Confirmar:
 * [ ] `docs/` atualizado.
 * [ ] `tests/` atualizado, se aplicável.
 * [ ] `scripts/` atualizado, se aplicável.
+* [ ] `node --version` apresenta `v24.x`.
+* [ ] `.node-version` contém `24`.
 * [ ] `package.json` coerente.
-* [ ] `package-lock.json` atualizado, se houve alteração de dependências.
+* [ ] `package-lock.json` sincronizado com `package.json`.
 * [ ] `npm run test:all` passou.
 * [ ] `npm run validate` passou.
 
@@ -1555,6 +1607,9 @@ git commit -m "docs: update backend documentation after test stabilization"
 
 Antes de deploy:
 
+* [ ] Confirmar Node.js 24 LTS.
+* [ ] Confirmar `NODE_VERSION=24` na plataforma de deploy.
+* [ ] Confirmar GitHub Actions com `node-version: "24.x"`.
 * [ ] Definir `NODE_ENV=production`.
 * [ ] Definir `DATABASE_URL` de produção.
 * [ ] Usar `AUTH_JWT_SECRET` forte.
