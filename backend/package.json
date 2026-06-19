@@ -25,6 +25,7 @@
     "test:coverage": "vitest --coverage --run",
     "test:all": "npm run test:unit -- --run && npm run test:integration -- --run && npm run test:e2e -- --run",
     "test:api": "node scripts/manual/test-current-api.js",
+    "test:staging:auth": "node scripts/smoke/staging-auth-smoke.js",
     "test:receita-expiry": "node scripts/manual/test-receita-expiry-job.js",
     "test:higiene": "node scripts/manual/test-higiene-job.js",
     "test:purge-history": "node scripts/manual/test-purge-history-job.js",
