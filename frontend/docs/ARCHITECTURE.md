@@ -599,6 +599,7 @@ utentes
 | `pedidos`           | pedido geral e pedidos pendentes                 |
 | `regularizacoes`    | regularizações pendentes e histórico             |
 | `historico`         | histórico de pedidos da Santa Casa               |
+| `shared`            | componentes, configurações e lógica reutilizados dentro da área Santa Casa |
 
 ---
 
@@ -650,17 +651,19 @@ Subáreas:
 health
 home
 manutencao
+shared
 users
 ```
 
 ### Responsabilidades principais
 
-| Subárea      | Responsabilidade                        |
-| ------------ | --------------------------------------- |
-| `home`       | página de entrada da área Sistema/Admin |
-| `health`     | estado dos serviços/backend             |
-| `manutencao` | preview/run de jobs de manutenção       |
-| `users`      | gestão de utilizadores do sistema       |
+| Subárea      | Responsabilidade                                        |
+| ------------ | ------------------------------------------------------- |
+| `home`       | página de entrada da área Sistema/Admin                 |
+| `health`     | estado dos serviços/backend                             |
+| `manutencao` | preview/run de jobs de manutenção                       |
+| `users`      | gestão de utilizadores do sistema                       |
+| `shared`     | configuração de rotas e navegação da área Sistema/Admin |
 
 A área de manutenção deve ser tratada como sensível porque permite executar jobs que podem alterar ou apagar dados.
 
