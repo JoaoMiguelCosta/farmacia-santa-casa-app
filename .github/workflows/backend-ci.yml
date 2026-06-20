@@ -1,109 +1,107 @@
-﻿name: Backend CI
+name: Backend CI
 
 on:
-push:
-branches:
-- main
-- develop
-paths:
-- "backend/**"
-- ".github/workflows/backend-ci.yml"
+  push:
+    branches:
+      - main
+      - develop
+    paths:
+      - "backend/**"
+      - ".github/workflows/backend-ci.yml"
 
-pull_request:
-branches:
-- main
-- develop
+  pull_request:
+    branches:
+      - main
+      - develop
 
 concurrency:
-group: backend-ci-${{ github.ref }}
-cancel-in-progress: true
+  group: backend-ci-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-backend:
-name: Backend validation
-runs-on: ubuntu-latest
+  backend:
+    name: Backend validation
+    runs-on: ubuntu-latest
 
-services:
-  postgres:
-    image: postgres:16-alpine
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: farmacia_santa_casa_ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U postgres -d farmacia_santa_casa_ci"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    defaults:
+      run:
+        working-directory: backend
+
     env:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: farmacia_santa_casa_ci
-    ports:
-      - 5432:5432
-    options: >-
-      --health-cmd="pg_isready -U postgres -d farmacia_santa_casa_ci"
-      --health-interval=10s
-      --health-timeout=5s
-      --health-retries=5
+      NODE_ENV: test
+      TZ: Europe/Lisbon
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/farmacia_santa_casa_ci?schema=public
 
-defaults:
-  run:
-    working-directory: backend
+      AUTH_JWT_SECRET: ci_auth_jwt_secret_with_enough_length_for_tests
+      AUTH_TOKEN_EXPIRES_IN: 8h
+      AUTH_COOKIE_MAX_AGE_MS: "28800000"
 
-env:
-  NODE_ENV: test
-  TZ: Europe/Lisbon
-  DATABASE_URL: postgresql://postgres:postgres@localhost:5432/farmacia_santa_casa_ci?schema=public
+      AUTH_COOKIE_NAME: farmacia_santa_casa_token
+      AUTH_COOKIE_SECURE: "false"
+      AUTH_COOKIE_SAME_SITE: lax
 
-  AUTH_JWT_SECRET: ci_auth_jwt_secret_with_enough_length_for_tests
-  AUTH_TOKEN_EXPIRES_IN: 8h
-  AUTH_COOKIE_MAX_AGE_MS: "28800000"
+      ALLOWED_ORIGINS: http://localhost:5173
+      TRUST_PROXY: "false"
 
-  AUTH_COOKIE_NAME: farmacia_santa_casa_token
-  AUTH_COOKIE_SECURE: "false"
-  AUTH_COOKIE_SAME_SITE: lax
+      ENABLE_JOBS: "false"
+      ENABLE_HIGIENE: "false"
+      ENABLE_PURGE_HISTORY: "false"
+      ENABLE_RECEITAS_EXPIRY: "false"
 
-  ALLOWED_ORIGINS: http://localhost:5173
-  TRUST_PROXY: "false"
+      ALLOW_PRODUCTION_SEED: "false"
 
-  ENABLE_JOBS: "false"
-  ENABLE_HIGIENE: "false"
-  ENABLE_PURGE_HISTORY: "false"
-  ENABLE_RECEITAS_EXPIRY: "false"
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
 
-  ALLOW_PRODUCTION_SEED: "false"
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "24.x"
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
 
-steps:
-  - name: Checkout repository
-    uses: actions/checkout@v6
+      - name: Install dependencies
+        run: npm ci
 
-  - name: Setup Node.js
-    uses: actions/setup-node@v6
-    with:
-      node-version: "24.x"
-      cache: npm
-      cache-dependency-path: backend/package-lock.json
+      - name: Generate Prisma Client
+        run: npm run prisma:generate
 
-  - name: Install dependencies
-    run: npm ci
+      - name: Apply database migrations
+        run: npm run prisma:migrate:deploy
 
-  - name: Generate Prisma Client
-    run: npm run prisma:generate
+      - name: Run unit tests
+        run: npm run test:unit -- --run
 
-  - name: Apply database migrations
-    run: npm run prisma:migrate:deploy
+      - name: Run integration tests
+        run: npm run test:integration -- --run
 
-  - name: Run unit tests
-    run: npm run test:unit -- --run
+      - name: Seed database for E2E tests
+        run: npm run prisma:seed
 
-  - name: Run integration tests
-    run: npm run test:integration -- --run
+      - name: Run E2E tests
+        run: npm run test:e2e -- --run
 
-  - name: Seed database for E2E tests
-    run: npm run prisma:seed
+      - name: Seed database for coverage tests
+        run: npm run prisma:seed
 
-  - name: Run E2E tests
-    run: npm run test:e2e -- --run
+      - name: Run coverage
+        run: npm run test:coverage
 
-  - name: Seed database for coverage tests
-    run: npm run prisma:seed
-
-  - name: Run coverage
-    run: npm run test:coverage
-
-  - name: Run audit
-    run: npm run audit
-
-
+      - name: Run audit
+        run: npm run audit
