@@ -1,74 +1,177 @@
-# Farmácia Santa Casa — Fullstack App
+# Farmácia Santa Casa
 
-Aplicação fullstack para gestão operacional entre **Santa Casa** e **Farmácia**.
+Aplicação full-stack para gestão operacional entre a **Santa Casa**, a **Farmácia** e a área de **Sistema/Admin**.
 
-O projeto está dividido em duas partes principais:
+O projeto centraliza o ciclo completo de utentes, medicação habitual, receitas, medicamentos não sujeitos a receita médica, medicamentos para Venda Suspensa, pedidos, validações, rejeições, regularizações, histórico, alertas e manutenção administrativa.
 
-```txt
-Farmacia-Santacasa-v2/
-├── backend/
-└── frontend/
-```
-
-* `backend/` — API, regras de negócio, autenticação, base de dados, jobs e testes.
-* `frontend/` — interface React para Santa Casa, Farmácia e Sistema/Admin.
-
-> Estado atual: projeto em desenvolvimento.
-> O backend já tem documentação e testes automatizados.
-> O frontend já tem arquitetura principal, documentação, lint e build funcionais, mas ainda não tem testes automatizados.
+> **Estado atual:** aplicação funcional, testada e publicada num ambiente público de staging com dados fictícios. O projeto está tecnicamente preparado para uma futura produção real, mas a infraestrutura de produção ainda não foi criada.
 
 ---
 
-## 1. Stack técnica
-
-### Backend
-
-* Node.js
-* Express
-* Prisma
-* PostgreSQL
-* JWT em cookie HTTP-only
-* node-cron
-* Vitest
-* Supertest
+## Demonstração pública
 
 ### Frontend
 
-* React
-* Vite
-* React Router
-* CSS Modules
-* Context API
-* ESLint
+https://farmacia-santacasa-frontend-staging.onrender.com
 
-### Raiz do projeto
+### Backend
 
-* Scripts globais com `npm --prefix`
-* `concurrently` para arrancar backend e frontend ao mesmo tempo
+https://farmacia-santacasa-backend-staging.onrender.com
+
+### API
+
+https://farmacia-santacasa-backend-staging.onrender.com/api
+
+### Contas demo
+
+| Role | Email |
+| --- | --- |
+| `ADMIN` | `demo.admin@sistema.local` |
+| `SANTACASA` | `demo.santacasa@sistema.local` |
+| `FARMACIA` | `demo.farmacia@sistema.local` |
+
+As passwords não são guardadas no repositório. Devem ser fornecidas separadamente para demonstração.
 
 ---
 
-## 2. Estrutura geral
+## Áreas da aplicação
 
-```txt
+### Santa Casa
+
+Permite:
+
+- gerir utentes;
+- gerir medicação habitual;
+- criar receitas;
+- criar medicamentos não sujeitos a receita médica;
+- criar medicamentos para Venda Suspensa;
+- preparar e enviar pedidos;
+- acompanhar pedidos;
+- consultar histórico;
+- consultar regularizações;
+- acompanhar indicadores operacionais.
+
+### Farmácia
+
+Permite:
+
+- consultar pedidos pendentes;
+- validar pedidos;
+- rejeitar pedidos;
+- consultar histórico;
+- acompanhar regularizações;
+- consultar e fechar alertas operacionais;
+- acompanhar indicadores operacionais.
+
+### Sistema/Admin
+
+Permite:
+
+- gerir utilizadores;
+- consultar o estado dos serviços;
+- consultar previews dos jobs;
+- executar jobs de manutenção com confirmação;
+- aceder às áreas Santa Casa e Farmácia.
+
+---
+
+## Fluxo funcional principal
+
+```text
+1. A Santa Casa seleciona ou cria um utente.
+
+2. Regista os elementos necessários:
+   - medicação habitual;
+   - receita;
+   - medicamento não sujeito a receita médica;
+   - medicamento para Venda Suspensa.
+
+3. Adiciona itens ao pedido em preparação.
+
+4. Envia o pedido para a Farmácia.
+
+5. A Farmácia valida ou rejeita o pedido.
+
+6. A validação atualiza quantidades, histórico e regularizações.
+
+7. Quando surge uma receita compatível, a Venda Suspensa pode ser regularizada.
+
+8. Os intervenientes acompanham o resultado através de dashboards,
+   histórico, regularizações e alertas.
+```
+
+---
+
+## Stack técnica
+
+### Backend
+
+- Node.js 24 LTS;
+- Express;
+- Prisma;
+- PostgreSQL;
+- JWT em cookie HTTP-only;
+- bcryptjs;
+- Helmet;
+- node-cron;
+- Vitest;
+- Supertest.
+
+### Frontend
+
+- React;
+- Vite;
+- React Router;
+- CSS Modules;
+- Context API;
+- Fetch API encapsulada;
+- ESLint.
+
+### Infraestrutura e qualidade
+
+- Render;
+- GitHub Actions;
+- PostgreSQL em staging;
+- migrations Prisma;
+- testes unitários;
+- testes de integração;
+- testes E2E do backend;
+- coverage;
+- audit de dependências;
+- smoke test remoto read-only.
+
+---
+
+## Estrutura do repositório
+
+```text
 Farmacia-Santacasa-v2/
+├── .github/
+│   └── workflows/
+│       └── backend-ci.yml
 ├── backend/
 │   ├── docs/
 │   ├── prisma/
+│   │   ├── demo/
+│   │   ├── migrations/
+│   │   ├── schema.prisma
+│   │   ├── seed.js
+│   │   └── seed-demo.js
 │   ├── scripts/
+│   │   ├── manual/
+│   │   └── smoke/
 │   ├── src/
 │   ├── tests/
-│   ├── .env
 │   ├── .env.example
-│   ├── package.json
+│   ├── .env.staging.example
+│   ├── .env.production.example
 │   └── README.md
 ├── frontend/
 │   ├── docs/
 │   ├── public/
 │   ├── src/
-│   ├── .env
 │   ├── .env.example
-│   ├── package.json
+│   ├── .env.production.example
 │   └── README.md
 ├── .gitignore
 ├── package.json
@@ -78,95 +181,52 @@ Farmacia-Santacasa-v2/
 
 ---
 
-## 3. Áreas da aplicação
+## Requisitos locais
 
-### Santa Casa
+- Node.js 24 LTS;
+- npm;
+- PostgreSQL;
+- Git.
 
-Permite:
+Confirmar o runtime:
 
-* gerir utentes;
-* criar receitas;
-* criar medicamentos não sujeitos a receita médica;
-* criar Vendas Suspensas;
-* preparar pedidos;
-* enviar pedidos para a Farmácia;
-* consultar regularizações;
-* consultar histórico.
+```bash
+node --version
+```
 
-### Farmácia
+Resultado esperado:
 
-Permite:
-
-* consultar pedidos pendentes;
-* validar pedidos;
-* rejeitar pedidos;
-* consultar regularizações;
-* consultar histórico;
-* acompanhar sinais operacionais.
-
-### Sistema/Admin
-
-Permite:
-
-* consultar health/status dos serviços;
-* gerir utilizadores;
-* consultar jobs de manutenção;
-* executar jobs administrativos quando permitido.
+```text
+v24.x.x
+```
 
 ---
 
-## 4. Requisitos locais
+## Instalação local
 
-Antes de arrancar o projeto, garantir:
+### 1. Clonar o repositório
 
-* Node.js instalado;
-* npm instalado;
-* PostgreSQL instalado e ativo;
-* base de dados criada;
-* `.env` configurado no backend;
-* `.env` configurado no frontend, se necessário.
+```bash
+git clone https://github.com/JoaoMiguelCosta/farmacia-santa-casa-app.git
+cd farmacia-santa-casa-app
+```
 
----
+### 2. Instalar dependências
 
-## 5. Instalação
-
-Na raiz do projeto:
+Na raiz:
 
 ```bash
 npm run install:all
 ```
 
-Isto instala dependências em:
-
-```txt
-backend/
-frontend/
-```
-
-Também podes instalar separadamente:
+Em alternativa:
 
 ```bash
 npm run install:backend
 npm run install:frontend
 ```
 
----
-
-## 6. Configuração de ambiente
-
-### Backend
-
-Criar:
-
-```txt
-backend/.env
-```
-
-A partir de:
-
-```txt
-backend/.env.example
-```
+### 3. Configurar o backend
 
 PowerShell:
 
@@ -174,19 +234,24 @@ PowerShell:
 Copy-Item backend/.env.example backend/.env
 ```
 
-### Frontend
+Linux/macOS:
 
-Criar:
-
-```txt
-frontend/.env
+```bash
+cp backend/.env.example backend/.env
 ```
 
-A partir de:
+Editar `backend/.env` e configurar, no mínimo:
 
-```txt
-frontend/.env.example
+```env
+NODE_ENV=development
+DATABASE_URL="postgresql://postgres:postgres@localhost:5432/farmacia_santacasa_development?schema=public"
+AUTH_JWT_SECRET="development-secret-with-at-least-32-characters"
+ALLOWED_ORIGINS="http://localhost:5173,http://localhost:5174"
+AUTH_COOKIE_SECURE=false
+AUTH_COOKIE_SAME_SITE=lax
 ```
+
+### 4. Configurar o frontend
 
 PowerShell:
 
@@ -194,41 +259,21 @@ PowerShell:
 Copy-Item frontend/.env.example frontend/.env
 ```
 
-Variável frontend principal:
+Linux/macOS:
+
+```bash
+cp frontend/.env.example frontend/.env
+```
+
+Configuração local:
 
 ```env
 VITE_API_BASE_URL="http://localhost:3001/api"
 ```
 
----
+### 5. Preparar a base de dados
 
-## 7. Base de dados
-
-Entrar no backend:
-
-```bash
-cd backend
-```
-
-Gerar Prisma Client:
-
-```bash
-npx prisma generate
-```
-
-Aplicar migrations:
-
-```bash
-npx prisma migrate dev
-```
-
-Executar seed:
-
-```bash
-npx prisma db seed
-```
-
-Ou pela raiz:
+Na raiz:
 
 ```bash
 npm run prisma:generate
@@ -236,158 +281,143 @@ npm run prisma:migrate
 npm run prisma:seed
 ```
 
----
-
-## 8. Arrancar o projeto
-
-### Backend e frontend ao mesmo tempo
-
-Na raiz:
+### 6. Arrancar backend e frontend
 
 ```bash
 npm run dev
 ```
 
-Isto arranca:
+Endereços locais:
 
-```txt
-backend  → http://localhost:3001/api
-frontend → http://localhost:5173
-```
-
-### Arrancar separadamente
-
-Backend:
-
-```bash
-npm run dev:backend
-```
-
-Frontend:
-
-```bash
-npm run dev:frontend
+```text
+Backend API → http://localhost:3001/api
+Frontend    → http://localhost:5173
 ```
 
 ---
 
-## 9. Scripts principais da raiz
-
-```json
-{
-  "dev": "concurrently --kill-others-on-fail -n BACKEND,FRONTEND -c blue,green \"npm run dev:backend\" \"npm run dev:frontend\"",
-  "dev:backend": "npm --prefix backend run dev",
-  "dev:frontend": "npm --prefix frontend run dev",
-  "install:all": "npm run install:backend && npm run install:frontend",
-  "validate": "npm run validate:backend && npm run validate:frontend"
-}
-```
+## Scripts da raiz
 
 ### Desenvolvimento
 
 ```bash
 npm run dev
+npm run dev:backend
+npm run dev:frontend
+npm run start:backend
+npm run preview:frontend
 ```
 
-### Validação completa
+### Instalação
 
 ```bash
-npm run validate
+npm run install:backend
+npm run install:frontend
+npm run install:all
 ```
 
-Este comando valida:
-
-Backend:
-
-* unit tests;
-* integration tests;
-* E2E tests;
-* audit.
-
-Frontend:
-
-* lint;
-* build;
-* audit.
-
-### Audits
-
-```bash
-npm run audit
-```
-
-### Frontend build
+### Frontend
 
 ```bash
 npm run build:frontend
+npm run lint:frontend
+npm run validate:frontend
 ```
 
-### Frontend lint
+### Backend
 
 ```bash
-npm run lint:frontend
+npm run test:backend
+npm run test:backend:unit
+npm run test:backend:integration
+npm run test:backend:e2e
+npm run test:backend:manual
+npm run validate:backend
+```
+
+### Prisma
+
+```bash
+npm run prisma:generate
+npm run prisma:migrate
+npm run prisma:studio
+npm run prisma:seed
+```
+
+### Segurança e validação
+
+```bash
+npm run audit
+npm run validate
+```
+
+O `validate` atual executa:
+
+- backend: unit, integration, E2E e audit;
+- frontend: lint, build e audit.
+
+O coverage do backend continua disponível diretamente em `backend/`:
+
+```bash
+cd backend
+npm run test:coverage
 ```
 
 ---
 
-## 10. Backend
+## Backend
 
 Documentação principal:
 
-```txt
+```text
 backend/README.md
 ```
 
 Documentação técnica:
 
-```txt
+```text
 backend/docs/
-├── ARCHITECTURE.md
 ├── API_ROUTES.md
+├── ARCHITECTURE.md
 ├── BUSINESS_RULES.md
 ├── ENVIRONMENT.md
 ├── MAINTENANCE_JOBS.md
+├── PRODUCTION_CHECKLIST.md
 └── TESTING.md
 ```
 
-### Comandos backend
+Principais responsabilidades:
 
-```bash
-npm run dev:backend
-npm run start:backend
-npm run validate:backend
-npm run test:backend:unit
-npm run test:backend:integration
-npm run test:backend:e2e
-```
-
-### Estado atual do backend
-
-* documentação criada;
-* `.env.example` criado;
-* testes unitários criados;
-* testes de integração criados;
-* testes E2E criados;
-* scripts manuais mantidos;
-* jobs documentados;
-* `npm audit` validado sem vulnerabilidades conhecidas no momento da última verificação.
+- API HTTP;
+- autenticação e autorização;
+- regras de negócio;
+- persistência Prisma/PostgreSQL;
+- validação de pedidos;
+- regularizações;
+- alertas;
+- jobs;
+- manutenção;
+- health checks;
+- graceful shutdown;
+- segurança HTTP.
 
 ---
 
-## 11. Frontend
+## Frontend
 
 Documentação principal:
 
-```txt
+```text
 frontend/README.md
 ```
 
 Documentação técnica:
 
-```txt
+```text
 frontend/docs/
-├── ARCHITECTURE.md
 ├── API_CONTRACT.md
+├── ARCHITECTURE.md
+├── DEPLOYMENT.md
 ├── ENVIRONMENT.md
 ├── ROUTES.md
 ├── STATE_MANAGEMENT.md
@@ -395,170 +425,310 @@ frontend/docs/
 └── UI_COMPONENTS.md
 ```
 
-### Comandos frontend
+A arquitetura é organizada por features:
 
-```bash
-npm run dev:frontend
-npm run build:frontend
-npm run lint:frontend
-npm run validate:frontend
+```text
+frontend/src/
+├── app/
+├── features/
+│   ├── auth/
+│   ├── farmacia/
+│   ├── santacasa/
+│   └── system/
+├── pages/
+└── shared/
 ```
 
-### Estado atual do frontend
-
-* arquitetura principal montada;
-* autenticação e roles implementadas;
-* integração com backend feita via `httpClient`;
-* `.env.example` criado;
-* documentação frontend criada;
-* `npm run lint` passa;
-* `npm run build` passa;
-* ainda não existem testes automatizados frontend.
-
-Existe aviso conhecido no build:
-
-```txt
-Some chunks are larger than 500 kB after minification.
-```
-
-Este aviso não bloqueia a fase atual. Deve ser tratado futuramente com code splitting.
+As páginas em `pages/` são finas. A lógica fica em hooks, utils e APIs de cada feature. Os textos visíveis são centralizados em ficheiros de configuração sempre que aplicável.
 
 ---
 
-## 12. Autenticação
+## Autenticação e autorização
 
-A autenticação usa:
+A autenticação utiliza:
 
-* login por email/password;
-* cookie HTTP-only definido pelo backend;
-* `credentials: "include"` no frontend;
-* guards por role no frontend;
-* validação real de sessão e permissões no backend.
+- login por email e password;
+- JWT;
+- cookie HTTP-only;
+- `credentials: "include"` no frontend;
+- guards por role no frontend;
+- validação real de sessão e permissões no backend.
 
-Roles principais:
+Roles:
 
-```txt
+```text
 ADMIN
 SANTACASA
 FARMACIA
 ```
 
-Regra principal:
+Regra de segurança:
 
-```txt
-Frontend controla navegação.
-Backend controla segurança real.
+```text
+O frontend controla a navegação.
+O backend controla a autorização real.
 ```
 
 ---
 
-## 13. Jobs de manutenção
+## Variáveis de ambiente
 
-O backend tem três jobs principais:
+### Backend
 
-```txt
+Templates:
+
+```text
+backend/.env.example
+backend/.env.staging.example
+backend/.env.production.example
+```
+
+### Frontend
+
+Templates:
+
+```text
+frontend/.env.example
+frontend/.env.production.example
+```
+
+Nunca versionar:
+
+```text
+backend/.env
+frontend/.env
+.env
+```
+
+Nunca colocar no frontend:
+
+- passwords;
+- `DATABASE_URL`;
+- `AUTH_JWT_SECRET`;
+- tokens privados;
+- chaves privadas;
+- credenciais reais.
+
+Todas as variáveis `VITE_*` ficam acessíveis no bundle do browser.
+
+---
+
+## Segurança de configuração
+
+O backend bloqueia o arranque quando deteta configurações inseguras, incluindo:
+
+- `DATABASE_URL` ausente;
+- base local em `NODE_ENV=production`;
+- JWT ausente ou demasiado curto;
+- cookie inseguro em produção;
+- `SameSite=None` sem `Secure`;
+- origins ausentes, locais ou com wildcard em produção.
+
+O frontend bloqueia builds de produção quando `VITE_API_BASE_URL`:
+
+- está ausente;
+- não é uma URL válida;
+- não usa HTTPS;
+- aponta para localhost;
+- contém query string;
+- contém fragmento;
+- não termina exatamente em `/api`.
+
+---
+
+## Testes e qualidade
+
+### Backend
+
+Disponíveis:
+
+- testes unitários;
+- testes de integração;
+- testes E2E;
+- coverage;
+- audit;
+- smoke test remoto de staging.
+
+Comandos:
+
+```bash
+cd backend
+npm run test:all
+npm run test:coverage
+npm run audit
+npm run test:staging:auth
+```
+
+### Frontend
+
+Validação atual:
+
+```bash
+cd frontend
+npm run lint
+npm run build
+npm run audit
+npm run validate
+```
+
+Ainda não existe uma suite automatizada de testes frontend.
+
+### CI
+
+Workflow:
+
+```text
+.github/workflows/backend-ci.yml
+```
+
+Executa:
+
+- PostgreSQL service;
+- Node.js 24;
+- instalação limpa;
+- Prisma generate;
+- migrations;
+- unit;
+- integration;
+- E2E;
+- coverage;
+- audit.
+
+---
+
+## Seed local e seed demo
+
+### Seed local
+
+```bash
+npm run prisma:seed
+```
+
+### Seed demo de staging
+
+```bash
+cd backend
+npm run prisma:seed:demo
+```
+
+O seed demo exige:
+
+```env
+ALLOW_DEMO_SEED=true
+DEMO_SEED_CONFIRMATION=PORTFOLIO_DEMO
+```
+
+É exclusivo do ambiente de demonstração e não deve ser executado numa produção real.
+
+---
+
+## Jobs e manutenção
+
+Jobs existentes:
+
+```text
 receita-expiry
 higiene
 purge-history
 ```
 
+No staging, os jobs automáticos permanecem desativados.
+
 A área de Sistema/Admin permite:
 
-* listar jobs;
-* fazer preview;
-* executar jobs quando permitido.
+- consultar estado;
+- executar preview;
+- executar jobs com confirmação.
 
-Atenção:
+O `purge-history` é destrutivo e exige backup confirmado.
 
-```txt
-purge-history é destrutivo e pode remover histórico antigo.
+---
+
+## Deploy atual
+
+### Backend Render
+
+```text
+Root Directory: backend
+Build Command: npm ci && npm run prisma:migrate:deploy
+Start Command: npm start
 ```
 
-Consultar:
+### Frontend Render
 
-```txt
-backend/docs/MAINTENANCE_JOBS.md
-frontend/docs/API_CONTRACT.md
+A plataforma define:
+
+```env
+VITE_API_BASE_URL="https://farmacia-santacasa-backend-staging.onrender.com/api"
+```
+
+O frontend é reconstruído quando esta variável muda.
+
+---
+
+## Estado validado em staging
+
+Foram validados:
+
+- login das três roles;
+- persistência da sessão após refresh;
+- logout;
+- CORS;
+- cookies cross-site;
+- permissões por role;
+- rotas internas;
+- fluxo Santa Casa;
+- fluxo Farmácia;
+- gestão de utilizadores;
+- regularizações;
+- histórico;
+- alertas;
+- manutenção;
+- health checks;
+- fluxo funcional ponta a ponta;
+- reposição do dataset demo.
+
+---
+
+## Limitações conhecidas
+
+- o frontend ainda não possui testes automatizados;
+- o rate limit do backend usa memória da instância;
+- os jobs estão integrados no processo da API;
+- a produção real ainda não foi criada;
+- backups e restore ainda não foram testados numa infraestrutura real;
+- não existe observabilidade persistente dedicada.
+
+Estas limitações não bloqueiam a versão de portefólio, mas devem ser revistas antes de uma utilização real.
+
+---
+
+## Estado de produção
+
+O projeto está preparado tecnicamente para uma futura produção, mas ainda requer:
+
+- PostgreSQL exclusivo;
+- backups automáticos;
+- restore testado;
+- domínios finais;
+- secrets exclusivos;
+- utilizadores reais;
+- estratégia de jobs;
+- logs persistentes;
+- monitorização;
+- plano de rollback.
+
+Checklist:
+
+```text
+backend/docs/PRODUCTION_CHECKLIST.md
 ```
 
 ---
 
-## 14. Testes
+## Checklist antes de commit
 
-### Backend
-
-O backend já tem testes automatizados.
-
-Comandos:
-
-```bash
-npm run test:backend:unit
-npm run test:backend:integration
-npm run test:backend:e2e
-```
-
-Validação backend completa:
-
-```bash
-npm run validate:backend
-```
-
-### Frontend
-
-O frontend ainda não tem testes automatizados.
-
-Validação atual:
-
-```bash
-npm run validate:frontend
-```
-
-Inclui:
-
-* lint;
-* build;
-* audit.
-
-Testes frontend recomendados futuramente:
-
-* Vitest;
-* React Testing Library;
-* Playwright.
-
----
-
-## 15. Segurança
-
-Nunca versionar:
-
-```txt
-.env
-.env.*
-backend/.env
-frontend/.env
-```
-
-Versionar apenas:
-
-```txt
-backend/.env.example
-frontend/.env.example
-```
-
-Nunca colocar no frontend:
-
-* passwords;
-* `DATABASE_URL`;
-* `AUTH_JWT_SECRET`;
-* tokens privados;
-* credenciais reais;
-* segredos.
-
----
-
-## 16. Git
-
-Antes de commit:
+Na raiz:
 
 ```bash
 git status
@@ -567,7 +737,7 @@ npm run validate
 
 Confirmar que não aparecem:
 
-```txt
+```text
 backend/.env
 frontend/.env
 backend/node_modules
@@ -576,86 +746,18 @@ node_modules
 frontend/dist
 ```
 
-Commit típico:
+Para uma validação mais completa do backend:
 
 ```bash
-git add .
-git commit -m "docs: add root project README"
-```
-
-Push:
-
-```bash
-git push origin main
+cd backend
+npm run test:coverage
 ```
 
 ---
 
-## 17. Checklist rápido para desenvolvimento
+## Estado final
 
-Antes de trabalhar:
-
-```bash
-npm run dev
+```text
+Aplicação full-stack funcional, testada e publicada em staging,
+com ambiente demo reproduzível e preparada tecnicamente para produção.
 ```
-
-Antes de commit:
-
-```bash
-npm run validate
-git status
-```
-
-Antes de mexer em backend:
-
-* confirmar regra em `backend/docs/BUSINESS_RULES.md`;
-* confirmar rotas em `backend/docs/API_ROUTES.md`;
-* atualizar testes se mudar regra crítica.
-
-Antes de mexer em frontend:
-
-* confirmar contrato em `frontend/docs/API_CONTRACT.md`;
-* confirmar rotas em `frontend/docs/ROUTES.md`;
-* correr lint/build.
-
----
-
-## 18. Limitações atuais
-
-O projeto ainda não está finalizado.
-
-Limitações conhecidas:
-
-* frontend ainda não tem testes automatizados;
-* frontend ainda tem bundle principal grande;
-* ainda não existe documentação de deploy final;
-* ainda não existe pipeline CI/CD;
-* ainda não foi feita auditoria final de acessibilidade;
-* ainda não foi feita validação completa em ambiente de produção.
-
----
-
-## 19. Próximos passos recomendados
-
-Curto prazo:
-
-* validar `npm run validate`;
-* confirmar `.env` ignorados;
-* rever documentação criada;
-* continuar desenvolvimento funcional/frontend.
-
-Médio prazo:
-
-* adicionar testes frontend;
-* adicionar code splitting;
-* adicionar Error Boundary;
-* preparar documentação de deploy;
-* validar integração em ambiente real.
-
-Futuro:
-
-* CI/CD;
-* testes E2E reais com browser;
-* auditoria de acessibilidade;
-* auditoria de performance;
-* documentação final de produção.
