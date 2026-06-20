@@ -861,21 +861,7 @@ Comando:
 npm run build
 ```
 
-Aviso atual:
-
-```txt
-Some chunks are larger than 500 kB after minification.
-```
-
-Isto indica que o bundle principal está grande.
-
-Não bloqueia a fase atual, mas deve ser otimizado futuramente com:
-
-* `React.lazy`;
-* `Suspense`;
-* code splitting por páginas;
-* imports dinâmicos;
-* análise de bundle.
+O frontend utiliza carregamento lazy e divisão de código por páginas, gerando chunks separados durante o build.
 
 ---
 
@@ -933,19 +919,7 @@ Mitigação futura:
 
 ---
 
-### 27.2 Bundle grande
-
-O bundle JS principal ultrapassa o limite recomendado pelo Vite (500 kB após minificação).
-
-Mitigação futura:
-
-* code splitting por área com `React.lazy`;
-* lazy loading por página;
-* análise de dependências.
-
----
-
-### 27.3 Falta de Error Boundary
+### 27.2 Falta de Error Boundary
 
 Ainda não existe uma camada dedicada para erros inesperados de render.
 
@@ -1053,8 +1027,7 @@ Prioridade recomendada:
 ```txt
 1. Adicionar testes frontend a utils e guards
 2. Criar Error Boundary
-3. Implementar code splitting por páginas
-4. Adicionar testes E2E com Playwright
+3. Adicionar testes E2E com Playwright
 ```
 
 ---
@@ -1076,7 +1049,6 @@ Pontos fortes:
 Pontos a melhorar futuramente:
 
 * testes frontend;
-* code splitting;
 * Error Boundary;
 * redução de duplicação;
 * divisão de hooks grandes;
