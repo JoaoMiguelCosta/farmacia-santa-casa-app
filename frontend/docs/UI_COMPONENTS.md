@@ -4,7 +4,7 @@ Documentação dos componentes de UI do frontend **Farmácia Santa Casa**.
 
 Este documento descreve os componentes partilhados, layouts reutilizáveis, padrões de composição, CSS Modules, estados visuais, acessibilidade e regras para criar novos componentes.
 
-> Estado atual: projeto fechado — componentes shared estabilizados.
+> Estado atual: componentes partilhados principais implementados e organizados para a fase atual do projeto.
 
 ---
 
@@ -29,7 +29,6 @@ Os componentes reutilizáveis estão em:
 
 ```txt
 src/shared/
-├── components/
 ├── layouts/
 └── ui/
 ```
@@ -82,7 +81,7 @@ features/farmacia/shared/pedidos     ✅ partilhado dentro da área Farmácia
 
 ---
 
-## 4. Diferença entre `shared/ui`, `shared/components` e `shared/layouts`
+## 4. Diferença entre `shared/ui` e `shared/layouts`
 
 ### `shared/ui`
 

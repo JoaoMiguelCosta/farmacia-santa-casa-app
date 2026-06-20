@@ -4,7 +4,7 @@ Documentação da arquitetura do frontend **Farmácia Santa Casa**.
 
 Este documento descreve a estrutura atual do frontend, a separação de responsabilidades, o fluxo de dados, a organização por features e as regras recomendadas para manter o projeto escalável.
 
-> Estado atual: projeto fechado — funcionalidades principais implementadas e validadas.
+> Estado atual: funcionalidades principais implementadas e arquitetura consolidada para a fase atual do projeto.
 
 ---
 
@@ -210,7 +210,7 @@ shared = reutilização global
 ```txt
 src/shared/
 ├── api/
-├── components/
+├── hooks/
 ├── layouts/
 ├── ui/
 └── utils/
@@ -573,28 +573,33 @@ Subáreas:
 dashboard
 extras
 historico
+home
+medicacaoHabitual
 operacao
 pedidos
 receitas
 regularizacoes
-sem-receita
+semReceita
 shared
 utentes
 ```
 
 ### Responsabilidades principais
 
-| Subárea          | Responsabilidade                                 |
-| ---------------- | ------------------------------------------------ |
-| `dashboard`      | sinais gerais da Santa Casa                      |
-| `utentes`        | criação, listagem, arquivo, reativação e remoção |
-| `operacao`       | agregação operacional por utente                 |
-| `receitas`       | criação/listagem de receitas                     |
-| `sem-receita`    | medicamentos não sujeitos a receita médica       |
-| `extras`         | Vendas Suspensas                                 |
-| `pedidos`        | pedido geral e pedidos pendentes                 |
-| `regularizacoes` | regularizações pendentes e histórico             |
-| `historico`      | histórico de pedidos da Santa Casa               |
+| Subárea             | Responsabilidade                                 |
+| ------------------- | ------------------------------------------------ |
+| `home`              | página de entrada da área Santa Casa             |
+| `dashboard`         | sinais gerais da Santa Casa                      |
+| `utentes`           | criação, listagem, arquivo, reativação e remoção |
+| `operacao`          | agregação operacional por utente                 |
+| `receitas`          | criação/listagem de receitas                     |
+| `medicacaoHabitual` | medicação habitual e sugestões operacionais do utente |
+| `semReceita`        | medicamentos não sujeitos a receita médica       |
+| `extras`            | Vendas Suspensas                                 |
+| `pedidos`           | pedido geral e pedidos pendentes                 |
+| `regularizacoes`    | regularizações pendentes e histórico             |
+| `historico`         | histórico de pedidos da Santa Casa               |
+| `shared`            | componentes, configurações e lógica reutilizados dentro da área Santa Casa |
 
 ---
 
@@ -609,8 +614,10 @@ src/features/farmacia/
 Subáreas:
 
 ```txt
+alertas
 dashboard
 historico
+home
 pedidos
 regularizacoes
 shared
@@ -620,7 +627,9 @@ shared
 
 | Subárea          | Responsabilidade                          |
 | ---------------- | ----------------------------------------- |
+| `home`           | página de entrada da área Farmácia        |
 | `dashboard`      | sinais operacionais da Farmácia           |
+| `alertas`        | consulta e fecho de alertas operacionais  |
 | `pedidos`        | listagem, validação e rejeição de pedidos |
 | `regularizacoes` | regularizações pendentes e histórico      |
 | `historico`      | histórico de pedidos                      |
@@ -640,17 +649,21 @@ Subáreas:
 
 ```txt
 health
+home
 manutencao
+shared
 users
 ```
 
 ### Responsabilidades principais
 
-| Subárea      | Responsabilidade                  |
-| ------------ | --------------------------------- |
-| `health`     | estado dos serviços/backend       |
-| `manutencao` | preview/run de jobs de manutenção |
-| `users`      | gestão de utilizadores do sistema |
+| Subárea      | Responsabilidade                                        |
+| ------------ | ------------------------------------------------------- |
+| `home`       | página de entrada da área Sistema/Admin                 |
+| `health`     | estado dos serviços/backend                             |
+| `manutencao` | preview/run de jobs de manutenção                       |
+| `users`      | gestão de utilizadores do sistema                       |
+| `shared`     | configuração de rotas e navegação da área Sistema/Admin |
 
 A área de manutenção deve ser tratada como sensível porque permite executar jobs que podem alterar ou apagar dados.
 
@@ -714,7 +727,6 @@ Devem ficar dentro de:
 
 ```txt
 shared/ui/
-shared/components/
 shared/layouts/
 ```
 
@@ -849,27 +861,7 @@ Comando:
 npm run build
 ```
 
-Estado atual:
-
-```txt
-Passa sem erros.
-```
-
-Aviso atual:
-
-```txt
-Some chunks are larger than 500 kB after minification.
-```
-
-Isto indica que o bundle principal está grande.
-
-Não bloqueia a fase atual, mas deve ser otimizado futuramente com:
-
-* `React.lazy`;
-* `Suspense`;
-* code splitting por páginas;
-* imports dinâmicos;
-* análise de bundle.
+O frontend utiliza carregamento lazy e divisão de código por páginas, gerando chunks separados durante o build.
 
 ---
 
@@ -879,12 +871,6 @@ Comando:
 
 ```bash
 npm run lint
-```
-
-Estado atual:
-
-```txt
-Passa sem erros.
 ```
 
 O lint deve ser corrido antes de commits relevantes.
@@ -933,19 +919,7 @@ Mitigação futura:
 
 ---
 
-### 27.2 Bundle grande
-
-O bundle JS principal ultrapassa o limite recomendado pelo Vite (500 kB após minificação).
-
-Mitigação futura:
-
-* code splitting por área com `React.lazy`;
-* lazy loading por página;
-* análise de dependências.
-
----
-
-### 27.3 Falta de Error Boundary
+### 27.2 Falta de Error Boundary
 
 Ainda não existe uma camada dedicada para erros inesperados de render.
 
@@ -1053,8 +1027,7 @@ Prioridade recomendada:
 ```txt
 1. Adicionar testes frontend a utils e guards
 2. Criar Error Boundary
-3. Implementar code splitting por páginas
-4. Adicionar testes E2E com Playwright
+3. Adicionar testes E2E com Playwright
 ```
 
 ---
@@ -1076,10 +1049,9 @@ Pontos fortes:
 Pontos a melhorar futuramente:
 
 * testes frontend;
-* code splitting;
 * Error Boundary;
 * redução de duplicação;
 * divisão de hooks grandes;
 * documentação complementar.
 
-O projeto está fechado e tem uma base arquitetural sólida e sustentável.
+A base arquitetural atual é adequada, organizada e sustentável para a fase do projeto.

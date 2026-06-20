@@ -110,10 +110,6 @@ frontend/
 │   ├── API_CONTRACT.md
 │   ├── ARCHITECTURE.md
 │   ├── DEPLOYMENT.md
-│   ├── ENVIRONMENT.md
-│   ├── ROUTES.md
-│   ├── STATE_MANAGEMENT.md
-│   ├── TESTING.md
 │   └── UI_COMPONENTS.md
 ├── public/
 ├── src/
@@ -141,6 +137,7 @@ frontend/
 │   └── main.jsx
 ├── .env.example
 ├── .env.production.example
+├── eslint.config.js
 ├── index.html
 ├── package.json
 ├── package-lock.json
