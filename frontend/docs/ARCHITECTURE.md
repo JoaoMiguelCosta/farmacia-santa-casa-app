@@ -210,7 +210,7 @@ shared = reutilização global
 ```txt
 src/shared/
 ├── api/
-├── components/
+├── hooks/
 ├── layouts/
 ├── ui/
 └── utils/
@@ -573,28 +573,32 @@ Subáreas:
 dashboard
 extras
 historico
+home
+medicacaoHabitual
 operacao
 pedidos
 receitas
 regularizacoes
-sem-receita
+semReceita
 shared
 utentes
 ```
 
 ### Responsabilidades principais
 
-| Subárea          | Responsabilidade                                 |
-| ---------------- | ------------------------------------------------ |
-| `dashboard`      | sinais gerais da Santa Casa                      |
-| `utentes`        | criação, listagem, arquivo, reativação e remoção |
-| `operacao`       | agregação operacional por utente                 |
-| `receitas`       | criação/listagem de receitas                     |
-| `sem-receita`    | medicamentos não sujeitos a receita médica       |
-| `extras`         | Vendas Suspensas                                 |
-| `pedidos`        | pedido geral e pedidos pendentes                 |
-| `regularizacoes` | regularizações pendentes e histórico             |
-| `historico`      | histórico de pedidos da Santa Casa               |
+| Subárea             | Responsabilidade                                 |
+| ------------------- | ------------------------------------------------ |
+| `home`              | página de entrada da área Santa Casa             |
+| `dashboard`         | sinais gerais da Santa Casa                      |
+| `utentes`           | criação, listagem, arquivo, reativação e remoção |
+| `operacao`          | agregação operacional por utente                 |
+| `receitas`          | criação/listagem de receitas                     |
+| `medicacaoHabitual` | medicação habitual e sugestões operacionais do utente |
+| `semReceita`        | medicamentos não sujeitos a receita médica       |
+| `extras`            | Vendas Suspensas                                 |
+| `pedidos`           | pedido geral e pedidos pendentes                 |
+| `regularizacoes`    | regularizações pendentes e histórico             |
+| `historico`         | histórico de pedidos da Santa Casa               |
 
 ---
 
@@ -609,8 +613,10 @@ src/features/farmacia/
 Subáreas:
 
 ```txt
+alertas
 dashboard
 historico
+home
 pedidos
 regularizacoes
 shared
@@ -620,7 +626,9 @@ shared
 
 | Subárea          | Responsabilidade                          |
 | ---------------- | ----------------------------------------- |
+| `home`           | página de entrada da área Farmácia        |
 | `dashboard`      | sinais operacionais da Farmácia           |
+| `alertas`        | consulta e fecho de alertas operacionais  |
 | `pedidos`        | listagem, validação e rejeição de pedidos |
 | `regularizacoes` | regularizações pendentes e histórico      |
 | `historico`      | histórico de pedidos                      |
@@ -640,17 +648,19 @@ Subáreas:
 
 ```txt
 health
+home
 manutencao
 users
 ```
 
 ### Responsabilidades principais
 
-| Subárea      | Responsabilidade                  |
-| ------------ | --------------------------------- |
-| `health`     | estado dos serviços/backend       |
-| `manutencao` | preview/run de jobs de manutenção |
-| `users`      | gestão de utilizadores do sistema |
+| Subárea      | Responsabilidade                        |
+| ------------ | --------------------------------------- |
+| `home`       | página de entrada da área Sistema/Admin |
+| `health`     | estado dos serviços/backend             |
+| `manutencao` | preview/run de jobs de manutenção       |
+| `users`      | gestão de utilizadores do sistema       |
 
 A área de manutenção deve ser tratada como sensível porque permite executar jobs que podem alterar ou apagar dados.
 
@@ -714,7 +724,6 @@ Devem ficar dentro de:
 
 ```txt
 shared/ui/
-shared/components/
 shared/layouts/
 ```
 

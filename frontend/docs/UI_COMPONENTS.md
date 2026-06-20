@@ -29,7 +29,6 @@ Os componentes reutilizáveis estão em:
 
 ```txt
 src/shared/
-├── components/
 ├── layouts/
 └── ui/
 ```
@@ -82,7 +81,7 @@ features/farmacia/shared/pedidos     ✅ partilhado dentro da área Farmácia
 
 ---
 
-## 4. Diferença entre `shared/ui`, `shared/components` e `shared/layouts`
+## 4. Diferença entre `shared/ui` e `shared/layouts`
 
 ### `shared/ui`
 
