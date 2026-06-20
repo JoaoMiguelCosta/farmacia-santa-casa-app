@@ -525,7 +525,6 @@ Após cancelamento de pedidos pendentes associados, a remoção volta a ser poss
 | `PENDENTE`                  | Venda Suspensa em aberto.                                      |
 | `PARCIALMENTE_REGULARIZADO` | Parte da quantidade já foi regularizada.                       |
 | `REGULARIZADO`              | Venda Suspensa concluída.                                      |
-| `EXPIRADO`                  | Estado previsto para expiração/encerramento, quando aplicável. |
 
 ### 10.2 Criação de Venda Suspensa
 
@@ -575,6 +574,7 @@ A quantidade restante é calculada assim:
 
 ```txt
 quantidadeRestante = quantidadeSolicitada
+  - quantidadeDispensada
   - quantidadeRegularizada
   - quantidadeCancelada
   - quantidadeReservadaPendente
@@ -583,6 +583,7 @@ quantidadeRestante = quantidadeSolicitada
 Onde:
 
 * `quantidadeSolicitada` é a quantidade em aberto.
+* `quantidadeDispensada` é a quantidade incluída em itens de pedido validados.
 * `quantidadeRegularizada` é a quantidade já regularizada.
 * `quantidadeCancelada` é a quantidade cancelada por chegada posterior de receita ou ajuste do sistema.
 * `quantidadeReservadaPendente` é a quantidade em pedidos pendentes.
@@ -820,8 +821,10 @@ Ao validar:
 
 Ao validar:
 
+* O registo de Venda Suspensa associado é encerrado: o seu estado interno passa imediatamente para `REGULARIZADO`.
 * É criada uma `RegularizacaoExtra` associada ao utente, Venda Suspensa e pedido.
-* A regularização fica pendente até existir receita compatível.
+* A `RegularizacaoExtra` fica pendente até existir uma linha de receita compatível; quando surgir, a quantidade pendente é aplicada à receita.
+* O facto de a Venda Suspensa estar internamente em `REGULARIZADO` não significa que a receita já tenha sido associada — a regularização pode ainda estar pendente.
 * A quantidade validada deixa de estar em aberto na Venda Suspensa.
 * O item passa para `VALIDADO`.
 * É guardado `validatedAt` e `validatedById`.
