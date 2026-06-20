@@ -302,11 +302,7 @@ Ao remover:
 
 A medicação habitual representa medicamentos normalmente usados pelo utente.
 
-No domínio atual, serve como apoio operacional para:
-
-* Sugerir medicamentos na criação de receitas.
-* Sugerir medicamentos não sujeitos a receita médica.
-* Sugerir medicamentos para Venda Suspensa.
+O backend persiste e disponibiliza a lista de medicamentos habituais do utente. O frontend utiliza essa lista como apoio e sugestão nos formulários operacionais aplicáveis, nomeadamente na criação de receitas, medicamentos não sujeitos a receita médica e Vendas Suspensas.
 
 Não representa stock, receita, dispensa, pedido nem regularização.
 
@@ -514,6 +510,8 @@ Um registo só pode ser removido se:
 * Não estiver associado a nenhum item de pedido pendente.
 
 Após cancelamento de pedidos pendentes associados, a remoção volta a ser possível se não restarem bloqueios.
+
+Se existirem itens históricos não pendentes associados ao registo, esses itens são desvinculados antes da eliminação. O histórico do pedido é preservado; o item deixa de referenciar o registo de medicamento não sujeito a receita médica, mas não é eliminado.
 
 ---
 
@@ -805,6 +803,7 @@ Ao cancelar:
 
 * O pedido passa para `CANCELADO`.
 * Os itens pendentes passam para `CANCELADO`.
+* O motivo de cancelamento é opcional; quando não é fornecido, o backend aplica um motivo padrão.
 * É guardado um motivo em `closedReason`/`cancelReason`.
 * Pode ser guardado o utilizador que cancelou.
 
@@ -1042,6 +1041,10 @@ Quando a Santa Casa cria um pedido:
 * O alerta aponta para o pedido.
 * A Farmácia passa a ver esse alerta como ativo.
 
+A criação é idempotente: é usada uma `idempotencyKey` com o formato `PEDIDO_ENVIADO:{pedidoId}`; tentativas repetidas não criam alertas duplicados para o mesmo pedido.
+
+A criação do alerta ocorre como efeito secundário após a criação do pedido ser concluída. Uma falha ao criar o alerta não reverte o pedido; a falha é registada nos logs.
+
 ### 14.4 Alerta de regularização parcial
 
 Quando uma regularização passa para `PARCIALMENTE_REGULARIZADO`:
@@ -1049,6 +1052,8 @@ Quando uma regularização passa para `PARCIALMENTE_REGULARIZADO`:
 * É criado alerta `REGULARIZACAO_PARCIAL`.
 * O alerta inclui pedido, utente, medicamento e quantidades em metadata.
 * O alerta indica que ainda existe quantidade por regularizar.
+
+A criação ocorre como efeito secundário após a regularização. Uma falha ao criar o alerta não reverte a regularização; a falha é registada nos logs. O mesmo comportamento aplica-se ao alerta de regularização total (§14.5).
 
 ### 14.5 Alerta de regularização total
 
@@ -1071,6 +1076,8 @@ Fechar um alerta:
 * Não altera regularizações.
 * Não altera receitas.
 * Apenas marca o alerta como dispensado para o utilizador atual.
+
+O encerramento global processa até 200 alertas operacionais ativos por execução. Caso existam mais de 200 alertas ativos, pode ser necessário invocar o endpoint novamente.
 
 ---
 
