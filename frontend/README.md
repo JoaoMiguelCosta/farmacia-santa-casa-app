@@ -1,128 +1,110 @@
 # Frontend — Farmácia Santa Casa
 
-Frontend da aplicação **Farmácia Santa Casa**, responsável pela interface de utilização para os contextos **Santa Casa**, **Farmácia** e **Sistema/Admin**.
+Frontend da aplicação **Farmácia Santa Casa**, responsável pela interface operacional dos contextos **Santa Casa**, **Farmácia** e **Sistema/Admin**.
 
-Este frontend foi construído com **React**, **Vite**, **React Router** e **CSS Modules**.
+Construído com React, Vite, React Router e CSS Modules.
 
-> Estado atual: projeto fechado — funcionalidades principais implementadas e validadas.
-
----
-
-## 1. Índice
-
-- [1. Índice](#1-índice)
-- [2. Estado atual](#2-estado-atual)
-- [3. Objetivo do frontend](#3-objetivo-do-frontend)
-- [4. Stack técnica](#4-stack-técnica)
-- [5. Estrutura principal](#5-estrutura-principal)
-- [6. Instalação local](#6-instalação-local)
-- [7. Variáveis de ambiente](#7-variáveis-de-ambiente)
-- [8. Scripts NPM](#8-scripts-npm)
-- [9. Como arrancar o frontend](#9-como-arrancar-o-frontend)
-- [10. Integração com o backend](#10-integração-com-o-backend)
-- [11. Autenticação e autorização](#11-autenticação-e-autorização)
-- [12. Áreas principais](#12-áreas-principais)
-- [13. Arquitetura frontend](#13-arquitetura-frontend)
-- [14. Estado global](#14-estado-global)
-- [15. Camada de API](#15-camada-de-api)
-- [16. Componentes partilhados](#16-componentes-partilhados)
-- [17. Build e lint](#17-build-e-lint)
-- [18. Testes](#18-testes)
-- [19. Segurança](#19-segurança)
-- [20. Convenções de desenvolvimento](#20-convenções-de-desenvolvimento)
-- [21. Troubleshooting](#21-troubleshooting)
-- [22. Checklist antes de commit](#22-checklist-antes-de-commit)
-- [23. Checklist antes de deploy](#23-checklist-antes-de-deploy)
-- [24. Limites atuais](#24-limites-atuais)
-- [25. Próximos passos recomendados](#25-próximos-passos-recomendados)
+> **Estado atual:** funcionalidades principais implementadas, integração com o backend validada e frontend publicado em staging.
 
 ---
 
-## 2. Estado atual
+## Demonstração pública
 
-Estado validado:
+### Frontend
 
-- estrutura principal do frontend criada;
-- arquitetura por features implementada;
-- autenticação e guards por role implementados;
-- integração com backend feita por `httpClient`;
-- áreas principais criadas e fechadas:
+https://farmacia-santacasa-frontend-staging.onrender.com
 
-  - Santa Casa;
-  - Farmácia;
-  - Sistema/Admin;
+### API utilizada pelo staging
 
-- estado global de autenticação implementado;
-- estado global do pedido em preparação implementado;
-- persistência local do pedido em preparação via `localStorage`;
-- refatoração P1/P2/P3 concluída — sem componentes inline, helpers extraídos para utils;
-- documentação em `frontend/docs/` criada;
-- `frontend/.env.example` criado;
-- `npm run lint` passa sem erros;
-- `npm run build` passa sem erros.
+https://farmacia-santacasa-backend-staging.onrender.com/api
 
-Comandos validados:
+Contas demo:
 
-```bash
-npm run lint
-npm run build
-```
+| Role | Email |
+| --- | --- |
+| `ADMIN` | `demo.admin@sistema.local` |
+| `SANTACASA` | `demo.santacasa@sistema.local` |
+| `FARMACIA` | `demo.farmacia@sistema.local` |
+
+As passwords são fornecidas separadamente e não existem no repositório.
 
 ---
 
-## 3. Objetivo do frontend
+## Objetivo
 
-O frontend serve como interface operacional para:
+O frontend disponibiliza uma interface clara, institucional e operacional para:
 
-- **Santa Casa**
+### Santa Casa
 
-  - gerir utentes;
-  - criar receitas;
-  - criar medicamentos não sujeitos a receita médica;
-  - criar Vendas Suspensas;
-  - preparar e enviar pedidos para a Farmácia;
-  - consultar pedidos pendentes;
-  - consultar regularizações;
-  - consultar histórico.
+- gerir utentes;
+- gerir medicação habitual;
+- criar receitas;
+- criar medicamentos não sujeitos a receita médica;
+- criar medicamentos para Venda Suspensa;
+- preparar e enviar pedidos;
+- consultar pedidos;
+- consultar histórico;
+- acompanhar regularizações;
+- consultar indicadores operacionais.
 
-- **Farmácia**
+### Farmácia
 
-  - consultar pedidos enviados pela Santa Casa;
-  - validar pedidos;
-  - rejeitar pedidos;
-  - consultar regularizações;
-  - consultar histórico;
-  - acompanhar sinais operacionais.
+- consultar pedidos pendentes;
+- validar pedidos;
+- rejeitar pedidos;
+- consultar histórico;
+- acompanhar regularizações;
+- consultar e fechar alertas;
+- consultar indicadores operacionais.
 
-- **Sistema/Admin**
+### Sistema/Admin
 
-  - consultar estado dos serviços;
-  - gerir utilizadores;
-  - pré-visualizar jobs de manutenção;
-  - executar jobs de manutenção quando permitido.
-
----
-
-## 4. Stack técnica
-
-| Área            | Tecnologia            |
-| --------------- | --------------------- |
-| Framework UI    | React                 |
-| Build tool      | Vite                  |
-| Routing         | React Router          |
-| Estilos         | CSS Modules           |
-| Estado global   | Context API           |
-| HTTP client     | Fetch API encapsulada |
-| Lint            | ESLint                |
-| Deploy previsto | Vercel ou equivalente |
+- gerir utilizadores;
+- consultar health e readiness;
+- pré-visualizar jobs;
+- executar jobs administrativos com confirmação;
+- aceder às áreas Santa Casa e Farmácia.
 
 ---
 
-## 5. Estrutura principal
+## Stack técnica
 
-Estrutura simplificada:
+| Área | Tecnologia |
+| --- | --- |
+| UI | React |
+| Build | Vite |
+| Routing | React Router |
+| Estilos | CSS Modules |
+| Estado global | Context API |
+| HTTP | Fetch API encapsulada |
+| Códigos de barras | JsBarcode |
+| Lint | ESLint |
+| Deploy atual | Render |
 
-```txt
+---
+
+## Direção visual
+
+A interface segue uma direção **clinic premium operacional**:
+
+- clara;
+- institucional;
+- calma;
+- profissional;
+- acessível a utilizadores de várias idades;
+- com boa legibilidade;
+- superfícies claras;
+- bordas suaves;
+- sombras controladas;
+- botões e controlos com dimensões confortáveis;
+- contraste moderado;
+- responsividade consistente.
+
+---
+
+## Estrutura principal
+
+```text
 frontend/
 ├── docs/
 │   ├── API_CONTRACT.md
@@ -137,15 +119,7 @@ frontend/
 ├── src/
 │   ├── app/
 │   │   ├── router/
-│   │   │   ├── routes/
-│   │   │   │   ├── farmacia.routes.jsx
-│   │   │   │   ├── santaCasa.routes.jsx
-│   │   │   │   └── system.routes.jsx
-│   │   │   ├── router.jsx
-│   │   │   └── router.utils.jsx
 │   │   ├── styles/
-│   │   │   ├── global.css
-│   │   │   └── tokens.css
 │   │   └── App.jsx
 │   ├── assets/
 │   ├── features/
@@ -165,8 +139,8 @@ frontend/
 │   │   ├── ui/
 │   │   └── utils/
 │   └── main.jsx
-├── .env
 ├── .env.example
+├── .env.production.example
 ├── index.html
 ├── package.json
 ├── package-lock.json
@@ -177,88 +151,177 @@ A pasta `dist/` é gerada pelo build e não deve ser versionada.
 
 ---
 
-## 6. Instalação local
+## Arquitetura
 
-### 6.1 Entrar na pasta do frontend
+A aplicação segue uma arquitetura **feature-based**.
+
+Estrutura típica:
+
+```text
+feature/
+├── api/
+├── components/
+├── config/
+├── hooks/
+├── state/
+└── utils/
+```
+
+Nem todas as features necessitam de todas as pastas.
+
+### Responsabilidades
+
+| Pasta | Responsabilidade |
+| --- | --- |
+| `api/` | chamadas HTTP do domínio |
+| `components/` | componentes específicos da feature |
+| `config/` | textos, labels, mensagens e opções |
+| `hooks/` | estado e lógica da feature |
+| `state/` | contextos e persistência local |
+| `utils/` | funções puras |
+| `pages/` | páginas finas e composição final |
+| `shared/` | elementos reutilizáveis globais |
+
+Princípios aplicados:
+
+- páginas finas;
+- lógica fora do JSX;
+- API isolada;
+- textos visíveis em ficheiros de configuração;
+- CSS Modules;
+- componentes partilhados sem dependências de domínio;
+- alterações pequenas e validáveis.
+
+---
+
+## Instalação local
+
+### 1. Entrar na pasta
 
 ```bash
 cd frontend
 ```
 
-### 6.2 Instalar dependências
+### 2. Instalar dependências
 
 ```bash
 npm install
 ```
 
-### 6.3 Criar `.env`
-
-Copiar o exemplo:
+Para uma instalação reprodutível:
 
 ```bash
-cp .env.example .env
+npm ci
 ```
 
-No PowerShell:
+### 3. Criar o ambiente local
+
+PowerShell:
 
 ```powershell
 Copy-Item .env.example .env
 ```
 
-### 6.4 Arrancar servidor de desenvolvimento
+Linux/macOS:
 
 ```bash
-npm run dev
+cp .env.example .env
 ```
 
----
-
-## 7. Variáveis de ambiente
-
-O frontend usa variáveis Vite.
-
-Ficheiro local:
-
-```txt
-.env
-```
-
-Ficheiro de exemplo versionado:
-
-```txt
-.env.example
-```
-
-Conteúdo atual:
+Conteúdo local:
 
 ```env
 VITE_API_BASE_URL="http://localhost:3001/api"
 ```
 
-### Nota importante
+### 4. Arrancar
 
-Todas as variáveis expostas ao frontend devem começar por:
-
-```txt
-VITE_
+```bash
+npm run dev
 ```
 
-Nunca colocar segredos no frontend.
+Endereço típico:
 
-O frontend corre no browser. Qualquer variável `VITE_*` pode ser vista pelo utilizador final.
+```text
+http://localhost:5173
+```
 
 ---
 
-## 8. Scripts NPM
+## Variáveis de ambiente
 
-Scripts principais definidos no `package.json`:
+Templates:
+
+```text
+.env.example
+.env.production.example
+```
+
+### Desenvolvimento
+
+```env
+VITE_API_BASE_URL="http://localhost:3001/api"
+```
+
+### Build remoto
+
+Exemplo:
+
+```env
+VITE_API_BASE_URL="https://api.exemplo.pt/api"
+```
+
+### Regras de segurança
+
+Todas as variáveis `VITE_*` ficam disponíveis no bundle do browser.
+
+Nunca colocar no frontend:
+
+- passwords;
+- `DATABASE_URL`;
+- `AUTH_JWT_SECRET`;
+- tokens privados;
+- chaves privadas;
+- credenciais reais.
+
+---
+
+## Proteção do build
+
+O `vite.config.js` valida `VITE_API_BASE_URL` durante o build.
+
+O build falha quando a variável:
+
+- está ausente;
+- não contém uma URL válida;
+- não usa HTTPS;
+- aponta para `localhost`, `127.0.0.1`, `0.0.0.0` ou `::1`;
+- contém query string;
+- contém fragmento;
+- não termina exatamente em `/api`.
+
+Exemplo válido:
+
+```env
+VITE_API_BASE_URL="https://farmacia-santacasa-backend-staging.onrender.com/api"
+```
+
+Em desenvolvimento, o fallback local só é permitido quando o Vite está em modo `DEV`.
+
+---
+
+## Scripts NPM
+
+Scripts atuais:
 
 ```json
 {
   "dev": "vite",
   "build": "vite build",
   "lint": "eslint .",
-  "preview": "vite preview"
+  "preview": "vite preview",
+  "audit": "npm audit",
+  "validate": "npm run lint && npm run build && npm run audit"
 }
 ```
 
@@ -268,13 +331,13 @@ Scripts principais definidos no `package.json`:
 npm run dev
 ```
 
-### Build de produção
+### Build
 
 ```bash
 npm run build
 ```
 
-### Preview local do build
+### Preview
 
 ```bash
 npm run preview
@@ -286,94 +349,70 @@ npm run preview
 npm run lint
 ```
 
----
-
-## 9. Como arrancar o frontend
-
-### 9.1 Arrancar backend
-
-Antes do frontend, o backend deve estar ativo:
+### Audit
 
 ```bash
-cd backend
-npm run dev
+npm run audit
 ```
 
-Por defeito:
-
-```txt
-http://localhost:3001/api
-```
-
-### 9.2 Arrancar frontend
-
-Noutro terminal:
+### Validação completa do frontend
 
 ```bash
-cd frontend
-npm run dev
+npm run validate
 ```
-
-Por defeito, o Vite usa uma porta como:
-
-```txt
-http://localhost:5173
-```
-
-ou outra próxima, se a porta estiver ocupada.
 
 ---
 
-## 10. Integração com o backend
+## Integração com o backend
 
-A integração é feita através de:
+A camada HTTP partilhada encontra-se em:
 
-```txt
-src/shared/api/httpClient.js
-src/shared/api/endpoints.js
+```text
+src/shared/api/
+├── endpoints.js
+├── httpClient.config.js
+├── httpClient.js
+└── httpClient.utils.js
 ```
 
-### `httpClient.js`
+### Responsabilidades
 
-Responsável por:
+`httpClient.config.js`:
 
-- construir URLs;
-- enviar cookies com `credentials: "include"`;
-- serializar query params;
-- enviar JSON;
-- interpretar respostas;
-- lançar erros HTTP normalizados;
-- marcar erros `401` e `403` como erros de autenticação/autorização.
+- resolve a base URL;
+- permite localhost apenas em desenvolvimento;
+- bloqueia ausência de configuração fora de desenvolvimento.
 
-### `endpoints.js`
+`httpClient.js`:
 
-Centraliza os endpoints usados pelo frontend:
+- constrói requests;
+- envia cookies com `credentials: "include"`;
+- envia JSON;
+- interpreta respostas;
+- normaliza erros;
+- trata `401` e `403`.
 
-```txt
-auth
-admin
-santacasa
-farmacia
-manutencao
-```
+`endpoints.js`:
 
-Isto evita strings de API espalhadas pela aplicação.
+- centraliza os caminhos da API;
+- evita strings espalhadas;
+- organiza endpoints por domínio.
 
 ---
 
-## 11. Autenticação e autorização
+## Autenticação e autorização
 
-A autenticação usa sessão baseada em cookie HTTP-only emitido pelo backend.
-
-No frontend, a autenticação é gerida por:
-
-```txt
-src/features/auth/
-```
+A autenticação usa cookie HTTP-only emitido pelo backend.
 
 Principais peças:
 
-```txt
+```text
+src/features/auth/
+```
+
+Inclui:
+
+```text
 AuthProvider
 AuthContext
 useAuth
@@ -383,30 +422,33 @@ AuthHomeRedirect
 useIdleLogout
 ```
 
-### Regras principais
+### Regras
 
-- utilizador sem sessão é redirecionado para `/login`;
-- utilizador autenticado é encaminhado conforme a sua role;
-- páginas sensíveis são protegidas por role;
-- erros `401` e `403` são tratados centralmente.
+- utilizadores sem sessão são redirecionados para `/login`;
+- utilizadores autenticados são encaminhados de acordo com a role;
+- rotas sensíveis são protegidas;
+- a sessão é validada no backend;
+- erros `401` e `403` são tratados centralmente;
+- o logout remove a sessão;
+- a sessão mantém-se após refresh quando o cookie continua válido.
 
 ### Roles
 
-| Role        | Área                                 |
-| ----------- | ------------------------------------ |
-| `ADMIN`     | Sistema/Admin, Santa Casa e Farmácia |
-| `SANTACASA` | Santa Casa                           |
-| `FARMACIA`  | Farmácia                             |
+| Role | Acesso |
+| --- | --- |
+| `ADMIN` | Sistema/Admin, Santa Casa e Farmácia |
+| `SANTACASA` | Santa Casa |
+| `FARMACIA` | Farmácia |
 
-Nota: o frontend melhora a experiência e bloqueia navegação indevida, mas a segurança real deve continuar sempre no backend.
+O frontend protege a navegação, mas a autorização real pertence ao backend.
 
 ---
 
-## 12. Áreas principais
+## Áreas funcionais
 
-## 12.1 Auth
+### Auth
 
-```txt
+```text
 src/features/auth/
 src/pages/auth/
 ```
@@ -414,215 +456,134 @@ src/pages/auth/
 Responsável por:
 
 - login;
-- sessão atual;
+- sessão;
 - logout;
 - proteção de rotas;
-- logout por inatividade;
-- redirecionamento por role.
+- redirecionamento por role;
+- logout por inatividade.
 
----
+### Santa Casa
 
-## 12.2 Santa Casa
-
-```txt
+```text
 src/features/santacasa/
 src/pages/santacasa/
 ```
 
-Inclui:
+Features principais:
 
-```txt
+```text
 dashboard
+home
 utentes
 operacao
 pedidos
-regularizacoes
 historico
+regularizacoes
 ```
 
-A área de operação agrega:
+A Operação integra:
 
+- seleção de utente;
+- medicação habitual;
 - receitas;
 - medicamentos não sujeitos a receita médica;
-- Vendas Suspensas;
-- seleção de utente;
-- ações para adicionar itens ao pedido geral.
+- medicamentos para Venda Suspensa;
+- pedido em preparação.
 
----
+### Farmácia
 
-## 12.3 Farmácia
-
-```txt
+```text
 src/features/farmacia/
 src/pages/farmacia/
 ```
 
-Inclui:
+Features principais:
 
-```txt
+```text
 dashboard
+home
 pedidos
-regularizacoes
 historico
+regularizacoes
+alertas
 ```
 
-Permite:
+### Sistema/Admin
 
-- consultar pedidos;
-- validar pedidos;
-- rejeitar pedidos;
-- acompanhar regularizações;
-- consultar histórico.
-
----
-
-## 12.4 Sistema/Admin
-
-```txt
+```text
 src/features/system/
 src/pages/system/
 ```
 
-Inclui:
+Features principais:
 
-```txt
+```text
+home
 health
-manutencao
 users
+manutencao
 ```
-
-Permite:
-
-- verificar estado dos serviços;
-- gerir utilizadores;
-- pré-visualizar jobs;
-- executar jobs de manutenção.
 
 ---
 
-## 13. Arquitetura frontend
+## Estado global
 
-A arquitetura segue uma abordagem **feature-based**.
+### Autenticação
 
-Padrão principal:
+O estado de autenticação gere:
 
-```txt
-feature/
-├── api/
-├── components/
-├── config/
-├── hooks/
-├── state/
-└── utils/
-```
-
-Nem todas as features têm todas as pastas. Cada feature tem apenas o que precisa.
-
-### Responsabilidades
-
-| Pasta         | Responsabilidade                       |
-| ------------- | -------------------------------------- |
-| `api/`        | chamadas HTTP ao backend               |
-| `components/` | componentes específicos da feature     |
-| `config/`     | textos, labels, opções, mensagens      |
-| `hooks/`      | estado e lógica da feature             |
-| `state/`      | contexto/persistência local da feature |
-| `utils/`      | funções puras e helpers                |
-| `pages/`      | composição final de página             |
-| `shared/`     | elementos reutilizáveis globais        |
-
----
-
-## 14. Estado global
-
-Existem dois estados globais principais.
-
-### 14.1 Auth
-
-```txt
-src/features/auth/context/AuthProvider.jsx
-```
-
-Responsável por:
-
-- guardar utilizador atual;
-- verificar sessão;
+- utilizador atual;
+- verificação da sessão;
 - login;
 - logout;
 - erros de autenticação;
-- expiração de sessão.
+- expiração da sessão.
 
-### 14.2 Pedido em preparação
+### Pedido em preparação
 
-```txt
-src/features/santacasa/pedidos/state/PedidoDraftProvider.jsx
-```
+O pedido da Santa Casa é mantido num provider dedicado.
 
-Responsável por:
+Responsabilidades:
 
-- guardar itens do pedido geral;
-- adicionar/remover itens;
+- adicionar itens;
+- remover itens;
 - alterar quantidades;
-- persistir no `localStorage`;
-- limpar pedido após envio.
+- persistir em `localStorage`;
+- limpar depois do envio.
 
-Persistência:
+Chave utilizada:
 
-```txt
+```text
 farmacia-santa-casa:pedido-draft
 ```
 
 ---
 
-## 15. Camada de API
+## Componentes partilhados
 
-Cada domínio tem o seu próprio ficheiro de API.
+Exemplos em:
 
-Exemplos:
-
-```txt
-features/santacasa/utentes/api/utentesApi.js
-features/santacasa/receitas/api/receitasApi.js
-features/santacasa/pedidos/api/pedidosApi.js
-features/farmacia/pedidos/api/farmaciaPedidosApi.js
-features/system/users/api/systemUsersApi.js
-```
-
-Estes ficheiros não devem conter lógica visual.
-
-Devem apenas:
-
-- preparar query params;
-- chamar `httpClient`;
-- normalizar respostas simples quando necessário.
-
----
-
-## 16. Componentes partilhados
-
-Componentes de UI reutilizáveis:
-
-```txt
+```text
 src/shared/ui/
-├── BarcodeValue/
-├── BrandMark/
-├── Button/
-├── ConfirmDialog/
-├── DashboardMetricCard/
-├── DashboardMetricGroup/
-├── DashboardPriorityCard/
-├── DataState/
-├── FeedbackDialog/
-├── FormField/
-├── HomeActionCard/
-├── OperationalDetailState/
-├── PageHeader/
-└── SurfaceCard/
 ```
 
-Layouts reutilizáveis:
+Incluem:
 
-```txt
+- `BarcodeValue`;
+- `BrandMark`;
+- `Button`;
+- `ConfirmDialog`;
+- componentes de dashboard;
+- `DataState`;
+- `FeedbackDialog`;
+- `FormField`;
+- `OperationalDetailState`;
+- `PageHeader`;
+- `SurfaceCard`.
+
+Layouts:
+
+```text
 src/shared/layouts/
 ├── AppShell/
 └── AreaLanding/
@@ -630,12 +591,34 @@ src/shared/layouts/
 
 Regra:
 
-- componentes em `shared/` não devem depender de uma feature específica;
-- componentes específicos de domínio devem ficar dentro da respetiva feature.
+```text
+Um componente shared não deve depender de uma feature específica.
+```
 
 ---
 
-## 17. Build e lint
+## Routing e carregamento
+
+As rotas estão organizadas por área:
+
+```text
+src/app/router/routes/
+├── farmacia.routes.jsx
+├── santaCasa.routes.jsx
+└── system.routes.jsx
+```
+
+As páginas são carregadas de forma lazy quando aplicável, reduzindo o carregamento inicial e separando o bundle por rotas.
+
+O deploy deve aplicar rewrite SPA para que rotas diretas sejam encaminhadas para:
+
+```text
+/index.html
+```
+
+---
+
+## Build e validação
 
 ### Lint
 
@@ -643,278 +626,299 @@ Regra:
 npm run lint
 ```
 
-Estado atual:
+### Build de staging
 
-```txt
-✅ passa sem erros
+PowerShell:
+
+```powershell
+$env:VITE_API_BASE_URL="https://farmacia-santacasa-backend-staging.onrender.com/api"
+npm run build
+Remove-Item Env:VITE_API_BASE_URL
 ```
 
-### Build
+### Preview
 
 ```bash
-npm run build
+npm run preview
 ```
 
-Estado atual:
+### Validação completa
 
-```txt
-✅ passa sem erros
+```bash
+npm run validate
 ```
 
-Aviso atual:
-
-```txt
-Some chunks are larger than 500 kB after minification.
-```
-
-Este aviso deve ser tratado futuramente com code splitting.
+O build de staging e o lint foram validados.
 
 ---
 
-## 18. Testes
+## Deploy no Render
 
-Ainda não existem testes automatizados no frontend.
+A plataforma deve definir:
 
-Isto é uma limitação conhecida.
-
-### Testes recomendados futuramente
-
-Ferramentas possíveis:
-
-- Vitest;
-- React Testing Library;
-- Playwright, para E2E real no browser.
-
-### Ordem recomendada
-
-```txt
-1. utils
-2. hooks simples
-3. httpClient
-4. auth guards
-5. componentes partilhados críticos
-6. fluxos principais com browser real
+```env
+VITE_API_BASE_URL="https://farmacia-santacasa-backend-staging.onrender.com/api"
 ```
 
-### Exemplos de testes úteis
+A variável é incorporada durante o build.
 
-- `formatDateTime`;
-- `classNames`;
-- normalização de pedidos;
-- normalização de regularizações;
-- regras do pedido draft;
-- guards por role;
-- renderização de estados de loading/error/empty;
-- login/logout;
-- envio de pedido;
-- validação/rejeição de pedido.
+Alterar o valor exige novo build/deploy.
+
+Também é necessário configurar um rewrite SPA:
+
+```text
+/* → /index.html
+```
+
+Foram validados:
+
+- `/login`;
+- rotas internas;
+- refresh em rotas diretas;
+- sessão;
+- logout;
+- comunicação cross-site com a API.
 
 ---
 
-## 19. Segurança
-
-### Nunca colocar segredos no frontend
-
-Não colocar no `.env` do frontend:
-
-- passwords;
-- JWT secrets;
-- URLs privadas sensíveis;
-- credenciais de base de dados;
-- chaves privadas.
+## Segurança
 
 ### Cookies
 
-O frontend usa:
+As requests autenticadas usam:
 
 ```js
-credentials: "include";
+credentials: "include"
 ```
-
-Isto é necessário porque a sessão é gerida pelo backend através de cookie HTTP-only.
 
 ### CORS
 
-O backend deve permitir a origin do frontend em:
+O backend deve permitir exatamente a origin do frontend.
+
+Exemplo de staging:
 
 ```env
-ALLOWED_ORIGINS
+ALLOWED_ORIGINS="https://farmacia-santacasa-frontend-staging.onrender.com"
 ```
 
-Exemplo local:
+### Secrets
 
-```env
-ALLOWED_ORIGINS="http://localhost:5173,http://localhost:5174"
-```
+Nunca expor no frontend:
+
+- passwords;
+- JWT secrets;
+- ligação à base;
+- tokens privados;
+- chaves de infraestrutura.
+
+### Guards
+
+Os guards frontend melhoram a experiência, mas não substituem o controlo de permissões do backend.
 
 ---
 
-## 20. Convenções de desenvolvimento
+## Testes
+
+Ainda não existe uma suite automatizada de testes frontend.
+
+A validação atual cobre:
+
+- ESLint;
+- build;
+- audit;
+- testes manuais no staging;
+- integração real com o backend;
+- autenticação das três roles;
+- rotas e refresh;
+- fluxos principais da aplicação.
+
+### Evolução recomendada
+
+Ordem sugerida:
+
+1. utils puras;
+2. `httpClient`;
+3. guards de autenticação;
+4. hooks críticos;
+5. componentes partilhados;
+6. fluxos com Playwright.
+
+Ferramentas adequadas:
+
+- Vitest;
+- React Testing Library;
+- Playwright.
+
+---
+
+## Convenções de desenvolvimento
 
 ### Componentes
 
-- usar PascalCase;
-- um componente por pasta quando tiver CSS Module;
-- manter JSX limpo;
-- mover textos longos para `config`;
-- evitar lógica pesada dentro do JSX.
+- PascalCase;
+- um componente por pasta quando tem CSS Module;
+- JSX focado em renderização;
+- lógica movida para hooks e utils;
+- textos visíveis em config sempre que aplicável.
 
 ### Hooks
 
-- usar `useSomething`;
-- hooks devem concentrar lógica de estado;
-- evitar hooks gigantes com responsabilidades demais;
-- dividir quando começarem a misturar vários fluxos.
+- prefixo `use`;
+- responsabilidade clara;
+- evitar hooks demasiado grandes;
+- separar lógica quando mistura vários fluxos.
 
 ### API
 
-- não chamar `fetch` diretamente nas páginas;
-- usar sempre `httpClient`;
-- centralizar endpoints em `endpoints.js`.
+- não usar `fetch` diretamente nas páginas;
+- usar o `httpClient`;
+- centralizar caminhos em `endpoints.js`.
 
 ### CSS
 
 - usar CSS Modules;
-- usar tokens globais de `tokens.css`;
-- evitar estilos inline, salvo exceções pequenas;
-- manter UI consistente com o estilo clínico premium do projeto.
+- reutilizar os tokens globais;
+- evitar estilos inline;
+- manter coerência com o estilo clinic premium operacional;
+- preservar responsividade.
 
-### Configs
+### Páginas
 
-Textos, labels, mensagens e opções devem ficar em ficheiros `*.config.js` sempre que fizer sentido.
+- manter páginas finas;
+- renderizar `PageContent`;
+- evitar regras de negócio em `/pages`.
 
 ---
 
-## 21. Troubleshooting
+## Troubleshooting
 
-### Erro: frontend não comunica com backend
+### O frontend não comunica com o backend
 
-Confirmar `.env`:
+Confirmar:
 
 ```env
 VITE_API_BASE_URL="http://localhost:3001/api"
 ```
 
-Confirmar que o backend está ligado:
+Confirmar o backend:
 
 ```bash
-cd backend
+cd ../backend
 npm run dev
 ```
 
 ### Erro de CORS
 
-Confirmar no backend:
+No backend local:
 
 ```env
 ALLOWED_ORIGINS="http://localhost:5173,http://localhost:5174"
 ```
 
-### Login não mantém sessão
+### O login não mantém a sessão
 
-Confirmar no backend local:
+No backend local:
 
 ```env
 AUTH_COOKIE_SECURE=false
 AUTH_COOKIE_SAME_SITE=lax
 ```
 
-Confirmar que o frontend envia cookies:
+Confirmar que o frontend usa:
 
 ```js
-credentials: "include";
+credentials: "include"
+```
+
+### O build falha por causa da API
+
+O build exige uma URL HTTPS remota que termine em `/api`.
+
+PowerShell:
+
+```powershell
+$env:VITE_API_BASE_URL="https://api.exemplo.pt/api"
+npm run build
+Remove-Item Env:VITE_API_BASE_URL
 ```
 
 ### Alterei `.env` e nada mudou
 
-Reiniciar o Vite:
+Reiniciar:
 
 ```bash
 npm run dev
 ```
 
-O Vite lê variáveis `.env` no arranque.
+O Vite lê os ficheiros de ambiente no arranque.
 
-### Build gerou `dist/`
+### Refresh numa rota interna devolve 404
 
-Normal.
+Configurar rewrite SPA:
 
-A pasta `dist/` é output de produção e não deve ser commitada.
+```text
+/* → /index.html
+```
 
 ---
 
-## 22. Checklist antes de commit
-
-Antes de commit:
+## Checklist antes de commit
 
 ```bash
 npm run lint
 npm run build
-npm audit
+npm run audit
 git status
 ```
 
 Confirmar:
 
-- [ ] `frontend/.env` não aparece no Git.
-- [ ] `frontend/.env.example` aparece quando criado/alterado.
-- [ ] `frontend/dist/` não aparece no Git.
-- [ ] `npm run lint` passa.
-- [ ] `npm run build` passa.
-- [ ] `npm audit` não mostra vulnerabilidades relevantes.
-- [ ] alterações estão limitadas ao necessário.
-- [ ] textos novos foram colocados em config quando fizer sentido.
+- [ ] `.env` real não aparece no Git;
+- [ ] `.env.example` e `.env.production.example` estão versionados;
+- [ ] `dist/` não aparece no Git;
+- [ ] lint passa;
+- [ ] build passa;
+- [ ] audit não apresenta vulnerabilidades relevantes;
+- [ ] alterações estão limitadas ao necessário;
+- [ ] textos novos foram colocados em config quando aplicável.
 
 ---
 
-## 23. Checklist antes de deploy
+## Checklist antes de deploy
 
-- [ ] Definir `VITE_API_BASE_URL` para a API correta.
-- [ ] Confirmar CORS no backend.
-- [ ] Confirmar cookies em ambiente real.
-- [ ] Correr `npm run lint`.
-- [ ] Correr `npm run build`.
-- [ ] Testar login.
-- [ ] Testar cada role.
-- [ ] Testar fluxo Santa Casa.
-- [ ] Testar fluxo Farmácia.
-- [ ] Testar área Admin.
-- [ ] Confirmar que `dist/` não foi commitado manualmente.
-- [ ] Confirmar variáveis no serviço de deploy.
-
----
-
-## 24. Limites atuais
-
-Limitações conhecidas:
-
-- ainda não existem testes automatizados frontend;
-- bundle principal está acima de 500 kB após minificação;
-- ainda não foi implementado code splitting;
-- ainda não existe Error Boundary dedicado;
-- `docs/DEPLOYMENT.md` ainda não está preenchido.
-
-Estas limitações não bloqueiam a fase atual, mas devem ser tratadas antes do deploy em produção.
+- [ ] definir `VITE_API_BASE_URL`;
+- [ ] confirmar HTTPS;
+- [ ] confirmar terminação `/api`;
+- [ ] confirmar CORS no backend;
+- [ ] confirmar cookies;
+- [ ] executar lint;
+- [ ] executar build;
+- [ ] testar login;
+- [ ] testar as três roles;
+- [ ] testar refresh em rotas internas;
+- [ ] testar logout;
+- [ ] testar fluxo Santa Casa;
+- [ ] testar fluxo Farmácia;
+- [ ] testar Sistema/Admin;
+- [ ] confirmar rewrite SPA;
+- [ ] confirmar que não existem secrets no bundle.
 
 ---
 
-## 25. Próximos passos recomendados
+## Limitações conhecidas
 
-### Curto prazo
+- ainda não existe uma suite automatizada de testes frontend;
+- a produção real ainda não foi criada;
+- não existe uma pipeline dedicada de testes E2E no browser;
+- a validação de acessibilidade ainda é predominantemente manual.
 
-- preencher `docs/DEPLOYMENT.md` com checklist e instruções de deploy;
-- validar integração frontend/backend em ambiente de produção;
-- confirmar CORS, cookies e `VITE_API_BASE_URL` em produção.
+Estas limitações não bloqueiam o ambiente atual de portefólio.
 
-### Médio prazo
+---
 
-- adicionar testes frontend (começar por utils e guards);
-- adicionar Error Boundary;
-- implementar code splitting por páginas;
-- rever acessibilidade com testes manuais.
+## Estado final
 
-### Futuro
-
-- otimizar bundle com análise de dependências;
-- adicionar testes E2E com Playwright;
-- rever performance com Lighthouse.
+```text
+Frontend funcional, integrado com o backend, publicado em staging,
+validado nas três roles e preparado para uma futura produção real.
+```
