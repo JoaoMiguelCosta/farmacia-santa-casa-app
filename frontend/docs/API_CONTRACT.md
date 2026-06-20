@@ -4,7 +4,7 @@ Contrato de integração entre o frontend **Farmácia Santa Casa** e o backend d
 
 Este documento descreve como o frontend comunica com a API, quais são os endpoints usados, como são tratados erros, autenticação, paginação, permissões e regras de integração.
 
-> Estado atual: projeto fechado — contrato estabilizado. Atualizar este ficheiro sempre que endpoints ou payloads mudarem.
+> Estado atual: contrato documentado para as integrações implementadas. Atualizar este ficheiro sempre que endpoints ou payloads mudarem.
 
 ---
 
@@ -667,7 +667,65 @@ GET /farmacia/regularizacoes/sinal
 
 ---
 
-## 22. Admin — Utilizadores
+## 22. Farmácia — Alertas
+
+Endpoints:
+
+```txt
+GET  /farmacia/alertas
+POST /farmacia/alertas/:alertaId/dismiss
+POST /farmacia/alertas/dismiss-all
+```
+
+Disponível para utilizadores com acesso à área Farmácia.
+
+A funcionalidade está integrada no `AppShell` da área Farmácia como tray transversal. Não requer rota frontend própria — é apresentada em todas as páginas da área enquanto o utilizador estiver autenticado.
+
+### GET /farmacia/alertas
+
+Obtém a lista de alertas operacionais ativos.
+
+O frontend normaliza a resposta para array, independentemente de vir como array direto ou encapsulado em `data`. Os alertas são ordenados por `createdAt` descendente.
+
+Campos usados pelo frontend:
+
+| Campo | Tipo | Uso |
+| --- | --- | --- |
+| `id` | string | identificar e fechar o alerta |
+| `tipo` | string | determinar label, visual e link de ação |
+| `createdAt` | string (data) | ordenação e exibição |
+
+Tipos de alerta reconhecidos pelo frontend:
+
+```txt
+PEDIDO_ENVIADO
+REGULARIZACAO_PARCIAL
+REGULARIZACAO_TOTAL
+```
+
+Tipos não reconhecidos são tratados com fallback genérico.
+
+O hook atualiza os alertas automaticamente a cada 30 segundos enquanto o tray estiver ativo.
+
+### POST /farmacia/alertas/:alertaId/dismiss
+
+Fecha (marca como visto) um alerta individual.
+
+Body enviado: `{}`.
+
+Após sucesso, o frontend remove o alerta da lista local sem recarregar todos.
+
+### POST /farmacia/alertas/dismiss-all
+
+Fecha todos os alertas ativos.
+
+Body enviado: `{}`.
+
+Após sucesso, o frontend limpa a lista local.
+
+---
+
+## 23. Admin — Utilizadores
 
 Endpoints:
 
@@ -749,7 +807,7 @@ O backend continua a ser a fonte final de validação.
 
 ---
 
-## 23. Manutenção
+## 24. Manutenção
 
 Endpoints:
 
@@ -767,7 +825,7 @@ Apenas `ADMIN` deve aceder a esta área.
 
 ---
 
-## 24. Manutenção — Receita Expiry
+## 25. Manutenção — Receita Expiry
 
 ### Preview
 
@@ -795,7 +853,7 @@ Este job pode:
 
 ---
 
-## 25. Manutenção — Higiene
+## 26. Manutenção — Higiene
 
 ### Preview
 
@@ -831,7 +889,7 @@ Este job pode alterar dados de utentes removidos antigos.
 
 ---
 
-## 26. Manutenção — Purge History
+## 27. Manutenção — Purge History
 
 ### Preview
 
@@ -867,7 +925,7 @@ O frontend deve obrigar a preview antes de permitir execução.
 
 ---
 
-## 27. Paginação
+## 28. Paginação
 
 Padrão usado:
 
@@ -901,7 +959,7 @@ Resposta esperada:
 
 ---
 
-## 28. Filtros
+## 29. Filtros
 
 Filtros comuns:
 
@@ -925,7 +983,7 @@ Regras:
 
 ---
 
-## 29. Datas
+## 30. Datas
 
 O frontend recebe datas em formato serializado pelo backend.
 
@@ -951,7 +1009,7 @@ Se a data for inválida ou ausente, mostrar:
 
 ---
 
-## 30. Terminologia funcional
+## 31. Terminologia funcional
 
 Usar linguagem visível correta:
 
@@ -973,7 +1031,7 @@ Exceto em nomes técnicos, código, enums ou endpoints.
 
 ---
 
-## 31. Validação frontend vs backend
+## 32. Validação frontend vs backend
 
 O frontend pode validar para melhorar UX.
 
@@ -997,7 +1055,7 @@ Backend valida para segurança e integridade.
 
 ---
 
-## 32. Contrato para erros de autenticação
+## 33. Contrato para erros de autenticação
 
 O frontend espera que erros `401` e `403` sejam tratados como erros de auth.
 
@@ -1011,7 +1069,7 @@ Não tratar manualmente `401`/`403` em cada componente, exceto se houver motivo 
 
 ---
 
-## 33. Contrato para jobs perigosos
+## 34. Contrato para jobs perigosos
 
 Jobs de manutenção devem seguir a regra:
 
@@ -1030,7 +1088,7 @@ higiene
 
 ---
 
-## 34. Regras ao alterar endpoints
+## 35. Regras ao alterar endpoints
 
 Sempre que um endpoint mudar:
 
@@ -1046,7 +1104,7 @@ Sempre que um endpoint mudar:
 
 ---
 
-## 35. Regras ao alterar payloads
+## 36. Regras ao alterar payloads
 
 Sempre que um payload mudar:
 
@@ -1060,7 +1118,7 @@ Sempre que um payload mudar:
 
 ---
 
-## 36. Regras ao alterar responses
+## 37. Regras ao alterar responses
 
 Sempre que uma resposta mudar:
 
@@ -1073,7 +1131,7 @@ Sempre que uma resposta mudar:
 
 ---
 
-## 37. Anti-padrões a evitar
+## 38. Anti-padrões a evitar
 
 Evitar:
 
@@ -1090,7 +1148,7 @@ Evitar:
 
 ---
 
-## 38. Checklist de integração
+## 39. Checklist de integração
 
 Antes de considerar uma integração pronta:
 
@@ -1110,14 +1168,14 @@ Antes de considerar uma integração pronta:
 
 ---
 
-## 39. Cobertura atual do contrato
+## 40. Cobertura atual do contrato
 
 O contrato cobre:
 
 * auth;
 * health;
 * Santa Casa (utentes, receitas, sem-receita, extras, pedidos, regularizações);
-* Farmácia (pedidos, regularizações, histórico, dashboard);
+* Farmácia (pedidos, regularizações, histórico, dashboard, alertas);
 * Admin (utilizadores);
 * manutenção (receita-expiry, higiene, purge-history);
 * paginação;
@@ -1126,7 +1184,7 @@ O contrato cobre:
 
 ---
 
-## 40. Resumo
+## 41. Resumo
 
 A camada de integração frontend/backend está bem centralizada.
 
