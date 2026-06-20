@@ -4,7 +4,7 @@ Documentação da arquitetura do frontend **Farmácia Santa Casa**.
 
 Este documento descreve a estrutura atual do frontend, a separação de responsabilidades, o fluxo de dados, a organização por features e as regras recomendadas para manter o projeto escalável.
 
-> Estado atual: projeto fechado — funcionalidades principais implementadas e validadas.
+> Estado atual: funcionalidades principais implementadas e arquitetura consolidada para a fase atual do projeto.
 
 ---
 
@@ -861,12 +861,6 @@ Comando:
 npm run build
 ```
 
-Estado atual:
-
-```txt
-Passa sem erros.
-```
-
 Aviso atual:
 
 ```txt
@@ -891,12 +885,6 @@ Comando:
 
 ```bash
 npm run lint
-```
-
-Estado atual:
-
-```txt
-Passa sem erros.
 ```
 
 O lint deve ser corrido antes de commits relevantes.
@@ -1094,4 +1082,4 @@ Pontos a melhorar futuramente:
 * divisão de hooks grandes;
 * documentação complementar.
 
-O projeto está fechado e tem uma base arquitetural sólida e sustentável.
+A base arquitetural atual é adequada, organizada e sustentável para a fase do projeto.
