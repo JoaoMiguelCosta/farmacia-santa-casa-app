@@ -1,3 +1,4 @@
+```yaml
 name: Backend CI
 
 on:
@@ -13,9 +14,6 @@ on:
     branches:
       - main
       - develop
-    paths:
-      - "backend/**"
-      - ".github/workflows/backend-ci.yml"
 
 concurrency:
   group: backend-ci-${{ github.ref }}
@@ -108,3 +106,4 @@ jobs:
 
       - name: Run audit
         run: npm run audit
+```
