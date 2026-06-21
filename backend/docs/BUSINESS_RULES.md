@@ -302,11 +302,7 @@ Ao remover:
 
 A medicação habitual representa medicamentos normalmente usados pelo utente.
 
-No domínio atual, serve como apoio operacional para:
-
-* Sugerir medicamentos na criação de receitas.
-* Sugerir medicamentos não sujeitos a receita médica.
-* Sugerir medicamentos para Venda Suspensa.
+O backend persiste e disponibiliza a lista de medicamentos habituais do utente. O frontend utiliza essa lista como apoio e sugestão nos formulários operacionais aplicáveis, nomeadamente na criação de receitas, medicamentos não sujeitos a receita médica e Vendas Suspensas.
 
 Não representa stock, receita, dispensa, pedido nem regularização.
 
@@ -430,6 +426,7 @@ A quantidade restante nunca deve ser negativa.
 Ao listar receitas de um utente:
 
 * Só são consideradas linhas `ATIVA`.
+* Só são consideradas linhas com validade igual ao dia atual ou futura; linhas `ATIVA` cuja validade seja anterior ao dia atual não são apresentadas como disponíveis, mesmo que o job de expiração ainda não tenha corrido.
 * Só devem ser devolvidas linhas com quantidade restante maior que 0.
 * As linhas são ordenadas por medicamento, validade, data de criação e ID, favorecendo o controlo FEFO.
 
@@ -514,6 +511,8 @@ Um registo só pode ser removido se:
 
 Após cancelamento de pedidos pendentes associados, a remoção volta a ser possível se não restarem bloqueios.
 
+Se existirem itens históricos não pendentes associados ao registo, esses itens são desvinculados antes da eliminação. O histórico do pedido é preservado; o item deixa de referenciar o registo de medicamento não sujeito a receita médica, mas não é eliminado.
+
 ---
 
 ## 10. Vendas Suspensas
@@ -525,7 +524,6 @@ Após cancelamento de pedidos pendentes associados, a remoção volta a ser poss
 | `PENDENTE`                  | Venda Suspensa em aberto.                                      |
 | `PARCIALMENTE_REGULARIZADO` | Parte da quantidade já foi regularizada.                       |
 | `REGULARIZADO`              | Venda Suspensa concluída.                                      |
-| `EXPIRADO`                  | Estado previsto para expiração/encerramento, quando aplicável. |
 
 ### 10.2 Criação de Venda Suspensa
 
@@ -575,6 +573,7 @@ A quantidade restante é calculada assim:
 
 ```txt
 quantidadeRestante = quantidadeSolicitada
+  - quantidadeDispensada
   - quantidadeRegularizada
   - quantidadeCancelada
   - quantidadeReservadaPendente
@@ -583,6 +582,7 @@ quantidadeRestante = quantidadeSolicitada
 Onde:
 
 * `quantidadeSolicitada` é a quantidade em aberto.
+* `quantidadeDispensada` é a quantidade incluída em itens de pedido validados.
 * `quantidadeRegularizada` é a quantidade já regularizada.
 * `quantidadeCancelada` é a quantidade cancelada por chegada posterior de receita ou ajuste do sistema.
 * `quantidadeReservadaPendente` é a quantidade em pedidos pendentes.
@@ -608,17 +608,39 @@ Uma Venda Suspensa só pode ser removida se:
 
 Após cancelamento de pedidos pendentes associados, a remoção volta a ser possível se não restarem bloqueios.
 
+Quando não existem pedidos pendentes, o comportamento é determinístico:
+
+* Sem histórico (sem itens validados e sem regularizações associadas): o registo é eliminado fisicamente.
+* Com histórico (itens validados ou regularizações presentes): o registo não é eliminado; a quantidade restante é acumulada em `quantidadeCancelada` e o estado interno passa para `REGULARIZADO`. O histórico é preservado. Este encerramento não representa associação efetiva a receita — é apenas o mecanismo de fecho do registo.
+
 ### 10.7 Resolução automática quando entra uma receita
 
-Quando uma nova receita é criada, o sistema procura Vendas Suspensas em aberto para medicamentos compatíveis.
+Quando é criada uma nova receita, o sistema executa dois passos automáticos para medicamentos compatíveis do mesmo utente.
 
-Se encontrar Venda Suspensa compatível:
+**Passo 1 — aplicação de regularizações pendentes (`applyPendingToLinhasTx`)**
 
-* Se não houver itens de pedido associados, a Venda Suspensa pode ser removida ou encerrada conforme a regra interna aplicável.
-* Se houver itens de pedido associados, a quantidade ainda não enviada em pedido pode ser cancelada.
-* A quantidade cancelada é acumulada em `quantidadeCancelada`.
+Para cada nova linha de receita elegível, o sistema procura registos `RegularizacaoExtra` com estado `PENDENTE` ou `PARCIALMENTE_REGULARIZADO` e medicamento compatível.
 
-Esta regra evita manter em aberto uma Venda Suspensa que passou a ter cobertura por receita.
+Quando existe correspondência:
+
+* incrementa `RegularizacaoExtra.quantidadeRegularizada`;
+* atualiza o estado da `RegularizacaoExtra` para `PARCIALMENTE_REGULARIZADO` ou `REGULARIZADO`;
+* incrementa `ReceitaLinha.quantidadeDispensada`;
+* cria o respetivo `RegularizacaoEvento`.
+
+O registo técnico `Extra` não é alterado neste passo.
+
+**Passo 2 — resolução de Vendas Suspensas em aberto (`resolveOpenExtrasForCreatedLinhasTx`)**
+
+Depois da aplicação das regularizações pendentes, o sistema analisa registos `Extra` em aberto com medicamento compatível:
+
+* se não existir quantidade associada a itens de pedido, o registo `Extra` é eliminado;
+* se existirem itens de pedido e também quantidade ainda não enviada em pedido, essa quantidade é acumulada em `quantidadeCancelada`;
+* se existirem itens de pedido, mas não existir quantidade por cancelar, o registo permanece inalterado.
+
+Nos dois últimos casos, este passo não altera diretamente o estado interno do `Extra`.
+
+A eliminação ou atualização do `Extra` neste fluxo é distinta da aplicação da `RegularizacaoExtra` à receita. O fluxo automático não passa por `removeForUtente`.
 
 ---
 
@@ -781,6 +803,7 @@ Ao cancelar:
 
 * O pedido passa para `CANCELADO`.
 * Os itens pendentes passam para `CANCELADO`.
+* O motivo de cancelamento é opcional; quando não é fornecido, o backend aplica um motivo padrão.
 * É guardado um motivo em `closedReason`/`cancelReason`.
 * Pode ser guardado o utilizador que cancelou.
 
@@ -820,20 +843,25 @@ Ao validar:
 
 Ao validar:
 
+* O registo de Venda Suspensa associado é encerrado: o seu estado interno passa imediatamente para `REGULARIZADO`.
 * É criada uma `RegularizacaoExtra` associada ao utente, Venda Suspensa e pedido.
-* A regularização fica pendente até existir receita compatível.
+* A `RegularizacaoExtra` fica pendente até existir uma linha de receita compatível; quando surgir, a quantidade pendente é aplicada à receita.
+* O facto de a Venda Suspensa estar internamente em `REGULARIZADO` não significa que a receita já tenha sido associada — a regularização pode ainda estar pendente.
 * A quantidade validada deixa de estar em aberto na Venda Suspensa.
 * O item passa para `VALIDADO`.
 * É guardado `validatedAt` e `validatedById`.
 
 ### 11.14 Pedidos com itens de receita expirados
 
-Se, no momento da validação, existirem itens de receita expirados:
+Durante a tentativa de validação de um pedido pela Farmácia, o sistema verifica se as linhas de receita associadas ainda são válidas. Este controlo ocorre no momento da ação, independentemente de o job diário de expiração já ter corrido.
 
-* A linha de receita pode ser marcada como `EXPIRADA`.
-* O item afetado pode passar para `CANCELADO_POR_EXPIRACAO`.
-* Se todos os itens ficarem cancelados por expiração, o pedido pode passar para `CANCELADO`.
-* O motivo de fecho deve indicar cancelamento automático por expiração da receita.
+Se existirem itens de receita expirados:
+
+* As linhas de receita afetadas que ainda estejam `ATIVA` são marcadas como `EXPIRADA`.
+* Os itens pendentes associados passam para `CANCELADO_POR_EXPIRACAO`.
+* Se o pedido ficar sem itens com estado `PENDENTE`, passa para `CANCELADO`.
+* Se ainda existir pelo menos um item pendente válido, o pedido mantém-se operacional para os itens restantes.
+* O motivo de fecho indica cancelamento automático por expiração da receita.
 
 ### 11.15 Fecho do pedido validado
 
@@ -1013,6 +1041,10 @@ Quando a Santa Casa cria um pedido:
 * O alerta aponta para o pedido.
 * A Farmácia passa a ver esse alerta como ativo.
 
+A criação é idempotente: é usada uma `idempotencyKey` com o formato `PEDIDO_ENVIADO:{pedidoId}`; tentativas repetidas não criam alertas duplicados para o mesmo pedido.
+
+A criação do alerta ocorre como efeito secundário após a criação do pedido ser concluída. Uma falha ao criar o alerta não reverte o pedido; a falha é registada nos logs.
+
 ### 14.4 Alerta de regularização parcial
 
 Quando uma regularização passa para `PARCIALMENTE_REGULARIZADO`:
@@ -1020,6 +1052,8 @@ Quando uma regularização passa para `PARCIALMENTE_REGULARIZADO`:
 * É criado alerta `REGULARIZACAO_PARCIAL`.
 * O alerta inclui pedido, utente, medicamento e quantidades em metadata.
 * O alerta indica que ainda existe quantidade por regularizar.
+
+A criação ocorre como efeito secundário após a regularização. Uma falha ao criar o alerta não reverte a regularização; a falha é registada nos logs. O mesmo comportamento aplica-se ao alerta de regularização total (§14.5).
 
 ### 14.5 Alerta de regularização total
 
@@ -1042,6 +1076,8 @@ Fechar um alerta:
 * Não altera regularizações.
 * Não altera receitas.
 * Apenas marca o alerta como dispensado para o utilizador atual.
+
+O encerramento global processa até 200 alertas operacionais ativos por execução. Caso existam mais de 200 alertas ativos, pode ser necessário invocar o endpoint novamente.
 
 ---
 
@@ -1081,8 +1117,10 @@ Regras:
 * Linhas `ATIVA` com validade anterior ao dia atual passam para `EXPIRADA`.
 * Validade igual ao dia atual não deve expirar nesse dia.
 * Se uma linha expirada estiver associada a itens pendentes de pedidos pendentes, esses itens passam para `CANCELADO_POR_EXPIRACAO`.
-* Pedidos afetados podem passar para `CANCELADO` se ficarem sem itens pendentes válidos.
+* Um pedido afetado passa para `CANCELADO` quando deixa de ter itens com estado `PENDENTE`; se ainda restar pelo menos um item pendente válido, o pedido mantém-se operacional.
 * O motivo de fecho indica cancelamento automático por expiração da receita.
+
+Nota: o job faz manutenção periódica das linhas expiradas. A validação de pedido pela Farmácia aplica a mesma proteção operacional no momento da ação, sem depender de o job já ter corrido.
 
 ### 16.2 Higiene Job
 

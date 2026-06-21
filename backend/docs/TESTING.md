@@ -194,6 +194,16 @@ export default defineConfig({
       provider: "v8",
       reporter: ["text", "html", "lcov"],
       reportsDirectory: "coverage",
+      include: ["src/**/*.js"],
+      exclude: [
+        "coverage/**",
+        "dist/**",
+        "build/**",
+        "prisma/**",
+        "scripts/**",
+        "tests/**",
+        "src/app/server.js",
+      ],
     },
   },
 });
@@ -250,7 +260,9 @@ backend/
     │   ├── pedidos.e2e.test.js
     │   ├── receitas.e2e.test.js
     │   ├── regularizacoes.e2e.test.js
+    │   ├── requestId.e2e.test.js
     │   ├── santacasa.e2e.test.js
+    │   ├── securityHeaders.e2e.test.js
     │   ├── semReceita.e2e.test.js
     │   └── utentes.e2e.test.js
     │
@@ -285,8 +297,8 @@ Scripts automatizados:
   "test": "vitest",
   "test:watch": "vitest --watch",
   "test:unit": "vitest tests/unit",
-  "test:integration": "vitest tests/integration",
-  "test:e2e": "vitest tests/e2e",
+  "test:integration": "vitest tests/integration --no-file-parallelism",
+  "test:e2e": "vitest tests/e2e --no-file-parallelism",
   "test:all": "npm run test:unit -- --run && npm run test:integration -- --run && npm run test:e2e -- --run",
   "test:coverage": "vitest --coverage --run",
   "audit": "npm audit",
@@ -303,6 +315,14 @@ Scripts manuais/smoke mantidos:
   "test:higiene": "node scripts/manual/test-higiene-job.js",
   "test:purge-history": "node scripts/manual/test-purge-history-job.js",
   "test:manual": "npm run test:api && npm run test:receita-expiry && npm run test:higiene && npm run test:purge-history"
+}
+```
+
+Script de smoke em staging:
+
+```json
+{
+  "test:staging:auth": "node scripts/smoke/staging-auth-smoke.js"
 }
 ```
 
@@ -1441,6 +1461,36 @@ npm run test:manual
 
 ---
 
+## 13.1 Script de smoke em staging
+
+Ficheiro:
+
+```txt
+scripts/smoke/staging-auth-smoke.js
+```
+
+Finalidade: verificar que os três utilizadores demo (ADMIN, SANTACASA, FARMACIA) conseguem autenticar com sucesso no ambiente de staging.
+
+Comando:
+
+```bash
+npm run test:staging:auth
+```
+
+Requisitos de ambiente:
+
+* `STAGING_SMOKE_CONFIRMATION=STAGING_READ_ONLY` — obrigatório para prevenir execuções acidentais;
+* `DEMO_ADMIN_EMAIL`, `DEMO_SANTACASA_EMAIL`, `DEMO_FARMACIA_EMAIL`, `DEMO_*_PASSWORD` — credenciais dos utilizadores demo; o script usa valores padrão se não estiverem definidas;
+* `STAGING_API_BASE_URL` — URL da API de staging; usa o valor padrão do script se não estiver definida.
+
+Diferença face aos testes E2E locais:
+
+* corre contra a API de staging em rede, não contra a app local;
+* não usa Vitest nem Supertest;
+* não é executado pelo CI automaticamente.
+
+---
+
 ## 14. Quando usar scripts manuais vs testes automatizados
 
 ### Usar scripts manuais quando:
@@ -1777,31 +1827,21 @@ Antes de considerar deploy:
 
 ---
 
-## 24. Coverage futuro
+## 24. Coverage
 
-Ainda não foi configurado relatório formal de coverage.
+O coverage está configurado com o provider V8 (`@vitest/coverage-v8`).
 
-Quando fizer sentido medir cobertura real:
-
-```bash
-npm install -D @vitest/coverage-v8
-```
-
-Adicionar ao `package.json`:
-
-```json
-{
-  "scripts": {
-    "test:coverage": "vitest --coverage"
-  }
-}
-```
-
-Correr:
+É executado por:
 
 ```bash
 npm run test:coverage
 ```
+
+Este comando faz parte do CI, mas não integra `npm run validate`.
+
+`validate` executa `test:all` seguido de `npm audit`. Coverage é um passo separado, executado pelo CI após os testes E2E.
+
+Não existem thresholds obrigatórios na configuração atual. A medição serve para identificar zonas sem cobertura de testes, não para bloquear o pipeline por um valor mínimo.
 
 Atenção:
 

@@ -150,7 +150,7 @@ ENABLE_RECEITAS_EXPIRY=true
 
 | Variável                 | Valor padrão | Função                                                   |
 | ------------------------ | -----------: | -------------------------------------------------------- |
-| `ENABLE_JOBS`            |       `true` | ativa/desativa globalmente o registo automático de jobs  |
+| `ENABLE_JOBS`            | `true` em development/test; `false` em production | ativa/desativa globalmente o registo automático de jobs  |
 | `ENABLE_HIGIENE`         |       `true` | ativa/desativa o job automático de higiene               |
 | `ENABLE_PURGE_HISTORY`   |       `true` | ativa/desativa o job automático de limpeza de histórico  |
 | `ENABLE_RECEITAS_EXPIRY` |       `true` | ativa/desativa o job automático de expiração de receitas |
@@ -1012,9 +1012,11 @@ Exemplos esperados:
 
 ```txt id="ok8va5"
 scripts/
-├── test-receita-expiry-job.js
-├── test-higiene-job.js
-└── test-purge-history-job.js
+└── manual/
+    ├── test-current-api.js
+    ├── test-higiene-job.js
+    ├── test-purge-history-job.js
+    └── test-receita-expiry-job.js
 ```
 
 Comandos possíveis, se existirem no `package.json`:
