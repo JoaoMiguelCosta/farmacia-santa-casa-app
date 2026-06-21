@@ -1,36 +1,52 @@
-/* src/features/farmacia/shared/pedidos/components/FarmaciaPedidoUtenteItemsList/FarmaciaPedidoUtenteItemsList.module.css */
-
 .container {
     display: grid;
     gap: 0.75rem;
+
+    min-width: 0;
+    max-inline-size: 100%;
 }
 
 .toolbar {
     display: grid;
     gap: 0.65rem;
+
+    min-width: 0;
+    max-inline-size: 100%;
 }
 
 .searchField {
     display: grid;
     gap: 0.35rem;
+
+    min-width: 0;
 }
 
-.searchField>span {
+.searchField > span {
+    min-width: 0;
+    overflow-wrap: anywhere;
+
     color: var(--clinic-ink-soft);
+
     font-size: var(--clinic-font-size-xs);
     font-weight: 800;
 }
 
 .searchField input {
+    min-width: 0;
     min-height: 2.75rem;
     inline-size: 100%;
+    max-inline-size: 100%;
     padding: 0.68rem 0.8rem;
+
     border: 1px solid var(--clinic-border-strong);
     border-radius: var(--clinic-radius-md);
+
     background: var(--clinic-white);
     color: var(--clinic-ink);
+
     font: inherit;
     font-size: var(--clinic-font-size-sm);
+
     transition:
         border-color var(--clinic-transition),
         box-shadow var(--clinic-transition);
@@ -38,7 +54,9 @@
 
 .searchField input:focus {
     outline: none;
+
     border-color: var(--clinic-green-600);
+
     box-shadow: 0 0 0 3px rgba(31, 95, 81, 0.12);
 }
 
@@ -46,47 +64,66 @@
     display: flex;
     flex-wrap: wrap;
     gap: 0.45rem;
+
+    min-width: 0;
+    max-inline-size: 100%;
 }
 
 .filterButton {
     display: inline-flex;
     align-items: center;
+    justify-content: space-between;
     gap: 0.45rem;
-    min-height: 2.25rem;
-    padding: 0.48rem 0.65rem;
+
+    min-width: 0;
+    min-height: 2.75rem;
+    max-inline-size: 100%;
+    padding: 0.58rem 0.7rem;
+
     border: 1px solid var(--clinic-border);
     border-radius: var(--clinic-radius-md);
+
     background: var(--clinic-white);
     color: var(--clinic-muted-strong);
+
     font: inherit;
     font-size: var(--clinic-font-size-xs);
     font-weight: 750;
+    line-height: 1.25;
+
     cursor: pointer;
+
     transition:
         border-color var(--clinic-transition),
         background var(--clinic-transition),
         color var(--clinic-transition);
 }
 
+.filterButton span {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
 .filterButton strong {
     display: inline-grid;
+    flex: 0 0 auto;
     place-items: center;
+
     min-width: 1.45rem;
     min-height: 1.45rem;
     padding-inline: 0.3rem;
+
     border-radius: 999px;
+
     background: var(--clinic-mist);
     color: var(--clinic-muted-strong);
-    font-size: 0.68rem;
-}
 
-.filterButton:hover {
-    border-color: var(--clinic-border-strong);
-    background: var(--clinic-mist);
+    font-size: 0.68rem;
 }
 
 .filterButton[data-active="true"] {
     border-color: rgba(31, 95, 81, 0.3);
+
     background: rgba(31, 95, 81, 0.08);
     color: var(--clinic-green-700);
 }
@@ -104,28 +141,46 @@
 .list {
     display: grid;
     gap: 0.45rem;
+
+    min-width: 0;
+    max-inline-size: 100%;
     margin: 0;
     padding: 0;
+
     list-style: none;
 }
 
 .emptyState {
     display: grid;
     gap: 0.3rem;
+
+    min-width: 0;
+    max-inline-size: 100%;
     padding: 1rem;
+
     border: 1px dashed var(--clinic-border-strong);
     border-radius: var(--clinic-radius-md);
+
     background: var(--clinic-mist);
+}
+
+.emptyState strong,
+.emptyState p {
+    min-width: 0;
+    overflow-wrap: anywhere;
 }
 
 .emptyState strong {
     color: var(--clinic-ink);
+
     font-size: var(--clinic-font-size-sm);
 }
 
 .emptyState p {
     margin: 0;
+
     color: var(--clinic-muted);
+
     font-size: var(--clinic-font-size-sm);
     line-height: 1.5;
 }
@@ -135,7 +190,11 @@
     align-items: center;
     justify-content: space-between;
     gap: 0.75rem;
+
+    min-width: 0;
+    max-inline-size: 100%;
     padding-top: 0.65rem;
+
     border-top: 1px solid var(--clinic-border);
 }
 
@@ -143,8 +202,18 @@
     display: flex;
     flex-wrap: wrap;
     gap: 0.35rem 1rem;
+
+    min-width: 0;
+
     color: var(--clinic-muted);
+
     font-size: var(--clinic-font-size-xs);
+    line-height: 1.45;
+}
+
+.results span {
+    min-width: 0;
+    overflow-wrap: anywhere;
 }
 
 .results strong {
@@ -155,28 +224,30 @@
     display: flex;
     flex: 0 0 auto;
     gap: 0.45rem;
+
+    min-width: 0;
 }
 
 .pageActions button {
-    min-height: 2.35rem;
-    padding: 0.55rem 0.75rem;
+    min-height: 2.75rem;
+    padding: 0.65rem 0.85rem;
+
     border: 1px solid rgba(31, 95, 81, 0.22);
     border-radius: var(--clinic-radius-md);
+
     background: var(--clinic-white);
     color: var(--clinic-green-700);
+
     font: inherit;
     font-size: var(--clinic-font-size-xs);
     font-weight: 800;
+
     cursor: pointer;
+
     transition:
         border-color var(--clinic-transition),
         background var(--clinic-transition),
         opacity var(--clinic-transition);
-}
-
-.pageActions button:hover:not(:disabled) {
-    border-color: rgba(31, 95, 81, 0.38);
-    background: var(--clinic-mist);
 }
 
 .pageActions button:disabled {
@@ -189,10 +260,23 @@
     outline-offset: 2px;
 }
 
+@media (hover: hover) and (pointer: fine) {
+    .filterButton:hover {
+        border-color: var(--clinic-border-strong);
+
+        background: var(--clinic-mist);
+    }
+
+    .pageActions button:hover:not(:disabled) {
+        border-color: rgba(31, 95, 81, 0.38);
+
+        background: var(--clinic-mist);
+    }
+}
+
 @media (max-width: 680px) {
     .filterButton {
         flex: 1 1 calc(50% - 0.45rem);
-        justify-content: space-between;
     }
 
     .pagination {
@@ -201,16 +285,28 @@
     }
 
     .pageActions {
-        width: 100%;
+        inline-size: 100%;
     }
 
     .pageActions button {
         flex: 1 1 0;
+    }
+
+    .searchField input {
+        font-size: 1rem;
     }
 }
 
 @media (max-width: 420px) {
     .filterButton {
         flex-basis: 100%;
+    }
+
+    .pageActions {
+        flex-direction: column;
+    }
+
+    .pageActions button {
+        inline-size: 100%;
     }
 }

@@ -1,10 +1,13 @@
-/* src/features/farmacia/shared/pedidos/components/FarmaciaPedidoUtenteGroup/FarmaciaPedidoUtenteGroup.module.css */
-
 .group {
+    min-width: 0;
+    max-inline-size: 100%;
     overflow: hidden;
+
     border: 1px solid var(--clinic-border);
     border-radius: var(--clinic-radius-lg);
+
     background: var(--clinic-surface);
+
     transition:
         border-color var(--clinic-transition),
         box-shadow var(--clinic-transition);
@@ -12,26 +15,41 @@
 
 .group[data-expanded="true"] {
     border-color: rgba(31, 95, 81, 0.28);
+
     box-shadow: var(--clinic-shadow-soft);
 }
 
 .summary {
     display: grid;
     grid-template-columns:
-        minmax(15rem, 1fr) auto auto;
+        minmax(0, 1fr) auto auto;
     align-items: center;
     gap: 0.85rem;
+
+    min-width: 0;
+    max-inline-size: 100%;
     padding: 0.85rem;
 }
 
 .identity {
     display: grid;
     gap: 0.18rem;
+
     min-width: 0;
+    max-inline-size: 100%;
+}
+
+.eyebrow,
+.name,
+.number {
+    min-width: 0;
+    max-inline-size: 100%;
+    overflow-wrap: anywhere;
 }
 
 .eyebrow {
     color: var(--clinic-muted);
+
     font-size: 0.66rem;
     font-weight: 800;
     letter-spacing: 0.065em;
@@ -40,14 +58,15 @@
 }
 
 .name {
-    overflow-wrap: anywhere;
     color: var(--clinic-ink);
+
     font-size: 0.96rem;
     line-height: 1.35;
 }
 
 .number {
     color: var(--clinic-muted);
+
     font-size: 0.78rem;
     font-weight: 650;
     line-height: 1.35;
@@ -56,6 +75,9 @@
 .metrics {
     display: flex;
     gap: 0.5rem;
+
+    min-width: 0;
+    max-inline-size: 100%;
     margin: 0;
 }
 
@@ -63,16 +85,27 @@
     display: grid;
     align-content: center;
     gap: 0.14rem;
+
     min-width: 7.5rem;
     min-height: 3.35rem;
+    max-inline-size: 100%;
     padding: 0.5rem 0.65rem;
+
     border: 1px solid var(--clinic-border);
     border-radius: var(--clinic-radius-md);
+
     background: var(--clinic-mist);
+}
+
+.metric dt,
+.metric dd {
+    min-width: 0;
+    overflow-wrap: anywhere;
 }
 
 .metric dt {
     color: var(--clinic-muted);
+
     font-size: 0.64rem;
     font-weight: 800;
     letter-spacing: 0.035em;
@@ -82,37 +115,41 @@
 
 .metric dd {
     margin: 0;
+
     color: var(--clinic-ink-soft);
+
     font-size: 0.86rem;
     font-weight: 800;
     line-height: 1.3;
 }
 
 .toggleButton {
-    min-height: 2.45rem;
-    padding: 0.62rem 0.85rem;
+    min-width: 0;
+    min-height: 2.75rem;
+    max-inline-size: 100%;
+    padding: 0.68rem 0.85rem;
+
+    overflow-wrap: anywhere;
+    text-align: center;
+
     border: 1px solid rgba(31, 95, 81, 0.22);
     border-radius: var(--clinic-radius-md);
+
     background: var(--clinic-white);
     color: var(--clinic-green-700);
+
     font: inherit;
     font-size: var(--clinic-font-size-sm);
     font-weight: 800;
-    line-height: 1;
-    white-space: nowrap;
+    line-height: 1.25;
+
     cursor: pointer;
+
     transition:
         transform var(--clinic-transition),
         border-color var(--clinic-transition),
         background var(--clinic-transition),
         box-shadow var(--clinic-transition);
-}
-
-.toggleButton:hover {
-    transform: translateY(-1px);
-    border-color: rgba(31, 95, 81, 0.38);
-    background: var(--clinic-mist);
-    box-shadow: var(--clinic-shadow-soft);
 }
 
 .toggleButton:focus-visible {
@@ -121,9 +158,25 @@
 }
 
 .details {
+    min-width: 0;
+    max-inline-size: 100%;
     padding: 0.85rem;
+
     border-top: 1px solid var(--clinic-border);
+
     background: var(--clinic-cream);
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .toggleButton:hover {
+        transform: translateY(-1px);
+
+        border-color: rgba(31, 95, 81, 0.38);
+
+        background: var(--clinic-mist);
+
+        box-shadow: var(--clinic-shadow-soft);
+    }
 }
 
 @media (max-width: 900px) {
@@ -153,7 +206,8 @@
         grid-row: auto;
         grid-template-columns:
             repeat(2, minmax(0, 1fr));
-        width: 100%;
+
+        inline-size: 100%;
     }
 
     .metric {
@@ -163,7 +217,8 @@
     .toggleButton {
         grid-column: auto;
         grid-row: auto;
-        width: 100%;
+
+        inline-size: 100%;
     }
 
     .details {
