@@ -3,19 +3,32 @@
 .actions {
     display: flex;
     justify-content: flex-start;
+
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
 }
 
 .detailsToggleButton {
-    min-height: 2.5rem;
+    min-width: 0;
+    max-width: 100%;
+    min-height: 2.75rem;
     padding: 0.68rem 1rem;
+
     border: 1px solid var(--clinic-border);
     border-radius: 999px;
+
     background: var(--clinic-white);
     color: var(--clinic-green-700);
+
     font: inherit;
     font-size: var(--clinic-font-size-sm);
     font-weight: 850;
+    line-height: 1.15;
+    white-space: normal;
+
     cursor: pointer;
+
     transition:
         transform var(--clinic-transition),
         border-color var(--clinic-transition),
@@ -25,16 +38,10 @@
 }
 
 .detailsToggleButtonHistory {
-    min-height: 2.22rem;
-    padding: 0.54rem 0.82rem;
-    font-size: var(--clinic-font-size-xs);
-}
+    min-height: 2.5rem;
+    padding: 0.58rem 0.82rem;
 
-.detailsToggleButton:hover {
-    transform: translateY(-1px);
-    border-color: var(--clinic-border-strong);
-    background: var(--clinic-mist);
-    box-shadow: var(--clinic-shadow-soft);
+    font-size: var(--clinic-font-size-xs);
 }
 
 .detailsToggleButton:focus-visible {
@@ -44,13 +51,33 @@
 
 .detailsToggleButton:disabled {
     cursor: not-allowed;
+
     opacity: 0.56;
     transform: none;
     box-shadow: none;
 }
 
+@media (hover: hover) and (pointer: fine) {
+    .detailsToggleButton:hover:not(:disabled) {
+        transform: translateY(-1px);
+
+        border-color: var(--clinic-border-strong);
+
+        background: var(--clinic-mist);
+
+        box-shadow: var(--clinic-shadow-soft);
+    }
+}
+
 @media (max-width: 720px) {
-    .detailsToggleButton {
+    .detailsToggleButton,
+    .detailsToggleButtonHistory {
         width: 100%;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .detailsToggleButton {
+        transition: none;
     }
 }
