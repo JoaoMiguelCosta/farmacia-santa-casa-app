@@ -8,10 +8,12 @@
 
     width: 100%;
     min-width: 0;
+    max-width: 100%;
 }
 
 .sectionTitleText {
     min-width: 0;
+    max-width: 100%;
 
     overflow-wrap: anywhere;
 }
@@ -41,12 +43,19 @@
 .filters {
     display: grid;
     grid-template-columns:
-        minmax(16rem, 1fr) auto;
-
+        minmax(0, 1fr)
+        auto;
     align-items: end;
     gap: 0.75rem;
 
+    width: 100%;
     min-width: 0;
+    max-width: 100%;
+}
+
+.filters > * {
+    min-width: 0;
+    max-width: 100%;
 }
 
 .filterField {
@@ -54,37 +63,42 @@
     gap: 0.42rem;
 
     min-width: 0;
+    max-width: 100%;
 }
 
 .filterField span {
+    max-width: 100%;
+
     color: var(--clinic-muted-strong);
 
     font-size: 0.74rem;
     font-weight: 900;
     letter-spacing: 0.08em;
-    line-height: 1;
+    line-height: 1.2;
     text-transform: uppercase;
+    overflow-wrap: anywhere;
 }
 
 .filterField input {
     width: 100%;
+    min-width: 0;
+    max-width: 100%;
     min-height: 2.75rem;
     padding: 0.72rem 0.9rem;
 
     border: 1px solid rgba(31, 95, 81, 0.2);
-
-    border-radius:
-        var(--clinic-radius-md);
+    border-radius: var(--clinic-radius-md);
 
     color: var(--clinic-ink);
-
     background:
-        linear-gradient(180deg,
+        linear-gradient(
+            180deg,
             rgba(255, 255, 255, 0.98),
-            rgba(247, 252, 249, 0.94));
+            rgba(247, 252, 249, 0.94)
+        );
 
     font: inherit;
-    font-size: 0.92rem;
+    font-size: max(1rem, 0.92rem);
     font-weight: 720;
 
     box-shadow:
@@ -104,8 +118,7 @@
 .filterField input:focus {
     outline: none;
 
-    border-color:
-        var(--clinic-green-700);
+    border-color: var(--clinic-green-700);
 
     box-shadow:
         0 0 0 3px rgba(31, 95, 81, 0.13),
@@ -120,20 +133,35 @@
 
 .filterActions {
     display: flex;
-    flex-wrap: wrap;
+    align-items: center;
     justify-content: flex-end;
+    flex-wrap: wrap;
     gap: 0.55rem;
 
     min-width: 0;
+    max-width: 100%;
+}
+
+.filterActions > button {
+    min-width: 0;
+    max-width: 100%;
+    min-height: 2.75rem;
+
+    white-space: normal;
 }
 
 .list {
     display: grid;
-    gap: clamp(0.9rem,
-            2vw,
-            1.1rem);
+    gap: clamp(0.9rem, 2vw, 1.1rem);
 
+    width: 100%;
     min-width: 0;
+    max-width: 100%;
+}
+
+.list > * {
+    min-width: 0;
+    max-width: 100%;
 }
 
 .pagination {
@@ -142,11 +170,15 @@
     justify-content: space-between;
     gap: 1rem;
 
+    width: 100%;
     min-width: 0;
+    max-width: 100%;
     padding-top: 0.15rem;
 }
 
 .pagination p {
+    min-width: 0;
+    max-width: 100%;
     margin: 0;
 
     color: var(--clinic-muted);
@@ -154,24 +186,53 @@
     font-size: 0.88rem;
     font-weight: 720;
     line-height: 1.45;
+    overflow-wrap: anywhere;
 }
 
 .paginationActions {
     display: flex;
-    flex-wrap: wrap;
+    align-items: center;
     justify-content: flex-end;
+    flex: 0 1 auto;
+    flex-wrap: wrap;
     gap: 0.55rem;
+
+    min-width: 0;
+    max-width: 100%;
+}
+
+.paginationActions > button {
+    min-width: 0;
+    max-width: 100%;
+    min-height: 2.75rem;
+
+    white-space: normal;
+}
+
+@media (max-width: 900px) {
+    .filters {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .filterActions {
+        justify-content: stretch;
+    }
+
+    .filterActions > button {
+        flex: 1 1 10rem;
+    }
 }
 
 @media (max-width: 760px) {
-    .filters {
-        grid-template-columns: 1fr;
-    }
-
     .filterActions,
     .paginationActions {
         display: grid;
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .filterActions > button,
+    .paginationActions > button {
+        width: 100%;
     }
 
     .pagination {
@@ -182,6 +243,7 @@
 
 @media (max-width: 480px) {
     .sectionTitleRow {
+        align-items: flex-start;
         gap: 0.7rem;
     }
 
@@ -191,5 +253,11 @@
         padding-inline: 0.45rem;
 
         font-size: 0.72rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .filterField input {
+        transition: none;
     }
 }
