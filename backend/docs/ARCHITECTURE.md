@@ -2054,7 +2054,7 @@ Executa unitários, integração e E2E.
 npm run validate
 ```
 
-Executa validação completa do backend, incluindo testes e auditoria configurada.
+Executa `test:all` (unitários, integração e E2E) e a auditoria de dependências. Coverage não integra este comando; é executado separadamente via `npm run test:coverage`, incluindo num passo próprio no CI.
 
 ```bash
 npm run job:receita-expiry
