@@ -6,7 +6,9 @@
     justify-content: space-between;
     gap: 1rem;
 
+    width: 100%;
     min-width: 0;
+    max-width: 100%;
     min-height: 3.5rem;
     padding: 0.75rem 0.85rem;
 
@@ -26,34 +28,47 @@
 
 .label {
     min-width: 0;
+    max-width: 100%;
 
     color: var(--clinic-muted-strong);
 
     font-size: var(--clinic-font-size-sm);
     font-weight: 550;
     line-height: 1.4;
+    overflow-wrap: anywhere;
 }
 
 .result {
     display: grid;
-    grid-template-columns: minmax(1.5rem, auto) 1rem;
+    grid-template-columns: minmax(0, auto) 1rem;
     align-items: center;
     justify-items: end;
     gap: 0.45rem;
 
-    flex: 0 0 auto;
+    flex: 0 1 auto;
+
+    min-width: 0;
+    max-width: 50%;
 }
 
 .value {
+    min-width: 0;
+    max-width: 100%;
+
     color: var(--metric-accent);
 
     font-size: var(--clinic-font-size-lg);
     font-weight: 800;
     line-height: 1;
+    text-align: end;
+    overflow-wrap: anywhere;
 }
 
 .arrow {
+    flex: 0 0 auto;
+
     color: var(--metric-accent);
+
     font-size: var(--clinic-font-size-sm);
     line-height: 1;
 }
@@ -91,6 +106,7 @@
     a.card:hover {
         border-color: var(--metric-accent);
         background: var(--clinic-soft);
+
         box-shadow: var(--clinic-shadow-soft);
     }
 }
@@ -98,9 +114,21 @@
 @media (max-width: 420px) {
     .card {
         align-items: flex-start;
+        gap: 0.75rem;
+
+        padding: 0.75rem;
     }
 
     .label {
         font-size: var(--clinic-font-size-xs);
+    }
+
+    .result {
+        max-width: 44%;
+    }
+
+    .value {
+        font-size: var(--clinic-font-size-md);
+        line-height: 1.15;
     }
 }

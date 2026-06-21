@@ -6,7 +6,9 @@
     align-content: start;
     gap: 1rem;
 
+    width: 100%;
     min-width: 0;
+    max-width: 100%;
     padding: clamp(1rem, 2vw, 1.25rem);
 
     border: 1px solid var(--group-border);
@@ -21,11 +23,20 @@
 .header {
     display: grid;
     gap: 0.35rem;
+
+    min-width: 0;
+    max-width: 100%;
+}
+
+.title,
+.description {
+    max-width: 100%;
+    margin: 0;
+
+    overflow-wrap: anywhere;
 }
 
 .title {
-    margin: 0;
-
     color: var(--clinic-ink);
 
     font-size: var(--clinic-font-size-lg);
@@ -34,8 +45,6 @@
 }
 
 .description {
-    margin: 0;
-
     color: var(--clinic-muted-strong);
 
     font-size: var(--clinic-font-size-sm);
@@ -47,10 +56,17 @@
     display: grid;
     gap: 0.55rem;
 
+    min-width: 0;
+    max-width: 100%;
     margin: 0;
     padding: 0;
 
     list-style: none;
+}
+
+.list > li {
+    min-width: 0;
+    max-width: 100%;
 }
 
 .green {
@@ -76,6 +92,7 @@
 @media (max-width: 520px) {
     .group {
         padding: 1rem;
+
         border-radius: var(--clinic-radius-lg);
     }
 }
