@@ -1,36 +1,49 @@
 .page {
     display: grid;
     gap: clamp(1.25rem, 2.5vw, 2rem);
-    inline-size: min(100%, var(--clinic-page-max));
+
+    width: 100%;
+    min-width: 0;
+    max-width: var(--clinic-page-max);
     margin-inline: auto;
 }
 
+.page > * {
+    min-width: 0;
+    max-width: 100%;
+}
+
 .backLink {
-    width: fit-content;
-    min-height: 2.45rem;
     display: inline-flex;
     align-items: center;
     justify-content: center;
+
+    width: fit-content;
+    min-width: 0;
+    max-width: 100%;
+    min-height: 2.75rem;
     padding: 0.65rem 0.95rem;
+
     border: 1px solid var(--clinic-border);
     border-radius: 999px;
+
     background: var(--clinic-white);
     color: var(--clinic-green-700);
+
+    box-shadow: var(--clinic-shadow-soft);
+
     font-size: var(--clinic-font-size-sm);
     font-weight: 850;
-    box-shadow: var(--clinic-shadow-soft);
+    line-height: 1.2;
+    text-align: center;
+    text-decoration: none;
+    overflow-wrap: anywhere;
+
     transition:
         transform var(--clinic-transition),
         border-color var(--clinic-transition),
         background var(--clinic-transition),
         box-shadow var(--clinic-transition);
-}
-
-.backLink:hover {
-    transform: translateY(-1px);
-    border-color: var(--clinic-border-strong);
-    background: var(--clinic-mist);
-    box-shadow: var(--clinic-shadow-card);
 }
 
 .backLink:focus-visible {
@@ -41,11 +54,23 @@
 .medicamentos {
     display: grid;
     gap: 1rem;
+
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
     padding: clamp(1rem, 2vw, 1.25rem);
+
     border: 1px solid var(--clinic-border);
     border-radius: var(--clinic-radius-2xl);
+
     background: var(--clinic-surface);
+
     box-shadow: var(--clinic-shadow-soft);
+}
+
+.medicamentos > * {
+    min-width: 0;
+    max-width: 100%;
 }
 
 .sectionHeader {
@@ -53,55 +78,83 @@
     align-items: flex-start;
     justify-content: space-between;
     gap: 1rem;
+
+    min-width: 0;
+    max-width: 100%;
+}
+
+.sectionHeader > * {
+    min-width: 0;
+    max-width: 100%;
+}
+
+.sectionHeader > button {
+    flex: 0 0 auto;
+    min-height: 2.75rem;
+
+    white-space: normal;
 }
 
 .heading {
     display: grid;
     gap: 0.35rem;
+
     min-width: 0;
+    max-width: 100%;
+}
+
+.sectionTitle,
+.sectionDescription {
+    max-width: 100%;
+
+    overflow-wrap: anywhere;
 }
 
 .sectionTitle {
     margin: 0;
+
     color: var(--clinic-ink);
+
     font-size: clamp(1.25rem, 2.2vw, 1.65rem);
     line-height: var(--clinic-line-height-tight);
 }
 
 .sectionDescription {
-    max-width: 70ch;
     margin: 0;
+
     color: var(--clinic-muted);
+
     font-size: var(--clinic-font-size-sm);
     line-height: var(--clinic-line-height-base);
 }
 
 .clearButton,
 .listButton {
-    min-height: 2.45rem;
+    min-width: 0;
+    max-width: 100%;
+    min-height: 2.75rem;
     padding: 0.65rem 0.95rem;
+
     border: 1px solid var(--clinic-border);
     border-radius: 999px;
+
     background: var(--clinic-white);
     color: var(--clinic-green-700);
+
     font: inherit;
     font-size: var(--clinic-font-size-sm);
     font-weight: 850;
+    line-height: 1.15;
+    white-space: normal;
+
     cursor: pointer;
+
     transition:
         transform var(--clinic-transition),
         border-color var(--clinic-transition),
         background var(--clinic-transition),
         box-shadow var(--clinic-transition),
         opacity var(--clinic-transition);
-}
-
-.clearButton:hover,
-.listButton:hover {
-    transform: translateY(-1px);
-    border-color: var(--clinic-border-strong);
-    background: var(--clinic-mist);
-    box-shadow: var(--clinic-shadow-soft);
 }
 
 .clearButton:focus-visible,
@@ -113,6 +166,7 @@
 .clearButton:disabled,
 .listButton:disabled {
     cursor: not-allowed;
+
     opacity: 0.56;
     transform: none;
     box-shadow: none;
@@ -120,111 +174,194 @@
 
 .controls {
     display: grid;
-    grid-template-columns: minmax(16rem, 1fr) minmax(10rem, 0.32fr) auto;
+    grid-template-columns:
+        minmax(16rem, 1fr)
+        minmax(10rem, 0.32fr)
+        auto;
     align-items: end;
     gap: 0.75rem;
+
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
     padding: 0.9rem;
+
     border: 1px solid var(--clinic-border);
     border-radius: var(--clinic-radius-xl);
+
     background: var(--clinic-mist);
+}
+
+.controls > * {
+    min-width: 0;
+    max-width: 100%;
 }
 
 .controlField {
     display: grid;
     gap: 0.35rem;
+
     min-width: 0;
+    max-width: 100%;
 }
 
 .controlField span {
+    max-width: 100%;
+
     color: var(--clinic-muted);
+
     font-size: var(--clinic-font-size-xs);
     font-weight: 850;
     letter-spacing: 0.05em;
+    line-height: 1.25;
     text-transform: uppercase;
+    overflow-wrap: anywhere;
 }
 
 .controlField input,
 .controlField select {
-    min-height: 2.45rem;
     width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    min-height: 2.75rem;
     padding: 0.65rem 0.85rem;
+
     border: 1px solid var(--clinic-border);
     border-radius: 999px;
+
     background: var(--clinic-white);
     color: var(--clinic-ink);
+
     font: inherit;
-    font-size: var(--clinic-font-size-sm);
+    font-size: max(1rem, var(--clinic-font-size-sm));
 }
 
 .controlField input:focus,
 .controlField select:focus {
     outline: none;
-    border-color: var(--clinic-border-strong);
-    box-shadow: 0 0 0 3px rgba(31, 95, 81, 0.16);
-}
 
-.clearButton {
-    white-space: nowrap;
+    border-color: var(--clinic-border-strong);
+
+    box-shadow: 0 0 0 3px rgba(31, 95, 81, 0.16);
 }
 
 .resultsMeta {
     grid-column: 1 / -1;
+
+    min-width: 0;
+    max-width: 100%;
     margin: 0;
+
     color: var(--clinic-muted);
+
     font-size: var(--clinic-font-size-sm);
     font-weight: 750;
+    line-height: var(--clinic-line-height-base);
+    overflow-wrap: anywhere;
 }
 
 .cards {
     display: grid;
     gap: 0.85rem;
+
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+}
+
+.cards > * {
+    min-width: 0;
+    max-width: 100%;
 }
 
 .listActions {
     display: flex;
-    flex-wrap: wrap;
     align-items: center;
+    flex-wrap: wrap;
     gap: 0.55rem;
+
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
     padding: 0.85rem 0.95rem;
+
     border: 1px solid var(--clinic-border);
     border-radius: var(--clinic-radius-xl);
+
     background: var(--clinic-mist);
 }
 
 .hiddenMeta {
     flex: 1 1 14rem;
+
+    min-width: 0;
+    max-width: 100%;
+
     color: var(--clinic-muted);
+
     font-size: var(--clinic-font-size-sm);
     font-weight: 750;
     line-height: var(--clinic-line-height-base);
+    overflow-wrap: anywhere;
 }
 
 .emptyResults {
     display: grid;
     gap: 0.3rem;
+
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
     padding: 1rem;
+
     border: 1px solid var(--clinic-border);
     border-radius: var(--clinic-radius-xl);
+
     background: var(--clinic-white);
+}
+
+.emptyResults strong,
+.emptyResults span {
+    min-width: 0;
+    max-width: 100%;
+
+    overflow-wrap: anywhere;
 }
 
 .emptyResults strong {
     color: var(--clinic-ink);
+
     font-size: var(--clinic-font-size-md);
 }
 
 .emptyResults span {
     color: var(--clinic-muted);
+
     font-size: var(--clinic-font-size-sm);
     line-height: var(--clinic-line-height-base);
 }
 
+@media (hover: hover) and (pointer: fine) {
+    .backLink:hover,
+    .clearButton:hover:not(:disabled),
+    .listButton:hover:not(:disabled) {
+        transform: translateY(-1px);
+
+        border-color: var(--clinic-border-strong);
+
+        background: var(--clinic-mist);
+
+        box-shadow: var(--clinic-shadow-card);
+    }
+}
+
 @media (max-width: 1100px) {
     .controls {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
     }
 
-    .clearButton {
+    .controls .clearButton {
         width: fit-content;
     }
 }
@@ -235,26 +372,71 @@
         flex-direction: column;
     }
 
-    .controls {
-        grid-template-columns: 1fr;
-    }
-
-    .clearButton,
-    .listButton,
+    .sectionHeader > button,
     .backLink {
         width: 100%;
     }
 
-    .sectionHeader > button {
+    .controls {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .controls .clearButton,
+    .clearButton,
+    .listButton {
         width: 100%;
     }
 
     .listActions {
         display: grid;
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
     }
 
     .hiddenMeta {
         flex: initial;
+    }
+}
+
+@media (max-width: 520px) {
+    .page {
+        gap: 1.1rem;
+    }
+
+    .medicamentos {
+        padding: 0.9rem;
+
+        border-radius: var(--clinic-radius-xl);
+    }
+
+    .controls,
+    .listActions,
+    .emptyResults {
+        padding: 0.8rem;
+
+        border-radius: var(--clinic-radius-lg);
+    }
+}
+
+@media (max-width: 360px) {
+    .medicamentos {
+        padding: 0.78rem;
+
+        border-radius: var(--clinic-radius-lg);
+    }
+
+    .controls,
+    .listActions,
+    .emptyResults {
+        padding: 0.72rem;
+
+        border-radius: var(--clinic-radius-md);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .backLink,
+    .clearButton,
+    .listButton {
+        transition: none;
     }
 }
