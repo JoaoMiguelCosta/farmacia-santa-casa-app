@@ -1,14 +1,14 @@
-/* src/features/santacasa/pedidos/components/PedidoGeralList/PedidoGeralActionsBar.module.css */
-
 .bar {
     display: grid;
     grid-template-columns:
-        minmax(0, 1fr) auto;
-
+        minmax(0, 1fr)
+        auto;
     align-items: center;
     gap: 1rem;
 
+    width: 100%;
     min-width: 0;
+    max-width: 100%;
     padding: clamp(0.85rem, 2vw, 1rem);
 
     border: 1px solid var(--clinic-border);
@@ -21,14 +21,20 @@
         inset 0 1px 0 rgb(255 255 255 / 0.82);
 }
 
+.bar > * {
+    min-width: 0;
+    max-width: 100%;
+}
+
 .summary {
     display: grid;
     grid-template-columns:
-        repeat(3, minmax(7rem, 1fr));
-
+        repeat(3, minmax(0, 1fr));
     gap: 0.5rem;
 
+    width: 100%;
     min-width: 0;
+    max-width: 100%;
     margin: 0;
 }
 
@@ -47,6 +53,13 @@
     background: var(--clinic-mist);
 }
 
+.metric dt,
+.metric dd {
+    max-width: 100%;
+
+    overflow-wrap: anywhere;
+}
+
 .metric dt {
     color: var(--clinic-muted);
 
@@ -61,8 +74,6 @@
     min-width: 0;
     margin: 0;
 
-    overflow-wrap: anywhere;
-
     color: var(--clinic-ink);
 
     font-size: 1rem;
@@ -74,20 +85,29 @@
     display: flex;
     align-items: center;
     justify-content: flex-end;
+    flex-wrap: wrap;
     gap: 0.65rem;
 
     min-width: 0;
+    max-width: 100%;
 }
 
-.actions>button,
-.clearAction>button {
-    white-space: nowrap;
-}
-
-.clearAction>button {
-    width: auto;
+.actions > *,
+.actions > button,
+.clearAction,
+.clearAction > button {
     min-width: 0;
-    min-height: 2.55rem;
+    max-width: 100%;
+}
+
+.actions > button,
+.clearAction > button {
+    white-space: normal;
+}
+
+.clearAction > button {
+    width: auto;
+    min-height: 2.75rem;
     padding: 0.62rem 0.82rem;
 
     box-shadow:
@@ -98,7 +118,7 @@
 
 @media (max-width: 900px) {
     .bar {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
     }
 
     .actions {
@@ -107,26 +127,27 @@
 }
 
 @media (max-width: 620px) {
-    .summary {
-        grid-template-columns:
-            repeat(3, minmax(0, 1fr));
-    }
-
     .actions {
         display: grid;
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
     }
 
-    .actions>button,
+    .actions > button,
     .clearAction,
-    .clearAction>button {
+    .clearAction > button {
         width: 100%;
     }
 }
 
 @media (max-width: 480px) {
+    .bar {
+        padding: 0.85rem;
+
+        border-radius: var(--clinic-radius-md);
+    }
+
     .summary {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
     }
 
     .metric {

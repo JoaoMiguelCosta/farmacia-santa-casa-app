@@ -1,10 +1,9 @@
-/* src/features/santacasa/pedidos/components/PedidoGeralList/PedidoGeralGroup.module.css */
-
 .group {
     overflow: hidden;
 
     width: 100%;
     min-width: 0;
+    max-width: 100%;
 
     border: 1px solid var(--clinic-border);
     border-radius: var(--clinic-radius-lg);
@@ -25,13 +24,21 @@
 .groupHeader {
     display: grid;
     grid-template-columns:
-        minmax(15rem, 1fr) auto auto;
-
+        minmax(0, 1fr)
+        auto
+        auto;
     align-items: center;
     gap: 0.85rem;
 
+    width: 100%;
     min-width: 0;
+    max-width: 100%;
     padding: 0.85rem;
+}
+
+.groupHeader > * {
+    min-width: 0;
+    max-width: 100%;
 }
 
 .groupIdentity {
@@ -39,6 +46,15 @@
     gap: 0.18rem;
 
     min-width: 0;
+    max-width: 100%;
+}
+
+.groupEyebrow,
+.groupIdentity h3,
+.groupNumber {
+    max-width: 100%;
+
+    overflow-wrap: anywhere;
 }
 
 .groupEyebrow {
@@ -49,15 +65,12 @@
     font-size: 0.66rem;
     font-weight: 800;
     letter-spacing: 0.065em;
-    line-height: 1;
+    line-height: 1.2;
     text-transform: uppercase;
 }
 
 .groupIdentity h3 {
-    max-width: 100%;
     margin: 0;
-
-    overflow-wrap: anywhere;
 
     color: var(--clinic-ink);
 
@@ -76,9 +89,11 @@
 
 .groupMetrics {
     display: flex;
+    flex-wrap: wrap;
     gap: 0.5rem;
 
     min-width: 0;
+    max-width: 100%;
     margin: 0;
 }
 
@@ -97,6 +112,13 @@
     background: var(--clinic-mist);
 }
 
+.metric dt,
+.metric dd {
+    max-width: 100%;
+
+    overflow-wrap: anywhere;
+}
+
 .metric dt {
     color: var(--clinic-muted);
 
@@ -111,8 +133,6 @@
     min-width: 0;
     margin: 0;
 
-    overflow-wrap: anywhere;
-
     color: var(--clinic-ink-soft);
 
     font-size: 0.86rem;
@@ -122,7 +142,9 @@
 
 .toggleButton,
 .pageButton {
-    min-height: 2.45rem;
+    min-width: 0;
+    max-width: 100%;
+    min-height: 2.75rem;
     padding: 0.62rem 0.85rem;
 
     border: 1px solid rgb(31 95 81 / 0.22);
@@ -134,8 +156,8 @@
     font: inherit;
     font-size: var(--clinic-font-size-sm);
     font-weight: 800;
-    line-height: 1;
-    white-space: nowrap;
+    line-height: 1.15;
+    white-space: normal;
 
     cursor: pointer;
 
@@ -145,17 +167,6 @@
         background var(--clinic-transition),
         box-shadow var(--clinic-transition),
         opacity var(--clinic-transition);
-}
-
-.toggleButton:hover:not(:disabled),
-.pageButton:hover:not(:disabled) {
-    transform: translateY(-1px);
-
-    border-color: rgb(31 95 81 / 0.38);
-
-    background: var(--clinic-mist);
-
-    box-shadow: var(--clinic-shadow-soft);
 }
 
 .toggleButton:focus-visible,
@@ -177,7 +188,9 @@
     display: grid;
     gap: 0.75rem;
 
+    width: 100%;
     min-width: 0;
+    max-width: 100%;
     padding: 0.85rem;
 
     border-top: 1px solid var(--clinic-border);
@@ -185,26 +198,42 @@
     background: var(--clinic-cream);
 }
 
+.groupDetails > * {
+    min-width: 0;
+    max-width: 100%;
+}
+
 .toolbar {
     display: grid;
     gap: 0.65rem;
+
+    min-width: 0;
+    max-width: 100%;
 }
 
 .searchField {
     display: grid;
     gap: 0.35rem;
+
+    min-width: 0;
+    max-width: 100%;
 }
 
-.searchField>span {
+.searchField > span {
+    max-width: 100%;
+
     color: var(--clinic-ink-soft);
 
     font-size: var(--clinic-font-size-xs);
     font-weight: 800;
     line-height: 1.3;
+    overflow-wrap: anywhere;
 }
 
 .searchField input {
     width: 100%;
+    min-width: 0;
+    max-width: 100%;
     min-height: 2.75rem;
     padding: 0.68rem 0.8rem;
 
@@ -215,7 +244,7 @@
     background: var(--clinic-white);
 
     font: inherit;
-    font-size: var(--clinic-font-size-sm);
+    font-size: max(1rem, var(--clinic-font-size-sm));
 
     transition:
         border-color var(--clinic-transition),
@@ -246,14 +275,20 @@
     display: flex;
     flex-wrap: wrap;
     gap: 0.45rem;
+
+    min-width: 0;
+    max-width: 100%;
 }
 
 .filterButton {
     display: inline-flex;
     align-items: center;
+    justify-content: space-between;
     gap: 0.45rem;
 
-    min-height: 2.25rem;
+    min-width: 0;
+    max-width: 100%;
+    min-height: 2.5rem;
     padding: 0.48rem 0.65rem;
 
     border: 1px solid var(--clinic-border);
@@ -265,6 +300,7 @@
     font: inherit;
     font-size: var(--clinic-font-size-xs);
     font-weight: 750;
+    line-height: 1.25;
 
     cursor: pointer;
 
@@ -279,6 +315,8 @@
     display: inline-grid;
     place-items: center;
 
+    flex: 0 0 auto;
+
     min-width: 1.45rem;
     min-height: 1.45rem;
     padding-inline: 0.3rem;
@@ -290,12 +328,6 @@
 
     font-size: 0.68rem;
     font-weight: 850;
-}
-
-.filterButton:hover:not(:disabled) {
-    border-color: var(--clinic-border-strong);
-
-    background: var(--clinic-mist);
 }
 
 .filterButton[data-active="true"] {
@@ -327,18 +359,33 @@
 
     width: 100%;
     min-width: 0;
+    max-width: 100%;
+}
+
+.items > * {
+    min-width: 0;
+    max-width: 100%;
 }
 
 .emptyState {
     display: grid;
     gap: 0.3rem;
 
+    min-width: 0;
+    max-width: 100%;
     padding: 1rem;
 
     border: 1px dashed var(--clinic-border-strong);
     border-radius: var(--clinic-radius-md);
 
     background: var(--clinic-surface);
+}
+
+.emptyState strong,
+.emptyState p {
+    max-width: 100%;
+
+    overflow-wrap: anywhere;
 }
 
 .emptyState strong {
@@ -363,6 +410,8 @@
     justify-content: space-between;
     gap: 0.75rem;
 
+    min-width: 0;
+    max-width: 100%;
     padding-top: 0.7rem;
 
     border-top: 1px solid var(--clinic-border);
@@ -372,6 +421,9 @@
     display: flex;
     flex-wrap: wrap;
     gap: 0.35rem 1rem;
+
+    min-width: 0;
+    max-width: 100%;
 
     color: var(--clinic-muted);
 
@@ -385,21 +437,45 @@
 
 .pageActions {
     display: flex;
-    flex: 0 0 auto;
+    flex: 0 1 auto;
+    flex-wrap: wrap;
     gap: 0.45rem;
+
+    min-width: 0;
+    max-width: 100%;
 }
 
 .pageButton {
-    min-height: 2.35rem;
+    min-height: 2.5rem;
     padding: 0.55rem 0.75rem;
 
     font-size: var(--clinic-font-size-xs);
 }
 
+@media (hover: hover) and (pointer: fine) {
+    .toggleButton:hover:not(:disabled),
+    .pageButton:hover:not(:disabled) {
+        transform: translateY(-1px);
+
+        border-color: rgb(31 95 81 / 0.38);
+
+        background: var(--clinic-mist);
+
+        box-shadow: var(--clinic-shadow-soft);
+    }
+
+    .filterButton:hover:not(:disabled) {
+        border-color: var(--clinic-border-strong);
+
+        background: var(--clinic-mist);
+    }
+}
+
 @media (max-width: 900px) {
     .groupHeader {
         grid-template-columns:
-            minmax(0, 1fr) auto;
+            minmax(0, 1fr)
+            auto;
     }
 
     .groupMetrics {
@@ -416,8 +492,6 @@
 @media (max-width: 680px) {
     .filterButton {
         flex: 1 1 calc(50% - 0.45rem);
-
-        justify-content: space-between;
     }
 
     .pagination {
@@ -436,15 +510,13 @@
 
 @media (max-width: 620px) {
     .groupHeader {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
     }
 
     .groupMetrics {
         display: grid;
-
         grid-column: auto;
         grid-row: auto;
-
         grid-template-columns:
             repeat(2, minmax(0, 1fr));
 
@@ -473,7 +545,7 @@
     }
 
     .groupMetrics {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
     }
 
     .groupIdentity h3 {
@@ -483,20 +555,23 @@
     .filterButton {
         flex-basis: 100%;
     }
+
+    .pageActions {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .pageButton {
+        width: 100%;
+    }
 }
 
 @media (prefers-reduced-motion: reduce) {
-
     .group,
     .toggleButton,
     .pageButton,
     .searchField input,
     .filterButton {
         transition: none;
-    }
-
-    .toggleButton:hover,
-    .pageButton:hover {
-        transform: none;
     }
 }
