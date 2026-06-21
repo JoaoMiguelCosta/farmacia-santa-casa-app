@@ -33,6 +33,14 @@ function createFutureDate(year = 2099) {
   return `${year}-12-31`;
 }
 
+function createTodayDate() {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+  const day = String(now.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
 async function createUtente(agent, prefix = "Utente Regularização E2E") {
   const payload = createUniqueUtentePayload(prefix);
 
@@ -469,6 +477,75 @@ describe("Regularizações E2E", () => {
         expect(
           findRegularizacaoByPedido(historicoResponse.body.data, pedido.id),
         ).toBe(undefined);
+      } finally {
+        await deleteUtente(santaCasaAgent, utente.id);
+      }
+    });
+  });
+
+  describe("Boundary de validade", () => {
+    it("deve aplicar regularização pendente a linha de receita com validade igual ao dia atual", async () => {
+      const santaCasaAgent = await createSantaCasaAgent(app);
+      const farmaciaAgent = await createFarmaciaAgent(app);
+
+      const utente = await createUtente(
+        santaCasaAgent,
+        "Utente Regularização Hoje",
+      );
+
+      const medicamento = createUniqueMedicamento("Regularização Hoje E2E");
+
+      try {
+        const { pedido } = await createPendingRegularizacao({
+          santaCasaAgent,
+          farmaciaAgent,
+          utente,
+          medicamento,
+          quantidade: 1,
+        });
+
+        const receita = await createReceita(santaCasaAgent, utente.id, {
+          medicamento,
+          quantidade: 1,
+          validade: createTodayDate(),
+          confirmRegularizacao: true,
+        });
+
+        expect(receita.linhas).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              medicamento,
+              quantidade: 1,
+              quantidadeUsadaRegularizacao: 1,
+              quantidadeRestante: 0,
+            }),
+          ]),
+        );
+
+        const historicoResponse = await farmaciaAgent
+          .get(
+            `/api/farmacia/regularizacoes/historico?utenteId=${
+              utente.id
+            }&search=${encodeURIComponent(medicamento)}`,
+          )
+          .expect(200);
+
+        const regularizacao = findRegularizacaoByPedido(
+          historicoResponse.body.data,
+          pedido.id,
+        );
+
+        expect(regularizacao).toEqual(
+          expect.objectContaining({
+            utenteId: utente.id,
+            pedidoId: pedido.id,
+            medicamento,
+            quantidadeSolicitada: 1,
+            quantidadeRegularizada: 1,
+            quantidadeRestante: 0,
+            status: "REGULARIZADO",
+          }),
+        );
       } finally {
         await deleteUtente(santaCasaAgent, utente.id);
       }

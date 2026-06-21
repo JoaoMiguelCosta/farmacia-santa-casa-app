@@ -15,6 +15,18 @@ function createUniqueMedicamento(prefix = "Medicamento Utente E2E") {
   return `${prefix} ${timestamp} ${random}`;
 }
 
+function makeNumero19(seed = Date.now()) {
+  return String(seed).replace(/\D/g, "").padEnd(19, "0").slice(0, 19);
+}
+
+function createTodayDate() {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+  const day = String(now.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
 async function createUtente(agent, prefix = "Utente E2E") {
   const payload = createUniqueUtentePayload(prefix);
 
@@ -31,6 +43,38 @@ async function deleteUtente(agent, utenteId) {
 
   try {
     await agent.delete(`/api/santacasa/utentes/${utenteId}`);
+  } catch {
+    // Cleanup best-effort.
+  }
+}
+
+async function createReceita(agent, utenteId, payload = {}) {
+  const response = await agent
+    .post(`/api/santacasa/utentes/${utenteId}/receitas`)
+    .send({
+      numero19: payload.numero19 || makeNumero19(Date.now()),
+      pinAcesso6: "123456",
+      pinOpcao4: "1234",
+      linhas: [
+        {
+          medicamento: payload.medicamento || createUniqueMedicamento(),
+          quantidade: payload.quantidade || 1,
+          validade: payload.validade || `2099-12-31`,
+        },
+      ],
+    })
+    .expect(201);
+
+  return response.body.data;
+}
+
+async function deleteReceitaLinha(agent, utenteId, linhaId) {
+  if (!utenteId || !linhaId) return;
+
+  try {
+    await agent.delete(
+      `/api/santacasa/utentes/${utenteId}/receitas/linhas/${linhaId}`,
+    );
   } catch {
     // Cleanup best-effort.
   }
@@ -250,6 +294,44 @@ describe("Utentes E2E reforçado", () => {
   });
 
   describe("Bloqueios por pendências e dados associados", () => {
+    it("deve bloquear arquivar utente com linha de receita válida no dia atual", async () => {
+      const agent = await createSantaCasaAgent(app);
+      const utente = await createUtente(agent, "Utente Arquivo Receita Hoje");
+
+      let linhaId = null;
+
+      try {
+        const receita = await createReceita(agent, utente.id, {
+          medicamento: createUniqueMedicamento("Arquivo Receita Hoje E2E"),
+          quantidade: 1,
+          validade: createTodayDate(),
+        });
+
+        linhaId = receita.linhas[0].linhaId;
+
+        const response = await agent
+          .patch(`/api/santacasa/utentes/${utente.id}/archive`)
+          .send({
+            archivedReason: "Tentativa com receita válida hoje.",
+          })
+          .expect(409);
+
+        expect(response.body).toEqual(
+          expect.objectContaining({
+            error: "CONFLICT",
+            message: expect.stringContaining("linha(s) de receita ativa"),
+          }),
+        );
+
+        expect(response.body.message).toContain(
+          "Resolve ou cancela as pendências antes de arquivar.",
+        );
+      } finally {
+        await deleteReceitaLinha(agent, utente.id, linhaId);
+        await deleteUtente(agent, utente.id);
+      }
+    });
+
     it("deve bloquear arquivar utente com medicamento não sujeito a receita médica disponível", async () => {
       const agent = await createSantaCasaAgent(app);
       const utente = await createUtente(agent, "Utente Arquivo Sem Receita");
