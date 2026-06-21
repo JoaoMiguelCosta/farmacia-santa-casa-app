@@ -1,6 +1,7 @@
 .nav {
     width: 100%;
     min-width: 0;
+    max-width: 100%;
 
     overflow: hidden;
 
@@ -24,8 +25,11 @@
 
     padding: 0.35rem;
 
-    scrollbar-width: none;
+    overscroll-behavior-inline: contain;
+    scroll-padding-inline: 0.35rem;
     scroll-snap-type: x proximity;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
 }
 
 .inner::-webkit-scrollbar {
@@ -57,7 +61,7 @@
 
     flex: 0 0 auto;
 
-    min-height: 2.45rem;
+    min-height: 2.75rem;
     padding: 0.68rem 0.9rem;
 
     border: 1px solid transparent;
@@ -127,10 +131,12 @@
 
     .inner {
         padding: 0.3rem;
+
+        scroll-padding-inline: 0.3rem;
     }
 
     .link {
-        min-height: 2.3rem;
+        min-height: 2.75rem;
         padding: 0.62rem 0.76rem;
 
         font-size: 0.82rem;

@@ -104,7 +104,7 @@ export default function AppShell() {
       <AppHeader
         labels={APP_SHELL_CONFIG.labels}
         primaryNavItems={primaryNavItems}
-        sessionBar={<AuthSessionBar />}
+        sessionBar={isAuthenticated ? <AuthSessionBar /> : null}
         sectionNav={sectionNav}
       />
 
