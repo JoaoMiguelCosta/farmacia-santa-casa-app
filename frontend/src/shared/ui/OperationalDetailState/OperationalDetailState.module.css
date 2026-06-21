@@ -2,22 +2,57 @@
     display: grid;
     justify-items: start;
     gap: 0.5rem;
+
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
     padding: clamp(1rem, 2.5vw, 1.35rem);
+
     border: 1px solid var(--clinic-border);
     border-radius: var(--clinic-radius-lg);
+
     background: var(--clinic-surface);
+
     box-shadow: var(--clinic-shadow-soft);
 }
 
+.stateTitle,
+.stateDescription {
+    max-width: 100%;
+
+    overflow-wrap: anywhere;
+}
+
 .stateTitle {
+    display: block;
+
     color: var(--clinic-ink);
+
     font-size: clamp(1rem, 1.6vw, 1.15rem);
+    line-height: var(--clinic-line-height-tight);
 }
 
 .stateDescription {
     max-width: 62ch;
     margin: 0;
+
     color: var(--clinic-muted);
+
     font-size: var(--clinic-font-size-sm);
     line-height: 1.5;
+}
+
+.state > :where(button, a) {
+    min-width: 0;
+    max-width: 100%;
+}
+
+@media (max-width: 520px) {
+    .state {
+        padding: 1rem;
+    }
+
+    .state > :where(button, a) {
+        width: 100%;
+    }
 }

@@ -6,7 +6,14 @@
     display: grid;
     place-items: center;
 
-    padding: clamp(1rem, 4vw, 2rem);
+    width: 100%;
+    min-width: 0;
+    min-height: 100%;
+    padding: clamp(0.75rem, 4vw, 2rem);
+
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
 
     background-color: rgba(23, 33, 29, 0.42);
 }
@@ -18,7 +25,15 @@
 
     width: min(100%, 34rem);
     min-width: 0;
+    max-width: 100%;
+    max-height: calc(100vh - 1.5rem);
+    max-height: calc(100dvh - 1.5rem);
     padding: clamp(1.1rem, 3vw, 1.4rem);
+
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-gutter: stable;
 
     border: 1px solid var(--clinic-border);
     border-radius: var(--clinic-radius-xl);
@@ -33,6 +48,8 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
+
+    flex: 0 0 auto;
 
     width: 2.5rem;
     height: 2.5rem;
@@ -49,11 +66,19 @@
     gap: 0.45rem;
 
     min-width: 0;
+    max-width: 100%;
+}
+
+.eyebrow,
+.title,
+.description {
+    max-width: 100%;
+    margin: 0;
+
+    overflow-wrap: anywhere;
 }
 
 .eyebrow {
-    margin: 0;
-
     font-size: var(--clinic-font-size-xs);
     font-weight: 900;
     letter-spacing: 0.08em;
@@ -62,8 +87,6 @@
 }
 
 .title {
-    margin: 0;
-
     color: var(--clinic-ink);
 
     font-size: clamp(1.25rem, 3vw, 1.55rem);
@@ -73,8 +96,6 @@
 }
 
 .description {
-    margin: 0;
-
     color: var(--clinic-muted-strong);
 
     font-size: var(--clinic-font-size-md);
@@ -91,7 +112,14 @@
     flex-wrap: wrap;
     gap: 0.65rem;
 
+    min-width: 0;
+    max-width: 100%;
     padding-top: 0.25rem;
+}
+
+.actions > * {
+    min-width: 0;
+    max-width: 100%;
 }
 
 /* Types */
@@ -140,18 +168,25 @@
 
 @media (max-width: 520px) {
     .dialog {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
         gap: 0.85rem;
+
+        padding: 1rem;
 
         border-radius: var(--clinic-radius-lg);
     }
 
-    .actions {
-        display: grid;
-        grid-template-columns: 1fr;
+    .icon {
+        width: 2.25rem;
+        height: 2.25rem;
     }
 
-    .actions>* {
+    .actions {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .actions > * {
         width: 100%;
     }
 }
