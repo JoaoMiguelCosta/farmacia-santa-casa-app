@@ -1,15 +1,18 @@
 .item {
-    --medicacao-control-height: 2.55rem;
+    --medicacao-control-height: 2.75rem;
     --medicacao-label-gap: 0.28rem;
 
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(10rem, auto) auto;
+    grid-template-columns:
+        minmax(0, 1fr)
+        minmax(10rem, auto)
+        auto;
     gap: 0.95rem;
     align-items: start;
 
     width: 100%;
-    max-width: 100%;
     min-width: 0;
+    max-width: 100%;
     padding: 0.88rem 0.95rem;
 
     overflow: hidden;
@@ -18,20 +21,30 @@
     border-radius: var(--clinic-radius-lg);
 
     background:
-        radial-gradient(circle at 96% 0%,
+        radial-gradient(
+            circle at 96% 0%,
             var(--operation-accent-softer, rgba(111, 127, 47, 0.16)),
-            transparent 12rem),
-        radial-gradient(circle at 0% 100%,
+            transparent 12rem
+        ),
+        radial-gradient(
+            circle at 0% 100%,
             var(--operation-accent-softer, rgba(111, 127, 47, 0.1)),
-            transparent 10rem),
-        var(--operation-panel-background,
-            linear-gradient(135deg,
+            transparent 10rem
+        ),
+        var(
+            --operation-panel-background,
+            linear-gradient(
+                135deg,
                 rgba(255, 255, 255, 0.98),
-                rgba(244, 248, 225, 0.93)));
+                rgba(244, 248, 225, 0.93)
+            )
+        );
 
     box-shadow:
-        var(--operation-panel-shadow,
-            0 0.8rem 1.8rem rgba(68, 82, 31, 0.08)),
+        var(
+            --operation-panel-shadow,
+            0 0.8rem 1.8rem rgba(68, 82, 31, 0.08)
+        ),
         inset 4px 0 0 var(--operation-accent-softer, rgba(111, 127, 47, 0.16)),
         inset 0 1px 0 rgba(255, 255, 255, 0.9);
 
@@ -42,32 +55,33 @@
         transform var(--clinic-transition);
 }
 
-.item:hover {
-    border-color: var(--operation-header-border, rgba(111, 127, 47, 0.42));
-
-    box-shadow:
-        0 1rem 2.2rem var(--operation-content-shadow, rgba(68, 82, 31, 0.095)),
-        0 0 0 3px var(--operation-accent-softer, rgba(111, 127, 47, 0.16)),
-        inset 5px 0 0 var(--operation-accent-soft, rgba(111, 127, 47, 0.28)),
-        inset 0 1px 0 rgba(255, 255, 255, 0.92);
-}
-
-.item>* {
+.item > * {
     min-width: 0;
+    max-width: 100%;
 }
 
 .medicationCell,
 .metaCell {
     display: grid;
-    grid-template-rows: auto var(--medicacao-control-height);
+    grid-template-rows: auto minmax(var(--medicacao-control-height), auto);
     gap: var(--medicacao-label-gap);
     align-content: start;
 
     min-width: 0;
+    max-width: 100%;
 }
 
-.medicationCell>span,
-.metaCell>span {
+.medicationCell > span,
+.metaCell > span,
+.medicationCell strong,
+.metaCell strong {
+    max-width: 100%;
+
+    overflow-wrap: anywhere;
+}
+
+.medicationCell > span,
+.metaCell > span {
     color: var(--operation-accent-strong, var(--clinic-muted-strong));
 
     font-size: 0.66rem;
@@ -75,7 +89,6 @@
     letter-spacing: 0.09em;
     line-height: 1.15;
     text-transform: uppercase;
-    white-space: nowrap;
 }
 
 .medicationCell strong,
@@ -85,20 +98,17 @@
     color: var(--clinic-ink);
 
     font-weight: 900;
-    line-height: 1.15;
+    line-height: 1.2;
 }
 
 .medicationCell strong {
     font-size: clamp(1.06rem, 1.3vw, 1.24rem);
     font-weight: 950;
     letter-spacing: -0.035em;
-
-    overflow-wrap: anywhere;
 }
 
 .metaCell strong {
     font-size: 0.88rem;
-    white-space: nowrap;
 }
 
 .actionCell {
@@ -106,32 +116,58 @@
     align-items: end;
     justify-content: flex-end;
 
-    min-height: calc(var(--medicacao-control-height) + 1rem);
     min-width: 0;
+    max-width: 100%;
+    min-height: calc(var(--medicacao-control-height) + 1rem);
 }
 
 .actionCell button {
+    min-width: 0;
+    max-width: 100%;
     min-height: var(--medicacao-control-height);
-    white-space: nowrap;
+
+    white-space: normal;
 }
 
-@media (max-width: 1240px) {
+@media (hover: hover) and (pointer: fine) {
+    .item:hover {
+        border-color: var(--operation-header-border, rgba(111, 127, 47, 0.42));
+
+        box-shadow:
+            0 1rem 2.2rem
+                var(--operation-content-shadow, rgba(68, 82, 31, 0.095)),
+            0 0 0 3px
+                var(--operation-accent-softer, rgba(111, 127, 47, 0.16)),
+            inset 5px 0 0
+                var(--operation-accent-soft, rgba(111, 127, 47, 0.28)),
+            inset 0 1px 0 rgba(255, 255, 255, 0.92);
+    }
+}
+
+@media (max-width: 1120px) {
     .item {
-        grid-template-columns: minmax(0, 1fr) minmax(10rem, auto);
+        grid-template-columns:
+            minmax(0, 1fr)
+            minmax(10rem, auto);
     }
 
     .actionCell {
+        grid-column: 1 / -1;
+
         justify-content: flex-start;
+
         min-height: auto;
     }
 }
 
 @media (max-width: 760px) {
     .item {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
     }
 
     .actionCell {
+        grid-column: auto;
+
         align-items: stretch;
     }
 
@@ -142,7 +178,15 @@
 
 @media (max-width: 520px) {
     .item {
+        gap: 0.8rem;
+        padding: 0.85rem;
+
         border-radius: var(--clinic-radius-md);
+    }
+
+    .medicationCell,
+    .metaCell {
+        grid-template-rows: auto auto;
     }
 }
 
