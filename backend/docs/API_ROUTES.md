@@ -377,8 +377,6 @@ Verifica estado geral da API para uso administrativo.
 
 # 7. Rotas Santa Casa
 
-# 7. Rotas Santa Casa
-
 Prefixo protegido:
 
 ```txt
@@ -419,7 +417,9 @@ Obtém sinais agregados para dashboard da Santa Casa.
 ```json
 {
   "utentes": {
-    "total": 10
+    "total": 10,
+    "ativos": 8,
+    "arquivados": 2
   },
   "receitas": {
     "total": 5,
@@ -430,6 +430,7 @@ Obtém sinais agregados para dashboard da Santa Casa.
     "total": 3
   },
   "extras": {
+    "abertos": 2,
     "pendentes": 1,
     "parcialmenteRegularizados": 1,
     "regularizados": 2,
@@ -438,7 +439,8 @@ Obtém sinais agregados para dashboard da Santa Casa.
   "pedidos": {
     "pendentes": 4,
     "validados": 12,
-    "rejeitados": 1
+    "rejeitados": 1,
+    "cancelados": 0
   },
   "regularizacoes": {
     "pendentes": 1,
@@ -837,6 +839,8 @@ Lista linhas de receita ativas com quantidade restante.
 }
 ```
 
+`quantidadeDispensada` representa a quantidade dispensada diretamente através de pedidos validados, sem incluir regularizações de Vendas Suspensas. Quando a linha participou em regularizações, o campo `quantidadeUsadaRegularizacao` também é devolvido (apenas quando o valor é superior a zero).
+
 ---
 
 ### POST `/api/santacasa/utentes/:utenteId/receitas`
@@ -921,12 +925,30 @@ Se a nova receita regularizar Vendas Suspensas pendentes e `confirmRegularizacao
         "status": "ATIVA"
       }
     ],
-    "extrasResolvidos": [],
+    "extrasResolvidos": [
+      {
+        "id": "cuid",
+        "utenteId": "cuid",
+        "medicamento": "Paracetamol",
+        "action": "DELETED",
+        "quantidadeRemovida": 2,
+        "quantidadeSolicitada": 2,
+        "quantidadeRegularizada": 0,
+        "quantidadeCancelada": 0
+      }
+    ],
     "createdAt": "2026-06-16T00:00:00.000Z",
     "updatedAt": "2026-06-16T00:00:00.000Z"
   }
 }
 ```
+
+`extrasResolvidos` resume as Vendas Suspensas tratadas automaticamente durante a criação da receita. Valores possíveis de `action`:
+
+* `"DELETED"` — a Venda Suspensa foi eliminada (não tinha histórico de pedidos);
+* `"CANCELLED_REMAINING"` — a quantidade restante foi cancelada (tinha histórico; `quantidadeCancelada` foi incrementada).
+
+O array é vazio quando não existiam Vendas Suspensas abertas para o medicamento.
 
 ---
 
@@ -1399,6 +1421,8 @@ Também é aceite:
 * Itens pendentes passam para `CANCELADO`.
 * Pedido passa para `CANCELADO`.
 * Guarda auditoria do utilizador autenticado em `canceledBy`.
+* `reason` é opcional; quando omitido, o backend aplica um motivo padrão.
+* Quando fornecido, `reason` não pode exceder 240 caracteres.
 
 #### Resposta `200`
 
@@ -2515,8 +2539,6 @@ Executa limpeza de histórico.
 | `offsetMonths` inválido                   |  400 |
 | `confirm` inválido ou ausente             |  400 |
 | `backupConfirmed` ausente em purge-history | 400 |
-
-# 11. Estados principais
 
 # 11. Estados principais
 
