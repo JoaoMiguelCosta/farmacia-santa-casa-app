@@ -1939,12 +1939,16 @@ alertas.e2e.test.js
 extras.e2e.test.js
 farmacia.e2e.test.js
 farmaciaPedidos.e2e.test.js
+health.e2e.test.js
+loginRateLimit.e2e.test.js
 manutencao.e2e.test.js
 medicacaoHabitual.e2e.test.js
 pedidos.e2e.test.js
 receitas.e2e.test.js
 regularizacoes.e2e.test.js
+requestId.e2e.test.js
 santacasa.e2e.test.js
+securityHeaders.e2e.test.js
 semReceita.e2e.test.js
 utentes.e2e.test.js
 ```
