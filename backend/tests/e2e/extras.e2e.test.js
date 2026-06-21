@@ -23,6 +23,14 @@ function createFutureDate(year = 2099) {
   return `${year}-12-31`;
 }
 
+function createTodayDate() {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+  const day = String(now.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
 async function createUtente(agent, prefix = "Utente Venda Suspensa E2E") {
   const payload = createUniqueUtentePayload(prefix);
 
@@ -337,6 +345,43 @@ describe("Vendas Suspensas E2E", () => {
         const receita = await createReceita(agent, utente.id, {
           medicamento,
           quantidade: 2,
+        });
+
+        linhaId = receita.linhas[0].linhaId;
+
+        const response = await agent
+          .post(`/api/santacasa/utentes/${utente.id}/extras`)
+          .send({
+            medicamento,
+            quantidadeSolicitada: 1,
+          })
+          .expect(409);
+
+        expect(response.body).toEqual(
+          expect.objectContaining({
+            error: "CONFLICT",
+            message:
+              "Já existe receita ativa com quantidade disponível para este medicamento.",
+          }),
+        );
+      } finally {
+        await deleteReceitaLinha(agent, utente.id, linhaId);
+        await deleteUtente(agent, utente.id);
+      }
+    });
+
+    it("deve impedir criar Venda Suspensa quando existe receita com validade igual ao dia atual", async () => {
+      const agent = await createSantaCasaAgent(app);
+      const utente = await createUtente(agent, "Utente Receita Hoje Extra");
+      const medicamento = createUniqueMedicamento("Receita Hoje Extra E2E");
+
+      let linhaId = null;
+
+      try {
+        const receita = await createReceita(agent, utente.id, {
+          medicamento,
+          quantidade: 2,
+          validade: createTodayDate(),
         });
 
         linhaId = receita.linhas[0].linhaId;

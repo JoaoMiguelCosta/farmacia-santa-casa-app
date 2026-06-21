@@ -1,5 +1,6 @@
 // src/modules/utentes/utentes.repository.js
 const { prisma } = require("../../db/prisma");
+const { getStartOfDay } = require("../../shared/utils/date");
 
 const baseSelect = Object.freeze({
   id: true,
@@ -292,7 +293,7 @@ async function countOpenOperationalDependencies(utenteId) {
         },
         status: "ATIVA",
         validade: {
-          gt: new Date(),
+          gte: getStartOfDay(),
         },
       },
       select: {

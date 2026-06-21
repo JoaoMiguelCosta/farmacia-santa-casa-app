@@ -1,6 +1,7 @@
 // src/modules/regularizacoes/regularizacoes.repository.js
 const { prisma } = require("../../db/prisma");
 const { normalizeText } = require("../../shared/utils/normalize");
+const { getStartOfDay } = require("../../shared/utils/date");
 
 const regularizacaoSelect = {
   id: true,
@@ -411,7 +412,7 @@ async function applyPendingToLinhasTx(tx, { utenteId, receitaLinhaIds = [] }) {
       },
       status: "ATIVA",
       validade: {
-        gt: now,
+        gte: getStartOfDay(now),
       },
     },
     select: {
