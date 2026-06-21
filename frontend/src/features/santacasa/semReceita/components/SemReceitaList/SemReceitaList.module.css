@@ -1,4 +1,12 @@
 .list {
     display: grid;
     gap: 0.72rem;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+}
+
+.list > * {
+    min-width: 0;
+    max-width: 100%;
 }
