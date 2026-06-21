@@ -7,8 +7,9 @@
     display: grid;
     gap: clamp(1rem, 2.2vw, 1.45rem);
 
-    inline-size: min(100%, var(--clinic-page-max));
-
+    width: 100%;
+    min-width: 0;
+    max-width: var(--clinic-page-max);
     margin-inline: auto;
     padding-bottom: 1rem;
 }
@@ -25,50 +26,82 @@
     pointer-events: none;
 
     background:
-        radial-gradient(circle at 10% 10%,
+        radial-gradient(
+            circle at 10% 10%,
             color-mix(in srgb, var(--clinic-green-700) 8%, transparent),
-            transparent 18rem),
-        radial-gradient(circle at 92% 2%,
+            transparent 18rem
+        ),
+        radial-gradient(
+            circle at 92% 2%,
             color-mix(in srgb, var(--clinic-gold-500) 6%, transparent),
-            transparent 20rem);
+            transparent 20rem
+        );
 
     opacity: 0.72;
 }
 
-.page>* {
+.page > * {
     min-width: 0;
+    max-width: 100%;
 }
 
 .navigation {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    flex-wrap: wrap;
     gap: 1rem;
 
+    width: 100%;
     min-width: 0;
+    max-width: 100%;
+}
+
+.navigation > * {
+    min-width: 0;
+    max-width: 100%;
+}
+
+.navigation > button {
+    min-height: 2.75rem;
+
+    white-space: normal;
 }
 
 .backLink {
-    min-height: 2.55rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    width: fit-content;
+    min-width: 0;
+    max-width: 100%;
+    min-height: 2.75rem;
     padding: 0.7rem 0.95rem;
 
-    border: 1px solid color-mix(in srgb, var(--clinic-green-700) 18%, transparent);
+    border: 1px solid
+        color-mix(in srgb, var(--clinic-green-700) 18%, transparent);
     border-radius: var(--clinic-radius-md);
 
     color: var(--clinic-green-800);
     background:
-        linear-gradient(180deg,
+        linear-gradient(
+            180deg,
             var(--clinic-white),
-            color-mix(in srgb, var(--clinic-cream) 86%, transparent));
+            color-mix(in srgb, var(--clinic-cream) 86%, transparent)
+        );
 
     box-shadow:
-        inset 0 1px 0 color-mix(in srgb, var(--clinic-white) 88%, transparent);
+        inset 0 1px 0
+            color-mix(in srgb, var(--clinic-white) 88%, transparent);
 
     font: inherit;
     font-size: var(--clinic-font-size-sm);
     font-weight: 850;
-    line-height: 1;
+    line-height: 1.2;
+    text-align: center;
     text-decoration: none;
+    overflow-wrap: anywhere;
 
     cursor: pointer;
 
@@ -80,30 +113,11 @@
         opacity var(--clinic-transition);
 }
 
-.backLink {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-
-    width: fit-content;
-}
-
-.backLink:hover {
-    transform: translateY(-1px);
-
-    border-color: color-mix(in srgb, var(--clinic-green-700) 30%, transparent);
-    background: var(--clinic-white);
-
-    box-shadow:
-        var(--clinic-shadow-soft),
-        0 0 0 3px color-mix(in srgb, var(--clinic-green-700) 5%, transparent);
-}
-
 .backLink:focus-visible {
-    outline: 3px solid color-mix(in srgb, var(--clinic-green-700) 20%, transparent);
+    outline: 3px solid
+        color-mix(in srgb, var(--clinic-green-700) 20%, transparent);
     outline-offset: 3px;
 }
-
 
 .state {
     position: relative;
@@ -113,22 +127,46 @@
     justify-items: start;
     gap: 0.55rem;
 
+    width: 100%;
     min-width: 0;
+    max-width: 100%;
     padding: clamp(1rem, 2.5vw, 1.38rem);
 
     overflow: hidden;
 
-    border: 1px solid color-mix(in srgb, var(--clinic-green-700) 12%, transparent);
+    border: 1px solid
+        color-mix(in srgb, var(--clinic-green-700) 12%, transparent);
     border-radius: var(--clinic-radius-xl);
 
     background:
-        linear-gradient(135deg,
+        linear-gradient(
+            135deg,
             var(--clinic-white),
-            color-mix(in srgb, var(--clinic-cream) 90%, transparent));
+            color-mix(in srgb, var(--clinic-cream) 90%, transparent)
+        );
 
     box-shadow:
         var(--clinic-shadow-soft),
-        inset 0 1px 0 color-mix(in srgb, var(--clinic-white) 90%, transparent);
+        inset 0 1px 0
+            color-mix(in srgb, var(--clinic-white) 90%, transparent);
+}
+
+.state > * {
+    min-width: 0;
+    max-width: 100%;
+}
+
+.state > button {
+    min-height: 2.75rem;
+
+    white-space: normal;
+}
+
+.stateTitle,
+.stateDescription {
+    max-width: 100%;
+
+    overflow-wrap: anywhere;
 }
 
 .stateTitle {
@@ -141,7 +179,6 @@
 }
 
 .stateDescription {
-    max-width: 62ch;
     margin: 0;
 
     color: var(--clinic-muted-strong);
@@ -160,22 +197,28 @@
     display: grid;
     gap: 0.95rem;
 
+    width: 100%;
     min-width: 0;
+    max-width: 100%;
     padding: clamp(1rem, 2.4vw, 1.34rem);
 
     overflow: hidden;
 
-    border: 1px solid color-mix(in srgb, var(--detail-accent) 20%, transparent);
+    border: 1px solid
+        color-mix(in srgb, var(--detail-accent) 20%, transparent);
     border-radius: var(--clinic-radius-xl);
 
     background:
-        linear-gradient(135deg,
+        linear-gradient(
+            135deg,
             color-mix(in srgb, var(--clinic-white) 98%, transparent),
-            color-mix(in srgb, var(--clinic-cream) 88%, transparent));
+            color-mix(in srgb, var(--clinic-cream) 88%, transparent)
+        );
 
     box-shadow:
         var(--clinic-shadow-card),
-        inset 0 1px 0 color-mix(in srgb, var(--clinic-white) 90%, transparent);
+        inset 0 1px 0
+            color-mix(in srgb, var(--clinic-white) 90%, transparent);
 }
 
 .summaryCard[data-tone="success"] {
@@ -201,12 +244,19 @@
     height: 3px;
 
     background:
-        linear-gradient(90deg,
+        linear-gradient(
+            90deg,
             var(--detail-accent),
             color-mix(in srgb, var(--detail-accent) 42%, transparent),
-            transparent 80%);
+            transparent 80%
+        );
 
     pointer-events: none;
+}
+
+.summaryCard > * {
+    min-width: 0;
+    max-width: 100%;
 }
 
 .summaryHeader {
@@ -219,30 +269,47 @@
     gap: 1rem;
 
     min-width: 0;
+    max-width: 100%;
 }
 
-.summaryHeader>div {
+.summaryHeader > div {
     display: grid;
     gap: 0.32rem;
 
     min-width: 0;
+    max-width: 100%;
+}
+
+.eyebrow,
+.summaryHeader h2,
+.summaryHeader p,
+.status {
+    max-width: 100%;
+
+    overflow-wrap: anywhere;
 }
 
 .eyebrow {
     width: fit-content;
     padding: 0.34rem 0.62rem;
 
-    border: 1px solid color-mix(in srgb, var(--detail-accent) 20%, transparent);
+    border: 1px solid
+        color-mix(in srgb, var(--detail-accent) 20%, transparent);
     border-radius: 999px;
 
     color: var(--detail-accent);
     background:
-        color-mix(in srgb, var(--detail-accent) 7%, var(--clinic-white));
+        color-mix(
+            in srgb,
+            var(--detail-accent) 7%,
+            var(--clinic-white)
+        );
 
     font-size: 0.68rem;
     font-weight: 950;
     letter-spacing: 0.1em;
-    line-height: 1;
+    line-height: 1.2;
+    text-align: center;
     text-transform: uppercase;
 }
 
@@ -254,11 +321,10 @@
     font-size: clamp(1.32rem, 2.4vw, 1.68rem);
     font-weight: 950;
     letter-spacing: -0.052em;
-    line-height: 1.05;
+    line-height: 1.08;
 }
 
 .summaryHeader p {
-    max-width: 62ch;
     margin: 0;
 
     color: var(--clinic-muted-strong);
@@ -273,24 +339,31 @@
     align-items: center;
     justify-content: center;
 
-    flex: 0 0 auto;
+    flex: 0 1 auto;
 
+    width: fit-content;
+    min-width: 0;
     min-height: 2rem;
     padding: 0.42rem 0.76rem;
 
-    border: 1px solid color-mix(in srgb, var(--detail-accent) 24%, transparent);
+    border: 1px solid
+        color-mix(in srgb, var(--detail-accent) 24%, transparent);
     border-radius: 999px;
 
     color: var(--detail-accent);
     background:
-        color-mix(in srgb, var(--detail-accent) 8%, var(--clinic-white));
+        color-mix(
+            in srgb,
+            var(--detail-accent) 8%,
+            var(--clinic-white)
+        );
 
     font-size: 0.76rem;
     font-weight: 950;
     letter-spacing: 0.04em;
-    line-height: 1;
+    line-height: 1.2;
+    text-align: center;
     text-transform: uppercase;
-    white-space: nowrap;
 }
 
 .message {
@@ -300,7 +373,8 @@
     margin: 0;
     padding: 0.82rem 0.92rem;
 
-    border: 1px solid color-mix(in srgb, var(--detail-accent) 15%, transparent);
+    border: 1px solid
+        color-mix(in srgb, var(--detail-accent) 15%, transparent);
     border-radius: var(--clinic-radius-md);
 
     color: var(--clinic-muted-strong);
@@ -310,6 +384,7 @@
     font-size: var(--clinic-font-size-sm);
     font-weight: 700;
     line-height: 1.5;
+    overflow-wrap: anywhere;
 }
 
 .summary {
@@ -318,9 +393,15 @@
 
     display: grid;
     grid-template-columns:
-        repeat(auto-fit, minmax(10.5rem, 1fr));
-
+        repeat(
+            auto-fit,
+            minmax(min(100%, 10.5rem), 1fr)
+        );
     gap: 0.68rem;
+
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
     margin: 0;
 }
 
@@ -331,6 +412,7 @@
     gap: 0.24rem;
 
     min-width: 0;
+    max-width: 100%;
     min-height: 3.7rem;
     padding: 0.76rem;
 
@@ -341,7 +423,17 @@
         color-mix(in srgb, var(--clinic-white) 76%, transparent);
 
     box-shadow:
-        inset 0 1px 0 color-mix(in srgb, var(--clinic-white) 84%, transparent);
+        inset 0 1px 0
+            color-mix(in srgb, var(--clinic-white) 84%, transparent);
+}
+
+.summaryItem dt,
+.metric dt,
+.summaryItem dd,
+.metric dd {
+    max-width: 100%;
+
+    overflow-wrap: anywhere;
 }
 
 .summaryItem dt,
@@ -360,8 +452,6 @@
     min-width: 0;
     margin: 0;
 
-    overflow-wrap: anywhere;
-
     color: var(--clinic-ink);
 
     font-size: 1rem;
@@ -374,7 +464,15 @@
     display: grid;
     gap: 0.9rem;
 
+    width: 100%;
     min-width: 0;
+    max-width: 100%;
+}
+
+.operationalSection > *,
+.itemsSection > * {
+    min-width: 0;
+    max-width: 100%;
 }
 
 .sectionHeader {
@@ -386,22 +484,28 @@
     justify-content: space-between;
     gap: 1rem;
 
+    width: 100%;
     min-width: 0;
+    max-width: 100%;
     padding: clamp(0.95rem, 2vw, 1.15rem);
 
     overflow: hidden;
 
-    border: 1px solid color-mix(in srgb, var(--clinic-green-700) 13%, transparent);
+    border: 1px solid
+        color-mix(in srgb, var(--clinic-green-700) 13%, transparent);
     border-radius: var(--clinic-radius-xl);
 
     background:
-        linear-gradient(135deg,
+        linear-gradient(
+            135deg,
             color-mix(in srgb, var(--clinic-white) 98%, transparent),
-            color-mix(in srgb, var(--clinic-cream) 90%, transparent));
+            color-mix(in srgb, var(--clinic-cream) 90%, transparent)
+        );
 
     box-shadow:
         var(--clinic-shadow-soft),
-        inset 0 1px 0 color-mix(in srgb, var(--clinic-white) 90%, transparent);
+        inset 0 1px 0
+            color-mix(in srgb, var(--clinic-white) 90%, transparent);
 }
 
 .sectionHeader::before {
@@ -415,19 +519,27 @@
     width: 4px;
 
     border-radius: 999px;
-    background: color-mix(in srgb, var(--clinic-green-700) 72%, transparent);
+    background:
+        color-mix(in srgb, var(--clinic-green-700) 72%, transparent);
 
     pointer-events: none;
 }
 
-.sectionHeader>div,
-.sectionHeader {
+.sectionHeader > div,
+.sectionHeader h2,
+.sectionHeader p {
     min-width: 0;
+    max-width: 100%;
 }
 
-.sectionHeader>div {
+.sectionHeader > div {
     position: relative;
     z-index: 2;
+}
+
+.sectionHeader h2,
+.sectionHeader p {
+    overflow-wrap: anywhere;
 }
 
 .sectionHeader h2 {
@@ -445,7 +557,6 @@
 }
 
 .sectionHeader p {
-    max-width: 68ch;
     margin: 0.3rem 0 0;
 
     color: var(--clinic-muted-strong);
@@ -458,16 +569,27 @@
 .operationalMetrics {
     display: grid;
     grid-template-columns:
-        repeat(auto-fit, minmax(10rem, 1fr));
-
+        repeat(
+            auto-fit,
+            minmax(min(100%, 10rem), 1fr)
+        );
     gap: 0.68rem;
+
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
     margin: 0;
 }
 
 .metric[data-tone="success"] {
-    border-color: color-mix(in srgb, var(--clinic-success) 18%, transparent);
+    border-color:
+        color-mix(in srgb, var(--clinic-success) 18%, transparent);
     background:
-        color-mix(in srgb, var(--clinic-success) 5%, var(--clinic-white));
+        color-mix(
+            in srgb,
+            var(--clinic-success) 5%,
+            var(--clinic-white)
+        );
 }
 
 .metric[data-tone="success"] dd {
@@ -475,9 +597,14 @@
 }
 
 .metric[data-tone="warning"] {
-    border-color: color-mix(in srgb, var(--clinic-warning) 22%, transparent);
+    border-color:
+        color-mix(in srgb, var(--clinic-warning) 22%, transparent);
     background:
-        color-mix(in srgb, var(--clinic-warning) 6%, var(--clinic-white));
+        color-mix(
+            in srgb,
+            var(--clinic-warning) 6%,
+            var(--clinic-white)
+        );
 }
 
 .metric[data-tone="warning"] dd {
@@ -485,9 +612,14 @@
 }
 
 .metric[data-tone="danger"] {
-    border-color: color-mix(in srgb, var(--clinic-danger) 18%, transparent);
+    border-color:
+        color-mix(in srgb, var(--clinic-danger) 18%, transparent);
     background:
-        color-mix(in srgb, var(--clinic-danger) 5%, var(--clinic-white));
+        color-mix(
+            in srgb,
+            var(--clinic-danger) 5%,
+            var(--clinic-white)
+        );
 }
 
 .metric[data-tone="danger"] dd {
@@ -499,26 +631,48 @@
     display: grid;
     gap: 0.32rem;
 
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
     padding: 0.88rem 0.98rem;
 
     border-radius: var(--clinic-radius-lg);
 }
 
 .notice[data-tone="warning"] {
-    border: 1px solid color-mix(in srgb, var(--clinic-warning) 24%, transparent);
+    border: 1px solid
+        color-mix(in srgb, var(--clinic-warning) 24%, transparent);
     border-inline-start: 4px solid var(--clinic-warning);
 
     background:
-        color-mix(in srgb, var(--clinic-warning) 6%, var(--clinic-white));
+        color-mix(
+            in srgb,
+            var(--clinic-warning) 6%,
+            var(--clinic-white)
+        );
 }
 
 .notice[data-tone="danger"],
 .reason {
-    border: 1px solid color-mix(in srgb, var(--clinic-danger) 20%, transparent);
+    border: 1px solid
+        color-mix(in srgb, var(--clinic-danger) 20%, transparent);
     border-inline-start: 4px solid var(--clinic-danger);
 
     background:
-        color-mix(in srgb, var(--clinic-danger) 5%, var(--clinic-white));
+        color-mix(
+            in srgb,
+            var(--clinic-danger) 5%,
+            var(--clinic-white)
+        );
+}
+
+.notice strong,
+.notice p,
+.reason strong,
+.reason p {
+    max-width: 100%;
+
+    overflow-wrap: anywhere;
 }
 
 .notice strong,
@@ -541,37 +695,70 @@
     line-height: 1.5;
 }
 
-@media (max-width: 620px) {
+@media (hover: hover) and (pointer: fine) {
+    .backLink:hover {
+        transform: translateY(-1px);
 
+        border-color:
+            color-mix(
+                in srgb,
+                var(--clinic-green-700) 30%,
+                transparent
+            );
+        background: var(--clinic-white);
+
+        box-shadow:
+            var(--clinic-shadow-soft),
+            0 0 0 3px
+                color-mix(
+                    in srgb,
+                    var(--clinic-green-700) 5%,
+                    transparent
+                );
+    }
+}
+
+@media (max-width: 620px) {
     .navigation,
     .summaryHeader {
         align-items: stretch;
         flex-direction: column;
     }
 
+    .navigation > button,
     .backLink {
-        justify-content: center;
-
         width: 100%;
     }
 
     .status {
         width: fit-content;
-        white-space: normal;
     }
 
     .summary,
     .operationalMetrics {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .state > button {
+        width: 100%;
     }
 }
 
 @media (max-width: 420px) {
+    .page {
+        gap: 1rem;
+    }
 
+    .page::before {
+        inset-inline: 0;
+    }
+
+    .state,
     .summaryCard,
     .sectionHeader {
-        padding: 0.9rem;
-        border-radius: var(--clinic-radius-lg);
+        padding: 0.85rem;
+
+        border-radius: var(--clinic-radius-md);
     }
 
     .summaryHeader h2 {
@@ -581,15 +768,30 @@
     .eyebrow {
         font-size: 0.62rem;
     }
+
+    .summaryItem,
+    .metric {
+        min-height: 0;
+        padding: 0.68rem;
+    }
+
+    .notice,
+    .reason,
+    .message {
+        padding: 0.72rem;
+    }
+}
+
+@media (max-width: 360px) {
+    .summaryCard,
+    .sectionHeader,
+    .state {
+        padding: 0.78rem;
+    }
 }
 
 @media (prefers-reduced-motion: reduce) {
-
     .backLink {
         transition: none;
-    }
-
-    .backLink:hover {
-        transform: none;
     }
 }
