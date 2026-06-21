@@ -1,21 +1,29 @@
 .quantitySummary {
     display: grid;
-    grid-template-columns: minmax(4.8rem, auto) minmax(7rem, 1fr);
-    grid-template-rows: auto var(--extra-control-height);
+    grid-template-columns:
+        minmax(4.8rem, auto)
+        minmax(0, 1fr);
+    grid-template-rows:
+        auto
+        minmax(var(--extra-control-height), auto);
     column-gap: 1rem;
     row-gap: var(--extra-label-gap);
     align-items: start;
 
+    width: 100%;
     min-width: 0;
+    max-width: 100%;
 }
 
 .quantityAvailable {
     display: contents;
 }
 
-.quantityAvailable>span {
+.quantityAvailable > span {
     grid-column: 1;
     grid-row: 1;
+
+    max-width: 100%;
 
     color: var(--operation-accent-strong, var(--clinic-muted-strong));
 
@@ -24,7 +32,7 @@
     letter-spacing: 0.09em;
     line-height: 1.15;
     text-transform: uppercase;
-    white-space: nowrap;
+    overflow-wrap: anywhere;
 }
 
 .quantityAvailable strong {
@@ -34,12 +42,15 @@
 
     display: block;
 
+    max-width: 100%;
+
     color: var(--clinic-ink);
 
     font-size: 1.62rem;
     font-weight: 950;
     letter-spacing: -0.04em;
     line-height: 1;
+    overflow-wrap: anywhere;
 }
 
 .quantityDetails {
@@ -51,16 +62,18 @@
     gap: 0.18rem;
 
     min-width: 0;
-    padding-top: 0;
+    max-width: 100%;
 }
 
 .quantityDetails span {
+    max-width: 100%;
+
     color: var(--clinic-muted-strong);
 
     font-size: 0.76rem;
     font-weight: 760;
     line-height: 1.25;
-    white-space: nowrap;
+    overflow-wrap: anywhere;
 }
 
 /* Dispensadas */
@@ -79,22 +92,14 @@
     font-weight: 900;
 }
 
-@media (max-width: 860px) {
-    .quantitySummary {
-        grid-template-columns: minmax(4.8rem, auto) minmax(7rem, 1fr);
-        grid-template-rows: auto var(--extra-control-height);
-        align-items: start;
-    }
-}
-
 @media (max-width: 560px) {
     .quantitySummary {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
         grid-template-rows: auto auto auto;
         gap: 0.45rem;
     }
 
-    .quantityAvailable>span {
+    .quantityAvailable > span {
         grid-column: 1;
         grid-row: 1;
     }
@@ -107,10 +112,5 @@
     .quantityDetails {
         grid-column: 1;
         grid-row: 3;
-        padding-top: 0;
-    }
-
-    .quantityDetails span {
-        white-space: normal;
     }
 }

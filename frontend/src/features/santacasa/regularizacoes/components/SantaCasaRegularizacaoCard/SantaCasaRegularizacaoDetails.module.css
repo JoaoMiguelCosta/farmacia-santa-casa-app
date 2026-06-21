@@ -3,7 +3,16 @@
 .details {
     display: grid;
     gap: 0.8rem;
+
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
     padding-top: 0.2rem;
+}
+
+.details > * {
+    min-width: 0;
+    max-width: 100%;
 }
 
 .detailsHeader {
@@ -11,39 +20,51 @@
     align-items: center;
     justify-content: space-between;
     gap: 1rem;
+
+    min-width: 0;
+    max-width: 100%;
 }
 
 .detailsTitle {
+    min-width: 0;
+    max-width: 100%;
     margin: 0;
+
     color: var(--clinic-ink);
+
     font-size: var(--clinic-font-size-md);
     line-height: var(--clinic-line-height-tight);
+    overflow-wrap: anywhere;
 }
 
 .detailsButton {
-    min-height: 2.5rem;
+    flex: 0 1 auto;
+
+    min-width: 0;
+    max-width: 100%;
+    min-height: 2.75rem;
     padding: 0.68rem 1rem;
+
     border: 1px solid var(--clinic-border);
     border-radius: 999px;
+
     background: var(--clinic-white);
     color: var(--clinic-green-700);
+
     font: inherit;
     font-size: var(--clinic-font-size-sm);
     font-weight: 850;
+    line-height: 1.15;
+    white-space: normal;
+
     cursor: pointer;
+
     transition:
         transform var(--clinic-transition),
         border-color var(--clinic-transition),
         background var(--clinic-transition),
         box-shadow var(--clinic-transition),
         opacity var(--clinic-transition);
-}
-
-.detailsButton:hover {
-    transform: translateY(-1px);
-    border-color: var(--clinic-border-strong);
-    background: var(--clinic-mist);
-    box-shadow: var(--clinic-shadow-soft);
 }
 
 .detailsButton:focus-visible {
@@ -53,6 +74,7 @@
 
 .detailsButton:disabled {
     cursor: not-allowed;
+
     opacity: 0.56;
     transform: none;
     box-shadow: none;
@@ -61,18 +83,46 @@
 .eventsList {
     display: grid;
     gap: 0.75rem;
+
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
     margin: 0;
     padding: 0;
+
     list-style: none;
+}
+
+.eventsList > * {
+    min-width: 0;
+    max-width: 100%;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .detailsButton:hover:not(:disabled) {
+        transform: translateY(-1px);
+
+        border-color: var(--clinic-border-strong);
+
+        background: var(--clinic-mist);
+
+        box-shadow: var(--clinic-shadow-soft);
+    }
 }
 
 @media (max-width: 720px) {
     .detailsHeader {
-        align-items: flex-start;
+        align-items: stretch;
         flex-direction: column;
     }
 
     .detailsButton {
         width: 100%;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .detailsButton {
+        transition: none;
     }
 }

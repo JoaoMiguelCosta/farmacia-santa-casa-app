@@ -3,6 +3,7 @@
     gap: clamp(1rem, 2vw, 1.25rem);
 
     min-width: 0;
+    max-inline-size: 100%;
     padding: clamp(1rem, 2.5vw, 1.35rem);
 
     border: 1px solid var(--clinic-border);
@@ -21,6 +22,7 @@
     gap: 1rem;
 
     min-width: 0;
+    max-inline-size: 100%;
 }
 
 .heading {
@@ -28,10 +30,23 @@
     gap: 0.38rem;
 
     min-width: 0;
+    max-inline-size: 100%;
+}
+
+.eyebrow,
+.title,
+.description,
+.field span,
+.field small,
+.feedbackSuccess,
+.feedbackError {
+    min-width: 0;
+    max-inline-size: 100%;
+    overflow-wrap: anywhere;
 }
 
 .eyebrow {
-    width: fit-content;
+    inline-size: fit-content;
     margin: 0;
     padding: 0.34rem 0.68rem;
 
@@ -44,7 +59,7 @@
     font-size: 0.7rem;
     font-weight: 850;
     letter-spacing: 0.1em;
-    line-height: 1;
+    line-height: 1.25;
     text-transform: uppercase;
 }
 
@@ -79,6 +94,7 @@
     gap: 0.9rem;
 
     min-width: 0;
+    max-inline-size: 100%;
 }
 
 .field {
@@ -86,6 +102,7 @@
     gap: 0.42rem;
 
     min-width: 0;
+    max-inline-size: 100%;
 }
 
 .field span {
@@ -94,7 +111,7 @@
     font-size: 0.72rem;
     font-weight: 850;
     letter-spacing: 0.08em;
-    line-height: 1;
+    line-height: 1.25;
     text-transform: uppercase;
 }
 
@@ -108,8 +125,10 @@
 
 .field input,
 .field select {
-    width: 100%;
+    min-width: 0;
     min-height: 2.75rem;
+    inline-size: 100%;
+    max-inline-size: 100%;
     padding: 0.72rem 0.95rem;
 
     border: 1px solid var(--clinic-border);
@@ -144,9 +163,11 @@
     outline: none;
 
     border-color: rgba(31, 95, 81, 0.36);
+
     background-color: var(--clinic-surface);
 
-    box-shadow: 0 0 0 3px rgba(31, 95, 81, 0.14);
+    box-shadow:
+        0 0 0 3px rgba(31, 95, 81, 0.14);
 }
 
 .field input:disabled,
@@ -161,6 +182,8 @@
     justify-content: flex-end;
     gap: 0.55rem;
 
+    min-width: 0;
+    max-inline-size: 100%;
     padding-top: 0.25rem;
 }
 
@@ -196,15 +219,20 @@
         flex-direction: column;
     }
 
-    .header>button {
-        width: 100%;
+    .header > button {
+        inline-size: 100%;
+    }
+
+    .field input,
+    .field select {
+        font-size: 1rem;
     }
 
     .actions {
         flex-direction: column-reverse;
     }
 
-    .actions>* {
-        width: 100%;
+    .actions > * {
+        inline-size: 100%;
     }
 }

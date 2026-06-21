@@ -2,14 +2,19 @@
     display: grid;
     gap: clamp(1.25rem, 2.5vw, 2rem);
 
-    width: 100%;
     min-width: 0;
+    inline-size: 100%;
+    max-inline-size: 100%;
 }
 
 .feedbackSuccess,
 .feedbackError {
+    min-width: 0;
+    max-inline-size: 100%;
     margin: 0;
     padding: 0.85rem 1rem;
+
+    overflow-wrap: anywhere;
 
     border-radius: var(--clinic-radius-lg);
 
@@ -39,6 +44,7 @@
     gap: 1rem;
 
     min-width: 0;
+    max-inline-size: 100%;
     padding: clamp(0.9rem, 2vw, 1.1rem);
 
     border: 1px solid var(--clinic-border);
@@ -50,7 +56,11 @@
 }
 
 .paginationInfo {
+    min-width: 0;
+    max-inline-size: 100%;
     margin: 0;
+
+    overflow-wrap: anywhere;
 
     color: var(--clinic-muted-strong);
 
@@ -61,9 +71,13 @@
 
 .paginationActions {
     display: flex;
+    flex: 0 0 auto;
     flex-wrap: wrap;
     justify-content: flex-end;
     gap: 0.55rem;
+
+    min-width: 0;
+    max-inline-size: 100%;
 }
 
 .paginationButton {
@@ -71,8 +85,13 @@
     align-items: center;
     justify-content: center;
 
-    min-height: 2.5rem;
+    min-width: 0;
+    min-height: 2.75rem;
+    max-inline-size: 100%;
     padding: 0.66rem 0.95rem;
+
+    overflow-wrap: anywhere;
+    text-align: center;
 
     border: 1px solid var(--clinic-border);
     border-radius: 999px;
@@ -83,7 +102,7 @@
     font: inherit;
     font-size: 0.84rem;
     font-weight: 850;
-    line-height: 1;
+    line-height: 1.25;
 
     cursor: pointer;
 
@@ -91,16 +110,6 @@
         transform var(--clinic-transition),
         border-color var(--clinic-transition),
         background-color var(--clinic-transition);
-}
-
-.paginationButton:hover {
-    border-color: var(--clinic-border-strong);
-    background: var(--clinic-mist);
-    transform: translateY(-1px);
-}
-
-.paginationButton:active {
-    transform: translateY(0);
 }
 
 .paginationButton:focus-visible {
@@ -114,6 +123,16 @@
     transform: none;
 }
 
+@media (hover: hover) and (pointer: fine) {
+    .paginationButton:hover:not(:disabled) {
+        transform: translateY(-1px);
+
+        border-color: var(--clinic-border-strong);
+
+        background: var(--clinic-mist);
+    }
+}
+
 @media (max-width: 760px) {
     .pagination {
         align-items: stretch;
@@ -122,10 +141,12 @@
 
     .paginationActions {
         justify-content: stretch;
+
+        inline-size: 100%;
     }
 
-    .paginationActions > * {
-        flex: 1;
+    .paginationButton {
+        flex: 1 1 0;
     }
 }
 
@@ -134,14 +155,8 @@
         display: grid;
         grid-template-columns: 1fr;
     }
-}
 
-@media (prefers-reduced-motion: reduce) {
     .paginationButton {
-        transition: none;
-    }
-
-    .paginationButton:hover {
-        transform: none;
+        inline-size: 100%;
     }
 }

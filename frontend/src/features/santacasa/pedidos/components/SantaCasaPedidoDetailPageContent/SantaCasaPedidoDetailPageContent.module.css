@@ -4,22 +4,50 @@
     display: grid;
     gap: clamp(1rem, 2vw, 1.5rem);
 
-    inline-size: min(100%,
-            var(--clinic-page-max));
-
+    width: 100%;
+    min-width: 0;
+    max-width: var(--clinic-page-max);
     margin-inline: auto;
     padding-bottom: 1rem;
+}
+
+.page > * {
+    min-width: 0;
+    max-width: 100%;
 }
 
 .navigation {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    flex-wrap: wrap;
     gap: 1rem;
+
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+}
+
+.navigation > * {
+    min-width: 0;
+    max-width: 100%;
+}
+
+.navigation > button {
+    min-height: 2.75rem;
+
+    white-space: normal;
 }
 
 .backLink {
-    min-height: 2.55rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    width: fit-content;
+    min-width: 0;
+    max-width: 100%;
+    min-height: 2.75rem;
     padding: 0.68rem 0.9rem;
 
     border: 1px solid rgb(31 95 81 / 0.22);
@@ -31,7 +59,10 @@
     font: inherit;
     font-size: var(--clinic-font-size-sm);
     font-weight: 800;
-    line-height: 1;
+    line-height: 1.2;
+    text-align: center;
+    text-decoration: none;
+    overflow-wrap: anywhere;
 
     transition:
         transform var(--clinic-transition),
@@ -41,30 +72,10 @@
         opacity var(--clinic-transition);
 }
 
-.backLink {
-    display: inline-flex;
-    align-items: center;
-
-    width: fit-content;
-
-    text-decoration: none;
-}
-
-.backLink:hover {
-    transform: translateY(-1px);
-
-    border-color: rgb(31 95 81 / 0.38);
-
-    background: var(--clinic-mist);
-
-    box-shadow: var(--clinic-shadow-soft);
-}
-
 .backLink:focus-visible {
     outline: 3px solid rgb(31 95 81 / 0.24);
     outline-offset: 3px;
 }
-
 
 .cancelSection {
     display: flex;
@@ -72,10 +83,10 @@
     justify-content: space-between;
     gap: 1rem;
 
+    width: 100%;
     min-width: 0;
-    padding: clamp(0.95rem,
-            2vw,
-            1.15rem);
+    max-width: 100%;
+    padding: clamp(0.95rem, 2vw, 1.15rem);
 
     border: 1px solid rgb(180 35 24 / 0.18);
     border-radius: var(--clinic-radius-lg);
@@ -86,11 +97,31 @@
         inset 0 1px 0 rgb(255 255 255 / 0.78);
 }
 
+.cancelSection > * {
+    min-width: 0;
+    max-width: 100%;
+}
+
+.cancelSection > button {
+    flex: 0 0 auto;
+    min-height: 2.75rem;
+
+    white-space: normal;
+}
+
 .cancelContent {
     display: grid;
     gap: 0.3rem;
 
     min-width: 0;
+    max-width: 100%;
+}
+
+.cancelContent h2,
+.cancelContent p {
+    max-width: 100%;
+
+    overflow-wrap: anywhere;
 }
 
 .cancelContent h2 {
@@ -98,17 +129,13 @@
 
     color: var(--clinic-danger);
 
-    font-size: clamp(1rem,
-            1.5vw,
-            1.15rem);
-
+    font-size: clamp(1rem, 1.5vw, 1.15rem);
     font-weight: 950;
     letter-spacing: -0.03em;
     line-height: 1.2;
 }
 
 .cancelContent p {
-    max-width: 72ch;
     margin: 0;
 
     color: var(--clinic-muted-strong);
@@ -118,13 +145,25 @@
     line-height: 1.5;
 }
 
+@media (hover: hover) and (pointer: fine) {
+    .backLink:hover {
+        transform: translateY(-1px);
+
+        border-color: rgb(31 95 81 / 0.38);
+
+        background: var(--clinic-mist);
+
+        box-shadow: var(--clinic-shadow-soft);
+    }
+}
+
 @media (max-width: 700px) {
     .cancelSection {
         align-items: stretch;
         flex-direction: column;
     }
 
-    .cancelSection>button {
+    .cancelSection > button {
         width: 100%;
     }
 }
@@ -135,29 +174,26 @@
         flex-direction: column;
     }
 
+    .navigation > button,
     .backLink {
-        justify-content: center;
-
         width: 100%;
     }
 }
 
 @media (max-width: 420px) {
-    .cancelSection {
-        padding: 0.9rem;
+    .page {
+        gap: 1rem;
+    }
 
-        border-radius:
-            var(--clinic-radius-lg);
+    .cancelSection {
+        padding: 0.85rem;
+
+        border-radius: var(--clinic-radius-md);
     }
 }
 
 @media (prefers-reduced-motion: reduce) {
-
     .backLink {
         transition: none;
-    }
-
-    .backLink:hover {
-        transform: none;
     }
 }

@@ -3,6 +3,7 @@
     gap: clamp(0.9rem, 2vw, 1.15rem);
 
     min-width: 0;
+    max-inline-size: 100%;
 }
 
 .header {
@@ -12,6 +13,7 @@
     gap: 1rem;
 
     min-width: 0;
+    max-inline-size: 100%;
     padding: clamp(0.9rem, 2vw, 1.1rem);
 
     border: 1px solid var(--clinic-border);
@@ -27,6 +29,20 @@
     gap: 0.35rem;
 
     min-width: 0;
+    max-inline-size: 100%;
+}
+
+.title,
+.description,
+.name,
+.email,
+.metaGrid dt,
+.metaGrid dd,
+.stateTitle,
+.stateDescription {
+    min-width: 0;
+    max-inline-size: 100%;
+    overflow-wrap: anywhere;
 }
 
 .title {
@@ -53,14 +69,18 @@
 
 .total {
     display: inline-flex;
+    flex: 0 1 auto;
     align-items: center;
     justify-content: center;
     gap: 0.25rem;
 
-    flex: 0 0 auto;
-
+    min-width: 0;
     min-height: 2.15rem;
+    max-inline-size: 100%;
     padding: 0.48rem 0.75rem;
+
+    overflow-wrap: anywhere;
+    text-align: center;
 
     border: 1px solid rgba(31, 95, 81, 0.18);
     border-radius: 999px;
@@ -70,8 +90,7 @@
 
     font-size: var(--clinic-font-size-sm);
     font-weight: 800;
-    line-height: 1;
-    white-space: nowrap;
+    line-height: 1.25;
 }
 
 .total strong {
@@ -83,6 +102,7 @@
     gap: 0.85rem;
 
     min-width: 0;
+    max-inline-size: 100%;
 }
 
 .card {
@@ -90,6 +110,7 @@
     gap: 0.9rem;
 
     min-width: 0;
+    max-inline-size: 100%;
     padding: clamp(0.95rem, 2vw, 1.15rem);
 
     border: 1px solid var(--clinic-border);
@@ -108,6 +129,7 @@
     gap: 1rem;
 
     min-width: 0;
+    max-inline-size: 100%;
 }
 
 .identity {
@@ -116,6 +138,7 @@
     gap: 0.72rem;
 
     min-width: 0;
+    max-inline-size: 100%;
 }
 
 .statusDotActive,
@@ -131,12 +154,16 @@
 
 .statusDotActive {
     background: var(--clinic-success);
-    box-shadow: 0 0 0 0.38rem rgba(37, 115, 90, 0.1);
+
+    box-shadow:
+        0 0 0 0.38rem rgba(37, 115, 90, 0.1);
 }
 
 .statusDotInactive {
     background: var(--clinic-danger);
-    box-shadow: 0 0 0 0.38rem rgba(180, 35, 24, 0.1);
+
+    box-shadow:
+        0 0 0 0.38rem rgba(180, 35, 24, 0.1);
 }
 
 .userInfo {
@@ -144,12 +171,11 @@
     gap: 0.18rem;
 
     min-width: 0;
+    max-inline-size: 100%;
 }
 
 .name {
     margin: 0;
-
-    overflow: hidden;
 
     color: var(--clinic-ink);
 
@@ -157,42 +183,40 @@
     font-weight: 850;
     letter-spacing: -0.025em;
     line-height: 1.18;
-    text-overflow: ellipsis;
-    white-space: nowrap;
 }
 
 .email {
     margin: 0;
 
-    overflow: hidden;
-
     color: var(--clinic-muted-strong);
 
     font-size: var(--clinic-font-size-sm);
     font-weight: 650;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    line-height: 1.4;
 }
 
 .statusActive,
 .statusInactive {
     display: inline-flex;
+    flex: 0 1 auto;
     align-items: center;
     justify-content: center;
 
-    flex: 0 0 auto;
-
+    min-width: 0;
     min-height: 2rem;
+    max-inline-size: 100%;
     padding: 0.42rem 0.68rem;
+
+    overflow-wrap: anywhere;
+    text-align: center;
 
     border-radius: 999px;
 
     font-size: 0.72rem;
     font-weight: 850;
     letter-spacing: 0.08em;
-    line-height: 1;
+    line-height: 1.25;
     text-transform: uppercase;
-    white-space: nowrap;
 }
 
 .statusActive {
@@ -211,12 +235,13 @@
 
 .metaGrid {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns:
+        repeat(4, minmax(0, 1fr));
     gap: 0.65rem;
 
-    margin: 0;
-
     min-width: 0;
+    max-inline-size: 100%;
+    margin: 0;
 }
 
 .metaGrid div {
@@ -224,6 +249,7 @@
     gap: 0.22rem;
 
     min-width: 0;
+    max-inline-size: 100%;
     padding: 0.68rem 0.72rem;
 
     border: 1px solid var(--clinic-border);
@@ -238,22 +264,18 @@
     font-size: 0.68rem;
     font-weight: 850;
     letter-spacing: 0.08em;
-    line-height: 1;
+    line-height: 1.25;
     text-transform: uppercase;
 }
 
 .metaGrid dd {
     margin: 0;
 
-    overflow: hidden;
-
     color: var(--clinic-ink);
 
     font-size: var(--clinic-font-size-sm);
     font-weight: 700;
-    line-height: 1.3;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    line-height: 1.4;
 }
 
 .actions {
@@ -263,6 +285,7 @@
     gap: 0.5rem;
 
     min-width: 0;
+    max-inline-size: 100%;
 }
 
 .state {
@@ -271,6 +294,7 @@
     gap: 0.55rem;
 
     min-width: 0;
+    max-inline-size: 100%;
     padding: clamp(1rem, 2vw, 1.25rem);
 
     border: 1px solid var(--clinic-border);
@@ -300,20 +324,22 @@
 
 @media (max-width: 980px) {
     .metaGrid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
     }
 }
 
 @media (max-width: 680px) {
-
     .header,
     .cardHeader {
         align-items: stretch;
         flex-direction: column;
     }
 
-    .total {
-        width: fit-content;
+    .total,
+    .statusActive,
+    .statusInactive {
+        inline-size: fit-content;
     }
 
     .metaGrid {
@@ -325,7 +351,11 @@
     }
 
     .actions > * {
-        flex: 1;
+        flex: 1 1 0;
+    }
+
+    .state > button {
+        inline-size: 100%;
     }
 }
 
@@ -335,7 +365,8 @@
     }
 
     .actions > * {
-        width: 100%;
         flex: none;
+
+        inline-size: 100%;
     }
 }

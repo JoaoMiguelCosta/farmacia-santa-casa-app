@@ -3,26 +3,42 @@
 .situation {
     display: grid;
     gap: 0.32rem;
+
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
     padding: 0.86rem 0.96rem;
+
     border-radius: var(--clinic-radius-lg);
 }
 
 .situationPending {
     border: 1px solid var(--clinic-border-gold);
+
     background: var(--clinic-gold-soft);
     color: var(--clinic-warning);
 }
 
 .situationCompleted {
     border: 1px solid rgba(37, 115, 90, 0.22);
+
     background: rgba(37, 115, 90, 0.08);
     color: var(--clinic-success);
+}
+
+.situation strong,
+.situation span {
+    min-width: 0;
+    max-width: 100%;
+
+    overflow-wrap: anywhere;
 }
 
 .situation strong {
     font-size: 0.86rem;
     font-weight: 920;
     letter-spacing: 0.06em;
+    line-height: 1.25;
     text-transform: uppercase;
 }
 
@@ -36,6 +52,15 @@
 
 .situation span {
     color: inherit;
+
     font-size: var(--clinic-font-size-sm);
     line-height: var(--clinic-line-height-base);
+}
+
+@media (max-width: 480px) {
+    .situation {
+        padding: 0.76rem 0.82rem;
+
+        border-radius: var(--clinic-radius-md);
+    }
 }

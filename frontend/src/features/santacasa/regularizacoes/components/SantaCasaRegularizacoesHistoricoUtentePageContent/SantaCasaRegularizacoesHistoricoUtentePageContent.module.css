@@ -1,36 +1,49 @@
 .page {
     display: grid;
     gap: clamp(1.25rem, 2.5vw, 2rem);
-    inline-size: min(100%, var(--clinic-page-max));
+
+    width: 100%;
+    min-width: 0;
+    max-width: var(--clinic-page-max);
     margin-inline: auto;
 }
 
+.page > * {
+    min-width: 0;
+    max-width: 100%;
+}
+
 .backLink {
-    width: fit-content;
-    min-height: 2.45rem;
     display: inline-flex;
     align-items: center;
     justify-content: center;
+
+    width: fit-content;
+    min-width: 0;
+    max-width: 100%;
+    min-height: 2.75rem;
     padding: 0.65rem 0.95rem;
+
     border: 1px solid var(--clinic-border);
     border-radius: 999px;
+
     background: var(--clinic-white);
     color: var(--clinic-green-700);
+
+    box-shadow: var(--clinic-shadow-soft);
+
     font-size: var(--clinic-font-size-sm);
     font-weight: 850;
-    box-shadow: var(--clinic-shadow-soft);
+    line-height: 1.2;
+    text-align: center;
+    text-decoration: none;
+    overflow-wrap: anywhere;
+
     transition:
         transform var(--clinic-transition),
         border-color var(--clinic-transition),
         background var(--clinic-transition),
         box-shadow var(--clinic-transition);
-}
-
-.backLink:hover {
-    transform: translateY(-1px);
-    border-color: var(--clinic-border-strong);
-    background: var(--clinic-mist);
-    box-shadow: var(--clinic-shadow-card);
 }
 
 .backLink:focus-visible {
@@ -42,15 +55,30 @@
 .history {
     display: grid;
     gap: 1rem;
+
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
     padding: clamp(1rem, 2vw, 1.25rem);
+
     border: 1px solid var(--clinic-border);
     border-radius: var(--clinic-radius-2xl);
+
     background: var(--clinic-surface);
+
     box-shadow: var(--clinic-shadow-soft);
 }
 
+.summary > *,
+.history > * {
+    min-width: 0;
+    max-width: 100%;
+}
+
 .summary {
-    grid-template-columns: minmax(12rem, 0.32fr) minmax(0, 1fr);
+    grid-template-columns:
+        minmax(12rem, 0.32fr)
+        minmax(0, 1fr);
     align-items: stretch;
 }
 
@@ -58,15 +86,27 @@
     display: grid;
     align-content: center;
     gap: 0.35rem;
+
     min-width: 0;
+    max-width: 100%;
     padding: clamp(1rem, 2vw, 1.25rem);
+
     border: 1px solid rgba(37, 115, 90, 0.28);
     border-radius: var(--clinic-radius-xl);
+
     background: rgba(37, 115, 90, 0.1);
+}
+
+.summaryFocus span,
+.summaryFocus strong {
+    max-width: 100%;
+
+    overflow-wrap: anywhere;
 }
 
 .summaryFocus span {
     color: var(--clinic-success);
+
     font-size: var(--clinic-font-size-xs);
     font-weight: 850;
     letter-spacing: 0.06em;
@@ -76,6 +116,7 @@
 
 .summaryFocus strong {
     color: var(--clinic-success);
+
     font-size: clamp(2.25rem, 5vw, 3.25rem);
     font-weight: 950;
     letter-spacing: -0.06em;
@@ -84,8 +125,13 @@
 
 .summaryGrid {
     display: grid;
-    grid-template-columns: repeat(5, minmax(0, 1fr));
+    grid-template-columns:
+        repeat(5, minmax(0, 1fr));
     gap: 0.75rem;
+
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
     margin: 0;
 }
 
@@ -93,15 +139,27 @@
     display: grid;
     align-content: center;
     gap: 0.25rem;
+
     min-width: 0;
+    max-width: 100%;
     padding: 0.85rem;
+
     border: 1px solid var(--clinic-border);
     border-radius: var(--clinic-radius-lg);
+
     background: var(--clinic-mist);
+}
+
+.summaryItem dt,
+.summaryItem dd {
+    max-width: 100%;
+
+    overflow-wrap: anywhere;
 }
 
 .summaryItem dt {
     color: var(--clinic-muted);
+
     font-size: var(--clinic-font-size-xs);
     font-weight: 800;
     line-height: 1.25;
@@ -110,38 +168,55 @@
 .summaryItem dd {
     min-width: 0;
     margin: 0;
-    overflow-wrap: anywhere;
+
     color: var(--clinic-green-700);
+
     font-size: var(--clinic-font-size-lg);
     font-weight: 950;
-    line-height: 1;
+    line-height: 1.1;
 }
 
 .pedidos {
     grid-column: 1 / -1;
+
     display: flex;
-    flex-wrap: wrap;
     align-items: center;
+    flex-wrap: wrap;
     gap: 0.45rem;
+
+    min-width: 0;
+    max-width: 100%;
     padding: 0.75rem 0.9rem;
+
     border: 1px solid var(--clinic-border);
     border-radius: var(--clinic-radius-lg);
+
     background: var(--clinic-white);
+}
+
+.pedidos span,
+.pedidos strong {
+    max-width: 100%;
+
+    overflow-wrap: anywhere;
 }
 
 .pedidos span {
     color: var(--clinic-muted);
+
     font-size: var(--clinic-font-size-xs);
     font-weight: 850;
     letter-spacing: 0.05em;
+    line-height: 1.2;
     text-transform: uppercase;
 }
 
 .pedidos strong {
-    overflow-wrap: anywhere;
     color: var(--clinic-ink-soft);
+
     font-size: var(--clinic-font-size-sm);
     font-weight: 850;
+    line-height: 1.35;
 }
 
 .sectionHeader {
@@ -149,55 +224,83 @@
     align-items: flex-start;
     justify-content: space-between;
     gap: 1rem;
+
+    min-width: 0;
+    max-width: 100%;
+}
+
+.sectionHeader > * {
+    min-width: 0;
+    max-width: 100%;
+}
+
+.sectionHeader > button {
+    flex: 0 0 auto;
+    min-height: 2.75rem;
+
+    white-space: normal;
 }
 
 .heading {
     display: grid;
     gap: 0.35rem;
+
     min-width: 0;
+    max-width: 100%;
+}
+
+.sectionTitle,
+.sectionDescription {
+    max-width: 100%;
+
+    overflow-wrap: anywhere;
 }
 
 .sectionTitle {
     margin: 0;
+
     color: var(--clinic-ink);
+
     font-size: clamp(1.25rem, 2.2vw, 1.65rem);
     line-height: var(--clinic-line-height-tight);
 }
 
 .sectionDescription {
-    max-width: 70ch;
     margin: 0;
+
     color: var(--clinic-muted);
+
     font-size: var(--clinic-font-size-sm);
     line-height: var(--clinic-line-height-base);
 }
 
 .clearButton,
 .listButton {
-    min-height: 2.45rem;
+    min-width: 0;
+    max-width: 100%;
+    min-height: 2.75rem;
     padding: 0.65rem 0.95rem;
+
     border: 1px solid var(--clinic-border);
     border-radius: 999px;
+
     background: var(--clinic-white);
     color: var(--clinic-green-700);
+
     font: inherit;
     font-size: var(--clinic-font-size-sm);
     font-weight: 850;
+    line-height: 1.15;
+    white-space: normal;
+
     cursor: pointer;
+
     transition:
         transform var(--clinic-transition),
         border-color var(--clinic-transition),
         background var(--clinic-transition),
         box-shadow var(--clinic-transition),
         opacity var(--clinic-transition);
-}
-
-.clearButton:hover,
-.listButton:hover {
-    transform: translateY(-1px);
-    border-color: var(--clinic-border-strong);
-    background: var(--clinic-mist);
-    box-shadow: var(--clinic-shadow-soft);
 }
 
 .clearButton:focus-visible,
@@ -209,6 +312,7 @@
 .clearButton:disabled,
 .listButton:disabled {
     cursor: not-allowed;
+
     opacity: 0.56;
     transform: none;
     box-shadow: none;
@@ -217,120 +321,206 @@
 .controls {
     display: grid;
     grid-template-columns:
-        minmax(16rem, 1fr) minmax(9rem, 0.26fr) minmax(9rem, 0.26fr) auto;
+        minmax(16rem, 1fr)
+        minmax(9rem, 0.26fr)
+        minmax(9rem, 0.26fr)
+        auto;
     align-items: end;
     gap: 0.75rem;
+
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
     padding: 0.9rem;
+
     border: 1px solid var(--clinic-border);
     border-radius: var(--clinic-radius-xl);
+
     background: var(--clinic-mist);
+}
+
+.controls > * {
+    min-width: 0;
+    max-width: 100%;
 }
 
 .controlField {
     display: grid;
     gap: 0.35rem;
+
     min-width: 0;
+    max-width: 100%;
 }
 
 .controlField span {
+    max-width: 100%;
+
     color: var(--clinic-muted);
+
     font-size: var(--clinic-font-size-xs);
     font-weight: 850;
     letter-spacing: 0.05em;
+    line-height: 1.25;
     text-transform: uppercase;
+    overflow-wrap: anywhere;
 }
 
 .controlField input {
-    min-height: 2.45rem;
     width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    min-height: 2.75rem;
     padding: 0.65rem 0.85rem;
+
     border: 1px solid var(--clinic-border);
     border-radius: 999px;
+
     background: var(--clinic-white);
     color: var(--clinic-ink);
+
     font: inherit;
-    font-size: var(--clinic-font-size-sm);
+    font-size: max(1rem, var(--clinic-font-size-sm));
 }
 
 .controlField input:focus {
     outline: none;
-    border-color: var(--clinic-border-strong);
-    box-shadow: 0 0 0 3px rgba(31, 95, 81, 0.16);
-}
 
-.clearButton {
-    white-space: nowrap;
+    border-color: var(--clinic-border-strong);
+
+    box-shadow: 0 0 0 3px rgba(31, 95, 81, 0.16);
 }
 
 .resultsMeta {
     grid-column: 1 / -1;
+
+    min-width: 0;
+    max-width: 100%;
     margin: 0;
+
     color: var(--clinic-muted);
+
     font-size: var(--clinic-font-size-sm);
     font-weight: 750;
+    line-height: var(--clinic-line-height-base);
+    overflow-wrap: anywhere;
 }
 
 .dateGroups {
     display: grid;
     gap: 1rem;
+
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+}
+
+.dateGroups > * {
+    min-width: 0;
+    max-width: 100%;
 }
 
 .dateGroup {
     display: grid;
     gap: 0.9rem;
+
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
     padding: 1rem;
+
     border: 1px solid var(--clinic-border);
     border-radius: var(--clinic-radius-xl);
+
     background: var(--clinic-mist);
+}
+
+.dateGroup > * {
+    min-width: 0;
+    max-width: 100%;
 }
 
 .dateHeader {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(24rem, 0.8fr);
+    grid-template-columns:
+        minmax(0, 1fr)
+        minmax(22rem, 0.8fr);
     align-items: center;
     gap: 1rem;
+
+    min-width: 0;
+    max-width: 100%;
 }
 
 .dateIdentity {
     display: grid;
     gap: 0.22rem;
+
     min-width: 0;
+    max-width: 100%;
+}
+
+.dateIdentity span,
+.dateIdentity h3 {
+    max-width: 100%;
+
+    overflow-wrap: anywhere;
 }
 
 .dateIdentity span {
     color: var(--clinic-muted-strong);
+
     font-size: var(--clinic-font-size-xs);
     font-weight: 850;
     letter-spacing: 0.06em;
+    line-height: 1.2;
     text-transform: uppercase;
 }
 
 .dateIdentity h3 {
     margin: 0;
+
     color: var(--clinic-ink);
+
     font-size: clamp(1.1rem, 2vw, 1.35rem);
     line-height: var(--clinic-line-height-tight);
 }
 
 .dateStats {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
     gap: 0.65rem;
+
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
     margin: 0;
 }
 
 .dateStats div {
     display: grid;
     gap: 0.18rem;
+
     min-width: 0;
+    max-width: 100%;
     padding: 0.68rem;
+
     border: 1px solid var(--clinic-border);
     border-radius: var(--clinic-radius-lg);
+
     background: var(--clinic-white);
+}
+
+.dateStats dt,
+.dateStats dd {
+    max-width: 100%;
+
+    overflow-wrap: anywhere;
 }
 
 .dateStats dt {
     color: var(--clinic-muted);
+
     font-size: var(--clinic-font-size-xs);
     font-weight: 780;
     line-height: 1.25;
@@ -338,81 +528,135 @@
 
 .dateStats dd {
     margin: 0;
+
     color: var(--clinic-green-700);
+
     font-size: var(--clinic-font-size-md);
     font-weight: 950;
-    line-height: 1;
+    line-height: 1.1;
 }
 
 .cards {
     display: grid;
     gap: 0.85rem;
+
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+}
+
+.cards > * {
+    min-width: 0;
+    max-width: 100%;
 }
 
 .listActions {
     display: flex;
-    flex-wrap: wrap;
     align-items: center;
+    flex-wrap: wrap;
     gap: 0.55rem;
+
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
     padding: 0.85rem 0.95rem;
+
     border: 1px solid var(--clinic-border);
     border-radius: var(--clinic-radius-xl);
+
     background: var(--clinic-mist);
 }
 
 .hiddenMeta {
     flex: 1 1 14rem;
+
+    min-width: 0;
+    max-width: 100%;
+
     color: var(--clinic-muted);
+
     font-size: var(--clinic-font-size-sm);
     font-weight: 750;
     line-height: var(--clinic-line-height-base);
+    overflow-wrap: anywhere;
 }
 
 .emptyResults {
     display: grid;
     gap: 0.3rem;
+
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
     padding: 1rem;
+
     border: 1px solid var(--clinic-border);
     border-radius: var(--clinic-radius-xl);
+
     background: var(--clinic-white);
+}
+
+.emptyResults strong,
+.emptyResults span {
+    min-width: 0;
+    max-width: 100%;
+
+    overflow-wrap: anywhere;
 }
 
 .emptyResults strong {
     color: var(--clinic-ink);
+
     font-size: var(--clinic-font-size-md);
 }
 
 .emptyResults span {
     color: var(--clinic-muted);
+
     font-size: var(--clinic-font-size-sm);
     line-height: var(--clinic-line-height-base);
 }
 
-@media (max-width: 1100px) {
+@media (hover: hover) and (pointer: fine) {
+    .backLink:hover,
+    .clearButton:hover:not(:disabled),
+    .listButton:hover:not(:disabled) {
+        transform: translateY(-1px);
 
+        border-color: var(--clinic-border-strong);
+
+        background: var(--clinic-mist);
+
+        box-shadow: var(--clinic-shadow-card);
+    }
+}
+
+@media (max-width: 1100px) {
     .summary,
     .dateHeader {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
     }
 
     .summaryGrid {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
+        grid-template-columns:
+            repeat(3, minmax(0, 1fr));
     }
 
     .controls {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
     }
 
-    .clearButton {
+    .controls .clearButton {
         width: fit-content;
     }
 }
 
 @media (max-width: 780px) {
-
     .summaryGrid,
     .dateStats {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
     }
 
     .sectionHeader {
@@ -420,23 +664,24 @@
         flex-direction: column;
     }
 
-    .clearButton,
-    .listButton,
+    .sectionHeader > button,
     .backLink {
         width: 100%;
     }
 
-    .sectionHeader > button {
-        width: 100%;
+    .controls {
+        grid-template-columns: minmax(0, 1fr);
     }
 
-    .controls {
-        grid-template-columns: 1fr;
+    .controls .clearButton,
+    .clearButton,
+    .listButton {
+        width: 100%;
     }
 
     .listActions {
         display: grid;
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
     }
 
     .hiddenMeta {
@@ -445,9 +690,62 @@
 }
 
 @media (max-width: 560px) {
+    .page {
+        gap: 1.1rem;
+    }
+
+    .summary,
+    .history {
+        padding: 0.9rem;
+
+        border-radius: var(--clinic-radius-xl);
+    }
 
     .summaryGrid,
     .dateStats {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .summaryFocus,
+    .summaryItem,
+    .pedidos,
+    .dateGroup,
+    .controls,
+    .listActions,
+    .emptyResults {
+        padding: 0.75rem;
+
+        border-radius: var(--clinic-radius-md);
+    }
+}
+
+@media (max-width: 360px) {
+    .summary,
+    .history {
+        padding: 0.78rem;
+
+        border-radius: var(--clinic-radius-lg);
+    }
+
+    .summaryFocus strong {
+        font-size: clamp(2rem, 14vw, 2.65rem);
+    }
+
+    .summaryFocus,
+    .summaryItem,
+    .pedidos,
+    .dateGroup,
+    .controls,
+    .listActions,
+    .emptyResults {
+        padding: 0.68rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .backLink,
+    .clearButton,
+    .listButton {
+        transition: none;
     }
 }

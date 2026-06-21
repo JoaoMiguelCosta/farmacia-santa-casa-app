@@ -6,6 +6,12 @@
 
     width: 100%;
     min-width: 0;
+    max-width: 100%;
+}
+
+.section > * {
+    min-width: 0;
+    max-width: 100%;
 }
 
 .header {
@@ -17,22 +23,28 @@
     justify-content: space-between;
     gap: 1rem;
 
+    width: 100%;
     min-width: 0;
+    max-width: 100%;
     padding: clamp(1rem, 2.4vw, 1.32rem);
 
     overflow: hidden;
 
-    border: 1px solid color-mix(in srgb, var(--clinic-green-700) 13%, transparent);
+    border: 1px solid
+        color-mix(in srgb, var(--clinic-green-700) 13%, transparent);
     border-radius: var(--clinic-radius-xl);
 
     background:
-        linear-gradient(135deg,
+        linear-gradient(
+            135deg,
             color-mix(in srgb, var(--clinic-white) 98%, transparent),
-            color-mix(in srgb, var(--clinic-cream) 90%, transparent));
+            color-mix(in srgb, var(--clinic-cream) 90%, transparent)
+        );
 
     box-shadow:
         var(--clinic-shadow-soft),
-        inset 0 1px 0 color-mix(in srgb, var(--clinic-white) 90%, transparent);
+        inset 0 1px 0
+            color-mix(in srgb, var(--clinic-white) 90%, transparent);
 }
 
 .header::before {
@@ -46,9 +58,22 @@
     width: 4px;
 
     border-radius: 999px;
-    background: color-mix(in srgb, var(--clinic-green-700) 72%, transparent);
+    background:
+        color-mix(in srgb, var(--clinic-green-700) 72%, transparent);
 
     pointer-events: none;
+}
+
+.header > * {
+    min-width: 0;
+    max-width: 100%;
+}
+
+.header > button {
+    flex: 0 0 auto;
+    min-height: 2.75rem;
+
+    white-space: normal;
 }
 
 .heading {
@@ -59,6 +84,14 @@
     gap: 0.34rem;
 
     min-width: 0;
+    max-width: 100%;
+}
+
+.title,
+.description {
+    max-width: 100%;
+
+    overflow-wrap: anywhere;
 }
 
 .title {
@@ -73,7 +106,6 @@
 }
 
 .description {
-    max-width: 68ch;
     margin: 0;
 
     color: var(--clinic-muted-strong);
@@ -83,12 +115,18 @@
     line-height: var(--clinic-line-height-base);
 }
 
-
 .list {
     display: grid;
     gap: clamp(0.9rem, 1.8vw, 1.08rem);
 
+    width: 100%;
     min-width: 0;
+    max-width: 100%;
+}
+
+.list > * {
+    min-width: 0;
+    max-width: 100%;
 }
 
 .state {
@@ -99,22 +137,46 @@
     justify-items: start;
     gap: 0.55rem;
 
+    width: 100%;
     min-width: 0;
+    max-width: 100%;
     padding: clamp(1rem, 2.5vw, 1.38rem);
 
     overflow: hidden;
 
-    border: 1px solid color-mix(in srgb, var(--clinic-green-700) 12%, transparent);
+    border: 1px solid
+        color-mix(in srgb, var(--clinic-green-700) 12%, transparent);
     border-radius: var(--clinic-radius-xl);
 
     background:
-        linear-gradient(135deg,
+        linear-gradient(
+            135deg,
             var(--clinic-white),
-            color-mix(in srgb, var(--clinic-cream) 90%, transparent));
+            color-mix(in srgb, var(--clinic-cream) 90%, transparent)
+        );
 
     box-shadow:
         var(--clinic-shadow-soft),
-        inset 0 1px 0 color-mix(in srgb, var(--clinic-white) 90%, transparent);
+        inset 0 1px 0
+            color-mix(in srgb, var(--clinic-white) 90%, transparent);
+}
+
+.state > * {
+    min-width: 0;
+    max-width: 100%;
+}
+
+.state > button {
+    min-height: 2.75rem;
+
+    white-space: normal;
+}
+
+.stateTitle,
+.stateDescription {
+    max-width: 100%;
+
+    overflow-wrap: anywhere;
 }
 
 .stateTitle {
@@ -127,7 +189,6 @@
 }
 
 .stateDescription {
-    max-width: 62ch;
     margin: 0;
 
     color: var(--clinic-muted-strong);
@@ -141,6 +202,8 @@
     .header {
         align-items: stretch;
         flex-direction: column;
+
+        border-radius: var(--clinic-radius-lg);
     }
 
     .header > button {
@@ -148,3 +211,23 @@
     }
 }
 
+@media (max-width: 520px) {
+    .state {
+        padding: 0.9rem;
+
+        border-radius: var(--clinic-radius-lg);
+    }
+
+    .state > button {
+        width: 100%;
+    }
+}
+
+@media (max-width: 360px) {
+    .header,
+    .state {
+        padding: 0.8rem;
+
+        border-radius: var(--clinic-radius-md);
+    }
+}

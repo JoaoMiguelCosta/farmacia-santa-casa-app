@@ -3,26 +3,40 @@
 .header {
     display: grid;
     gap: 0.9rem;
+
+    width: 100%;
     min-width: 0;
+    max-width: 100%;
 }
 
 .headerHistory {
     gap: 0.72rem;
 }
 
+.header > * {
+    min-width: 0;
+    max-width: 100%;
+}
+
 .statusGroup {
     display: flex;
-    flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
+    flex-wrap: wrap;
     gap: 0.55rem;
+
+    min-width: 0;
+    max-width: 100%;
 }
 
 .headerMeta {
     display: flex;
-    flex-wrap: wrap;
     justify-content: flex-end;
+    flex-wrap: wrap;
     gap: 0.5rem;
+
+    min-width: 0;
+    max-width: 100%;
 }
 
 .status,
@@ -30,31 +44,44 @@
 .datePill {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
+
+    flex: 0 1 auto;
+
     width: fit-content;
+    min-width: 0;
+    max-width: 100%;
     min-height: 2rem;
     padding: 0.42rem 0.72rem;
+
     border-radius: 999px;
+
     font-size: var(--clinic-font-size-xs);
     font-weight: 850;
-    line-height: 1;
+    line-height: 1.2;
+    text-align: center;
+    overflow-wrap: anywhere;
 }
 
 .headerHistory .status,
 .headerHistory .pedidoPill,
 .headerHistory .datePill {
-    min-height: 1.75rem;
+    min-height: 1.9rem;
     padding: 0.34rem 0.58rem;
+
     font-size: 0.72rem;
 }
 
 .statusPending {
     border: 1px solid var(--clinic-border-gold);
+
     background: var(--clinic-gold-soft);
     color: var(--clinic-warning);
 }
 
 .statusCompleted {
     border: 1px solid rgba(37, 115, 90, 0.24);
+
     background: rgba(37, 115, 90, 0.1);
     color: var(--clinic-success);
 }
@@ -62,6 +89,7 @@
 .pedidoPill,
 .datePill {
     border: 1px solid var(--clinic-border);
+
     background: var(--clinic-white);
     color: var(--clinic-muted-strong);
 }
@@ -72,8 +100,15 @@
 
 .identityGrid {
     display: grid;
-    grid-template-columns: minmax(13rem, 1.35fr) minmax(11rem, 1fr) minmax(7rem, 0.65fr);
+    grid-template-columns:
+        minmax(13rem, 1.35fr)
+        minmax(11rem, 1fr)
+        minmax(7rem, 0.65fr);
     gap: 0.85rem;
+
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
     margin: 0;
 }
 
@@ -82,18 +117,31 @@
 }
 
 .identityGridHistory {
-    grid-template-columns: minmax(12rem, 1.15fr) minmax(10rem, 0.85fr) minmax(7rem, 0.6fr);
+    grid-template-columns:
+        minmax(12rem, 1.15fr)
+        minmax(10rem, 0.85fr)
+        minmax(7rem, 0.6fr);
     gap: 0.7rem;
 }
 
 .identityGrid div {
     display: grid;
     gap: 0.25rem;
+
     min-width: 0;
+    max-width: 100%;
+}
+
+.identityGrid dt,
+.identityGrid dd {
+    max-width: 100%;
+
+    overflow-wrap: anywhere;
 }
 
 .identityGrid dt {
     color: var(--clinic-muted);
+
     font-size: var(--clinic-font-size-xs);
     font-weight: 850;
     letter-spacing: 0.07em;
@@ -108,8 +156,9 @@
 .identityGrid dd {
     min-width: 0;
     margin: 0;
-    overflow-wrap: anywhere;
+
     color: var(--clinic-ink);
+
     font-size: clamp(1rem, 1.45vw, 1.25rem);
     font-weight: 900;
     line-height: 1.15;
@@ -130,20 +179,37 @@
 }
 
 @media (max-width: 1080px) {
-
     .identityGrid,
     .identityGridHistory {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
     }
 }
 
 @media (max-width: 720px) {
     .statusGroup {
-        align-items: flex-start;
+        align-items: stretch;
         flex-direction: column;
     }
 
     .headerMeta {
         justify-content: flex-start;
+    }
+}
+
+@media (max-width: 480px) {
+    .status,
+    .pedidoPill,
+    .datePill,
+    .headerHistory .status,
+    .headerHistory .pedidoPill,
+    .headerHistory .datePill {
+        width: 100%;
+    }
+
+    .headerMeta {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+
+        width: 100%;
     }
 }

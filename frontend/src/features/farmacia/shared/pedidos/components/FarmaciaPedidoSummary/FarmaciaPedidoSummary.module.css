@@ -1,18 +1,19 @@
-/* src/features/farmacia/shared/pedidos/components/FarmaciaPedidoSummary/FarmaciaPedidoSummary.module.css */
-
 .summary {
     display: grid;
     grid-template-columns:
-        repeat(auto-fit,
-            minmax(9rem, 1fr));
+        repeat(
+            auto-fit,
+            minmax(min(9rem, 100%), 1fr)
+        );
     gap: 0.45rem;
 
+    min-width: 0;
+    max-inline-size: 100%;
     margin: 0;
     padding: 0.55rem;
 
     border: 1px solid var(--clinic-border);
-    border-radius:
-        var(--clinic-radius-md);
+    border-radius: var(--clinic-radius-md);
 
     background: var(--clinic-mist);
 }
@@ -27,12 +28,17 @@
     padding: 0.5rem 0.65rem;
 
     border: 1px solid transparent;
-    border-radius:
-        var(--clinic-radius-sm);
+    border-radius: var(--clinic-radius-sm);
 }
 
 .dateItem {
     grid-column: span 2;
+}
+
+.summaryItem dt,
+.summaryItem dd {
+    min-width: 0;
+    overflow-wrap: anywhere;
 }
 
 .summaryItem dt {
@@ -46,10 +52,7 @@
 }
 
 .summaryItem dd {
-    min-width: 0;
     margin: 0;
-
-    overflow-wrap: anywhere;
 
     color: var(--clinic-ink-soft);
 
@@ -60,15 +63,14 @@
 
 .dateItem dd {
     color: var(--clinic-ink);
+
     font-size: 0.93rem;
 }
 
 .summaryItem[data-tone="success"] {
-    border-color:
-        rgba(37, 115, 90, 0.14);
+    border-color: rgba(37, 115, 90, 0.14);
 
-    background:
-        rgba(37, 115, 90, 0.045);
+    background: rgba(37, 115, 90, 0.045);
 }
 
 .summaryItem[data-tone="success"] dd {
@@ -76,11 +78,9 @@
 }
 
 .summaryItem[data-tone="danger"] {
-    border-color:
-        rgba(180, 35, 24, 0.14);
+    border-color: rgba(180, 35, 24, 0.14);
 
-    background:
-        rgba(180, 35, 24, 0.04);
+    background: rgba(180, 35, 24, 0.04);
 }
 
 .summaryItem[data-tone="danger"] dd {
@@ -127,7 +127,6 @@
 }
 
 @media (max-width: 920px) {
-
     .summary[data-layout="pending-warning"],
     .summary[data-layout="history-warning"] {
         grid-template-columns:
@@ -162,7 +161,6 @@
 }
 
 @media (max-width: 520px) {
-
     .summary,
     .summary[data-layout="pending-warning"],
     .summary[data-layout="history-warning"] {

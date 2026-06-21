@@ -5,27 +5,34 @@
     isolation: isolate;
 
     display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    gap: clamp(0.85rem, 2vw, 1rem);
+    grid-template-columns:
+        minmax(0, 1fr)
+        auto;
     align-items: end;
+    gap: clamp(0.85rem, 2vw, 1rem);
 
     width: 100%;
     min-width: 0;
+    max-width: 100%;
     padding: clamp(0.95rem, 2vw, 1.16rem);
 
     overflow: hidden;
 
-    border: 1px solid color-mix(in srgb, var(--clinic-green-700) 16%, transparent);
+    border: 1px solid
+        color-mix(in srgb, var(--clinic-green-700) 16%, transparent);
     border-radius: var(--clinic-radius-xl);
 
     background:
-        linear-gradient(135deg,
+        linear-gradient(
+            135deg,
             color-mix(in srgb, var(--clinic-white) 98%, transparent),
-            color-mix(in srgb, var(--clinic-cream) 90%, transparent));
+            color-mix(in srgb, var(--clinic-cream) 90%, transparent)
+        );
 
     box-shadow:
         var(--clinic-shadow-soft),
-        inset 0 1px 0 color-mix(in srgb, var(--clinic-white) 90%, transparent);
+        inset 0 1px 0
+            color-mix(in srgb, var(--clinic-white) 90%, transparent);
 }
 
 .toolbar::before {
@@ -39,12 +46,19 @@
     height: 3px;
 
     background:
-        linear-gradient(90deg,
+        linear-gradient(
+            90deg,
             color-mix(in srgb, var(--clinic-green-700) 88%, transparent),
             color-mix(in srgb, var(--clinic-gold-500) 42%, transparent),
-            transparent 78%);
+            transparent 78%
+        );
 
     pointer-events: none;
+}
+
+.toolbar > * {
+    min-width: 0;
+    max-width: 100%;
 }
 
 .filters {
@@ -53,12 +67,22 @@
 
     display: grid;
     grid-template-columns:
-        minmax(9.5rem, 0.75fr) minmax(17rem, 1.45fr) minmax(10rem, 0.8fr) minmax(10rem, 0.8fr) auto;
-
-    gap: 0.72rem;
+        minmax(8.5rem, 0.7fr)
+        minmax(14rem, 1.45fr)
+        minmax(9rem, 0.8fr)
+        minmax(9rem, 0.8fr)
+        auto;
     align-items: end;
+    gap: 0.72rem;
 
+    width: 100%;
     min-width: 0;
+    max-width: 100%;
+}
+
+.filters > * {
+    min-width: 0;
+    max-width: 100%;
 }
 
 .filterField {
@@ -66,39 +90,54 @@
     gap: 0.42rem;
 
     min-width: 0;
+    max-width: 100%;
 }
 
 .filterField span {
+    max-width: 100%;
+
     color: var(--clinic-green-800);
 
     font-size: var(--clinic-font-size-xs);
     font-weight: 950;
     letter-spacing: 0.08em;
-    line-height: 1;
+    line-height: 1.2;
     text-transform: uppercase;
+    overflow-wrap: anywhere;
 }
 
 .filterField input,
 .filterField select {
     width: 100%;
-    min-height: 2.72rem;
+    min-width: 0;
+    max-width: 100%;
+    min-height: 2.75rem;
     padding: 0.72rem 0.9rem;
 
-    border: 1px solid color-mix(in srgb, var(--clinic-green-700) 17%, transparent);
+    border: 1px solid
+        color-mix(in srgb, var(--clinic-green-700) 17%, transparent);
     border-radius: var(--clinic-radius-md);
 
     color: var(--clinic-ink);
     background:
-        linear-gradient(180deg,
+        linear-gradient(
+            180deg,
             var(--clinic-white),
-            color-mix(in srgb, var(--clinic-cream) 78%, var(--clinic-white)));
+            color-mix(
+                in srgb,
+                var(--clinic-cream) 78%,
+                var(--clinic-white)
+            )
+        );
 
     box-shadow:
-        inset 0 1px 0 color-mix(in srgb, var(--clinic-white) 92%, transparent),
-        inset 0 -1px 0 color-mix(in srgb, var(--clinic-ink) 3%, transparent);
+        inset 0 1px 0
+            color-mix(in srgb, var(--clinic-white) 92%, transparent),
+        inset 0 -1px 0
+            color-mix(in srgb, var(--clinic-ink) 3%, transparent);
 
     font: inherit;
-    font-size: var(--clinic-font-size-sm);
+    font-size: max(1rem, var(--clinic-font-size-sm));
     font-weight: 730;
     line-height: 1.25;
 
@@ -130,7 +169,8 @@
 }
 
 .filterField input::placeholder {
-    color: color-mix(in srgb, var(--clinic-muted) 72%, transparent);
+    color:
+        color-mix(in srgb, var(--clinic-muted) 72%, transparent);
 }
 
 .filterField input:focus,
@@ -140,28 +180,35 @@
     border-color: var(--clinic-green-700);
 
     box-shadow:
-        0 0 0 3px color-mix(in srgb, var(--clinic-green-700) 12%, transparent),
-        inset 0 1px 0 color-mix(in srgb, var(--clinic-white) 92%, transparent);
+        0 0 0 3px
+            color-mix(in srgb, var(--clinic-green-700) 12%, transparent),
+        inset 0 1px 0
+            color-mix(in srgb, var(--clinic-white) 92%, transparent);
 }
 
 .filterField input:disabled,
 .filterField select:disabled {
     cursor: not-allowed;
+
     opacity: 0.62;
 }
 
 .filterActions {
     display: flex;
-    flex-wrap: wrap;
+    align-items: center;
     justify-content: flex-end;
+    flex-wrap: wrap;
     gap: 0.52rem;
 
     min-width: 0;
+    max-width: 100%;
 }
 
 .filterButton,
 .clearButton {
-    min-height: 2.72rem;
+    min-width: 0;
+    max-width: 100%;
+    min-height: 2.75rem;
     padding: 0.74rem 0.96rem;
 
     border-radius: var(--clinic-radius-md);
@@ -169,8 +216,8 @@
     font: inherit;
     font-size: var(--clinic-font-size-sm);
     font-weight: 900;
-    line-height: 1;
-    white-space: nowrap;
+    line-height: 1.15;
+    white-space: normal;
 
     cursor: pointer;
 
@@ -190,44 +237,30 @@
     background: var(--clinic-green-700);
 
     box-shadow:
-        0 0.75rem 1.45rem color-mix(in srgb, var(--clinic-green-700) 16%, transparent);
+        0 0.75rem 1.45rem
+            color-mix(in srgb, var(--clinic-green-700) 16%, transparent);
 }
 
 .clearButton {
-    border: 1px solid color-mix(in srgb, var(--clinic-green-700) 17%, transparent);
+    border: 1px solid
+        color-mix(in srgb, var(--clinic-green-700) 17%, transparent);
 
     color: var(--clinic-green-800);
-    background: color-mix(in srgb, var(--clinic-white) 88%, transparent);
-}
-
-.filterButton:hover:not(:disabled),
-.clearButton:hover:not(:disabled) {
-    transform: translateY(-1px);
-
-    box-shadow:
-        var(--clinic-shadow-soft),
-        0 0 0 3px color-mix(in srgb, var(--clinic-green-700) 5%, transparent);
-}
-
-.filterButton:hover:not(:disabled) {
-    border-color: var(--clinic-green-800);
-    background: var(--clinic-green-800);
-}
-
-.clearButton:hover:not(:disabled) {
-    border-color: color-mix(in srgb, var(--clinic-green-700) 28%, transparent);
-    background: var(--clinic-white);
+    background:
+        color-mix(in srgb, var(--clinic-white) 88%, transparent);
 }
 
 .filterButton:focus-visible,
 .clearButton:focus-visible {
-    outline: 3px solid color-mix(in srgb, var(--clinic-green-700) 20%, transparent);
+    outline: 3px solid
+        color-mix(in srgb, var(--clinic-green-700) 20%, transparent);
     outline-offset: 3px;
 }
 
 .filterButton:disabled,
 .clearButton:disabled {
     cursor: not-allowed;
+
     opacity: 0.58;
     transform: none;
     box-shadow: none;
@@ -242,9 +275,11 @@
     gap: 0.24rem;
 
     min-width: 5.4rem;
+    max-width: 100%;
     padding: 0.7rem 0.92rem;
 
-    border: 1px solid color-mix(in srgb, var(--clinic-green-700) 15%, transparent);
+    border: 1px solid
+        color-mix(in srgb, var(--clinic-green-700) 15%, transparent);
     border-radius: var(--clinic-radius-md);
 
     color: var(--clinic-ink);
@@ -252,7 +287,15 @@
         color-mix(in srgb, var(--clinic-white) 82%, transparent);
 
     box-shadow:
-        inset 0 1px 0 color-mix(in srgb, var(--clinic-white) 86%, transparent);
+        inset 0 1px 0
+            color-mix(in srgb, var(--clinic-white) 86%, transparent);
+}
+
+.meta span,
+.meta strong {
+    max-width: 100%;
+
+    overflow-wrap: anywhere;
 }
 
 .meta span {
@@ -260,7 +303,8 @@
 
     font-size: var(--clinic-font-size-xs);
     font-weight: 850;
-    line-height: 1;
+    line-height: 1.2;
+    text-align: center;
 }
 
 .meta strong {
@@ -272,14 +316,46 @@
     line-height: 1;
 }
 
+@media (hover: hover) and (pointer: fine) {
+    .filterButton:hover:not(:disabled),
+    .clearButton:hover:not(:disabled) {
+        transform: translateY(-1px);
+
+        box-shadow:
+            var(--clinic-shadow-soft),
+            0 0 0 3px
+                color-mix(
+                    in srgb,
+                    var(--clinic-green-700) 5%,
+                    transparent
+                );
+    }
+
+    .filterButton:hover:not(:disabled) {
+        border-color: var(--clinic-green-800);
+        background: var(--clinic-green-800);
+    }
+
+    .clearButton:hover:not(:disabled) {
+        border-color:
+            color-mix(
+                in srgb,
+                var(--clinic-green-700) 28%,
+                transparent
+            );
+        background: var(--clinic-white);
+    }
+}
+
 @media (max-width: 1160px) {
     .toolbar {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
         align-items: stretch;
     }
 
     .filters {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
     }
 
     .filterActions {
@@ -287,20 +363,35 @@
         justify-content: flex-start;
     }
 
+    .filterActions > button {
+        flex: 1 1 10rem;
+    }
+
     .meta {
         justify-items: start;
+
         width: fit-content;
+    }
+
+    .meta span {
+        text-align: start;
     }
 }
 
 @media (max-width: 680px) {
+    .toolbar {
+        padding: 0.9rem;
+
+        border-radius: var(--clinic-radius-lg);
+    }
+
     .filters {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
     }
 
     .filterActions {
         display: grid;
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
     }
 
     .filterButton,
@@ -309,22 +400,27 @@
     }
 
     .meta {
-        width: 100%;
         justify-items: center;
+
+        width: 100%;
+    }
+
+    .meta span {
+        text-align: center;
+    }
+}
+
+@media (max-width: 360px) {
+    .toolbar {
+        padding: 0.8rem;
     }
 }
 
 @media (prefers-reduced-motion: reduce) {
-
     .filterButton,
     .clearButton,
     .filterField input,
     .filterField select {
         transition: none;
-    }
-
-    .filterButton:hover:not(:disabled),
-    .clearButton:hover:not(:disabled) {
-        transform: none;
     }
 }

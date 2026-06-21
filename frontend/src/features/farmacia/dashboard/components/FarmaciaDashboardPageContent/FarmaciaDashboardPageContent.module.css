@@ -4,8 +4,10 @@
 
     width: 100%;
     min-width: 0;
+    max-width: 100%;
 }
 
-.page>* {
+.page > * {
     min-width: 0;
+    max-width: 100%;
 }

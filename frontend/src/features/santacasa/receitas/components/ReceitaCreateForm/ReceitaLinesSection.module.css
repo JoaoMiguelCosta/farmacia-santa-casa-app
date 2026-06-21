@@ -3,20 +3,34 @@
     justify-content: flex-end;
     gap: 0.75rem;
 
+    width: 100%;
     min-width: 0;
+    max-width: 100%;
     margin-top: clamp(0.35rem, 1vw, 0.55rem);
     margin-bottom: clamp(0.9rem, 2vw, 1rem);
+}
+
+.linesHeader > button {
+    min-width: 0;
+    max-width: 100%;
 }
 
 .lines {
     display: grid;
     gap: clamp(0.9rem, 2vw, 1rem);
 
+    width: 100%;
     min-width: 0;
+    max-width: 100%;
+}
+
+.lines > * {
+    min-width: 0;
+    max-width: 100%;
 }
 
 @media (max-width: 720px) {
-    .linesHeader>button {
+    .linesHeader > button {
         width: 100%;
     }
 }

@@ -4,6 +4,12 @@
 
     width: 100%;
     min-width: 0;
+    max-width: 100%;
+}
+
+.page > * {
+    min-width: 0;
+    max-width: 100%;
 }
 
 .header {
@@ -13,10 +19,12 @@
     display: grid;
     gap: 0.7rem;
 
+    width: 100%;
     min-width: 0;
-    overflow: hidden;
-
+    max-width: 100%;
     padding: clamp(1.25rem, 3vw, 1.9rem);
+
+    overflow: hidden;
 
     border: 1px solid var(--clinic-border);
     border-radius: var(--clinic-radius-2xl);
@@ -35,16 +43,20 @@
 
     height: 4px;
 
-    background: linear-gradient(90deg,
+    background:
+        linear-gradient(
+            90deg,
             var(--clinic-green-700),
             var(--clinic-blue-700),
-            var(--clinic-gold-500));
+            var(--clinic-gold-500)
+        );
 }
 
 .eyebrow {
     width: fit-content;
+    max-width: 100%;
     margin: 0;
-    padding: 0.34rem 0.68rem;
+    padding: 0.36rem 0.68rem;
 
     border: 1px solid rgba(31, 95, 81, 0.16);
     border-radius: 999px;
@@ -55,13 +67,22 @@
     font-size: 0.7rem;
     font-weight: 850;
     letter-spacing: 0.11em;
-    line-height: 1;
+    line-height: 1.2;
+    text-align: center;
     text-transform: uppercase;
+    overflow-wrap: anywhere;
+}
+
+.title,
+.description {
+    max-width: 100%;
+    margin: 0;
+
+    overflow-wrap: anywhere;
 }
 
 .title {
     max-width: 16ch;
-    margin: 0;
 
     color: var(--clinic-ink);
 
@@ -73,7 +94,6 @@
 
 .description {
     max-width: 70ch;
-    margin: 0;
 
     color: var(--clinic-muted-strong);
 
@@ -84,28 +104,60 @@
 
 .featured {
     display: grid;
-    grid-template-columns: minmax(0, 1.25fr) repeat(2, minmax(0, 1fr));
+    grid-template-columns:
+        repeat(
+            auto-fit,
+            minmax(min(100%, 17rem), 1fr)
+        );
     gap: clamp(0.9rem, 2vw, 1.1rem);
 
+    width: 100%;
     min-width: 0;
+    max-width: 100%;
 }
 
-@media (max-width: 980px) {
-    .featured {
-        grid-template-columns: 1fr;
-    }
-
-    .title {
-        max-width: 20ch;
-    }
+.featured > * {
+    min-width: 0;
+    max-width: 100%;
 }
 
 @media (max-width: 520px) {
+    .page {
+        gap: 1.15rem;
+    }
+
     .header {
+        padding: 1.15rem 1.05rem;
+
         border-radius: var(--clinic-radius-xl);
     }
 
+    .eyebrow {
+        border-radius: var(--clinic-radius-md);
+    }
+
     .title {
-        font-size: clamp(1.8rem, 10vw, 2.35rem);
+        max-width: 100%;
+
+        font-size: clamp(1.8rem, 9vw, 2.35rem);
+        letter-spacing: -0.045em;
+    }
+
+    .description {
+        font-size: var(--clinic-font-size-sm);
+    }
+}
+
+@media (max-width: 360px) {
+    .page {
+        gap: 1rem;
+    }
+
+    .header {
+        padding: 1rem;
+    }
+
+    .title {
+        font-size: clamp(1.72rem, 10vw, 2.1rem);
     }
 }

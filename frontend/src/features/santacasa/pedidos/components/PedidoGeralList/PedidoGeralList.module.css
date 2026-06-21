@@ -1,11 +1,15 @@
-/* src/features/santacasa/pedidos/components/PedidoGeralList/PedidoGeralList.module.css */
-
 .form {
     display: grid;
     gap: clamp(1rem, 2.4vw, 1.45rem);
 
     width: 100%;
     min-width: 0;
+    max-width: 100%;
+}
+
+.form > * {
+    min-width: 0;
+    max-width: 100%;
 }
 
 .groups {
@@ -14,10 +18,15 @@
 
     width: 100%;
     min-width: 0;
+    max-width: 100%;
+}
+
+.groups > * {
+    min-width: 0;
+    max-width: 100%;
 }
 
 @media (max-width: 420px) {
-
     .form,
     .groups {
         gap: 0.85rem;

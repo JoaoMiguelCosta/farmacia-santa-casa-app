@@ -3,14 +3,17 @@
 .card {
     --history-accent: var(--clinic-green-700);
     --history-accent-soft:
-        color-mix(in srgb,
+        color-mix(
+            in srgb,
             var(--history-accent) 7%,
-            transparent);
-
+            transparent
+        );
     --history-accent-border:
-        color-mix(in srgb,
+        color-mix(
+            in srgb,
             var(--history-accent) 20%,
-            transparent);
+            transparent
+        );
 
     position: relative;
     isolation: isolate;
@@ -18,7 +21,9 @@
     display: grid;
     gap: 0.78rem;
 
+    width: 100%;
     min-width: 0;
+    max-width: 100%;
     padding: clamp(0.95rem, 2vw, 1.14rem);
 
     overflow: hidden;
@@ -27,13 +32,17 @@
     border-radius: var(--clinic-radius-lg);
 
     background:
-        linear-gradient(135deg,
+        linear-gradient(
+            135deg,
             color-mix(in srgb, var(--clinic-white) 98%, transparent),
-            color-mix(in srgb, var(--clinic-cream) 88%, transparent));
+            color-mix(in srgb, var(--clinic-cream) 88%, transparent)
+        );
 
     box-shadow:
-        0 0.7rem 1.55rem color-mix(in srgb, var(--history-accent) 4%, transparent),
-        inset 0 1px 0 color-mix(in srgb, var(--clinic-white) 90%, transparent);
+        0 0.7rem 1.55rem
+            color-mix(in srgb, var(--history-accent) 4%, transparent),
+        inset 0 1px 0
+            color-mix(in srgb, var(--clinic-white) 90%, transparent);
 
     transition:
         transform var(--clinic-transition),
@@ -52,24 +61,23 @@
     height: 3px;
 
     background:
-        linear-gradient(90deg,
+        linear-gradient(
+            90deg,
             var(--history-accent),
-            color-mix(in srgb, var(--history-accent) 42%, transparent),
-            transparent 82%);
+            color-mix(
+                in srgb,
+                var(--history-accent) 42%,
+                transparent
+            ),
+            transparent 82%
+        );
 
     pointer-events: none;
 }
 
-.card:hover {
-    transform: translateY(-1px);
-
-    border-color:
-        color-mix(in srgb, var(--history-accent) 28%, transparent);
-
-    box-shadow:
-        var(--clinic-shadow-hover),
-        0 0 0 3px color-mix(in srgb, var(--history-accent) 4%, transparent),
-        inset 0 1px 0 color-mix(in srgb, var(--clinic-white) 92%, transparent);
+.card > * {
+    min-width: 0;
+    max-width: 100%;
 }
 
 .cardValidated {
@@ -95,6 +103,7 @@
     gap: 1rem;
 
     min-width: 0;
+    max-width: 100%;
 }
 
 .identity {
@@ -102,6 +111,16 @@
     gap: 0.28rem;
 
     min-width: 0;
+    max-width: 100%;
+}
+
+.eyebrow,
+.identity h3,
+.identity p,
+.status {
+    max-width: 100%;
+
+    overflow-wrap: anywhere;
 }
 
 .eyebrow {
@@ -113,14 +132,17 @@
 
     color: var(--history-accent);
     background:
-        color-mix(in srgb,
+        color-mix(
+            in srgb,
             var(--history-accent) 7%,
-            var(--clinic-white));
+            var(--clinic-white)
+        );
 
     font-size: 0.66rem;
     font-weight: 950;
     letter-spacing: 0.105em;
-    line-height: 1;
+    line-height: 1.2;
+    text-align: center;
     text-transform: uppercase;
 }
 
@@ -132,7 +154,7 @@
     font-size: clamp(1.18rem, 2vw, 1.44rem);
     font-weight: 950;
     letter-spacing: -0.048em;
-    line-height: 1.05;
+    line-height: 1.1;
 }
 
 .identity p {
@@ -150,8 +172,10 @@
     align-items: center;
     justify-content: center;
 
-    flex: 0 0 auto;
+    flex: 0 1 auto;
 
+    width: fit-content;
+    min-width: 0;
     min-height: 2rem;
     padding: 0.4rem 0.7rem;
 
@@ -160,16 +184,18 @@
 
     color: var(--history-accent);
     background:
-        color-mix(in srgb,
+        color-mix(
+            in srgb,
             var(--history-accent) 8%,
-            var(--clinic-white));
+            var(--clinic-white)
+        );
 
     font-size: 0.74rem;
     font-weight: 950;
     letter-spacing: 0.045em;
-    line-height: 1;
+    line-height: 1.2;
+    text-align: center;
     text-transform: uppercase;
-    white-space: nowrap;
 }
 
 .message {
@@ -179,7 +205,8 @@
     margin: 0;
     padding: 0.72rem 0.8rem;
 
-    border: 1px solid color-mix(in srgb, var(--history-accent) 13%, transparent);
+    border: 1px solid
+        color-mix(in srgb, var(--history-accent) 13%, transparent);
     border-radius: var(--clinic-radius-md);
 
     color: var(--clinic-muted-strong);
@@ -189,6 +216,7 @@
     font-size: 0.81rem;
     font-weight: 690;
     line-height: 1.45;
+    overflow-wrap: anywhere;
 }
 
 .summary {
@@ -198,8 +226,11 @@
     display: grid;
     grid-template-columns:
         repeat(4, minmax(0, 1fr));
-
     gap: 0.58rem;
+
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
     margin: 0;
 }
 
@@ -209,6 +240,7 @@
     gap: 0.22rem;
 
     min-width: 0;
+    max-width: 100%;
     min-height: 3.65rem;
     padding: 0.65rem 0.7rem;
 
@@ -219,23 +251,37 @@
         color-mix(in srgb, var(--clinic-white) 76%, transparent);
 
     box-shadow:
-        inset 0 1px 0 color-mix(in srgb, var(--clinic-white) 84%, transparent);
+        inset 0 1px 0
+            color-mix(in srgb, var(--clinic-white) 84%, transparent);
 }
 
 .summaryItem[data-tone="success"] {
     border-color:
         color-mix(in srgb, var(--clinic-success) 18%, transparent);
-
     background:
-        color-mix(in srgb, var(--clinic-success) 5%, var(--clinic-white));
+        color-mix(
+            in srgb,
+            var(--clinic-success) 5%,
+            var(--clinic-white)
+        );
 }
 
 .summaryItem[data-tone="danger"] {
     border-color:
         color-mix(in srgb, var(--clinic-danger) 18%, transparent);
-
     background:
-        color-mix(in srgb, var(--clinic-danger) 5%, var(--clinic-white));
+        color-mix(
+            in srgb,
+            var(--clinic-danger) 5%,
+            var(--clinic-white)
+        );
+}
+
+.summaryItem dt,
+.summaryItem dd {
+    max-width: 100%;
+
+    overflow-wrap: anywhere;
 }
 
 .summaryItem dt {
@@ -251,8 +297,6 @@
 .summaryItem dd {
     min-width: 0;
     margin: 0;
-
-    overflow-wrap: anywhere;
 
     color: var(--clinic-ink);
 
@@ -279,22 +323,36 @@
     gap: 0.85rem;
 
     min-width: 0;
+    max-width: 100%;
     padding: 0.74rem 0.82rem;
 
-    border: 1px solid color-mix(in srgb, var(--clinic-warning) 23%, transparent);
+    border: 1px solid
+        color-mix(in srgb, var(--clinic-warning) 23%, transparent);
     border-inline-start: 4px solid var(--clinic-warning);
-
     border-radius: var(--clinic-radius-md);
 
     background:
-        color-mix(in srgb, var(--clinic-warning) 6%, var(--clinic-white));
+        color-mix(
+            in srgb,
+            var(--clinic-warning) 6%,
+            var(--clinic-white)
+        );
 }
 
-.warning>div {
+.warning > div {
     display: grid;
     gap: 0.22rem;
 
     min-width: 0;
+    max-width: 100%;
+}
+
+.warning strong,
+.warning p,
+.warning span {
+    max-width: 100%;
+
+    overflow-wrap: anywhere;
 }
 
 .warning strong {
@@ -306,7 +364,6 @@
 }
 
 .warning p {
-    max-width: 72ch;
     margin: 0;
 
     color: var(--clinic-muted-strong);
@@ -317,11 +374,13 @@
 }
 
 .warning span {
-    flex: 0 0 auto;
+    flex: 0 1 auto;
 
+    width: fit-content;
     padding: 0.32rem 0.54rem;
 
-    border: 1px solid color-mix(in srgb, var(--clinic-warning) 18%, transparent);
+    border: 1px solid
+        color-mix(in srgb, var(--clinic-warning) 18%, transparent);
     border-radius: 999px;
 
     color: var(--clinic-warning);
@@ -330,8 +389,8 @@
 
     font-size: 0.7rem;
     font-weight: 900;
-    line-height: 1;
-    white-space: nowrap;
+    line-height: 1.2;
+    text-align: center;
 }
 
 .reason {
@@ -341,15 +400,28 @@
     display: grid;
     gap: 0.22rem;
 
+    min-width: 0;
+    max-width: 100%;
     padding: 0.68rem 0.78rem;
 
-    border: 1px solid color-mix(in srgb, var(--clinic-danger) 16%, transparent);
+    border: 1px solid
+        color-mix(in srgb, var(--clinic-danger) 16%, transparent);
     border-inline-start: 4px solid var(--clinic-danger);
-
     border-radius: var(--clinic-radius-md);
 
     background:
-        color-mix(in srgb, var(--clinic-danger) 4%, var(--clinic-white));
+        color-mix(
+            in srgb,
+            var(--clinic-danger) 4%,
+            var(--clinic-white)
+        );
+}
+
+.reason strong,
+.reason p {
+    max-width: 100%;
+
+    overflow-wrap: anywhere;
 }
 
 .reason strong {
@@ -380,6 +452,7 @@
     justify-content: flex-end;
 
     min-width: 0;
+    max-width: 100%;
 }
 
 .detailLink {
@@ -387,7 +460,9 @@
     align-items: center;
     justify-content: center;
 
-    min-height: 2.42rem;
+    min-width: 0;
+    max-width: 100%;
+    min-height: 2.75rem;
     padding: 0.66rem 0.92rem;
 
     border: 1px solid var(--history-accent);
@@ -397,13 +472,15 @@
     background: var(--history-accent);
 
     box-shadow:
-        0 0.52rem 1rem color-mix(in srgb, var(--history-accent) 14%, transparent);
+        0 0.52rem 1rem
+            color-mix(in srgb, var(--history-accent) 14%, transparent);
 
     font-size: var(--clinic-font-size-sm);
     font-weight: 850;
-    line-height: 1;
+    line-height: 1.2;
+    text-align: center;
     text-decoration: none;
-    white-space: nowrap;
+    overflow-wrap: anywhere;
 
     transition:
         transform var(--clinic-transition),
@@ -411,17 +488,47 @@
         box-shadow var(--clinic-transition);
 }
 
-.detailLink:hover {
-    transform: translateY(-1px);
-    filter: brightness(0.92);
-
-    box-shadow:
-        0 0.75rem 1.35rem color-mix(in srgb, var(--history-accent) 18%, transparent);
+.detailLink:focus-visible {
+    outline: 3px solid
+        color-mix(in srgb, var(--history-accent) 22%, transparent);
+    outline-offset: 3px;
 }
 
-.detailLink:focus-visible {
-    outline: 3px solid color-mix(in srgb, var(--history-accent) 22%, transparent);
-    outline-offset: 3px;
+@media (hover: hover) and (pointer: fine) {
+    .card:hover {
+        transform: translateY(-1px);
+
+        border-color:
+            color-mix(in srgb, var(--history-accent) 28%, transparent);
+
+        box-shadow:
+            var(--clinic-shadow-hover),
+            0 0 0 3px
+                color-mix(
+                    in srgb,
+                    var(--history-accent) 4%,
+                    transparent
+                ),
+            inset 0 1px 0
+                color-mix(
+                    in srgb,
+                    var(--clinic-white) 92%,
+                    transparent
+                );
+    }
+
+    .detailLink:hover {
+        transform: translateY(-1px);
+        filter: brightness(0.92);
+
+        box-shadow:
+            0 0.75rem 1.35rem
+                color-mix(
+                    in srgb,
+                    var(--history-accent) 18%,
+                    transparent
+                );
+    }
 }
 
 @media (max-width: 900px) {
@@ -432,7 +539,6 @@
 }
 
 @media (max-width: 620px) {
-
     .cardHeader,
     .warning {
         align-items: stretch;
@@ -442,11 +548,10 @@
     .status,
     .warning span {
         width: fit-content;
-        white-space: normal;
     }
 
     .summary {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
     }
 
     .actions,
@@ -458,10 +563,12 @@
 @media (max-width: 420px) {
     .card {
         padding: 0.85rem;
+
         border-radius: var(--clinic-radius-md);
     }
 
     .summaryItem {
+        min-height: 0;
         padding: 0.66rem;
     }
 
@@ -472,17 +579,17 @@
     .summaryItem dt {
         font-size: 0.62rem;
     }
+
+    .warning,
+    .reason,
+    .message {
+        padding: 0.68rem;
+    }
 }
 
 @media (prefers-reduced-motion: reduce) {
-
     .card,
     .detailLink {
         transition: none;
-    }
-
-    .card:hover,
-    .detailLink:hover {
-        transform: none;
     }
 }

@@ -1,27 +1,17 @@
-/* src/features/farmacia/shared/pedidos/components/FarmaciaPedidoItem/FarmaciaPedidoItem.module.css */
-
 .item {
-    --item-accent:
-        var(--clinic-green-700);
+    --item-accent: var(--clinic-green-700);
+    --item-accent-soft: rgba(31, 95, 81, 0.07);
+    --item-accent-border: rgba(31, 95, 81, 0.2);
 
-    --item-accent-soft:
-        rgba(31, 95, 81, 0.07);
-
-    --item-accent-border:
-        rgba(31, 95, 81, 0.2);
-
+    min-width: 0;
+    max-inline-size: 100%;
     overflow: hidden;
 
     border: 1px solid var(--clinic-border);
+    border-inline-start: 4px solid var(--item-accent);
+    border-radius: var(--clinic-radius-md);
 
-    border-inline-start:
-        4px solid var(--item-accent);
-
-    border-radius:
-        var(--clinic-radius-md);
-
-    background:
-        var(--clinic-surface);
+    background: var(--clinic-surface);
 
     transition:
         border-color var(--clinic-transition),
@@ -30,70 +20,58 @@
 }
 
 .item[data-type="SEM_RECEITA"] {
-    --item-accent:
-        var(--clinic-blue-700);
-
-    --item-accent-soft:
-        rgba(35, 93, 115, 0.07);
-
-    --item-accent-border:
-        rgba(35, 93, 115, 0.2);
+    --item-accent: var(--clinic-blue-700);
+    --item-accent-soft: rgba(35, 93, 115, 0.07);
+    --item-accent-border: rgba(35, 93, 115, 0.2);
 }
 
 .item[data-type="EXTRA"] {
-    --item-accent:
-        var(--clinic-warning);
-
-    --item-accent-soft:
-        rgba(161, 92, 7, 0.07);
-
-    --item-accent-border:
-        rgba(161, 92, 7, 0.2);
+    --item-accent: var(--clinic-warning);
+    --item-accent-soft: rgba(161, 92, 7, 0.07);
+    --item-accent-border: rgba(161, 92, 7, 0.2);
 }
 
 .item[data-expired="true"] {
-    border-color:
-        rgba(180, 35, 24, 0.22);
+    border-color: rgba(180, 35, 24, 0.22);
+    border-inline-start-color: var(--clinic-danger);
 
-    border-inline-start-color:
-        var(--clinic-danger);
-
-    background:
-        rgba(180, 35, 24, 0.018);
+    background: rgba(180, 35, 24, 0.018);
 }
 
 .item[data-expanded="true"] {
-    border-color:
-        var(--item-accent-border);
+    border-color: var(--item-accent-border);
 
-    box-shadow:
-        var(--clinic-shadow-soft);
+    box-shadow: var(--clinic-shadow-soft);
 }
 
 .item[data-expired="true"][data-expanded="true"] {
-    border-color:
-        rgba(180, 35, 24, 0.28);
+    border-color: rgba(180, 35, 24, 0.28);
 }
 
 .header {
     display: grid;
     grid-template-columns:
         minmax(0, 1fr) auto;
-
     align-items: center;
     gap: 0.85rem;
 
+    min-width: 0;
     min-height: 4.5rem;
+    max-inline-size: 100%;
     padding: 0.7rem 0.8rem;
 }
 
 .identity {
     display: grid;
     gap: 0.4rem;
+
     min-width: 0;
+    max-inline-size: 100%;
 }
 
 .title {
+    min-width: 0;
+    max-inline-size: 100%;
     overflow-wrap: anywhere;
 
     color: var(--clinic-ink);
@@ -106,6 +84,9 @@
     display: flex;
     flex-wrap: wrap;
     gap: 0.35rem;
+
+    min-width: 0;
+    max-inline-size: 100%;
 }
 
 .typeBadge,
@@ -113,25 +94,26 @@
     display: inline-flex;
     align-items: center;
 
+    min-width: 0;
     min-height: 1.5rem;
+    max-inline-size: 100%;
     padding: 0.24rem 0.46rem;
 
-    border: 1px solid var(--clinic-border);
+    overflow-wrap: anywhere;
+    text-align: center;
 
+    border: 1px solid var(--clinic-border);
     border-radius: 999px;
 
     font-size: 0.64rem;
     font-weight: 800;
-    line-height: 1;
+    line-height: 1.2;
 }
 
 .typeBadge {
-    border-color:
-        var(--item-accent-border);
+    border-color: var(--item-accent-border);
 
-    background:
-        var(--item-accent-soft);
-
+    background: var(--item-accent-soft);
     color: var(--item-accent);
 }
 
@@ -141,33 +123,24 @@
 }
 
 .statusBadge[data-status="PENDENTE"] {
-    border-color:
-        rgba(161, 92, 7, 0.2);
+    border-color: rgba(161, 92, 7, 0.2);
 
-    background:
-        rgba(161, 92, 7, 0.07);
-
+    background: rgba(161, 92, 7, 0.07);
     color: var(--clinic-warning);
 }
 
 .statusBadge[data-status="VALIDADO"] {
-    border-color:
-        rgba(37, 115, 90, 0.22);
+    border-color: rgba(37, 115, 90, 0.22);
 
-    background:
-        rgba(37, 115, 90, 0.08);
-
+    background: rgba(37, 115, 90, 0.08);
     color: var(--clinic-success);
 }
 
 .statusBadge[data-status="REJEITADO"],
 .statusBadge[data-status="CANCELADO_POR_EXPIRACAO"] {
-    border-color:
-        rgba(180, 35, 24, 0.2);
+    border-color: rgba(180, 35, 24, 0.2);
 
-    background:
-        rgba(180, 35, 24, 0.06);
-
+    background: rgba(180, 35, 24, 0.06);
     color: var(--clinic-danger);
 }
 
@@ -177,6 +150,9 @@
     align-items: center;
     justify-content: flex-end;
     gap: 0.75rem;
+
+    min-width: 0;
+    max-inline-size: 100%;
 }
 
 .validade,
@@ -186,6 +162,16 @@
     gap: 0.12rem;
 
     min-width: 6.5rem;
+    max-inline-size: 100%;
+}
+
+.validade span,
+.quantity span,
+.validade strong,
+.quantity strong {
+    min-width: 0;
+    max-inline-size: 100%;
+    overflow-wrap: anywhere;
 }
 
 .validade span,
@@ -204,7 +190,6 @@
 
     font-size: 0.85rem;
     line-height: 1.2;
-    white-space: nowrap;
 }
 
 .quantity strong {
@@ -220,24 +205,24 @@
 }
 
 .toggleButton {
-    min-height: 2.25rem;
-    padding: 0.52rem 0.7rem;
+    min-width: 0;
+    min-height: 2.75rem;
+    max-inline-size: 100%;
+    padding: 0.62rem 0.75rem;
+
+    overflow-wrap: anywhere;
+    text-align: center;
 
     border: 1px solid var(--item-accent-border);
-
-    border-radius:
-        var(--clinic-radius-md);
+    border-radius: var(--clinic-radius-md);
 
     background: var(--clinic-white);
     color: var(--item-accent);
 
     font: inherit;
-
-    font-size:
-        var(--clinic-font-size-xs);
-
+    font-size: var(--clinic-font-size-xs);
     font-weight: 800;
-    white-space: nowrap;
+    line-height: 1.25;
 
     cursor: pointer;
 
@@ -248,53 +233,36 @@
 }
 
 .item[data-expired="true"] .toggleButton {
-    border-color:
-        rgba(180, 35, 24, 0.22);
+    border-color: rgba(180, 35, 24, 0.22);
 
     color: var(--clinic-danger);
 }
 
-.toggleButton:hover {
-    transform: translateY(-1px);
-
-    background:
-        var(--item-accent-soft);
-}
-
-.item[data-expired="true"] .toggleButton:hover {
-    background:
-        rgba(180, 35, 24, 0.055);
-}
-
 .toggleButton:focus-visible {
     outline: 3px solid var(--item-accent-border);
-
     outline-offset: 2px;
 }
 
 .item[data-expired="true"] .toggleButton:focus-visible {
-    outline-color:
-        rgba(180, 35, 24, 0.2);
+    outline-color: rgba(180, 35, 24, 0.2);
 }
 
 .expiredNotice {
     display: grid;
     grid-template-columns:
         auto minmax(0, 1fr);
-
     align-items: start;
     gap: 0.6rem;
 
+    min-width: 0;
+    max-inline-size: 100%;
     margin: 0 0.8rem 0.75rem;
     padding: 0.65rem 0.75rem;
 
     border: 1px solid rgba(180, 35, 24, 0.18);
+    border-radius: var(--clinic-radius-sm);
 
-    border-radius:
-        var(--clinic-radius-sm);
-
-    background:
-        rgba(180, 35, 24, 0.045);
+    background: rgba(180, 35, 24, 0.045);
 }
 
 .expiredNoticeIcon {
@@ -306,7 +274,6 @@
     height: 1.45rem;
 
     border: 1px solid rgba(180, 35, 24, 0.22);
-
     border-radius: 50%;
 
     background: var(--clinic-white);
@@ -320,53 +287,57 @@
 .expiredNoticeContent {
     display: grid;
     gap: 0.14rem;
+
     min-width: 0;
+}
+
+.expiredNoticeContent strong,
+.expiredNoticeContent p {
+    min-width: 0;
+    max-inline-size: 100%;
+    overflow-wrap: anywhere;
 }
 
 .expiredNoticeContent strong {
     color: var(--clinic-danger);
 
-    font-size:
-        var(--clinic-font-size-xs);
-
+    font-size: var(--clinic-font-size-xs);
     line-height: 1.35;
 }
 
 .expiredNoticeContent p {
     margin: 0;
 
-    color:
-        var(--clinic-muted-strong);
+    color: var(--clinic-muted-strong);
 
-    font-size:
-        var(--clinic-font-size-xs);
-
+    font-size: var(--clinic-font-size-xs);
     line-height: 1.5;
 }
 
 .details {
+    min-width: 0;
+    max-inline-size: 100%;
     padding: 0.75rem;
 
-    border-top:
-        1px solid var(--clinic-border);
+    border-top: 1px solid var(--clinic-border);
 
     background: var(--clinic-cream);
 }
 
 .item[data-expired="true"] .details {
-    border-top-color:
-        rgba(180, 35, 24, 0.16);
+    border-top-color: rgba(180, 35, 24, 0.16);
 
-    background:
-        rgba(180, 35, 24, 0.025);
+    background: rgba(180, 35, 24, 0.025);
 }
 
 .information {
     display: grid;
     grid-template-columns:
         repeat(2, minmax(0, 1fr));
-
     gap: 0.55rem;
+
+    min-width: 0;
+    max-inline-size: 100%;
 }
 
 .reference,
@@ -374,38 +345,41 @@
     display: flex;
     align-items: center;
 
+    min-width: 0;
     min-height: 2.75rem;
+    max-inline-size: 100%;
     padding: 0.65rem 0.75rem;
 
-    border: 1px solid var(--clinic-border);
-
-    border-radius:
-        var(--clinic-radius-md);
-
-    background:
-        var(--clinic-surface);
-
-    color:
-        var(--clinic-muted-strong);
-
-    font-size:
-        var(--clinic-font-size-xs);
-
-    line-height: 1.45;
     overflow-wrap: anywhere;
+
+    border: 1px solid var(--clinic-border);
+    border-radius: var(--clinic-radius-md);
+
+    background: var(--clinic-surface);
+    color: var(--clinic-muted-strong);
+
+    font-size: var(--clinic-font-size-xs);
+    line-height: 1.45;
 }
 
 .reference {
     color: var(--clinic-ink-soft);
+
     font-weight: 750;
 }
 
 .barcodeSection {
     display: grid;
     gap: 0.5rem;
+
+    min-width: 0;
+    max-inline-size: 100%;
 }
 
 .sectionLabel {
+    min-width: 0;
+    overflow-wrap: anywhere;
+
     color: var(--clinic-muted);
 
     font-size: 0.65rem;
@@ -416,31 +390,45 @@
 
 .barcodePanel {
     display: grid;
-
     grid-template-columns:
-        minmax(12rem, 1.4fr) repeat(2,
-            minmax(8rem, 0.8fr));
-
+        minmax(12rem, 1.4fr)
+        repeat(2, minmax(8rem, 0.8fr));
     gap: 0.6rem;
+
+    min-width: 0;
+    max-inline-size: 100%;
     padding: 0.65rem;
 
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+
     border: 1px solid var(--item-accent-border);
+    border-radius: var(--clinic-radius-md);
 
-    border-radius:
-        var(--clinic-radius-md);
-
-    background:
-        var(--clinic-surface);
+    background: var(--clinic-surface);
 }
 
 .item[data-expired="true"] .barcodePanel {
-    border-color:
-        rgba(180, 35, 24, 0.18);
+    border-color: rgba(180, 35, 24, 0.18);
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .toggleButton:hover {
+        transform: translateY(-1px);
+
+        background: var(--item-accent-soft);
+    }
+
+    .item[data-expired="true"] .toggleButton:hover {
+        background: rgba(180, 35, 24, 0.055);
+    }
 }
 
 @media (max-width: 820px) {
     .barcodePanel {
         grid-template-columns: 1fr;
+
+        overflow-x: visible;
     }
 }
 
@@ -450,10 +438,9 @@
     }
 
     .side {
-        justify-content:
-            space-between;
+        justify-content: space-between;
 
-        width: 100%;
+        inline-size: 100%;
     }
 
     .validade,
@@ -469,10 +456,8 @@
 @media (max-width: 520px) {
     .side {
         display: grid;
-
         grid-template-columns:
             repeat(2, minmax(0, 1fr));
-
         align-items: stretch;
     }
 
@@ -482,31 +467,26 @@
         padding: 0.55rem 0.65rem;
 
         border: 1px solid var(--clinic-border);
+        border-radius: var(--clinic-radius-md);
 
-        border-radius:
-            var(--clinic-radius-md);
-
-        background:
-            var(--clinic-mist);
+        background: var(--clinic-mist);
     }
 
     .item[data-expired="true"] .validade,
     .item[data-expired="true"] .quantity {
-        border-color:
-            rgba(180, 35, 24, 0.16);
+        border-color: rgba(180, 35, 24, 0.16);
 
-        background:
-            rgba(180, 35, 24, 0.035);
+        background: rgba(180, 35, 24, 0.035);
     }
 
     .toggleButton {
         grid-column: 1 / -1;
-        width: 100%;
+
+        inline-size: 100%;
     }
 
     .expiredNotice {
-        margin-inline:
-            0.65rem;
+        margin-inline: 0.65rem;
     }
 }
 
@@ -517,5 +497,10 @@
 
     .toggleButton {
         grid-column: auto;
+    }
+
+    .header,
+    .details {
+        padding-inline: 0.65rem;
     }
 }

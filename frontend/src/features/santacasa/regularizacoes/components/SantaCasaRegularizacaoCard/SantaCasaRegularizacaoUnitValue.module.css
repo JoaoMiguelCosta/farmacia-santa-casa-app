@@ -3,32 +3,45 @@
 .unitValue {
     display: inline-flex;
     align-items: baseline;
+    flex-wrap: wrap;
     gap: 0.3rem;
+
     min-width: 0;
+    max-width: 100%;
+
     color: var(--clinic-ink-soft);
+
     font-weight: 900;
     line-height: 1;
     text-transform: none;
 }
 
-.unitValue strong {
+.unitValue strong,
+.unitValue span {
+    min-width: 0;
+    max-width: 100%;
+
     color: inherit;
+    overflow-wrap: anywhere;
+}
+
+.unitValue strong {
     font-size: 1.05rem;
     font-weight: 950;
     line-height: 1;
 }
 
 .unitValue span {
-    color: inherit;
     font-size: 0.86rem;
     font-weight: 850;
     letter-spacing: -0.01em;
-    line-height: 1;
+    line-height: 1.15;
     text-transform: none;
 }
 
 .unitValueFeatured {
     gap: 0.42rem;
+
     color: var(--clinic-warning);
 }
 
@@ -39,6 +52,7 @@
 
 .unitValueFeatured span {
     color: var(--clinic-warning);
+
     font-size: clamp(0.88rem, 1.25vw, 1rem);
     font-weight: 850;
     letter-spacing: -0.01em;
@@ -51,4 +65,16 @@
 
 .unitValueSuccess span {
     color: var(--clinic-success);
+}
+
+@media (max-width: 420px) {
+    .unitValueFeatured {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 0.2rem;
+    }
+
+    .unitValueFeatured strong {
+        font-size: clamp(2rem, 12vw, 2.5rem);
+    }
 }

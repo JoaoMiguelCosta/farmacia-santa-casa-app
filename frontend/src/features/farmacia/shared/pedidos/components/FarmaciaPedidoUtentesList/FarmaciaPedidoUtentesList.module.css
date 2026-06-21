@@ -1,11 +1,14 @@
-/* src/features/farmacia/shared/pedidos/components/FarmaciaPedidoUtentesList/FarmaciaPedidoUtentesList.module.css */
-
 .section {
     display: grid;
     gap: 0.7rem;
+
+    min-width: 0;
+    max-inline-size: 100%;
     padding: 0.8rem;
+
     border: 1px solid var(--clinic-border);
     border-radius: var(--clinic-radius-lg);
+
     background: var(--clinic-cream);
 }
 
@@ -14,25 +17,40 @@
     align-items: center;
     justify-content: space-between;
     gap: 0.75rem;
+
+    min-width: 0;
 }
 
 .title {
+    min-width: 0;
     margin: 0;
+
+    overflow-wrap: anywhere;
+
     color: var(--clinic-ink);
+
     font-size: 0.94rem;
     line-height: 1.2;
 }
 
 .count {
     display: inline-grid;
+    flex: 0 0 auto;
     place-items: center;
+
     min-width: 1.8rem;
     min-height: 1.8rem;
+    max-inline-size: 100%;
     padding-inline: 0.45rem;
+
+    overflow-wrap: anywhere;
+
     border: 1px solid var(--clinic-border);
     border-radius: 999px;
+
     background: var(--clinic-surface);
     color: var(--clinic-muted-strong);
+
     font-size: 0.72rem;
     font-weight: 800;
 }
@@ -40,24 +58,36 @@
 .searchField {
     display: grid;
     gap: 0.35rem;
+
+    min-width: 0;
 }
 
-.searchField>span {
+.searchField > span {
+    min-width: 0;
+    overflow-wrap: anywhere;
+
     color: var(--clinic-ink-soft);
+
     font-size: var(--clinic-font-size-xs);
     font-weight: 800;
 }
 
 .searchField input {
+    min-width: 0;
     min-height: 2.75rem;
     inline-size: 100%;
+    max-inline-size: 100%;
     padding: 0.68rem 0.8rem;
+
     border: 1px solid var(--clinic-border-strong);
     border-radius: var(--clinic-radius-md);
+
     background: var(--clinic-white);
     color: var(--clinic-ink);
+
     font: inherit;
     font-size: var(--clinic-font-size-sm);
+
     transition:
         border-color var(--clinic-transition),
         box-shadow var(--clinic-transition);
@@ -65,35 +95,55 @@
 
 .searchField input:focus {
     outline: none;
+
     border-color: var(--clinic-green-600);
+
     box-shadow: 0 0 0 3px rgba(31, 95, 81, 0.12);
 }
 
 .list {
     display: grid;
     gap: 0.65rem;
+
+    min-width: 0;
+    max-inline-size: 100%;
     margin: 0;
     padding: 0;
+
     list-style: none;
 }
 
 .emptyState {
     display: grid;
     gap: 0.3rem;
+
+    min-width: 0;
+    max-inline-size: 100%;
     padding: 1rem;
+
     border: 1px dashed var(--clinic-border-strong);
     border-radius: var(--clinic-radius-md);
+
     background: var(--clinic-surface);
+}
+
+.emptyState strong,
+.emptyState p {
+    min-width: 0;
+    overflow-wrap: anywhere;
 }
 
 .emptyState strong {
     color: var(--clinic-ink);
+
     font-size: var(--clinic-font-size-sm);
 }
 
 .emptyState p {
     margin: 0;
+
     color: var(--clinic-muted);
+
     font-size: var(--clinic-font-size-sm);
     line-height: 1.5;
 }
@@ -103,7 +153,11 @@
     align-items: center;
     justify-content: space-between;
     gap: 0.75rem;
+
+    min-width: 0;
+    max-inline-size: 100%;
     padding-top: 0.7rem;
+
     border-top: 1px solid var(--clinic-border);
 }
 
@@ -111,8 +165,18 @@
     display: flex;
     flex-wrap: wrap;
     gap: 0.35rem 1rem;
+
+    min-width: 0;
+
     color: var(--clinic-muted);
+
     font-size: var(--clinic-font-size-xs);
+    line-height: 1.45;
+}
+
+.results span {
+    min-width: 0;
+    overflow-wrap: anywhere;
 }
 
 .results strong {
@@ -123,28 +187,30 @@
     display: flex;
     flex: 0 0 auto;
     gap: 0.45rem;
+
+    min-width: 0;
 }
 
 .pageActions button {
-    min-height: 2.35rem;
-    padding: 0.55rem 0.75rem;
+    min-height: 2.75rem;
+    padding: 0.65rem 0.85rem;
+
     border: 1px solid rgba(31, 95, 81, 0.22);
     border-radius: var(--clinic-radius-md);
+
     background: var(--clinic-white);
     color: var(--clinic-green-700);
+
     font: inherit;
     font-size: var(--clinic-font-size-xs);
     font-weight: 800;
+
     cursor: pointer;
+
     transition:
         border-color var(--clinic-transition),
         background var(--clinic-transition),
         opacity var(--clinic-transition);
-}
-
-.pageActions button:hover:not(:disabled) {
-    border-color: rgba(31, 95, 81, 0.38);
-    background: var(--clinic-mist);
 }
 
 .pageActions button:disabled {
@@ -157,6 +223,14 @@
     outline-offset: 2px;
 }
 
+@media (hover: hover) and (pointer: fine) {
+    .pageActions button:hover:not(:disabled) {
+        border-color: rgba(31, 95, 81, 0.38);
+
+        background: var(--clinic-mist);
+    }
+}
+
 @media (max-width: 680px) {
     .pagination {
         align-items: stretch;
@@ -164,16 +238,28 @@
     }
 
     .pageActions {
-        width: 100%;
+        inline-size: 100%;
     }
 
     .pageActions button {
         flex: 1 1 0;
+    }
+
+    .searchField input {
+        font-size: 1rem;
     }
 }
 
 @media (max-width: 420px) {
     .section {
         padding: 0.65rem;
+    }
+
+    .pageActions {
+        flex-direction: column;
+    }
+
+    .pageActions button {
+        inline-size: 100%;
     }
 }

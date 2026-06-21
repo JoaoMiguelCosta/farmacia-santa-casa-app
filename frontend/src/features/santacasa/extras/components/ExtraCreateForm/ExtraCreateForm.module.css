@@ -4,6 +4,7 @@
 
     width: 100%;
     min-width: 0;
+    max-width: 100%;
     padding: clamp(1rem, 2.3vw, 1.3rem);
 
     overflow: visible;
@@ -12,21 +13,32 @@
     border-radius: var(--clinic-radius-xl);
 
     background:
-        radial-gradient(circle at 96% 0%,
+        radial-gradient(
+            circle at 96% 0%,
             var(--operation-accent-softer, rgba(196, 122, 8, 0.18)),
-            transparent 16rem),
-        radial-gradient(circle at 0% 100%,
+            transparent 16rem
+        ),
+        radial-gradient(
+            circle at 0% 100%,
             var(--operation-accent-softer, rgba(196, 122, 8, 0.12)),
-            transparent 14rem),
-        var(--operation-panel-background,
-            linear-gradient(135deg,
+            transparent 14rem
+        ),
+        var(
+            --operation-panel-background,
+            linear-gradient(
+                135deg,
                 rgba(255, 255, 255, 0.98),
-                rgba(255, 246, 226, 0.93)));
+                rgba(255, 246, 226, 0.93)
+            )
+        );
 
     box-shadow:
-        var(--operation-panel-shadow,
-            0 0.95rem 2.1rem rgba(122, 74, 5, 0.085)),
-        inset 5px 0 0 var(--operation-accent-softer, rgba(196, 122, 8, 0.16)),
+        var(
+            --operation-panel-shadow,
+            0 0.95rem 2.1rem rgba(122, 74, 5, 0.085)
+        ),
+        inset 5px 0 0
+            var(--operation-accent-softer, rgba(196, 122, 8, 0.16)),
         inset 0 1px 0 rgba(255, 255, 255, 0.9);
 
     transition:
@@ -35,51 +47,74 @@
         background-color var(--clinic-transition);
 }
 
-/* resto do ficheiro mantém igual */
+.form > * {
+    min-width: 0;
+    max-width: 100%;
+}
 
 .form:focus-within {
     border-color: var(--operation-header-border, rgba(196, 122, 8, 0.42));
 
     box-shadow:
         0 1rem 2.25rem rgba(122, 74, 5, 0.12),
-        0 0 0 3px var(--operation-accent-softer, rgba(196, 122, 8, 0.18)),
-        inset 5px 0 0 var(--operation-accent-soft, rgba(196, 122, 8, 0.28)),
+        0 0 0 3px
+            var(--operation-accent-softer, rgba(196, 122, 8, 0.18)),
+        inset 5px 0 0
+            var(--operation-accent-soft, rgba(196, 122, 8, 0.28)),
         inset 0 1px 0 rgba(255, 255, 255, 0.92);
 }
 
 .notice {
+    max-width: 100%;
     margin: 0;
     padding: 0.9rem 1rem;
 
-    border: 1px solid var(--operation-state-border, rgba(196, 122, 8, 0.34));
+    border: 1px solid
+        var(--operation-state-border, rgba(196, 122, 8, 0.34));
     border-radius: var(--clinic-radius-md);
 
     color: var(--operation-accent-strong, var(--clinic-warning));
     background:
-        radial-gradient(circle at 96% 0%,
+        radial-gradient(
+            circle at 96% 0%,
             var(--operation-accent-softer, rgba(196, 122, 8, 0.16)),
-            transparent 12rem),
-        var(--operation-state-background,
-            linear-gradient(135deg,
+            transparent 12rem
+        ),
+        var(
+            --operation-state-background,
+            linear-gradient(
+                135deg,
                 rgba(255, 255, 255, 0.98),
-                rgba(255, 248, 232, 0.92)));
+                rgba(255, 248, 232, 0.92)
+            )
+        );
 
     font-size: var(--clinic-font-size-sm);
     font-weight: 800;
     line-height: 1.45;
+    overflow-wrap: anywhere;
 
     box-shadow:
         0 0.65rem 1.35rem rgba(122, 74, 5, 0.055),
-        inset 4px 0 0 var(--operation-accent-softer, rgba(196, 122, 8, 0.14));
+        inset 4px 0 0
+            var(--operation-accent-softer, rgba(196, 122, 8, 0.14));
 }
 
 .grid {
     display: grid;
-    grid-template-columns: minmax(18rem, 1fr) minmax(10rem, 0.35fr);
+    grid-template-columns:
+        minmax(0, 1fr)
+        minmax(10rem, 0.35fr);
     gap: clamp(0.85rem, 2vw, 1.05rem);
 
     width: 100%;
     min-width: 0;
+    max-width: 100%;
+}
+
+.grid > * {
+    min-width: 0;
+    max-width: 100%;
 }
 
 .actions {
@@ -88,7 +123,13 @@
     justify-content: flex-end;
 
     min-width: 0;
+    max-width: 100%;
     padding-top: 0.2rem;
+}
+
+.actions > button {
+    min-width: 0;
+    max-width: 100%;
 }
 
 @media (max-width: 760px) {
@@ -97,13 +138,15 @@
     }
 
     .grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
     }
 }
 
 @media (max-width: 560px) {
     .form {
-        padding: 1rem;
+        gap: 1rem;
+        padding: 0.9rem;
+
         border-radius: var(--clinic-radius-md);
     }
 
@@ -111,8 +154,18 @@
         justify-content: stretch;
     }
 
-    .actions>button {
+    .actions > button {
         width: 100%;
+    }
+}
+
+@media (max-width: 360px) {
+    .form {
+        padding: 0.8rem;
+    }
+
+    .notice {
+        padding: 0.8rem;
     }
 }
 

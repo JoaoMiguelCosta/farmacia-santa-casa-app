@@ -1,11 +1,14 @@
 .toolbar {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(18rem, 1.35fr);
-    gap: clamp(0.9rem, 2vw, 1.1rem);
+    grid-template-columns:
+        minmax(0, 1fr)
+        minmax(18rem, 1.35fr);
     align-items: end;
+    gap: clamp(0.9rem, 2vw, 1.1rem);
 
     width: 100%;
     min-width: 0;
+    max-width: 100%;
     padding: clamp(1rem, 2vw, 1.15rem);
 
     border: 1px solid var(--clinic-border);
@@ -16,20 +19,30 @@
     box-shadow: var(--clinic-shadow-soft);
 }
 
+.toolbar > * {
+    min-width: 0;
+    max-width: 100%;
+}
+
 .filterGroup,
 .searchGroup {
     display: grid;
     gap: 0.55rem;
 
+    width: 100%;
     min-width: 0;
+    max-width: 100%;
 }
 
 .filterLabel {
+    max-width: 100%;
+
     color: var(--clinic-muted-strong);
 
     font-size: var(--clinic-font-size-sm);
     font-weight: 850;
     line-height: 1.25;
+    overflow-wrap: anywhere;
 }
 
 .filterOptions,
@@ -39,11 +52,17 @@
     flex-wrap: wrap;
     gap: 0.5rem;
 
+    width: 100%;
     min-width: 0;
+    max-width: 100%;
 }
 
 .filterButton {
-    min-height: 2.45rem;
+    flex: 1 1 6.75rem;
+
+    min-width: 0;
+    max-width: 100%;
+    min-height: 2.75rem;
     padding: 0.68rem 0.9rem;
 
     border: 1px solid var(--clinic-border);
@@ -52,30 +71,34 @@
     color: var(--clinic-muted-strong);
     background-color: var(--clinic-white);
 
+    font: inherit;
     font-size: var(--clinic-font-size-sm);
     font-weight: 850;
-    line-height: 1;
-    white-space: nowrap;
+    line-height: 1.15;
+    white-space: normal;
+
+    cursor: pointer;
 
     transition:
         color var(--clinic-transition),
         background-color var(--clinic-transition),
         border-color var(--clinic-transition),
         box-shadow var(--clinic-transition),
-        transform var(--clinic-transition);
+        transform var(--clinic-transition),
+        opacity var(--clinic-transition);
 }
 
-.filterButton:hover:not(:disabled) {
-    color: var(--clinic-green-900);
-    background-color: var(--clinic-soft);
-    border-color: var(--clinic-border-strong);
-
-    transform: translateY(-1px);
+.filterButton:focus-visible {
+    outline: 3px solid rgba(31, 95, 81, 0.24);
+    outline-offset: 3px;
 }
 
 .filterButton:disabled {
     cursor: not-allowed;
+
     opacity: 0.58;
+    transform: none;
+    box-shadow: none;
 }
 
 .filterButtonActive {
@@ -86,18 +109,26 @@
     box-shadow: 0 8px 20px rgba(31, 95, 81, 0.14);
 }
 
-.filterButtonActive:hover:not(:disabled) {
-    color: var(--clinic-white);
-    background-color: var(--clinic-green-800);
-    border-color: var(--clinic-green-800);
+.searchControls > * {
+    min-width: 0;
+    max-width: 100%;
+}
+
+.searchControls > button {
+    flex: 0 1 auto;
+
+    min-height: 2.75rem;
+
+    white-space: normal;
 }
 
 .searchInput {
     flex: 1 1 16rem;
 
     width: 100%;
-    min-width: 12rem;
-    min-height: 2.45rem;
+    min-width: 0;
+    max-width: 100%;
+    min-height: 2.75rem;
     padding: 0.68rem 0.9rem;
 
     border: 1px solid var(--clinic-border);
@@ -106,7 +137,8 @@
     color: var(--clinic-ink);
     background-color: var(--clinic-white);
 
-    font-size: var(--clinic-font-size-md);
+    font: inherit;
+    font-size: max(1rem, var(--clinic-font-size-md));
     font-weight: 600;
     line-height: 1.35;
 
@@ -115,6 +147,10 @@
     transition:
         border-color var(--clinic-transition),
         box-shadow var(--clinic-transition);
+}
+
+.searchInput::placeholder {
+    color: rgba(102, 115, 109, 0.76);
 }
 
 .searchInput:focus {
@@ -136,39 +172,92 @@
     opacity: 0.74;
 }
 
+@media (hover: hover) and (pointer: fine) {
+    .filterButton:hover:not(:disabled) {
+        color: var(--clinic-green-900);
+        background-color: var(--clinic-soft);
+        border-color: var(--clinic-border-strong);
+
+        transform: translateY(-1px);
+    }
+
+    .filterButtonActive:hover:not(:disabled) {
+        color: var(--clinic-white);
+        background-color: var(--clinic-green-800);
+        border-color: var(--clinic-green-800);
+    }
+}
+
 @media (max-width: 920px) {
     .toolbar {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
         align-items: stretch;
     }
 }
 
-@media (max-width: 620px) {
-    .toolbar {
-        border-radius: var(--clinic-radius-lg);
-    }
-
-    .filterOptions,
+@media (max-width: 700px) {
     .searchControls {
         display: grid;
-        grid-template-columns: 1fr;
-
-        width: 100%;
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
     }
 
-    .filterButton,
-    .searchInput,
-    .searchControls>* {
+    .searchInput {
+        grid-column: 1 / -1;
+    }
+
+    .searchControls > button {
         width: 100%;
     }
 }
 
-@media (prefers-reduced-motion: reduce) {
-    .filterButton {
-        transition: none;
+@media (max-width: 520px) {
+    .toolbar {
+        padding: 0.9rem;
+
+        border-radius: var(--clinic-radius-lg);
     }
 
-    .filterButton:hover:not(:disabled) {
-        transform: none;
+    .filterOptions {
+        display: grid;
+        grid-template-columns:
+            repeat(3, minmax(0, 1fr));
+    }
+
+    .filterButton {
+        width: 100%;
+        padding-inline: 0.55rem;
+    }
+
+    .searchControls {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .searchInput {
+        grid-column: auto;
+    }
+
+    .searchInput,
+    .searchControls > button {
+        width: 100%;
+    }
+}
+
+@media (max-width: 380px) {
+    .toolbar {
+        padding: 0.78rem;
+
+        border-radius: var(--clinic-radius-md);
+    }
+
+    .filterOptions {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .filterButton,
+    .searchInput {
+        transition: none;
     }
 }

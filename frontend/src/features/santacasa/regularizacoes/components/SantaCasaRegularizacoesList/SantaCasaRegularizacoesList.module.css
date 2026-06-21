@@ -3,7 +3,15 @@
 .section {
     display: grid;
     gap: clamp(1rem, 2vw, 1.35rem);
-    inline-size: 100%;
+
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+}
+
+.section > * {
+    min-width: 0;
+    max-width: 100%;
 }
 
 .header {
@@ -11,22 +19,52 @@
     align-items: center;
     justify-content: space-between;
     gap: 1rem;
+
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
     padding: clamp(1rem, 2.4vw, 1.35rem);
+
     border: 1px solid var(--clinic-border);
     border-radius: var(--clinic-radius-2xl);
+
     background: var(--clinic-surface);
+
     box-shadow: var(--clinic-shadow-soft);
+}
+
+.header > * {
+    min-width: 0;
+    max-width: 100%;
+}
+
+.header > button {
+    flex: 0 0 auto;
+    min-height: 2.75rem;
+
+    white-space: normal;
 }
 
 .heading {
     display: grid;
     gap: 0.34rem;
+
     min-width: 0;
+    max-width: 100%;
+}
+
+.title,
+.description {
+    max-width: 100%;
+
+    overflow-wrap: anywhere;
 }
 
 .title {
     margin: 0;
+
     color: var(--clinic-ink);
+
     font-size: clamp(1.45rem, 2vw, 1.85rem);
     font-weight: 900;
     letter-spacing: -0.025em;
@@ -34,9 +72,10 @@
 }
 
 .description {
-    max-width: 70ch;
     margin: 0;
+
     color: var(--clinic-muted-strong);
+
     font-size: var(--clinic-font-size-md);
     font-weight: 500;
     line-height: var(--clinic-line-height-base);
@@ -44,16 +83,25 @@
 
 .groupButton,
 .groupSecondaryButton {
-    min-height: 2.55rem;
+    min-width: 0;
+    max-width: 100%;
+    min-height: 2.75rem;
     padding: 0.72rem 1rem;
+
     border: 1px solid var(--clinic-border);
     border-radius: 999px;
+
     background: var(--clinic-white);
     color: var(--clinic-green-700);
+
     font: inherit;
     font-size: var(--clinic-font-size-sm);
     font-weight: 850;
+    line-height: 1.15;
+    white-space: normal;
+
     cursor: pointer;
+
     transition:
         transform var(--clinic-transition),
         border-color var(--clinic-transition),
@@ -64,21 +112,12 @@
 
 .groupButton {
     flex: 0 0 auto;
+
     box-shadow: var(--clinic-shadow-soft);
 }
 
 .groupSecondaryButton {
-    min-height: 2.35rem;
     padding: 0.62rem 0.9rem;
-    font-size: var(--clinic-font-size-sm);
-}
-
-.groupButton:hover,
-.groupSecondaryButton:hover {
-    transform: translateY(-1px);
-    border-color: var(--clinic-border-strong);
-    background: var(--clinic-mist);
-    box-shadow: var(--clinic-shadow-card);
 }
 
 .groupButton:focus-visible,
@@ -90,6 +129,7 @@
 .groupButton:disabled,
 .groupSecondaryButton:disabled {
     cursor: not-allowed;
+
     opacity: 0.56;
     transform: none;
     box-shadow: none;
@@ -102,15 +142,35 @@
 .historyContent {
     display: grid;
     gap: clamp(1rem, 2vw, 1.25rem);
+
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+}
+
+.list > *,
+.groups > *,
+.groupContent > *,
+.groupList > *,
+.historyContent > * {
+    min-width: 0;
+    max-width: 100%;
 }
 
 .group {
     display: grid;
     gap: clamp(0.9rem, 2vw, 1.15rem);
+
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
     padding: clamp(1rem, 2vw, 1.2rem);
+
     border: 1px solid var(--clinic-border);
     border-radius: var(--clinic-radius-2xl);
+
     background: var(--clinic-surface);
+
     box-shadow: var(--clinic-shadow-soft);
 }
 
@@ -120,23 +180,48 @@
 
 .groupHeader {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(18rem, 0.85fr) auto;
+    grid-template-columns:
+        minmax(0, 1fr)
+        minmax(16rem, 0.85fr)
+        auto;
     align-items: center;
     gap: 0.9rem;
+
+    min-width: 0;
+    max-width: 100%;
 }
 
 .groupHeaderHistory {
-    grid-template-columns: minmax(14rem, 1fr) minmax(28rem, auto) auto;
+    grid-template-columns:
+        minmax(12rem, 1fr)
+        minmax(24rem, auto)
+        auto;
+}
+
+.groupHeader > * {
+    min-width: 0;
+    max-width: 100%;
 }
 
 .groupIdentity {
     display: grid;
     gap: 0.22rem;
+
     min-width: 0;
+    max-width: 100%;
+}
+
+.groupEyebrow,
+.groupTitle,
+.groupDescription {
+    max-width: 100%;
+
+    overflow-wrap: anywhere;
 }
 
 .groupEyebrow {
     color: var(--clinic-muted);
+
     font-size: var(--clinic-font-size-xs);
     font-weight: 850;
     letter-spacing: 0.07em;
@@ -145,8 +230,8 @@
 }
 
 .groupTitle {
-    overflow-wrap: anywhere;
     color: var(--clinic-ink);
+
     font-size: clamp(1.15rem, 1.8vw, 1.45rem);
     font-weight: 950;
     letter-spacing: -0.035em;
@@ -155,6 +240,7 @@
 
 .groupDescription {
     color: var(--clinic-muted);
+
     font-size: var(--clinic-font-size-sm);
     font-weight: 750;
     line-height: 1.35;
@@ -162,37 +248,57 @@
 
 .groupStats {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
     gap: 0.55rem;
+
+    min-width: 0;
+    max-width: 100%;
     margin: 0;
 }
 
 .groupStatsWide {
     display: flex;
-    flex-wrap: nowrap;
     align-items: stretch;
     justify-content: flex-end;
+    flex-wrap: wrap;
     gap: 0.52rem;
 }
 
 .groupStats div {
     display: grid;
     gap: 0.18rem;
+
     min-width: 0;
+    max-width: 100%;
     padding: 0.65rem 0.75rem;
+
     border: 1px solid var(--clinic-border);
     border-radius: var(--clinic-radius-lg);
+
     background: var(--clinic-mist);
 }
 
 .groupStatsWide div {
-    width: clamp(8.8rem, 11vw, 10.2rem);
+    flex: 1 1 8.8rem;
+
+    width: auto;
+    min-width: 0;
+    max-width: 10.2rem;
     gap: 0.12rem;
     padding: 0.58rem 0.7rem;
 }
 
+.groupStats dt,
+.groupStats dd {
+    max-width: 100%;
+
+    overflow-wrap: anywhere;
+}
+
 .groupStats dt {
     color: var(--clinic-muted);
+
     font-size: var(--clinic-font-size-xs);
     font-weight: 800;
     line-height: 1.25;
@@ -201,23 +307,21 @@
 .groupStatsWide dt {
     font-size: 0.68rem;
     line-height: 1.15;
-    white-space: nowrap;
 }
 
 .groupStats dd {
     margin: 0;
-    overflow-wrap: anywhere;
+
     color: var(--clinic-ink-soft);
+
     font-size: 0.95rem;
     font-weight: 900;
     line-height: 1.2;
 }
 
 .groupStatsWide dd {
-    overflow-wrap: normal;
     font-size: 0.9rem;
     line-height: 1.15;
-    white-space: nowrap;
 }
 
 .groupList {
@@ -230,31 +334,61 @@
     align-items: center;
     justify-content: space-between;
     gap: 1rem;
+
+    min-width: 0;
+    max-width: 100%;
     padding: 0.85rem 0.95rem;
+
     border: 1px solid var(--clinic-border);
     border-radius: var(--clinic-radius-lg);
+
     background: var(--clinic-mist);
 }
 
+.groupPagination > *,
+.historyPagination > * {
+    min-width: 0;
+    max-width: 100%;
+}
+
 .groupPaginationInfo {
+    max-width: 100%;
+
     color: var(--clinic-muted);
+
     font-size: var(--clinic-font-size-sm);
     font-weight: 760;
     line-height: var(--clinic-line-height-base);
+    overflow-wrap: anywhere;
 }
 
 .groupPaginationActions {
     display: flex;
-    flex-wrap: wrap;
     justify-content: flex-end;
+    flex-wrap: wrap;
     gap: 0.5rem;
+
+    min-width: 0;
+    max-width: 100%;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .groupButton:hover:not(:disabled),
+    .groupSecondaryButton:hover:not(:disabled) {
+        transform: translateY(-1px);
+
+        border-color: var(--clinic-border-strong);
+
+        background: var(--clinic-mist);
+
+        box-shadow: var(--clinic-shadow-card);
+    }
 }
 
 @media (max-width: 1280px) {
-
     .groupHeader,
     .groupHeaderHistory {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
     }
 
     .groupButton {
@@ -267,7 +401,6 @@
 }
 
 @media (max-width: 760px) {
-
     .header,
     .groupPagination,
     .historyPagination {
@@ -275,35 +408,60 @@
         flex-direction: column;
     }
 
+    .header > button,
     .groupButton {
-        width: 100%;
-    }
-
-    .header > button {
         width: 100%;
     }
 
     .groupStats,
     .groupStatsWide {
         display: grid;
-        grid-template-columns: 1fr;
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
     }
 
     .groupStatsWide div {
-        width: auto;
-    }
-
-    .groupStatsWide dt,
-    .groupStatsWide dd {
-        white-space: normal;
+        max-width: none;
     }
 
     .groupPaginationActions {
         display: grid;
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
+
+        width: 100%;
     }
 
     .groupSecondaryButton {
         width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .header,
+    .group {
+        padding: 0.85rem;
+
+        border-radius: var(--clinic-radius-xl);
+    }
+
+    .groupStats,
+    .groupStatsWide {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+@media (max-width: 360px) {
+    .header,
+    .group {
+        padding: 0.75rem;
+
+        border-radius: var(--clinic-radius-lg);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .groupButton,
+    .groupSecondaryButton {
+        transition: none;
     }
 }

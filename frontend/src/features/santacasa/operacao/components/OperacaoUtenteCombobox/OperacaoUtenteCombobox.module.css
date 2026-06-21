@@ -5,6 +5,7 @@
 
     width: 100%;
     min-width: 0;
+    max-width: 100%;
 }
 
 .trigger {
@@ -14,6 +15,8 @@
     align-items: center;
 
     width: 100%;
+    min-width: 0;
+    max-width: 100%;
     min-height: 3.35rem;
     padding: 0.86rem 0.98rem;
 
@@ -22,12 +25,16 @@
 
     color: var(--clinic-ink);
     background:
-        radial-gradient(circle at 96% 0%,
+        radial-gradient(
+            circle at 96% 0%,
             rgba(31, 95, 81, 0.1),
-            transparent 11rem),
-        linear-gradient(180deg,
+            transparent 11rem
+        ),
+        linear-gradient(
+            180deg,
             rgba(255, 255, 255, 0.99),
-            rgba(247, 252, 249, 0.97));
+            rgba(247, 252, 249, 0.97)
+        );
 
     font: inherit;
     text-align: left;
@@ -47,24 +54,6 @@
         transform var(--clinic-transition);
 }
 
-.trigger:hover:not(:disabled) {
-    border-color: rgba(31, 95, 81, 0.4);
-
-    background:
-        radial-gradient(circle at 96% 0%,
-            rgba(31, 95, 81, 0.14),
-            transparent 11rem),
-        linear-gradient(180deg,
-            rgba(255, 255, 255, 1),
-            rgba(244, 251, 247, 0.98));
-
-    box-shadow:
-        0 0.78rem 1.5rem rgba(23, 33, 29, 0.06),
-        0 0 0 1px rgba(31, 95, 81, 0.06),
-        inset 4px 0 0 rgba(31, 95, 81, 0.14),
-        inset 0 1px 0 rgba(255, 255, 255, 0.96);
-}
-
 .trigger:focus-visible {
     outline: none;
 
@@ -82,9 +71,11 @@
 
     color: var(--clinic-muted);
     background:
-        linear-gradient(180deg,
+        linear-gradient(
+            180deg,
             rgba(247, 250, 248, 0.92),
-            rgba(239, 245, 242, 0.86));
+            rgba(239, 245, 242, 0.86)
+        );
 
     border-color: var(--clinic-border);
 
@@ -97,6 +88,7 @@
 .triggerValue,
 .triggerPlaceholder {
     min-width: 0;
+    max-width: 100%;
 
     overflow: hidden;
 
@@ -124,6 +116,8 @@
     align-items: center;
     justify-content: center;
 
+    flex: 0 0 auto;
+
     width: 1.8rem;
     height: 1.8rem;
 
@@ -132,9 +126,11 @@
 
     color: var(--clinic-green-800);
     background:
-        linear-gradient(135deg,
+        linear-gradient(
+            135deg,
             rgba(238, 247, 243, 0.98),
-            rgba(255, 255, 255, 0.84));
+            rgba(255, 255, 255, 0.84)
+        );
 
     font-size: 0.92rem;
     font-weight: 950;
@@ -175,24 +171,31 @@
 
     width: 100%;
     min-width: 0;
+    max-width: 100%;
     margin-top: 0.68rem;
     padding: 0.78rem;
 
-    overflow: hidden;
+    overflow-x: hidden;
 
     border: 1px solid rgba(31, 95, 81, 0.28);
     border-radius: var(--clinic-radius-lg);
 
     background:
-        radial-gradient(circle at 96% 0%,
+        radial-gradient(
+            circle at 96% 0%,
             rgba(31, 95, 81, 0.15),
-            transparent 13rem),
-        radial-gradient(circle at 0% 100%,
+            transparent 13rem
+        ),
+        radial-gradient(
+            circle at 0% 100%,
             rgba(198, 161, 91, 0.07),
-            transparent 12rem),
-        linear-gradient(135deg,
+            transparent 12rem
+        ),
+        linear-gradient(
+            135deg,
             rgba(255, 255, 255, 0.99),
-            rgba(240, 248, 244, 0.97));
+            rgba(240, 248, 244, 0.97)
+        );
 
     box-shadow:
         0 1.05rem 2.35rem rgba(23, 33, 29, 0.09),
@@ -205,10 +208,13 @@
     display: grid;
 
     min-width: 0;
+    max-width: 100%;
 }
 
 .searchInput {
     width: 100%;
+    min-width: 0;
+    max-width: 100%;
     min-height: 2.9rem;
     padding: 0.76rem 0.92rem;
 
@@ -217,12 +223,14 @@
 
     color: var(--clinic-ink);
     background:
-        linear-gradient(180deg,
+        linear-gradient(
+            180deg,
             rgba(255, 255, 255, 1),
-            rgba(248, 252, 250, 0.98));
+            rgba(248, 252, 250, 0.98)
+        );
 
     font: inherit;
-    font-size: var(--clinic-font-size-md);
+    font-size: max(1rem, var(--clinic-font-size-md));
     font-weight: 800;
     line-height: 1.35;
 
@@ -256,12 +264,17 @@
     display: grid;
     gap: 0.48rem;
 
-    max-height: 17.5rem;
+    max-height: min(17.5rem, 42dvh);
     min-width: 0;
+    max-width: 100%;
     padding-right: 0.15rem;
 
+    overflow-x: hidden;
     overflow-y: auto;
     overscroll-behavior: contain;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(31, 95, 81, 0.3) rgba(31, 95, 81, 0.07);
+    -webkit-overflow-scrolling: touch;
 }
 
 .options::-webkit-scrollbar {
@@ -286,6 +299,8 @@
 
     width: 100%;
     min-width: 0;
+    max-width: 100%;
+    min-height: 3rem;
     padding: 0.82rem 0.92rem;
 
     border: 1px solid rgba(31, 95, 81, 0.14);
@@ -293,9 +308,11 @@
 
     color: var(--clinic-ink);
     background:
-        linear-gradient(135deg,
+        linear-gradient(
+            135deg,
             rgba(255, 255, 255, 0.98),
-            rgba(248, 252, 250, 0.93));
+            rgba(248, 252, 250, 0.93)
+        );
 
     font: inherit;
     text-align: left;
@@ -312,17 +329,23 @@
         transform var(--clinic-transition);
 }
 
-.option:hover,
-.option.active {
+.option.active,
+.option:focus-visible {
+    outline: none;
+
     border-color: rgba(31, 95, 81, 0.36);
 
     background:
-        radial-gradient(circle at 100% 0%,
+        radial-gradient(
+            circle at 100% 0%,
             rgba(31, 95, 81, 0.13),
-            transparent 8rem),
-        linear-gradient(135deg,
+            transparent 8rem
+        ),
+        linear-gradient(
+            135deg,
             rgba(255, 255, 255, 1),
-            rgba(238, 247, 243, 0.97));
+            rgba(238, 247, 243, 0.97)
+        );
 
     box-shadow:
         0 0.72rem 1.38rem rgba(23, 33, 29, 0.058),
@@ -334,12 +357,16 @@
     border-color: rgba(31, 95, 81, 0.44);
 
     background:
-        radial-gradient(circle at 100% 0%,
+        radial-gradient(
+            circle at 100% 0%,
             rgba(31, 95, 81, 0.18),
-            transparent 8rem),
-        linear-gradient(135deg,
+            transparent 8rem
+        ),
+        linear-gradient(
+            135deg,
             rgba(238, 247, 243, 0.99),
-            rgba(226, 241, 234, 0.95));
+            rgba(226, 241, 234, 0.95)
+        );
 
     box-shadow:
         0 0.72rem 1.38rem rgba(23, 33, 29, 0.062),
@@ -350,10 +377,9 @@
 .optionName,
 .optionNumber {
     min-width: 0;
+    max-width: 100%;
 
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    overflow-wrap: anywhere;
 }
 
 .optionName {
@@ -374,6 +400,7 @@
 }
 
 .empty {
+    max-width: 100%;
     margin: 0;
     padding: 0.92rem;
 
@@ -382,13 +409,61 @@
 
     color: var(--clinic-muted-strong);
     background:
-        linear-gradient(135deg,
+        linear-gradient(
+            135deg,
             rgba(255, 255, 255, 0.82),
-            rgba(248, 252, 250, 0.72));
+            rgba(248, 252, 250, 0.72)
+        );
 
     font-size: var(--clinic-font-size-sm);
     font-weight: 800;
     line-height: 1.4;
+    overflow-wrap: anywhere;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .trigger:hover:not(:disabled) {
+        border-color: rgba(31, 95, 81, 0.4);
+
+        background:
+            radial-gradient(
+                circle at 96% 0%,
+                rgba(31, 95, 81, 0.14),
+                transparent 11rem
+            ),
+            linear-gradient(
+                180deg,
+                rgba(255, 255, 255, 1),
+                rgba(244, 251, 247, 0.98)
+            );
+
+        box-shadow:
+            0 0.78rem 1.5rem rgba(23, 33, 29, 0.06),
+            0 0 0 1px rgba(31, 95, 81, 0.06),
+            inset 4px 0 0 rgba(31, 95, 81, 0.14),
+            inset 0 1px 0 rgba(255, 255, 255, 0.96);
+    }
+
+    .option:hover {
+        border-color: rgba(31, 95, 81, 0.36);
+
+        background:
+            radial-gradient(
+                circle at 100% 0%,
+                rgba(31, 95, 81, 0.13),
+                transparent 8rem
+            ),
+            linear-gradient(
+                135deg,
+                rgba(255, 255, 255, 1),
+                rgba(238, 247, 243, 0.97)
+            );
+
+        box-shadow:
+            0 0.72rem 1.38rem rgba(23, 33, 29, 0.058),
+            0 0 0 2px rgba(31, 95, 81, 0.08),
+            inset 4px 0 0 rgba(31, 95, 81, 0.2);
+    }
 }
 
 @media (max-width: 560px) {
@@ -406,11 +481,12 @@
         gap: 0.65rem;
         margin-top: 0.58rem;
         padding: 0.68rem;
+
         border-radius: var(--clinic-radius-md);
     }
 
     .searchInput {
-        min-height: 2.75rem;
+        min-height: 2.9rem;
         padding: 0.72rem 0.82rem;
     }
 
@@ -433,12 +509,17 @@
     }
 
     .options {
-        max-height: 15rem;
+        max-height: min(15rem, 40dvh);
+    }
+}
+
+@media (max-height: 560px) {
+    .options {
+        max-height: 34dvh;
     }
 }
 
 @media (prefers-reduced-motion: reduce) {
-
     .trigger,
     .triggerIcon,
     .searchInput,

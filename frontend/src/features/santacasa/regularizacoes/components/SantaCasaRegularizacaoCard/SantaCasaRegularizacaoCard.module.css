@@ -3,21 +3,59 @@
 .card {
     display: grid;
     gap: clamp(0.95rem, 2vw, 1.2rem);
+
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
     padding: clamp(1rem, 2vw, 1.35rem);
+
+    overflow: hidden;
+
     border: 1px solid var(--clinic-border);
     border-radius: var(--clinic-radius-2xl);
+
     background: var(--clinic-surface);
+
     box-shadow: var(--clinic-shadow-soft);
+}
+
+.card > * {
+    min-width: 0;
+    max-width: 100%;
 }
 
 .cardCompleted {
     border-color: rgba(37, 115, 90, 0.24);
+
     background: var(--clinic-surface-strong);
 }
 
 .cardHistory {
     gap: clamp(0.72rem, 1.4vw, 0.95rem);
+
     padding: clamp(0.85rem, 1.7vw, 1.05rem);
+
     border-radius: var(--clinic-radius-xl);
+
     box-shadow: var(--clinic-shadow-soft);
+}
+
+@media (max-width: 520px) {
+    .card,
+    .cardHistory {
+        padding: 0.85rem;
+
+        border-radius: var(--clinic-radius-xl);
+    }
+}
+
+@media (max-width: 360px) {
+    .card,
+    .cardHistory {
+        gap: 0.78rem;
+
+        padding: 0.75rem;
+
+        border-radius: var(--clinic-radius-lg);
+    }
 }

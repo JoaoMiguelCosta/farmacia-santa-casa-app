@@ -1,36 +1,48 @@
 .row {
-    --extra-control-height: 2.55rem;
+    --extra-control-height: 2.75rem;
     --extra-label-gap: 0.28rem;
 
     display: grid;
     gap: 0.78rem;
 
     width: 100%;
-    max-width: 100%;
     min-width: 0;
+    max-width: 100%;
     padding: 0.88rem 0.95rem;
 
     overflow: hidden;
 
-    border: 1px solid var(--operation-panel-border, rgba(196, 122, 8, 0.34));
+    border: 1px solid
+        var(--operation-panel-border, rgba(196, 122, 8, 0.34));
     border-radius: var(--clinic-radius-lg);
 
     background:
-        radial-gradient(circle at 96% 0%,
+        radial-gradient(
+            circle at 96% 0%,
             var(--operation-accent-softer, rgba(196, 122, 8, 0.18)),
-            transparent 12rem),
-        radial-gradient(circle at 0% 100%,
+            transparent 12rem
+        ),
+        radial-gradient(
+            circle at 0% 100%,
             var(--operation-accent-softer, rgba(196, 122, 8, 0.1)),
-            transparent 10rem),
-        var(--operation-panel-background,
-            linear-gradient(135deg,
+            transparent 10rem
+        ),
+        var(
+            --operation-panel-background,
+            linear-gradient(
+                135deg,
                 rgba(255, 255, 255, 0.98),
-                rgba(255, 246, 226, 0.93)));
+                rgba(255, 246, 226, 0.93)
+            )
+        );
 
     box-shadow:
-        var(--operation-panel-shadow,
-            0 0.8rem 1.8rem rgba(122, 74, 5, 0.08)),
-        inset 4px 0 0 var(--operation-accent-softer, rgba(196, 122, 8, 0.16)),
+        var(
+            --operation-panel-shadow,
+            0 0.8rem 1.8rem rgba(122, 74, 5, 0.08)
+        ),
+        inset 4px 0 0
+            var(--operation-accent-softer, rgba(196, 122, 8, 0.16)),
         inset 0 1px 0 rgba(255, 255, 255, 0.9);
 
     transition:
@@ -40,44 +52,50 @@
         transform var(--clinic-transition);
 }
 
-.row:hover {
-    border-color: var(--operation-header-border, rgba(196, 122, 8, 0.42));
-
-    box-shadow:
-        0 1rem 2.2rem var(--operation-content-shadow, rgba(122, 74, 5, 0.095)),
-        0 0 0 3px var(--operation-accent-softer, rgba(196, 122, 8, 0.16)),
-        inset 5px 0 0 var(--operation-accent-soft, rgba(196, 122, 8, 0.28)),
-        inset 0 1px 0 rgba(255, 255, 255, 0.92);
-}
-
 .compactContent {
     display: grid;
     grid-template-columns:
-        minmax(0, 1fr) minmax(14rem, 0.75fr) minmax(10rem, auto) minmax(17rem, auto);
+        minmax(0, 1.1fr)
+        minmax(13rem, 0.75fr)
+        minmax(9rem, auto)
+        minmax(16rem, auto);
     gap: 0.95rem;
     align-items: start;
 
     width: 100%;
-    max-width: 100%;
     min-width: 0;
+    max-width: 100%;
 }
 
-.compactContent>* {
+.compactContent > * {
     min-width: 0;
+    max-width: 100%;
     align-self: start;
 }
 
 .medicationCell {
     display: grid;
-    grid-template-rows: auto var(--extra-control-height);
+    grid-template-rows:
+        auto
+        minmax(var(--extra-control-height), auto);
     gap: var(--extra-label-gap);
     align-content: start;
 
     min-width: 0;
+    max-width: 100%;
 }
 
-.medicationCell>span,
-.createdBox>span {
+.medicationCell > span,
+.createdBox > span,
+.medicationCell strong,
+.createdBox strong {
+    max-width: 100%;
+
+    overflow-wrap: anywhere;
+}
+
+.medicationCell > span,
+.createdBox > span {
     color: var(--operation-accent-strong, var(--clinic-muted-strong));
 
     font-size: 0.66rem;
@@ -94,9 +112,7 @@
 
     font-size: clamp(1.06rem, 1.3vw, 1.24rem);
     font-weight: 950;
-    line-height: 1.05;
-
-    overflow-wrap: anywhere;
+    line-height: 1.15;
 }
 
 .metaCell {
@@ -106,15 +122,19 @@
     gap: 1rem;
 
     min-width: 0;
+    max-width: 100%;
 }
 
 .createdBox {
     display: grid;
-    grid-template-rows: auto var(--extra-control-height);
+    grid-template-rows:
+        auto
+        minmax(var(--extra-control-height), auto);
     gap: var(--extra-label-gap);
     align-content: start;
 
-    min-width: max-content;
+    min-width: 0;
+    max-width: 100%;
 }
 
 .createdBox strong {
@@ -124,25 +144,37 @@
 
     font-size: 0.88rem;
     font-weight: 900;
-    line-height: 1.15;
-    white-space: nowrap;
+    line-height: 1.2;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .row:hover {
+        border-color:
+            var(--operation-header-border, rgba(196, 122, 8, 0.42));
+
+        box-shadow:
+            0 1rem 2.2rem
+                var(--operation-content-shadow, rgba(122, 74, 5, 0.095)),
+            0 0 0 3px
+                var(--operation-accent-softer, rgba(196, 122, 8, 0.16)),
+            inset 5px 0 0
+                var(--operation-accent-soft, rgba(196, 122, 8, 0.28)),
+            inset 0 1px 0 rgba(255, 255, 255, 0.92);
+    }
 }
 
 @media (max-width: 1360px) {
     .compactContent {
         grid-template-columns:
-            minmax(0, 1fr) minmax(18rem, auto);
+            minmax(0, 1fr)
+            minmax(18rem, 1fr);
         gap: 0.82rem;
     }
 }
 
 @media (max-width: 860px) {
     .compactContent {
-        grid-template-columns: 1fr;
-    }
-
-    .metaCell {
-        flex-wrap: wrap;
+        grid-template-columns: minmax(0, 1fr);
     }
 }
 
@@ -155,8 +187,13 @@
 
     .metaCell {
         display: grid;
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
         gap: 0.65rem;
+    }
+
+    .medicationCell,
+    .createdBox {
+        grid-template-rows: auto auto;
     }
 }
 

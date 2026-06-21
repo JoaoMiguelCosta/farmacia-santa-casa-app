@@ -5,6 +5,7 @@
 
     width: 100%;
     min-width: 0;
+    max-width: 100%;
 
     color: var(--clinic-ink);
     text-align: center;
@@ -14,6 +15,7 @@
     display: block;
 
     min-width: 0;
+    max-width: 100%;
 
     color: var(--clinic-muted-strong);
 
@@ -23,19 +25,25 @@
     line-height: 1.2;
     text-align: center;
     text-transform: uppercase;
-
     overflow-wrap: anywhere;
 }
 
 .frame {
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
 
     width: 100%;
     min-width: 0;
+    max-width: 100%;
     min-height: 3.2rem;
     padding: 0.45rem 0.55rem;
+
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-inline: contain;
+    scrollbar-width: thin;
+    -webkit-overflow-scrolling: touch;
 
     border: 1px solid var(--clinic-border);
     border-radius: var(--clinic-radius-md);
@@ -49,9 +57,12 @@
 .svg {
     display: block;
 
-    width: 100%;
-    max-width: 100%;
+    flex: 0 0 auto;
+
+    width: auto;
+    max-width: none;
     min-width: 0;
+    margin-inline: auto;
 
     color: currentColor;
 }
@@ -68,6 +79,7 @@
     display: block;
 
     min-width: 0;
+    max-width: 100%;
 
     color: var(--clinic-muted);
 
@@ -75,7 +87,6 @@
     font-weight: 700;
     line-height: 1.25;
     text-align: center;
-
     overflow-wrap: anywhere;
 }
 
@@ -118,7 +129,6 @@
 }
 
 @media (max-width: 520px) {
-
     .default,
     .compact,
     .large {
@@ -126,6 +136,6 @@
     }
 
     .frame {
-        justify-content: center;
+        padding-inline: 0.45rem;
     }
 }

@@ -1,9 +1,12 @@
-/* src/features/santacasa/shared/pedidos/components/SantaCasaPedidoUtentesList/SantaCasaPedidoUtentesList.module.css */
+/* src/features/santacasa/shared/pedidos/components/SantaCasaPedidoDetails/components/SantaCasaPedidoUtentesList/SantaCasaPedidoUtentesList.module.css */
 
 .section {
     display: grid;
     gap: 0.7rem;
 
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
     padding: 0.8rem;
 
     border: 1px solid var(--clinic-border);
@@ -12,25 +15,38 @@
     background: var(--clinic-cream);
 }
 
+.section > * {
+    min-width: 0;
+    max-width: 100%;
+}
+
 .header {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 0.75rem;
+
+    min-width: 0;
+    max-width: 100%;
 }
 
 .title {
+    min-width: 0;
+    max-width: 100%;
     margin: 0;
 
     color: var(--clinic-ink);
 
     font-size: 0.94rem;
     line-height: 1.2;
+    overflow-wrap: anywhere;
 }
 
 .count {
     display: inline-grid;
     place-items: center;
+
+    flex: 0 0 auto;
 
     min-width: 1.8rem;
     min-height: 1.8rem;
@@ -49,18 +65,27 @@
 .searchField {
     display: grid;
     gap: 0.35rem;
+
+    min-width: 0;
+    max-width: 100%;
 }
 
-.searchField>span {
+.searchField > span {
+    max-width: 100%;
+
     color: var(--clinic-ink-soft);
 
     font-size: var(--clinic-font-size-xs);
     font-weight: 800;
+    line-height: 1.3;
+    overflow-wrap: anywhere;
 }
 
 .searchField input {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
     min-height: 2.75rem;
-    inline-size: 100%;
     padding: 0.68rem 0.8rem;
 
     border: 1px solid var(--clinic-border-strong);
@@ -70,7 +95,7 @@
     color: var(--clinic-ink);
 
     font: inherit;
-    font-size: var(--clinic-font-size-sm);
+    font-size: max(1rem, var(--clinic-font-size-sm));
 
     transition:
         border-color var(--clinic-transition),
@@ -90,22 +115,39 @@
     display: grid;
     gap: 0.65rem;
 
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
     margin: 0;
     padding: 0;
 
     list-style: none;
 }
 
+.list > * {
+    min-width: 0;
+    max-width: 100%;
+}
+
 .emptyState {
     display: grid;
     gap: 0.3rem;
 
+    min-width: 0;
+    max-width: 100%;
     padding: 1rem;
 
     border: 1px dashed var(--clinic-border-strong);
     border-radius: var(--clinic-radius-md);
 
     background: var(--clinic-surface);
+}
+
+.emptyState strong,
+.emptyState p {
+    max-width: 100%;
+
+    overflow-wrap: anywhere;
 }
 
 .emptyState strong {
@@ -129,6 +171,8 @@
     justify-content: space-between;
     gap: 0.75rem;
 
+    min-width: 0;
+    max-width: 100%;
     padding-top: 0.7rem;
 
     border-top: 1px solid var(--clinic-border);
@@ -139,9 +183,19 @@
     flex-wrap: wrap;
     gap: 0.35rem 1rem;
 
+    min-width: 0;
+    max-width: 100%;
+
     color: var(--clinic-muted);
 
     font-size: var(--clinic-font-size-xs);
+    line-height: 1.4;
+}
+
+.results span {
+    max-width: 100%;
+
+    overflow-wrap: anywhere;
 }
 
 .results strong {
@@ -150,12 +204,18 @@
 
 .pageActions {
     display: flex;
-    flex: 0 0 auto;
+    flex: 0 1 auto;
+    flex-wrap: wrap;
     gap: 0.45rem;
+
+    min-width: 0;
+    max-width: 100%;
 }
 
 .pageActions button {
-    min-height: 2.35rem;
+    min-width: 0;
+    max-width: 100%;
+    min-height: 2.75rem;
     padding: 0.55rem 0.75rem;
 
     border: 1px solid rgb(31 95 81 / 0.22);
@@ -167,6 +227,8 @@
     font: inherit;
     font-size: var(--clinic-font-size-xs);
     font-weight: 800;
+    line-height: 1.2;
+    white-space: normal;
 
     cursor: pointer;
 
@@ -174,12 +236,6 @@
         border-color var(--clinic-transition),
         background var(--clinic-transition),
         opacity var(--clinic-transition);
-}
-
-.pageActions button:hover:not(:disabled) {
-    border-color: rgb(31 95 81 / 0.38);
-
-    background: var(--clinic-mist);
 }
 
 .pageActions button:disabled {
@@ -191,6 +247,14 @@
 .pageActions button:focus-visible {
     outline: 3px solid rgb(31 95 81 / 0.22);
     outline-offset: 2px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .pageActions button:hover:not(:disabled) {
+        border-color: rgb(31 95 81 / 0.38);
+
+        background: var(--clinic-mist);
+    }
 }
 
 @media (max-width: 680px) {
@@ -211,5 +275,23 @@
 @media (max-width: 420px) {
     .section {
         padding: 0.65rem;
+
+        border-radius: var(--clinic-radius-md);
+    }
+
+    .pageActions {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .pageActions button {
+        width: 100%;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .searchField input,
+    .pageActions button {
+        transition: none;
     }
 }

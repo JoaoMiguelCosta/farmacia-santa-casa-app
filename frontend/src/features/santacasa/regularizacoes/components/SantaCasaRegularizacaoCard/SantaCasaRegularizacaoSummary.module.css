@@ -2,38 +2,58 @@
 
 .operationalSummary {
     display: grid;
-    grid-template-columns: minmax(10rem, 0.34fr) minmax(0, 1fr);
-    gap: 0.8rem;
+    grid-template-columns:
+        minmax(10rem, 0.34fr)
+        minmax(0, 1fr);
     align-items: stretch;
+    gap: 0.8rem;
+
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+}
+
+.operationalSummary > * {
+    min-width: 0;
+    max-width: 100%;
 }
 
 .operationalSummaryHistory {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
 }
 
 .focusMetric {
     display: grid;
     align-content: center;
     gap: 0.42rem;
+
     min-width: 0;
+    max-width: 100%;
     padding: clamp(0.95rem, 2vw, 1.15rem);
+
     border: 1px solid var(--clinic-border-gold);
     border-radius: var(--clinic-radius-xl);
+
     background: var(--clinic-gold-soft);
 }
 
 .focusMetricCompleted {
     border-color: rgba(37, 115, 90, 0.24);
+
     background: rgba(37, 115, 90, 0.1);
 }
 
 .focusMetricLabel {
+    max-width: 100%;
+
     color: var(--clinic-warning);
+
     font-size: var(--clinic-font-size-xs);
     font-weight: 900;
     letter-spacing: 0.06em;
     line-height: 1.25;
     text-transform: uppercase;
+    overflow-wrap: anywhere;
 }
 
 .focusMetricCompleted .focusMetricLabel {
@@ -42,33 +62,52 @@
 
 .contextList {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
     gap: 0.72rem;
+
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
     margin: 0;
 }
 
 .contextListHistory {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
 }
 
 .contextList div {
     display: grid;
     align-content: center;
     gap: 0.28rem;
+
     min-width: 0;
+    max-width: 100%;
     padding: 0.82rem;
+
     border: 1px solid var(--clinic-border);
     border-radius: var(--clinic-radius-lg);
+
     background: var(--clinic-mist);
 }
 
 .contextListHistory div {
     padding: 0.62rem 0.72rem;
+
     border-radius: var(--clinic-radius-md);
+}
+
+.contextList dt,
+.contextList dd {
+    max-width: 100%;
+
+    overflow-wrap: anywhere;
 }
 
 .contextList dt {
     color: var(--clinic-muted);
+
     font-size: var(--clinic-font-size-xs);
     font-weight: 780;
     line-height: 1.25;
@@ -81,8 +120,9 @@
 .contextList dd {
     min-width: 0;
     margin: 0;
-    overflow-wrap: anywhere;
+
     color: var(--clinic-ink-soft);
+
     font-size: 0.98rem;
     font-weight: 900;
     line-height: 1.25;
@@ -94,6 +134,7 @@
 
 .contextMetricRegularized {
     border-color: rgba(37, 115, 90, 0.22) !important;
+
     background: rgba(37, 115, 90, 0.08) !important;
 }
 
@@ -103,19 +144,29 @@
 
 @media (max-width: 1080px) {
     .operationalSummary {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
     }
 
     .contextList,
     .contextListHistory {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
     }
 }
 
-@media (max-width: 860px) {
-
+@media (max-width: 620px) {
     .contextList,
     .contextListHistory {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .focusMetric,
+    .contextList div,
+    .contextListHistory div {
+        padding: 0.72rem;
+
+        border-radius: var(--clinic-radius-md);
     }
 }

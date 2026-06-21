@@ -1,6 +1,10 @@
-/* src/features/santacasa/shared/pedidos/components/SantaCasaPedidoUtenteGroup/SantaCasaPedidoUtenteGroup.module.css */
+/* src/features/santacasa/shared/pedidos/components/SantaCasaPedidoDetails/components/SantaCasaPedidoUtenteGroup/SantaCasaPedidoUtenteGroup.module.css */
 
 .group {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+
     overflow: hidden;
 
     border: 1px solid var(--clinic-border);
@@ -22,12 +26,21 @@
 .summary {
     display: grid;
     grid-template-columns:
-        minmax(15rem, 1fr) auto auto;
-
+        minmax(0, 1fr)
+        auto
+        auto;
     align-items: center;
     gap: 0.85rem;
 
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
     padding: 0.85rem;
+}
+
+.summary > * {
+    min-width: 0;
+    max-width: 100%;
 }
 
 .identity {
@@ -35,6 +48,15 @@
     gap: 0.18rem;
 
     min-width: 0;
+    max-width: 100%;
+}
+
+.eyebrow,
+.name,
+.number {
+    max-width: 100%;
+
+    overflow-wrap: anywhere;
 }
 
 .eyebrow {
@@ -43,13 +65,11 @@
     font-size: 0.66rem;
     font-weight: 800;
     letter-spacing: 0.065em;
-    line-height: 1;
+    line-height: 1.2;
     text-transform: uppercase;
 }
 
 .name {
-    overflow-wrap: anywhere;
-
     color: var(--clinic-ink);
 
     font-size: 0.96rem;
@@ -66,8 +86,11 @@
 
 .metrics {
     display: flex;
+    flex-wrap: wrap;
     gap: 0.5rem;
 
+    min-width: 0;
+    max-width: 100%;
     margin: 0;
 }
 
@@ -77,6 +100,7 @@
     gap: 0.14rem;
 
     min-width: 7.5rem;
+    max-width: 100%;
     min-height: 3.35rem;
     padding: 0.5rem 0.65rem;
 
@@ -84,6 +108,13 @@
     border-radius: var(--clinic-radius-md);
 
     background: var(--clinic-mist);
+}
+
+.metric dt,
+.metric dd {
+    max-width: 100%;
+
+    overflow-wrap: anywhere;
 }
 
 .metric dt {
@@ -97,6 +128,7 @@
 }
 
 .metric dd {
+    min-width: 0;
     margin: 0;
 
     color: var(--clinic-ink-soft);
@@ -107,7 +139,9 @@
 }
 
 .toggleButton {
-    min-height: 2.45rem;
+    min-width: 0;
+    max-width: 100%;
+    min-height: 2.75rem;
     padding: 0.62rem 0.85rem;
 
     border: 1px solid rgb(31 95 81 / 0.22);
@@ -119,8 +153,9 @@
     font: inherit;
     font-size: var(--clinic-font-size-sm);
     font-weight: 800;
-    line-height: 1;
-    white-space: nowrap;
+    line-height: 1.2;
+    text-align: center;
+    white-space: normal;
 
     cursor: pointer;
 
@@ -131,22 +166,15 @@
         box-shadow var(--clinic-transition);
 }
 
-.toggleButton:hover {
-    transform: translateY(-1px);
-
-    border-color: rgb(31 95 81 / 0.38);
-
-    background: var(--clinic-mist);
-
-    box-shadow: var(--clinic-shadow-soft);
-}
-
 .toggleButton:focus-visible {
     outline: 3px solid rgb(31 95 81 / 0.24);
     outline-offset: 3px;
 }
 
 .details {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
     padding: 0.85rem;
 
     border-top: 1px solid var(--clinic-border);
@@ -154,20 +182,46 @@
     background: var(--clinic-cream);
 }
 
+.details > * {
+    min-width: 0;
+    max-width: 100%;
+}
+
 .items {
     display: grid;
     gap: 0.45rem;
 
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
     margin: 0;
     padding: 0;
 
     list-style: none;
 }
 
+.items > * {
+    min-width: 0;
+    max-width: 100%;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .toggleButton:hover {
+        transform: translateY(-1px);
+
+        border-color: rgb(31 95 81 / 0.38);
+
+        background: var(--clinic-mist);
+
+        box-shadow: var(--clinic-shadow-soft);
+    }
+}
+
 @media (max-width: 900px) {
     .summary {
         grid-template-columns:
-            minmax(0, 1fr) auto;
+            minmax(0, 1fr)
+            auto;
     }
 
     .metrics {
@@ -183,12 +237,11 @@
 
 @media (max-width: 620px) {
     .summary {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
     }
 
     .metrics {
         display: grid;
-
         grid-column: auto;
         grid-row: auto;
         grid-template-columns:
@@ -214,7 +267,22 @@
 }
 
 @media (max-width: 420px) {
+    .summary {
+        padding: 0.7rem;
+    }
+
     .metrics {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .details {
+        padding: 0.6rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .group,
+    .toggleButton {
+        transition: none;
     }
 }

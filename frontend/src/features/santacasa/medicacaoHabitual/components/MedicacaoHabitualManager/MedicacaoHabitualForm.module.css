@@ -2,7 +2,9 @@
     display: grid;
     gap: clamp(0.9rem, 2vw, 1.05rem);
 
+    width: 100%;
     min-width: 0;
+    max-width: 100%;
     padding: clamp(1rem, 2.3vw, 1.2rem);
 
     overflow: hidden;
@@ -11,20 +13,30 @@
     border-radius: var(--clinic-radius-lg);
 
     background:
-        radial-gradient(circle at 96% 0%,
+        radial-gradient(
+            circle at 96% 0%,
             var(--operation-accent-softer, rgba(111, 127, 47, 0.16)),
-            transparent 13rem),
-        radial-gradient(circle at 0% 100%,
+            transparent 13rem
+        ),
+        radial-gradient(
+            circle at 0% 100%,
             var(--operation-accent-softer, rgba(111, 127, 47, 0.1)),
-            transparent 11rem),
-        var(--operation-panel-background,
-            linear-gradient(135deg,
+            transparent 11rem
+        ),
+        var(
+            --operation-panel-background,
+            linear-gradient(
+                135deg,
                 rgba(255, 255, 255, 0.98),
-                rgba(244, 248, 225, 0.93)));
+                rgba(244, 248, 225, 0.93)
+            )
+        );
 
     box-shadow:
-        var(--operation-panel-shadow,
-            0 0.8rem 1.8rem rgba(68, 82, 31, 0.08)),
+        var(
+            --operation-panel-shadow,
+            0 0.8rem 1.8rem rgba(68, 82, 31, 0.08)
+        ),
         inset 5px 0 0 var(--operation-accent-softer, rgba(111, 127, 47, 0.16)),
         inset 0 1px 0 rgba(255, 255, 255, 0.9);
 
@@ -49,11 +61,18 @@
     gap: 0.25rem;
 
     min-width: 0;
+    max-width: 100%;
+}
+
+.intro h3,
+.intro p {
+    max-width: 100%;
+    margin: 0;
+
+    overflow-wrap: anywhere;
 }
 
 .intro h3 {
-    margin: 0;
-
     color: var(--clinic-ink);
 
     font-size: clamp(1.05rem, 1.8vw, 1.18rem);
@@ -63,9 +82,6 @@
 }
 
 .intro p {
-
-    margin: 0;
-
     color: var(--clinic-muted-strong);
 
     font-size: var(--clinic-font-size-sm);
@@ -75,11 +91,18 @@
 
 .grid {
     display: grid;
-    grid-template-columns: minmax(16rem, 1fr) auto;
+    grid-template-columns: minmax(0, 1fr) auto;
     gap: clamp(0.85rem, 2vw, 1.05rem);
     align-items: end;
 
+    width: 100%;
     min-width: 0;
+    max-width: 100%;
+}
+
+.grid > * {
+    min-width: 0;
+    max-width: 100%;
 }
 
 .action {
@@ -87,12 +110,18 @@
     justify-content: flex-end;
 
     min-width: 0;
+    max-width: 100%;
     padding-bottom: 0.02rem;
+}
+
+.action button {
+    min-width: 0;
+    max-width: 100%;
 }
 
 @media (max-width: 760px) {
     .grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
     }
 
     .action {
@@ -106,6 +135,8 @@
 
 @media (max-width: 520px) {
     .form {
+        padding: 0.9rem;
+
         border-radius: var(--clinic-radius-md);
     }
 }

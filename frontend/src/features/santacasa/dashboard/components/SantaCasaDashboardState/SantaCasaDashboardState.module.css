@@ -2,6 +2,17 @@
     display: grid;
     justify-items: start;
     gap: 0.6rem;
+
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+}
+
+.title,
+.description {
+    max-width: 100%;
+
+    overflow-wrap: anywhere;
 }
 
 .title {
@@ -21,4 +32,15 @@
     font-size: var(--clinic-font-size-sm);
     font-weight: 500;
     line-height: 1.55;
+}
+
+.state > :where(button, a) {
+    min-width: 0;
+    max-width: 100%;
+}
+
+@media (max-width: 520px) {
+    .state > :where(button, a) {
+        width: 100%;
+    }
 }

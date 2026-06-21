@@ -2,7 +2,9 @@
     display: grid;
     gap: 0.35rem;
 
+    width: 100%;
     min-width: 0;
+    max-width: 100%;
     padding: clamp(1rem, 2.3vw, 1.2rem);
 
     overflow: hidden;
@@ -11,22 +13,42 @@
     border-radius: var(--clinic-radius-lg);
 
     background:
-        radial-gradient(circle at 96% 0%,
+        radial-gradient(
+            circle at 96% 0%,
             var(--operation-accent-softer, rgba(111, 127, 47, 0.16)),
-            transparent 13rem),
-        radial-gradient(circle at 0% 100%,
+            transparent 13rem
+        ),
+        radial-gradient(
+            circle at 0% 100%,
             var(--operation-accent-softer, rgba(111, 127, 47, 0.1)),
-            transparent 11rem),
-        var(--operation-state-background,
-            linear-gradient(135deg,
+            transparent 11rem
+        ),
+        var(
+            --operation-state-background,
+            linear-gradient(
+                135deg,
                 rgba(255, 255, 255, 0.98),
-                rgba(244, 248, 225, 0.92)));
+                rgba(244, 248, 225, 0.92)
+            )
+        );
 
     box-shadow:
-        var(--operation-state-shadow,
-            0 0.75rem 1.5rem rgba(68, 82, 31, 0.06)),
+        var(
+            --operation-state-shadow,
+            0 0.75rem 1.5rem rgba(68, 82, 31, 0.06)
+        ),
         inset 5px 0 0 var(--operation-accent-softer, rgba(111, 127, 47, 0.16)),
         inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+.emptyState strong,
+.emptyState span,
+.header h3,
+.header p,
+.countBadge {
+    max-width: 100%;
+
+    overflow-wrap: anywhere;
 }
 
 .emptyState strong {
@@ -38,8 +60,6 @@
 }
 
 .emptyState span {
-   
-
     color: var(--clinic-muted-strong);
 
     font-size: var(--clinic-font-size-sm);
@@ -51,7 +71,9 @@
     display: grid;
     gap: 0.75rem;
 
+    width: 100%;
     min-width: 0;
+    max-width: 100%;
 }
 
 .header {
@@ -60,19 +82,27 @@
     justify-content: space-between;
     gap: 1rem;
 
+    width: 100%;
     min-width: 0;
+    max-width: 100%;
 }
 
 .header div {
     display: grid;
     gap: 0.22rem;
 
+    flex: 1 1 auto;
+
     min-width: 0;
+    max-width: 100%;
+}
+
+.header h3,
+.header p {
+    margin: 0;
 }
 
 .header h3 {
-    margin: 0;
-
     color: var(--clinic-ink);
 
     font-size: clamp(1.05rem, 1.8vw, 1.16rem);
@@ -82,8 +112,6 @@
 }
 
 .header p {
-    margin: 0;
-
     color: var(--clinic-muted-strong);
 
     font-size: var(--clinic-font-size-sm);
@@ -96,7 +124,10 @@
     align-items: center;
     justify-content: center;
 
+    flex: 0 0 auto;
+
     min-width: 2.2rem;
+    max-width: 100%;
     min-height: 2.2rem;
     padding: 0.35rem 0.65rem;
 
@@ -108,25 +139,44 @@
 
     font-size: 0.9rem;
     font-weight: 950;
-    line-height: 1;
+    line-height: 1.1;
+    text-align: center;
 }
 
 .list {
     display: grid;
     gap: 0.72rem;
 
+    width: 100%;
     min-width: 0;
+    max-width: 100%;
+}
+
+.list > * {
+    min-width: 0;
+    max-width: 100%;
 }
 
 @media (max-width: 760px) {
     .header {
-        align-items: stretch;
-        flex-direction: column;
+        align-items: flex-start;
     }
 }
 
 @media (max-width: 520px) {
     .emptyState {
+        padding: 0.9rem;
+
         border-radius: var(--clinic-radius-md);
+    }
+
+    .header {
+        align-items: stretch;
+        flex-direction: column;
+        gap: 0.65rem;
+    }
+
+    .countBadge {
+        align-self: flex-start;
     }
 }

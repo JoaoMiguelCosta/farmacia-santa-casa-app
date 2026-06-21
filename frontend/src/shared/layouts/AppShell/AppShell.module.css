@@ -1,9 +1,12 @@
 .shell {
+    --app-shell-page-pad: var(--clinic-page-pad);
+
     position: relative;
     isolation: isolate;
 
     min-width: 320px;
     min-height: 100vh;
+    min-height: 100dvh;
 
     color: var(--clinic-ink);
     background-color: var(--clinic-cream);
@@ -17,7 +20,10 @@
     left: 50%;
     z-index: 200;
 
+    max-width: calc(100vw - 2rem);
     padding: 0.75rem 1rem;
+
+    overflow: hidden;
 
     border: 2px solid var(--clinic-white);
     border-radius: 999px;
@@ -28,6 +34,9 @@
     font-size: var(--clinic-font-size-sm);
     font-weight: 900;
     line-height: 1;
+    text-align: center;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 
     box-shadow: var(--clinic-shadow-card);
 
@@ -40,13 +49,18 @@
 }
 
 .main {
-    width: min(calc(100% - (var(--clinic-page-pad) * 2)),
-            var(--clinic-page-max));
+    width: 100%;
+    max-width: calc(
+        var(--clinic-page-max) +
+        var(--app-shell-page-pad) +
+        var(--app-shell-page-pad)
+    );
+    min-width: 0;
     margin-inline: auto;
 
     padding-block-start: clamp(1rem, 2.8vw, 1.75rem);
     padding-block-end: clamp(2.5rem, 7vw, 5rem);
-    padding-inline: 0;
+    padding-inline: var(--app-shell-page-pad);
 }
 
 @media (max-width: 680px) {
@@ -56,10 +70,11 @@
 }
 
 @media (max-width: 460px) {
-    .main {
-        width: min(calc(100% - (clamp(0.85rem, 4vw, 1rem) * 2)),
-                var(--clinic-page-max));
+    .shell {
+        --app-shell-page-pad: clamp(0.875rem, 4vw, 1rem);
+    }
 
+    .main {
         padding-block-end: 3rem;
     }
 }

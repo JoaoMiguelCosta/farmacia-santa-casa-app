@@ -3,27 +3,53 @@
 .progressWrap {
     display: grid;
     gap: 0.45rem;
+
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
 }
 
 .progressHeader {
     display: flex;
+    align-items: flex-start;
     justify-content: space-between;
     gap: 1rem;
+
+    min-width: 0;
+    max-width: 100%;
+
     color: var(--clinic-muted);
+
     font-size: var(--clinic-font-size-sm);
     font-weight: 800;
 }
 
+.progressHeader span,
+.progressHeader strong {
+    min-width: 0;
+    max-width: 100%;
+
+    overflow-wrap: anywhere;
+}
+
 .progressHeader strong {
     color: var(--clinic-green-700);
+
     text-align: right;
 }
 
 .progressTrack {
     position: relative;
-    overflow: hidden;
+
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
     block-size: 0.65rem;
+
+    overflow: hidden;
+
     border-radius: 999px;
+
     background: var(--clinic-soft);
 }
 
@@ -31,9 +57,14 @@
     position: absolute;
     inset-block: 0;
     inset-inline-start: 0;
+
     inline-size: var(--progress-value, 0%);
+    max-inline-size: 100%;
+
     border-radius: inherit;
+
     background: var(--clinic-green-700);
+
     transition: inline-size 180ms ease;
 }
 
@@ -45,5 +76,11 @@
 
     .progressHeader strong {
         text-align: left;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .progressBar {
+        transition: none;
     }
 }

@@ -1,11 +1,11 @@
 .field {
     position: relative;
     z-index: 5;
-
     display: grid;
     gap: 0.55rem;
-
+    width: 100%;
     min-width: 0;
+    max-width: 100%;
 }
 
 .field:focus-within {
@@ -14,17 +14,18 @@
 
 .inputWrap {
     position: relative;
-
     display: grid;
-
     width: 100%;
     min-width: 0;
+    max-width: 100%;
 }
 
 .inputWrap input {
     width: 100%;
     min-width: 0;
+    max-width: 100%;
     padding-inline-end: 3.35rem;
+    font-size: max(1rem, var(--clinic-font-size-md));
 }
 
 .toggleButton {
@@ -32,37 +33,25 @@
     inset-block-start: 50%;
     inset-inline-end: 0.62rem;
     z-index: 2;
-
     display: inline-flex;
     align-items: center;
     justify-content: center;
-
     width: 2rem;
     height: 2rem;
     padding: 0;
-
     border: 1px solid var(--operation-header-border, rgba(31, 95, 81, 0.24));
     border-radius: 999px;
-
     color: var(--operation-accent-strong, var(--clinic-green-800));
-    background:
-        linear-gradient(135deg,
-            rgba(255, 255, 255, 0.98),
-            rgba(248, 252, 250, 0.86));
-
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(248, 252, 250, 0.86));
     font: inherit;
     font-size: 1.1rem;
     font-weight: 950;
     line-height: 1;
-
     box-shadow:
         0 0.35rem 0.75rem rgba(23, 33, 29, 0.035),
         inset 0 1px 0 rgba(255, 255, 255, 0.92);
-
     cursor: pointer;
-
     transform: translateY(-50%);
-
     transition:
         color var(--clinic-transition),
         border-color var(--clinic-transition),
@@ -72,26 +61,9 @@
         opacity var(--clinic-transition);
 }
 
-.toggleButton:hover:not(:disabled) {
-    border-color: var(--operation-header-border, rgba(31, 95, 81, 0.36));
-
-    color: var(--operation-accent-strong, var(--clinic-green-900));
-    background:
-        linear-gradient(135deg,
-            rgba(255, 255, 255, 1),
-            rgba(244, 251, 247, 0.94));
-
-    box-shadow:
-        0 0.5rem 1rem rgba(23, 33, 29, 0.055),
-        0 0 0 2px var(--operation-accent-softer, rgba(31, 95, 81, 0.08)),
-        inset 0 1px 0 rgba(255, 255, 255, 0.94);
-}
-
 .toggleButton:focus-visible {
     outline: none;
-
     border-color: var(--operation-accent, var(--clinic-green-700));
-
     box-shadow:
         0 0.5rem 1rem rgba(23, 33, 29, 0.055),
         0 0 0 3px var(--operation-accent-softer, rgba(31, 95, 81, 0.14)),
@@ -102,7 +74,6 @@
     color: var(--clinic-white);
     background: var(--operation-accent, var(--clinic-green-700));
     border-color: var(--operation-accent, var(--clinic-green-700));
-
     transform: translateY(-50%) rotate(180deg);
 }
 
@@ -112,36 +83,29 @@
 }
 
 .dropdown {
-    position: absolute;
-    inset-inline: 0;
-    inset-block-start: calc(100% + 0.55rem);
+    position: relative;
     z-index: 50;
-
     display: grid;
     gap: 0.48rem;
-
     width: 100%;
     min-width: 0;
-    max-height: min(18rem, 42vh);
+    max-width: 100%;
+    max-height: min(18rem, 42dvh);
     padding: 0.72rem;
-
+    overflow-x: hidden;
     overflow-y: auto;
     overscroll-behavior: contain;
-
+    scrollbar-width: thin;
+    scrollbar-color:
+        var(--operation-accent-soft, rgba(31, 95, 81, 0.28))
+        var(--operation-accent-softer, rgba(31, 95, 81, 0.08));
+    -webkit-overflow-scrolling: touch;
     border: 1px solid var(--operation-panel-border, rgba(31, 95, 81, 0.26));
     border-radius: var(--clinic-radius-lg);
-
     background:
-        radial-gradient(circle at 96% 0%,
-            var(--operation-accent-softer, rgba(31, 95, 81, 0.13)),
-            transparent 13rem),
-        radial-gradient(circle at 0% 100%,
-            rgba(198, 161, 91, 0.06),
-            transparent 11rem),
-        linear-gradient(135deg,
-            rgba(255, 255, 255, 0.99),
-            rgba(248, 252, 250, 0.96));
-
+        radial-gradient(circle at 96% 0%, var(--operation-accent-softer, rgba(31, 95, 81, 0.13)), transparent 13rem),
+        radial-gradient(circle at 0% 100%, rgba(198, 161, 91, 0.06), transparent 11rem),
+        linear-gradient(135deg, rgba(255, 255, 255, 0.99), rgba(248, 252, 250, 0.96));
     box-shadow:
         0 1rem 2.2rem rgba(23, 33, 29, 0.09),
         0 0 0 1px rgba(31, 95, 81, 0.045),
@@ -155,41 +119,30 @@
 
 .dropdown::-webkit-scrollbar-track {
     border-radius: 999px;
-
     background-color: var(--operation-accent-softer, rgba(31, 95, 81, 0.08));
 }
 
 .dropdown::-webkit-scrollbar-thumb {
     border-radius: 999px;
-
     background-color: var(--operation-accent-soft, rgba(31, 95, 81, 0.28));
 }
 
 .option {
     display: grid;
     gap: 0.22rem;
-
     width: 100%;
     min-width: 0;
+    max-width: 100%;
+    min-height: 3rem;
     padding: 0.78rem 0.9rem;
-
     border: 1px solid var(--operation-state-border, rgba(31, 95, 81, 0.16));
     border-radius: var(--clinic-radius-md);
-
     color: var(--clinic-ink);
-    background:
-        linear-gradient(135deg,
-            rgba(255, 255, 255, 0.98),
-            rgba(248, 252, 250, 0.92));
-
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(248, 252, 250, 0.92));
     font: inherit;
     text-align: left;
-
     cursor: pointer;
-
-    box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.9);
-
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
     transition:
         border-color var(--clinic-transition),
         box-shadow var(--clinic-transition),
@@ -197,18 +150,13 @@
         transform var(--clinic-transition);
 }
 
-.option:hover,
-.option.active {
+.option.active,
+.option:focus-visible {
+    outline: none;
     border-color: var(--operation-header-border, rgba(31, 95, 81, 0.34));
-
     background:
-        radial-gradient(circle at 100% 0%,
-            var(--operation-accent-softer, rgba(31, 95, 81, 0.12)),
-            transparent 8rem),
-        linear-gradient(135deg,
-            rgba(255, 255, 255, 1),
-            rgba(248, 252, 250, 0.96));
-
+        radial-gradient(circle at 100% 0%, var(--operation-accent-softer, rgba(31, 95, 81, 0.12)), transparent 8rem),
+        linear-gradient(135deg, rgba(255, 255, 255, 1), rgba(248, 252, 250, 0.96));
     box-shadow:
         0 0.68rem 1.32rem rgba(23, 33, 29, 0.055),
         0 0 0 2px var(--operation-accent-softer, rgba(31, 95, 81, 0.08)),
@@ -217,35 +165,50 @@
 
 .optionName {
     min-width: 0;
-
-    overflow: hidden;
-
+    max-width: 100%;
     color: var(--clinic-ink);
-
     font-size: var(--clinic-font-size-md);
     font-weight: 900;
     letter-spacing: -0.018em;
     line-height: 1.25;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    overflow-wrap: anywhere;
 }
 
 .empty {
+    max-width: 100%;
     margin: 0;
     padding: 0.9rem;
-
     border: 1px dashed var(--operation-state-border, rgba(31, 95, 81, 0.24));
     border-radius: var(--clinic-radius-md);
-
     color: var(--clinic-muted-strong);
-    background:
-        linear-gradient(135deg,
-            rgba(255, 255, 255, 0.82),
-            rgba(248, 252, 250, 0.72));
-
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.82), rgba(248, 252, 250, 0.72));
     font-size: var(--clinic-font-size-sm);
     font-weight: 800;
     line-height: 1.4;
+    overflow-wrap: anywhere;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .toggleButton:hover:not(:disabled) {
+        border-color: var(--operation-header-border, rgba(31, 95, 81, 0.36));
+        color: var(--operation-accent-strong, var(--clinic-green-900));
+        background: linear-gradient(135deg, rgba(255, 255, 255, 1), rgba(244, 251, 247, 0.94));
+        box-shadow:
+            0 0.5rem 1rem rgba(23, 33, 29, 0.055),
+            0 0 0 2px var(--operation-accent-softer, rgba(31, 95, 81, 0.08)),
+            inset 0 1px 0 rgba(255, 255, 255, 0.94);
+    }
+
+    .option:hover {
+        border-color: var(--operation-header-border, rgba(31, 95, 81, 0.34));
+        background:
+            radial-gradient(circle at 100% 0%, var(--operation-accent-softer, rgba(31, 95, 81, 0.12)), transparent 8rem),
+            linear-gradient(135deg, rgba(255, 255, 255, 1), rgba(248, 252, 250, 0.96));
+        box-shadow:
+            0 0.68rem 1.32rem rgba(23, 33, 29, 0.055),
+            0 0 0 2px var(--operation-accent-softer, rgba(31, 95, 81, 0.08)),
+            inset 4px 0 0 var(--operation-accent-soft, rgba(31, 95, 81, 0.2));
+    }
 }
 
 @media (max-width: 560px) {
@@ -255,31 +218,29 @@
 
     .toggleButton {
         inset-inline-end: 0.52rem;
-
         width: 1.85rem;
         height: 1.85rem;
     }
 
     .dropdown {
         gap: 0.42rem;
-        inset-block-start: calc(100% + 0.48rem);
-        max-height: min(16rem, 44vh);
+        max-height: min(16rem, 40dvh);
         padding: 0.65rem;
-
         border-radius: var(--clinic-radius-md);
     }
 
     .option {
         padding: 0.74rem 0.82rem;
     }
+}
 
-    .optionName {
-        white-space: normal;
+@media (max-height: 560px) {
+    .dropdown {
+        max-height: 34dvh;
     }
 }
 
 @media (prefers-reduced-motion: reduce) {
-
     .toggleButton,
     .option {
         transition: none;
