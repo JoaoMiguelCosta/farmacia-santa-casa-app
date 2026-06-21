@@ -331,6 +331,7 @@ npm run test:backend
 npm run test:backend:unit
 npm run test:backend:integration
 npm run test:backend:e2e
+npm run test:backend:coverage
 npm run test:backend:manual
 npm run validate:backend
 ```
@@ -349,19 +350,18 @@ npm run prisma:seed
 ```bash
 npm run audit
 npm run validate
+npm run test:backend:coverage
+npm run validate:release
 ```
 
-O `validate` atual executa:
+O `validate` executa:
 
 - backend: unit, integration, E2E e audit;
 - frontend: lint, build e audit.
 
-O coverage do backend continua disponível diretamente em `backend/`:
+O coverage não integra o `validate`. `npm run test:backend:coverage` é um alias executado a partir da raiz; chama `npm run test:coverage` dentro de `backend/` e gera o relatório de coverage usando a configuração definida em `backend/vitest.config.mjs`.
 
-```bash
-cd backend
-npm run test:coverage
-```
+`npm run validate:release` executa `validate` e, em seguida, o coverage do backend. Indicado para uma validação mais abrangente antes de um release; não substitui o pipeline de CI.
 
 ---
 
@@ -418,10 +418,6 @@ frontend/docs/
 ├── API_CONTRACT.md
 ├── ARCHITECTURE.md
 ├── DEPLOYMENT.md
-├── ENVIRONMENT.md
-├── ROUTES.md
-├── STATE_MANAGEMENT.md
-├── TESTING.md
 └── UI_COMPONENTS.md
 ```
 
