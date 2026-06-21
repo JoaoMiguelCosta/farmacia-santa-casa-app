@@ -9,6 +9,7 @@
 
     width: 100%;
     min-width: 0;
+    max-width: 100%;
 }
 
 .page::before {
@@ -23,28 +24,41 @@
     pointer-events: none;
 
     background:
-        radial-gradient(circle at 10% 10%,
+        radial-gradient(
+            circle at 10% 10%,
             color-mix(in srgb, var(--clinic-green-700) 8%, transparent),
-            transparent 18rem),
-        radial-gradient(circle at 92% 2%,
+            transparent 18rem
+        ),
+        radial-gradient(
+            circle at 92% 2%,
             color-mix(in srgb, var(--clinic-gold-500) 6%, transparent),
-            transparent 20rem);
+            transparent 20rem
+        );
 
     opacity: 0.72;
 }
 
-.page>* {
+.page > * {
     min-width: 0;
+    max-width: 100%;
 }
 
 @media (max-width: 760px) {
     .page {
         gap: 1.05rem;
     }
+
+    .page::before {
+        inset-inline: -0.5rem;
+    }
 }
 
 @media (max-width: 420px) {
     .page {
         gap: 0.95rem;
+    }
+
+    .page::before {
+        inset-inline: 0;
     }
 }
