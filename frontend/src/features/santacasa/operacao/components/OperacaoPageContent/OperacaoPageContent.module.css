@@ -4,11 +4,31 @@
 
     width: 100%;
     min-width: 0;
+    max-width: 100%;
+}
+
+.page > * {
+    min-width: 0;
+    max-width: 100%;
 }
 
 .sections {
     display: grid;
     gap: clamp(1rem, 2.6vw, 1.45rem);
 
+    width: 100%;
     min-width: 0;
+    max-width: 100%;
+}
+
+.sections > * {
+    min-width: 0;
+    max-width: 100%;
+}
+
+@media (max-width: 520px) {
+    .page,
+    .sections {
+        gap: 1rem;
+    }
 }

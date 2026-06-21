@@ -19,9 +19,11 @@
 
     --operation-panel-border: rgba(31, 95, 81, 0.3);
     --operation-panel-background:
-        linear-gradient(135deg,
+        linear-gradient(
+            135deg,
             rgba(255, 255, 255, 0.98),
-            rgba(232, 244, 238, 0.92));
+            rgba(232, 244, 238, 0.92)
+        );
     --operation-panel-shadow:
         0 0.95rem 2.1rem rgba(23, 33, 29, 0.075),
         0 0.08rem 0.24rem rgba(23, 33, 29, 0.04),
@@ -29,9 +31,11 @@
 
     --operation-state-border: rgba(31, 95, 81, 0.3);
     --operation-state-background:
-        linear-gradient(135deg,
+        linear-gradient(
+            135deg,
             rgba(255, 255, 255, 0.98),
-            rgba(232, 244, 238, 0.9));
+            rgba(232, 244, 238, 0.9)
+        );
     --operation-state-icon-color: var(--operation-accent-strong);
     --operation-state-icon-background: var(--operation-accent-soft);
     --operation-state-icon-border: var(--operation-header-border);
@@ -48,6 +52,7 @@
 
     width: 100%;
     min-width: 0;
+    max-width: 100%;
     padding: clamp(1rem, 2.5vw, 1.35rem);
 
     overflow: hidden;
@@ -56,15 +61,21 @@
     border-radius: var(--clinic-radius-xl);
 
     background:
-        radial-gradient(circle at 98% 0%,
+        radial-gradient(
+            circle at 98% 0%,
             var(--operation-surface-glow),
-            transparent 21rem),
-        radial-gradient(circle at 0% 100%,
+            transparent 21rem
+        ),
+        radial-gradient(
+            circle at 0% 100%,
             var(--operation-accent-softer),
-            transparent 18rem),
-        linear-gradient(135deg,
+            transparent 18rem
+        ),
+        linear-gradient(
+            135deg,
             var(--operation-surface-start),
-            var(--operation-surface-end));
+            var(--operation-surface-end)
+        );
 
     box-shadow:
         0 18px 42px var(--operation-shadow),
@@ -83,12 +94,13 @@
     height: 5px;
 
     background:
-        linear-gradient(90deg,
+        linear-gradient(
+            90deg,
             var(--operation-accent),
             var(--operation-accent-soft),
-            transparent);
+            transparent
+        );
 
-    opacity: 1;
     pointer-events: none;
 }
 
@@ -103,10 +115,12 @@
     width: 5px;
 
     background:
-        linear-gradient(180deg,
+        linear-gradient(
+            180deg,
             var(--operation-accent),
             var(--operation-accent-soft),
-            transparent 84%);
+            transparent 84%
+        );
 
     opacity: 0.95;
     pointer-events: none;
@@ -115,190 +129,155 @@
 .default {
     --operation-accent: var(--clinic-green-700);
     --operation-accent-strong: var(--clinic-green-800);
-
-    --operation-surface-start: rgba(244, 251, 248, 0.99);
-    --operation-surface-end: rgba(226, 241, 234, 0.98);
-    --operation-surface-glow: rgba(31, 95, 81, 0.22);
-
-    --operation-header-bg-start: rgba(226, 241, 234, 0.98);
-    --operation-header-bg-end: rgba(255, 255, 255, 0.82);
-
-    --operation-accent-soft: rgba(31, 95, 81, 0.24);
-    --operation-accent-softer: rgba(31, 95, 81, 0.12);
-
-    --operation-border: rgba(31, 95, 81, 0.36);
-    --operation-header-border: rgba(31, 95, 81, 0.3);
-    --operation-eyebrow-bg: rgba(226, 241, 234, 0.98);
-    --operation-shadow: rgba(23, 33, 29, 0.095);
-
-    --operation-panel-border: rgba(31, 95, 81, 0.3);
-    --operation-panel-background:
-        linear-gradient(135deg,
-            rgba(255, 255, 255, 0.98),
-            rgba(232, 244, 238, 0.92));
-
-    --operation-state-border: rgba(31, 95, 81, 0.3);
-    --operation-state-background:
-        linear-gradient(135deg,
-            rgba(255, 255, 255, 0.98),
-            rgba(232, 244, 238, 0.9));
 }
 
-/* Medicação habitual — olive/sage mais distinto de Receitas */
+/* Medicação habitual — olive/sage */
 .habitual {
     --operation-accent: #6f7f2f;
     --operation-accent-strong: #44521f;
-
     --operation-surface-start: rgba(252, 253, 241, 0.99);
     --operation-surface-end: rgba(231, 239, 199, 0.98);
     --operation-surface-glow: rgba(111, 127, 47, 0.34);
-
     --operation-header-bg-start: rgba(236, 243, 211, 0.98);
     --operation-header-bg-end: rgba(255, 255, 255, 0.8);
-
     --operation-accent-soft: rgba(111, 127, 47, 0.32);
     --operation-accent-softer: rgba(111, 127, 47, 0.16);
-
     --operation-border: rgba(111, 127, 47, 0.48);
     --operation-header-border: rgba(111, 127, 47, 0.38);
     --operation-eyebrow-bg: rgba(243, 248, 224, 0.98);
     --operation-shadow: rgba(68, 82, 31, 0.1);
-
     --operation-panel-border: rgba(111, 127, 47, 0.34);
     --operation-panel-background:
-        linear-gradient(135deg,
+        linear-gradient(
+            135deg,
             rgba(255, 255, 255, 0.98),
-            rgba(244, 248, 225, 0.93));
+            rgba(244, 248, 225, 0.93)
+        );
     --operation-panel-shadow:
         0 0.95rem 2.1rem rgba(68, 82, 31, 0.08),
         0 0.08rem 0.24rem rgba(68, 82, 31, 0.04),
         inset 4px 0 0 rgba(111, 127, 47, 0.14);
-
     --operation-state-border: rgba(111, 127, 47, 0.34);
     --operation-state-background:
-        linear-gradient(135deg,
+        linear-gradient(
+            135deg,
             rgba(255, 255, 255, 0.98),
-            rgba(244, 248, 225, 0.92));
+            rgba(244, 248, 225, 0.92)
+        );
     --operation-state-icon-color: #44521f;
     --operation-state-icon-background: rgba(111, 127, 47, 0.18);
     --operation-state-icon-border: rgba(111, 127, 47, 0.32);
 }
 
-/* Receitas — verde/teal clínico forte */
+/* Receitas — verde/teal */
 .receitas {
     --operation-accent: #08705c;
     --operation-accent-strong: #064d40;
-
     --operation-surface-start: rgba(246, 253, 250, 0.99);
     --operation-surface-end: rgba(219, 242, 233, 0.98);
     --operation-surface-glow: rgba(8, 112, 92, 0.35);
-
     --operation-header-bg-start: rgba(221, 243, 235, 0.98);
     --operation-header-bg-end: rgba(255, 255, 255, 0.8);
-
     --operation-accent-soft: rgba(8, 112, 92, 0.32);
     --operation-accent-softer: rgba(8, 112, 92, 0.16);
-
     --operation-border: rgba(8, 112, 92, 0.5);
     --operation-header-border: rgba(8, 112, 92, 0.38);
     --operation-eyebrow-bg: rgba(229, 247, 240, 0.98);
     --operation-shadow: rgba(6, 77, 64, 0.11);
-
     --operation-panel-border: rgba(8, 112, 92, 0.34);
     --operation-panel-background:
-        linear-gradient(135deg,
+        linear-gradient(
+            135deg,
             rgba(255, 255, 255, 0.98),
-            rgba(233, 248, 242, 0.93));
+            rgba(233, 248, 242, 0.93)
+        );
     --operation-panel-shadow:
         0 0.95rem 2.1rem rgba(6, 77, 64, 0.085),
         0 0.08rem 0.24rem rgba(6, 77, 64, 0.04),
         inset 4px 0 0 rgba(8, 112, 92, 0.14);
-
     --operation-state-border: rgba(8, 112, 92, 0.34);
     --operation-state-background:
-        linear-gradient(135deg,
+        linear-gradient(
+            135deg,
             rgba(255, 255, 255, 0.98),
-            rgba(233, 248, 242, 0.92));
+            rgba(233, 248, 242, 0.92)
+        );
     --operation-state-icon-color: #064d40;
     --operation-state-icon-background: rgba(8, 112, 92, 0.17);
     --operation-state-icon-border: rgba(8, 112, 92, 0.32);
 }
 
-/* Medicamentos não sujeitos a receita médica — azul clínico */
+/* Medicamentos não sujeitos a receita médica — azul */
 .semReceita {
     --operation-accent: #1f6fa8;
     --operation-accent-strong: #174f78;
-
     --operation-surface-start: rgba(247, 252, 255, 0.99);
     --operation-surface-end: rgba(219, 238, 251, 0.98);
     --operation-surface-glow: rgba(31, 111, 168, 0.36);
-
     --operation-header-bg-start: rgba(223, 241, 252, 0.98);
     --operation-header-bg-end: rgba(255, 255, 255, 0.8);
-
     --operation-accent-soft: rgba(31, 111, 168, 0.33);
     --operation-accent-softer: rgba(31, 111, 168, 0.16);
-
     --operation-border: rgba(31, 111, 168, 0.5);
     --operation-header-border: rgba(31, 111, 168, 0.38);
     --operation-eyebrow-bg: rgba(230, 245, 253, 0.98);
     --operation-shadow: rgba(23, 79, 120, 0.105);
-
     --operation-panel-border: rgba(31, 111, 168, 0.34);
     --operation-panel-background:
-        linear-gradient(135deg,
+        linear-gradient(
+            135deg,
             rgba(255, 255, 255, 0.98),
-            rgba(235, 247, 254, 0.93));
+            rgba(235, 247, 254, 0.93)
+        );
     --operation-panel-shadow:
         0 0.95rem 2.1rem rgba(23, 79, 120, 0.08),
         0 0.08rem 0.24rem rgba(23, 79, 120, 0.04),
         inset 4px 0 0 rgba(31, 111, 168, 0.14);
-
     --operation-state-border: rgba(31, 111, 168, 0.34);
     --operation-state-background:
-        linear-gradient(135deg,
+        linear-gradient(
+            135deg,
             rgba(255, 255, 255, 0.98),
-            rgba(235, 247, 254, 0.92));
+            rgba(235, 247, 254, 0.92)
+        );
     --operation-state-icon-color: #174f78;
     --operation-state-icon-background: rgba(31, 111, 168, 0.17);
     --operation-state-icon-border: rgba(31, 111, 168, 0.32);
 }
 
-/* Vendas Suspensas — âmbar mais presente */
+/* Vendas Suspensas — âmbar */
 .extras {
     --operation-accent: #c47a08;
     --operation-accent-strong: #7a4a05;
-
     --operation-surface-start: rgba(255, 252, 244, 0.99);
     --operation-surface-end: rgba(255, 235, 191, 0.98);
     --operation-surface-glow: rgba(196, 122, 8, 0.4);
-
     --operation-header-bg-start: rgba(255, 239, 204, 0.98);
     --operation-header-bg-end: rgba(255, 255, 255, 0.78);
-
     --operation-accent-soft: rgba(196, 122, 8, 0.36);
     --operation-accent-softer: rgba(196, 122, 8, 0.18);
-
     --operation-border: rgba(196, 122, 8, 0.54);
     --operation-header-border: rgba(196, 122, 8, 0.42);
     --operation-eyebrow-bg: rgba(255, 245, 222, 0.99);
     --operation-shadow: rgba(122, 74, 5, 0.11);
-
     --operation-panel-border: rgba(196, 122, 8, 0.36);
     --operation-panel-background:
-        linear-gradient(135deg,
+        linear-gradient(
+            135deg,
             rgba(255, 255, 255, 0.98),
-            rgba(255, 246, 226, 0.93));
+            rgba(255, 246, 226, 0.93)
+        );
     --operation-panel-shadow:
         0 0.95rem 2.1rem rgba(122, 74, 5, 0.085),
         0 0.08rem 0.24rem rgba(122, 74, 5, 0.04),
         inset 4px 0 0 rgba(196, 122, 8, 0.16);
-
     --operation-state-border: rgba(196, 122, 8, 0.36);
     --operation-state-background:
-        linear-gradient(135deg,
+        linear-gradient(
+            135deg,
             rgba(255, 255, 255, 0.98),
-            rgba(255, 246, 226, 0.92));
+            rgba(255, 246, 226, 0.92)
+        );
     --operation-state-icon-color: #7a4a05;
     --operation-state-icon-background: rgba(196, 122, 8, 0.2);
     --operation-state-icon-border: rgba(196, 122, 8, 0.34);
@@ -308,16 +287,20 @@
     display: grid;
     gap: 0.45rem;
 
+    width: 100%;
     min-width: 0;
+    max-width: 100%;
     padding: clamp(0.75rem, 1.8vw, 0.95rem);
 
     border: 1px solid var(--operation-header-border);
     border-radius: var(--clinic-radius-lg);
 
     background:
-        linear-gradient(135deg,
+        linear-gradient(
+            135deg,
             var(--operation-header-bg-start),
-            var(--operation-header-bg-end));
+            var(--operation-header-bg-end)
+        );
 
     box-shadow:
         inset 5px 0 0 var(--operation-accent),
@@ -330,6 +313,14 @@
 
     min-width: 0;
     max-width: 78ch;
+}
+
+.eyebrow,
+.title,
+.description {
+    max-width: 100%;
+
+    overflow-wrap: anywhere;
 }
 
 .eyebrow {
@@ -346,7 +337,8 @@
     font-size: clamp(0.72rem, 1vw, 0.78rem);
     font-weight: 950;
     letter-spacing: 0.1em;
-    line-height: 1;
+    line-height: 1.2;
+    text-align: center;
     text-transform: uppercase;
 }
 
@@ -362,7 +354,6 @@
 }
 
 .description {
-  
     margin: 0;
 
     color: var(--clinic-muted-strong);
@@ -376,12 +367,20 @@
     display: grid;
     gap: clamp(1rem, 2.4vw, 1.25rem);
 
+    width: 100%;
     min-width: 0;
+    max-width: 100%;
+}
+
+.content > * {
+    min-width: 0;
+    max-width: 100%;
 }
 
 @media (max-width: 760px) {
     .section {
         padding: clamp(1rem, 4vw, 1.2rem);
+
         border-radius: var(--clinic-radius-lg);
     }
 
@@ -400,6 +399,17 @@
 
 @media (max-width: 460px) {
     .section {
+        gap: 1rem;
+        padding: 0.9rem;
+
+        border-radius: var(--clinic-radius-md);
+    }
+
+    .header {
+        padding: 0.8rem;
+    }
+
+    .eyebrow {
         border-radius: var(--clinic-radius-md);
     }
 }
