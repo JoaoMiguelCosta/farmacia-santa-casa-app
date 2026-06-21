@@ -1,7 +1,12 @@
 .actionsCell {
     display: grid;
-    grid-template-columns: 4.8rem auto auto;
-    grid-template-rows: auto var(--extra-control-height);
+    grid-template-columns:
+        minmax(4.8rem, 4.8rem)
+        minmax(0, auto)
+        minmax(0, auto);
+    grid-template-rows:
+        auto
+        minmax(var(--extra-control-height), auto);
     grid-template-areas:
         "label . ."
         "input add remove";
@@ -9,8 +14,9 @@
     align-items: start;
     justify-content: end;
 
-    max-width: 100%;
+    width: 100%;
     min-width: 0;
+    max-width: 100%;
 }
 
 .pedidoAction {
@@ -21,6 +27,8 @@
     grid-area: label;
     align-self: start;
 
+    max-width: 100%;
+
     color: var(--operation-accent-strong, var(--clinic-muted-strong));
 
     font-size: 0.66rem;
@@ -28,6 +36,7 @@
     letter-spacing: 0.09em;
     line-height: 1.15;
     text-transform: uppercase;
+    overflow-wrap: anywhere;
 }
 
 .pedidoAction input {
@@ -35,6 +44,7 @@
     align-self: center;
 
     width: 4.8rem;
+    max-width: 100%;
     min-height: var(--extra-control-height);
     padding: 0.34rem 0.6rem;
 
@@ -45,6 +55,7 @@
     background-color: var(--clinic-white);
 
     font: inherit;
+    font-size: max(1rem, var(--clinic-font-size-md));
     font-weight: 900;
 
     transition:
@@ -55,7 +66,8 @@
 
 .pedidoAction input:focus {
     border-color: var(--operation-header-border, rgba(196, 122, 8, 0.42));
-    outline: 3px solid var(--operation-accent-softer, rgba(196, 122, 8, 0.16));
+    outline: 3px solid
+        var(--operation-accent-softer, rgba(196, 122, 8, 0.16));
     outline-offset: 1px;
 }
 
@@ -76,18 +88,36 @@
 .deleteButtonSlot {
     display: flex;
     align-items: center;
+
     min-width: 0;
+    max-width: 100%;
 }
 
 .addButtonSlot button,
 .deleteButtonSlot button {
+    min-width: 0;
+    max-width: 100%;
     min-height: var(--extra-control-height);
-    white-space: nowrap;
+
+    white-space: normal;
 }
 
-@media (max-width: 1360px) {
+@media (max-width: 1120px) {
     .actionsCell {
-        justify-content: end;
+        grid-template-columns:
+            minmax(4.8rem, 4.8rem)
+            minmax(0, 1fr);
+        grid-template-rows: auto auto auto;
+        grid-template-areas:
+            "label ."
+            "input add"
+            "remove remove";
+        justify-content: stretch;
+    }
+
+    .addButtonSlot button,
+    .deleteButtonSlot button {
+        width: 100%;
     }
 }
 
@@ -99,7 +129,7 @@
 
 @media (max-width: 560px) {
     .actionsCell {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
         grid-template-rows: auto auto auto auto;
         grid-template-areas:
             "label"
