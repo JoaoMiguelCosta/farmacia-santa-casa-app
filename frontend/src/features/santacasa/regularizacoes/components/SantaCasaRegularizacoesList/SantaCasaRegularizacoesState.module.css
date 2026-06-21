@@ -2,15 +2,41 @@
     display: grid;
     justify-items: start;
     gap: 0.55rem;
+
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
     padding: clamp(1rem, 2.5vw, 1.45rem);
+
     border: 1px solid var(--clinic-border);
     border-radius: var(--clinic-radius-2xl);
+
     background: var(--clinic-surface);
+
     box-shadow: var(--clinic-shadow-soft);
+}
+
+.state > * {
+    min-width: 0;
+    max-width: 100%;
+}
+
+.state > button {
+    min-height: 2.75rem;
+
+    white-space: normal;
+}
+
+.stateTitle,
+.stateDescription {
+    max-width: 100%;
+
+    overflow-wrap: anywhere;
 }
 
 .stateTitle {
     color: var(--clinic-ink);
+
     font-size: clamp(1.45rem, 2vw, 1.85rem);
     font-weight: 900;
     letter-spacing: -0.025em;
@@ -18,10 +44,31 @@
 }
 
 .stateDescription {
-    max-width: 70ch;
     margin: 0;
+
     color: var(--clinic-muted-strong);
+
     font-size: var(--clinic-font-size-md);
     font-weight: 500;
     line-height: var(--clinic-line-height-base);
+}
+
+@media (max-width: 520px) {
+    .state {
+        padding: 0.9rem;
+
+        border-radius: var(--clinic-radius-xl);
+    }
+
+    .state > button {
+        width: 100%;
+    }
+}
+
+@media (max-width: 360px) {
+    .state {
+        padding: 0.8rem;
+
+        border-radius: var(--clinic-radius-lg);
+    }
 }

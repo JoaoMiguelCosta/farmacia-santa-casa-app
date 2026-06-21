@@ -1,11 +1,23 @@
 .toolbar {
     display: grid;
     gap: 0.9rem;
+
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
     padding: clamp(0.9rem, 2vw, 1.05rem);
+
     border: 1px solid var(--clinic-border);
     border-radius: var(--clinic-radius-xl);
+
     background: var(--clinic-surface);
+
     box-shadow: var(--clinic-shadow-soft);
+}
+
+.toolbar > * {
+    min-width: 0;
+    max-width: 100%;
 }
 
 .topBar {
@@ -13,29 +25,45 @@
     align-items: center;
     justify-content: space-between;
     gap: 1rem;
+
+    min-width: 0;
+    max-width: 100%;
 }
 
 .tabs {
     display: inline-flex;
     flex-wrap: wrap;
     gap: 0.38rem;
+
     width: fit-content;
+    min-width: 0;
+    max-width: 100%;
     padding: 0.28rem;
+
     border: 1px solid var(--clinic-border);
     border-radius: 999px;
+
     background: var(--clinic-mist);
 }
 
 .tabButton,
 .filterButton,
 .clearButton {
-    min-height: 2.35rem;
+    min-width: 0;
+    max-width: 100%;
+    min-height: 2.75rem;
     padding: 0.62rem 0.9rem;
+
     border-radius: 999px;
+
     font: inherit;
     font-size: var(--clinic-font-size-sm);
     font-weight: 850;
+    line-height: 1.15;
+    white-space: normal;
+
     cursor: pointer;
+
     transition:
         transform var(--clinic-transition),
         border-color var(--clinic-transition),
@@ -47,14 +75,17 @@
 
 .tabButton {
     border: 1px solid transparent;
+
     background: transparent;
     color: var(--clinic-green-700);
 }
 
 .tabButtonActive {
     border-color: var(--clinic-green-700);
+
     background: var(--clinic-green-700);
     color: var(--clinic-white);
+
     box-shadow: var(--clinic-shadow-soft);
 }
 
@@ -62,21 +93,38 @@
     display: inline-flex;
     align-items: center;
     gap: 0.55rem;
-    min-height: 2.35rem;
+
+    flex: 0 1 auto;
+
+    min-width: 0;
+    max-width: 100%;
+    min-height: 2.75rem;
     padding: 0.55rem 0.8rem;
+
     border: 1px solid var(--clinic-border);
     border-radius: 999px;
+
     background: var(--clinic-white);
+}
+
+.meta span,
+.meta strong {
+    max-width: 100%;
+
+    overflow-wrap: anywhere;
 }
 
 .meta span {
     color: var(--clinic-muted);
+
     font-size: var(--clinic-font-size-xs);
     font-weight: 800;
+    line-height: 1.25;
 }
 
 .meta strong {
     color: var(--clinic-ink-soft);
+
     font-size: var(--clinic-font-size-md);
     font-weight: 950;
     line-height: 1;
@@ -85,38 +133,60 @@
 .filters {
     display: grid;
     grid-template-columns:
-        minmax(18rem, 1fr) minmax(9rem, 0.46fr) minmax(9rem, 0.46fr) auto;
+        minmax(16rem, 1fr)
+        minmax(8.5rem, 0.46fr)
+        minmax(8.5rem, 0.46fr)
+        auto;
     align-items: end;
     gap: 0.68rem;
+
+    width: 100%;
     min-width: 0;
+    max-width: 100%;
+}
+
+.filters > * {
+    min-width: 0;
+    max-width: 100%;
 }
 
 .filterField {
     display: grid;
     gap: 0.36rem;
+
     min-width: 0;
+    max-width: 100%;
 }
 
 .filterField span {
+    max-width: 100%;
+
     color: var(--clinic-muted);
+
     font-size: var(--clinic-font-size-xs);
     font-weight: 850;
     letter-spacing: 0.06em;
     line-height: 1.25;
     text-transform: uppercase;
+    overflow-wrap: anywhere;
 }
 
 .filterField input,
 .filterField select {
-    min-height: 2.38rem;
-    inline-size: 100%;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    min-height: 2.75rem;
     padding: 0.65rem 0.85rem;
+
     border: 1px solid var(--clinic-border);
     border-radius: 999px;
+
     background: var(--clinic-white);
     color: var(--clinic-ink);
+
     font: inherit;
-    font-size: var(--clinic-font-size-sm);
+    font-size: max(1rem, var(--clinic-font-size-sm));
 }
 
 .filterField input::placeholder {
@@ -126,48 +196,37 @@
 .filterField input:focus,
 .filterField select:focus {
     outline: none;
+
     border-color: var(--clinic-border-strong);
-    box-shadow: 0 0 0 3px rgba(31, 95, 81, 0.16);
+
+    box-shadow:
+        0 0 0 3px rgba(31, 95, 81, 0.16);
 }
 
 .filterActions {
     display: flex;
+    align-items: center;
+    flex-wrap: wrap;
     gap: 0.5rem;
+
+    min-width: 0;
+    max-width: 100%;
 }
 
 .filterButton {
     border: 1px solid var(--clinic-green-700);
+
     background: var(--clinic-green-700);
     color: var(--clinic-white);
+
     box-shadow: var(--clinic-shadow-soft);
 }
 
 .clearButton {
     border: 1px solid var(--clinic-border);
+
     background: var(--clinic-white);
     color: var(--clinic-green-700);
-}
-
-.tabButton:hover,
-.filterButton:hover,
-.clearButton:hover {
-    transform: translateY(-1px);
-    border-color: var(--clinic-border-strong);
-    box-shadow: var(--clinic-shadow-soft);
-}
-
-.tabButton:hover {
-    background: var(--clinic-white);
-}
-
-.tabButtonActive:hover,
-.filterButton:hover {
-    background: var(--clinic-green-800);
-    color: var(--clinic-white);
-}
-
-.clearButton:hover {
-    background: var(--clinic-mist);
 }
 
 .tabButton:focus-visible,
@@ -183,18 +242,50 @@
 .filterField input:disabled,
 .filterField select:disabled {
     cursor: not-allowed;
+
     opacity: 0.58;
     transform: none;
     box-shadow: none;
 }
 
+@media (hover: hover) and (pointer: fine) {
+    .tabButton:hover:not(:disabled),
+    .filterButton:hover:not(:disabled),
+    .clearButton:hover:not(:disabled) {
+        transform: translateY(-1px);
+
+        border-color: var(--clinic-border-strong);
+
+        box-shadow: var(--clinic-shadow-soft);
+    }
+
+    .tabButton:hover:not(:disabled) {
+        background: var(--clinic-white);
+    }
+
+    .tabButtonActive:hover:not(:disabled),
+    .filterButton:hover:not(:disabled) {
+        background: var(--clinic-green-800);
+        color: var(--clinic-white);
+    }
+
+    .clearButton:hover:not(:disabled) {
+        background: var(--clinic-mist);
+    }
+}
+
 @media (max-width: 1120px) {
     .filters {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
     }
 
     .filterActions {
         grid-column: 1 / -1;
+    }
+
+    .filterActions > button {
+        flex: 1 1 10rem;
     }
 }
 
@@ -211,7 +302,9 @@
 
     .tabs {
         display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+
         border-radius: var(--clinic-radius-lg);
     }
 
@@ -221,22 +314,49 @@
 
     .meta {
         justify-content: space-between;
+
         border-radius: var(--clinic-radius-lg);
     }
 }
 
 @media (max-width: 640px) {
+    .toolbar {
+        padding: 0.85rem;
+
+        border-radius: var(--clinic-radius-lg);
+    }
+
     .filters {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
     }
 
     .filterActions {
         display: grid;
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
     }
 
     .filterButton,
     .clearButton {
         width: 100%;
+    }
+}
+
+@media (max-width: 380px) {
+    .toolbar {
+        padding: 0.75rem;
+
+        border-radius: var(--clinic-radius-md);
+    }
+
+    .tabs {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .tabButton,
+    .filterButton,
+    .clearButton {
+        transition: none;
     }
 }

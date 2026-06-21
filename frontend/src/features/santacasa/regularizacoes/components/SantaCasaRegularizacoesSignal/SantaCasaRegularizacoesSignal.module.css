@@ -1,14 +1,23 @@
-/* src/features/santacasa/regularizacoes/components/SantaCasaRegularizacoesSignal/SantaCasaRegularizacoesSignal.module.css */
-
 .section {
     display: grid;
     gap: clamp(1rem, 2vw, 1.25rem);
-    inline-size: 100%;
+
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
     padding: clamp(1rem, 2.5vw, 1.35rem);
+
     border: 1px solid var(--clinic-border);
     border-radius: var(--clinic-radius-2xl);
+
     background: var(--clinic-surface);
+
     box-shadow: var(--clinic-shadow-soft);
+}
+
+.section > * {
+    min-width: 0;
+    max-width: 100%;
 }
 
 .header {
@@ -16,17 +25,44 @@
     align-items: flex-start;
     justify-content: space-between;
     gap: 1rem;
+
+    min-width: 0;
+    max-width: 100%;
+}
+
+.header > * {
+    min-width: 0;
+    max-width: 100%;
+}
+
+.header > button {
+    flex: 0 0 auto;
+    min-height: 2.75rem;
+
+    white-space: normal;
 }
 
 .heading {
     display: grid;
     gap: 0.34rem;
+
     min-width: 0;
+    max-width: 100%;
+}
+
+.eyebrow,
+.title,
+.description {
+    max-width: 100%;
+
+    overflow-wrap: anywhere;
 }
 
 .eyebrow {
     width: fit-content;
+
     color: var(--clinic-muted);
+
     font-size: var(--clinic-font-size-xs);
     font-weight: 850;
     letter-spacing: 0.08em;
@@ -36,7 +72,9 @@
 
 .title {
     margin: 0;
+
     color: var(--clinic-ink);
+
     font-size: clamp(1.45rem, 2vw, 1.85rem);
     font-weight: 900;
     letter-spacing: -0.025em;
@@ -44,30 +82,44 @@
 }
 
 .description {
-    max-width: 70ch;
     margin: 0;
+
     color: var(--clinic-muted-strong);
+
     font-size: var(--clinic-font-size-md);
     font-weight: 500;
     line-height: var(--clinic-line-height-base);
 }
 
-
 .grid {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
     gap: 0.8rem;
+
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+}
+
+.grid > * {
+    min-width: 0;
+    max-width: 100%;
 }
 
 .metric {
     display: grid;
     align-content: center;
     gap: 0.42rem;
+
     min-width: 0;
+    max-width: 100%;
     min-height: 6.4rem;
     padding: clamp(0.9rem, 2vw, 1rem);
+
     border: 1px solid var(--clinic-border);
     border-radius: var(--clinic-radius-xl);
+
     background: var(--clinic-mist);
 }
 
@@ -77,40 +129,59 @@
 
 .metricSuccess {
     border-color: rgba(37, 115, 90, 0.24);
+
     background: rgba(37, 115, 90, 0.08);
 }
 
 .metricDate {
     border-color: var(--clinic-border);
+
     background: var(--clinic-white);
 }
 
-.metric>span {
+.metric > span {
+    max-width: 100%;
+
     color: var(--clinic-muted);
+
     font-size: var(--clinic-font-size-xs);
     font-weight: 800;
     line-height: 1.25;
+    overflow-wrap: anywhere;
 }
 
-.metricPrimary>span,
-.metricSuccess>span {
+.metricPrimary > span,
+.metricSuccess > span {
     color: var(--clinic-muted-strong);
+
     font-weight: 850;
 }
 
 .metricValue {
     display: inline-flex;
-    flex-wrap: wrap;
     align-items: baseline;
+    flex-wrap: wrap;
     gap: 0.34rem;
+
     min-width: 0;
-    overflow-wrap: anywhere;
+    max-width: 100%;
+
     color: var(--clinic-green-700);
+
     line-height: 1;
+    overflow-wrap: anywhere;
 }
 
-.metricValue>span {
+.metricValue > span,
+.metricValue small {
+    max-width: 100%;
+
+    overflow-wrap: anywhere;
+}
+
+.metricValue > span {
     color: inherit;
+
     font-size: clamp(1.45rem, 2.4vw, 1.9rem);
     font-weight: 950;
     letter-spacing: -0.04em;
@@ -119,17 +190,18 @@
 
 .metricValue small {
     color: var(--clinic-muted-strong);
+
     font-size: var(--clinic-font-size-sm);
     font-weight: 850;
     letter-spacing: -0.01em;
-    line-height: 1;
+    line-height: 1.2;
 }
 
 .metricValueMuted {
     color: var(--clinic-ink-soft);
 }
 
-.metricValueMuted>span {
+.metricValueMuted > span {
     font-size: clamp(1rem, 1.5vw, 1.18rem);
     font-weight: 900;
     letter-spacing: -0.02em;
@@ -140,10 +212,32 @@
     display: grid;
     justify-items: start;
     gap: 0.55rem;
+
+    min-width: 0;
+    max-width: 100%;
+}
+
+.state > * {
+    min-width: 0;
+    max-width: 100%;
+}
+
+.state > button {
+    min-height: 2.75rem;
+
+    white-space: normal;
+}
+
+.stateTitle,
+.stateDescription {
+    max-width: 100%;
+
+    overflow-wrap: anywhere;
 }
 
 .stateTitle {
     color: var(--clinic-ink);
+
     font-size: clamp(1.45rem, 2vw, 1.85rem);
     font-weight: 900;
     letter-spacing: -0.025em;
@@ -151,9 +245,10 @@
 }
 
 .stateDescription {
-    max-width: 70ch;
     margin: 0;
+
     color: var(--clinic-muted-strong);
+
     font-size: var(--clinic-font-size-md);
     font-weight: 500;
     line-height: var(--clinic-line-height-base);
@@ -170,10 +265,30 @@
     }
 
     .grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
     }
 
     .metric {
-        min-height: auto;
+        min-height: 0;
+    }
+}
+
+@media (max-width: 520px) {
+    .section {
+        padding: 0.9rem;
+
+        border-radius: var(--clinic-radius-xl);
+    }
+
+    .state > button {
+        width: 100%;
+    }
+}
+
+@media (max-width: 360px) {
+    .section {
+        padding: 0.8rem;
+
+        border-radius: var(--clinic-radius-lg);
     }
 }
