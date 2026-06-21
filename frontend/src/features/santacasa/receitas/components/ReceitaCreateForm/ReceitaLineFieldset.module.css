@@ -2,7 +2,9 @@
     display: grid;
     gap: clamp(0.9rem, 2vw, 1.05rem);
 
+    width: 100%;
     min-width: 0;
+    max-width: 100%;
     margin: 0;
     padding: clamp(1rem, 2.2vw, 1.2rem);
 
@@ -12,22 +14,37 @@
     border-radius: var(--clinic-radius-lg);
 
     background:
-        radial-gradient(circle at 96% 0%,
+        radial-gradient(
+            circle at 96% 0%,
             var(--operation-accent-softer, rgba(8, 112, 92, 0.14)),
-            transparent 12rem),
-        radial-gradient(circle at 0% 100%,
+            transparent 12rem
+        ),
+        radial-gradient(
+            circle at 0% 100%,
             var(--operation-accent-softer, rgba(8, 112, 92, 0.09)),
-            transparent 10rem),
-        var(--operation-panel-background,
-            linear-gradient(135deg,
+            transparent 10rem
+        ),
+        var(
+            --operation-panel-background,
+            linear-gradient(
+                135deg,
                 rgba(255, 255, 255, 0.98),
-                rgba(233, 248, 242, 0.93)));
+                rgba(233, 248, 242, 0.93)
+            )
+        );
 
     box-shadow:
-        var(--operation-panel-shadow,
-            0 0.8rem 1.8rem rgba(6, 77, 64, 0.07)),
+        var(
+            --operation-panel-shadow,
+            0 0.8rem 1.8rem rgba(6, 77, 64, 0.07)
+        ),
         inset 4px 0 0 var(--operation-accent-softer, rgba(8, 112, 92, 0.14)),
         inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+.line > * {
+    min-width: 0;
+    max-width: 100%;
 }
 
 .line legend {
@@ -44,17 +61,28 @@
     font-size: 0.7rem;
     font-weight: 900;
     letter-spacing: 0.1em;
-    line-height: 1;
+    line-height: 1.2;
+    text-align: center;
     text-transform: uppercase;
+    overflow-wrap: anywhere;
 }
 
 .lineGrid {
     display: grid;
-    grid-template-columns: minmax(16rem, 1.5fr) minmax(8rem, 0.5fr) minmax(11rem, 0.75fr);
+    grid-template-columns:
+        minmax(0, 1.5fr)
+        minmax(8rem, 0.5fr)
+        minmax(10rem, 0.75fr);
     gap: clamp(0.85rem, 2vw, 1.05rem);
 
     width: 100%;
     min-width: 0;
+    max-width: 100%;
+}
+
+.lineGrid > * {
+    min-width: 0;
+    max-width: 100%;
 }
 
 .lineActions {
@@ -63,31 +91,45 @@
     justify-content: flex-end;
 
     min-width: 0;
+    max-width: 100%;
     padding-top: 0.1rem;
+}
+
+.lineActions > button {
+    min-width: 0;
+    max-width: 100%;
 }
 
 @media (max-width: 980px) {
     .lineGrid {
-        grid-template-columns: minmax(0, 1fr) minmax(8rem, 0.45fr);
+        grid-template-columns:
+            minmax(0, 1fr)
+            minmax(8rem, 0.45fr);
     }
 
-    .lineGrid> :first-child {
+    .lineGrid > :first-child {
         grid-column: 1 / -1;
     }
 }
 
 @media (max-width: 720px) {
     .lineGrid {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
     }
 
-    .lineGrid> :first-child {
+    .lineGrid > :first-child {
         grid-column: auto;
     }
 }
 
 @media (max-width: 560px) {
     .line {
+        padding: 0.9rem;
+
+        border-radius: var(--clinic-radius-md);
+    }
+
+    .line legend {
         border-radius: var(--clinic-radius-md);
     }
 
@@ -95,7 +137,13 @@
         justify-content: stretch;
     }
 
-    .lineActions>button {
+    .lineActions > button {
         width: 100%;
+    }
+}
+
+@media (max-width: 360px) {
+    .line {
+        padding: 0.8rem;
     }
 }
