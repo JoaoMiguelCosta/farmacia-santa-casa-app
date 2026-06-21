@@ -2,6 +2,12 @@
     display: grid;
     gap: clamp(1.25rem, 2.5vw, 2rem);
 
-    width: 100%;
     min-width: 0;
+    inline-size: 100%;
+    max-inline-size: 100%;
+}
+
+.page > div {
+    min-width: 0;
+    max-inline-size: 100%;
 }

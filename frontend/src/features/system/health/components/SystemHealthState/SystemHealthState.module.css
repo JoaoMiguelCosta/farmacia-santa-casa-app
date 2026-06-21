@@ -3,6 +3,8 @@
     justify-items: start;
     gap: 0.55rem;
 
+    min-width: 0;
+    max-inline-size: 100%;
     padding: clamp(1rem, 2.5vw, 1.35rem);
 
     border: 1px solid var(--clinic-border);
@@ -11,6 +13,13 @@
     background: var(--clinic-surface);
 
     box-shadow: var(--clinic-shadow-soft);
+}
+
+.stateTitle,
+.stateDescription {
+    min-width: 0;
+    max-inline-size: 100%;
+    overflow-wrap: anywhere;
 }
 
 .stateTitle {

@@ -3,6 +3,7 @@
     gap: clamp(1rem, 2vw, 1.25rem);
 
     min-width: 0;
+    max-inline-size: 100%;
     padding: clamp(1rem, 2.5vw, 1.35rem);
 
     border: 1px solid var(--clinic-border);
@@ -20,6 +21,7 @@
     gap: 1rem;
 
     min-width: 0;
+    max-inline-size: 100%;
 }
 
 .heading {
@@ -27,6 +29,15 @@
     gap: 0.35rem;
 
     min-width: 0;
+    max-inline-size: 100%;
+}
+
+.title,
+.description,
+.field span {
+    min-width: 0;
+    max-inline-size: 100%;
+    overflow-wrap: anywhere;
 }
 
 .title {
@@ -53,19 +64,25 @@
 
 .headerActions {
     display: flex;
+    flex: 0 1 auto;
     flex-wrap: wrap;
     justify-content: flex-end;
     gap: 0.55rem;
 
-    flex: 0 0 auto;
+    min-width: 0;
+    max-inline-size: 100%;
 }
 
 .filters {
     display: grid;
-    grid-template-columns: minmax(16rem, 1.5fr) minmax(10rem, 0.75fr) minmax(10rem, 0.75fr);
+    grid-template-columns:
+        minmax(0, 1.5fr)
+        minmax(0, 0.75fr)
+        minmax(0, 0.75fr);
     gap: 0.85rem;
 
     min-width: 0;
+    max-inline-size: 100%;
 }
 
 .field {
@@ -73,6 +90,7 @@
     gap: 0.4rem;
 
     min-width: 0;
+    max-inline-size: 100%;
 }
 
 .field span {
@@ -81,14 +99,16 @@
     font-size: 0.72rem;
     font-weight: 850;
     letter-spacing: 0.08em;
-    line-height: 1;
+    line-height: 1.25;
     text-transform: uppercase;
 }
 
 .field input,
 .field select {
-    width: 100%;
-    min-height: 2.65rem;
+    min-width: 0;
+    min-height: 2.75rem;
+    inline-size: 100%;
+    max-inline-size: 100%;
     padding: 0.72rem 0.9rem;
 
     border: 1px solid var(--clinic-border);
@@ -115,11 +135,13 @@
 .field input:focus,
 .field select:focus {
     outline: none;
+
     border-color: rgba(31, 95, 81, 0.36);
 
     background: var(--clinic-surface);
 
-    box-shadow: 0 0 0 3px rgba(31, 95, 81, 0.14);
+    box-shadow:
+        0 0 0 3px rgba(31, 95, 81, 0.14);
 }
 
 .field input:disabled,
@@ -135,16 +157,22 @@
     }
 
     .headerActions {
-        width: 100%;
         justify-content: stretch;
+
+        inline-size: 100%;
     }
 
     .headerActions > * {
-        flex: 1;
+        flex: 1 1 0;
     }
 
     .filters {
         grid-template-columns: 1fr;
+    }
+
+    .field input,
+    .field select {
+        font-size: 1rem;
     }
 }
 
@@ -154,7 +182,8 @@
     }
 
     .headerActions > * {
-        width: 100%;
         flex: none;
+
+        inline-size: 100%;
     }
 }

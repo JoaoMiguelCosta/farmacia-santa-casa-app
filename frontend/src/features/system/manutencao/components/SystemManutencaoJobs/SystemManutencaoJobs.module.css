@@ -2,17 +2,23 @@
     display: grid;
     gap: clamp(1rem, 2vw, 1.35rem);
 
-    width: 100%;
     min-width: 0;
+    inline-size: 100%;
+    max-inline-size: 100%;
 }
 
-.header {
+.header,
+.jobHeader {
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
     gap: 1rem;
 
     min-width: 0;
+    max-inline-size: 100%;
+}
+
+.header {
     padding: clamp(1rem, 2vw, 1.2rem);
 
     border: 1px solid var(--clinic-border);
@@ -23,11 +29,34 @@
     box-shadow: var(--clinic-shadow-soft);
 }
 
-.heading {
+.heading,
+.jobIdentity {
     display: grid;
-    gap: 0.38rem;
 
     min-width: 0;
+    max-inline-size: 100%;
+}
+
+.heading {
+    gap: 0.38rem;
+}
+
+.jobIdentity {
+    gap: 0.34rem;
+}
+
+.title,
+.description,
+.jobEyebrow,
+.jobTitle,
+.jobDescription,
+.warning,
+.runHint,
+.stateTitle,
+.stateDescription {
+    min-width: 0;
+    max-inline-size: 100%;
+    overflow-wrap: anywhere;
 }
 
 .title {
@@ -57,6 +86,7 @@
     gap: clamp(0.95rem, 2vw, 1.15rem);
 
     min-width: 0;
+    max-inline-size: 100%;
 }
 
 .job {
@@ -64,6 +94,7 @@
     gap: 0.95rem;
 
     min-width: 0;
+    max-inline-size: 100%;
     padding: clamp(1rem, 2vw, 1.25rem);
 
     border: 1px solid var(--clinic-border);
@@ -75,29 +106,13 @@
     box-shadow: var(--clinic-shadow-soft);
 }
 
-.jobHeader {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 1rem;
-
-    min-width: 0;
-}
-
-.jobIdentity {
-    display: grid;
-    gap: 0.34rem;
-
-    min-width: 0;
-}
-
 .jobEyebrow {
     color: var(--clinic-green-700);
 
     font-size: 0.72rem;
     font-weight: 850;
     letter-spacing: 0.09em;
-    line-height: 1;
+    line-height: 1.25;
     text-transform: uppercase;
 }
 
@@ -125,13 +140,17 @@
 
 .risk {
     display: inline-flex;
+    flex: 0 1 auto;
     align-items: center;
     justify-content: center;
 
-    flex: 0 0 auto;
-
+    min-width: 0;
     min-height: 2rem;
+    max-inline-size: 100%;
     padding: 0.42rem 0.68rem;
+
+    overflow-wrap: anywhere;
+    text-align: center;
 
     border: 1px solid rgba(161, 92, 7, 0.22);
     border-radius: 999px;
@@ -141,8 +160,7 @@
 
     font-size: 0.78rem;
     font-weight: 850;
-    line-height: 1;
-    white-space: nowrap;
+    line-height: 1.25;
 }
 
 .warning {
@@ -169,6 +187,7 @@
     gap: 0.85rem;
 
     min-width: 0;
+    max-inline-size: 100%;
     padding: 0.9rem;
 
     border: 1px solid var(--clinic-border);
@@ -182,6 +201,16 @@
     gap: 0.42rem;
 
     min-width: 0;
+    max-inline-size: 100%;
+}
+
+.optionField span,
+.optionField small,
+.checkboxField strong,
+.checkboxField small {
+    min-width: 0;
+    max-inline-size: 100%;
+    overflow-wrap: anywhere;
 }
 
 .optionField span {
@@ -190,13 +219,15 @@
     font-size: 0.72rem;
     font-weight: 850;
     letter-spacing: 0.08em;
-    line-height: 1;
+    line-height: 1.25;
     text-transform: uppercase;
 }
 
 .optionField input {
-    width: min(100%, 16rem);
-    min-height: 2.65rem;
+    min-width: 0;
+    min-height: 2.75rem;
+    inline-size: min(100%, 16rem);
+    max-inline-size: 100%;
     padding: 0.72rem 0.95rem;
 
     border: 1px solid var(--clinic-border);
@@ -224,9 +255,11 @@
     outline: none;
 
     border-color: rgba(31, 95, 81, 0.36);
+
     background: var(--clinic-surface);
 
-    box-shadow: 0 0 0 3px rgba(31, 95, 81, 0.14);
+    box-shadow:
+        0 0 0 3px rgba(31, 95, 81, 0.14);
 }
 
 .optionField input:disabled {
@@ -249,15 +282,18 @@
     align-items: flex-start;
     gap: 0.65rem;
 
+    min-width: 0;
+    max-inline-size: 100%;
+
     color: var(--clinic-ink-soft);
 }
 
 .checkboxField input {
     flex: 0 0 auto;
 
-    width: 1rem;
-    height: 1rem;
-    margin-top: 0.2rem;
+    width: 1.15rem;
+    height: 1.15rem;
+    margin-top: 0.16rem;
 
     accent-color: var(--clinic-green-700);
 }
@@ -267,6 +303,7 @@
     gap: 0.2rem;
 
     min-width: 0;
+    max-inline-size: 100%;
 }
 
 .checkboxField strong {
@@ -282,6 +319,7 @@
     gap: 0.6rem;
 
     min-width: 0;
+    max-inline-size: 100%;
 }
 
 .runHint {
@@ -294,6 +332,7 @@
     gap: 0.55rem;
 
     min-width: 0;
+    max-inline-size: 100%;
     padding: clamp(1rem, 2vw, 1.25rem);
 
     border: 1px solid var(--clinic-border);
@@ -322,15 +361,16 @@
 }
 
 @media (max-width: 760px) {
-
     .header,
     .jobHeader {
         align-items: stretch;
         flex-direction: column;
     }
 
-    .header > button {
-        width: 100%;
+    .header > button,
+    .jobActions > *,
+    .state > button {
+        inline-size: 100%;
     }
 
     .jobActions {
@@ -339,6 +379,11 @@
     }
 
     .optionField input {
-        width: 100%;
+        inline-size: 100%;
+        font-size: 1rem;
+    }
+
+    .risk {
+        inline-size: fit-content;
     }
 }

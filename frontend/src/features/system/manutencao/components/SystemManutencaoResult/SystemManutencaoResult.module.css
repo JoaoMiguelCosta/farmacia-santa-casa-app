@@ -2,8 +2,9 @@
     display: grid;
     gap: clamp(1rem, 2vw, 1.35rem);
 
-    width: 100%;
     min-width: 0;
+    inline-size: 100%;
+    max-inline-size: 100%;
     padding: clamp(1rem, 2.5vw, 1.35rem);
 
     border: 1px solid var(--clinic-border);
@@ -22,6 +23,7 @@
     gap: 1rem;
 
     min-width: 0;
+    max-inline-size: 100%;
 }
 
 .heading {
@@ -29,6 +31,19 @@
     gap: 0.35rem;
 
     min-width: 0;
+    max-inline-size: 100%;
+}
+
+.title,
+.description,
+.resultSectionTitle,
+.resultRow dt,
+.resultRow dd,
+.stateTitle,
+.stateDescription {
+    min-width: 0;
+    max-inline-size: 100%;
+    overflow-wrap: anywhere;
 }
 
 .title {
@@ -55,31 +70,35 @@
 
 .badges {
     display: flex;
-    flex: 0 0 auto;
+    flex: 0 1 auto;
     flex-wrap: wrap;
     justify-content: flex-end;
     gap: 0.55rem;
 
     min-width: 0;
+    max-inline-size: 100%;
 }
 
 .badge,
 .badgeStrong {
     display: inline-flex;
+    flex: 0 1 auto;
     align-items: center;
     justify-content: center;
 
-    flex: 0 0 auto;
-
+    min-width: 0;
     min-height: 2rem;
+    max-inline-size: 100%;
     padding: 0.42rem 0.72rem;
+
+    overflow-wrap: anywhere;
+    text-align: center;
 
     border-radius: 999px;
 
     font-size: 0.78rem;
     font-weight: 850;
-    line-height: 1;
-    white-space: nowrap;
+    line-height: 1.25;
 }
 
 .badge {
@@ -101,6 +120,7 @@
     gap: 0.9rem;
 
     min-width: 0;
+    max-inline-size: 100%;
 }
 
 .resultSection {
@@ -108,6 +128,7 @@
     gap: 0.75rem;
 
     min-width: 0;
+    max-inline-size: 100%;
     padding: clamp(0.9rem, 2vw, 1rem);
 
     border: 1px solid var(--clinic-border);
@@ -129,12 +150,13 @@
 
 .resultRows {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
     gap: 0.7rem;
 
-    margin: 0;
-
     min-width: 0;
+    max-inline-size: 100%;
+    margin: 0;
 }
 
 .resultRow {
@@ -142,6 +164,7 @@
     gap: 0.25rem;
 
     min-width: 0;
+    max-inline-size: 100%;
     padding: 0.75rem;
 
     border: 1px solid var(--clinic-border);
@@ -156,15 +179,12 @@
     font-size: 0.72rem;
     font-weight: 850;
     letter-spacing: 0.08em;
-    line-height: 1;
+    line-height: 1.25;
     text-transform: uppercase;
 }
 
 .resultRow dd {
-    min-width: 0;
     margin: 0;
-
-    overflow-wrap: anywhere;
 
     color: var(--clinic-ink);
 
@@ -180,6 +200,7 @@
     gap: 0.55rem;
 
     min-width: 0;
+    max-inline-size: 100%;
     padding: clamp(1rem, 2.5vw, 1.35rem);
 
     border: 1px solid var(--clinic-border);
