@@ -1,5 +1,12 @@
 /* src/features/santacasa/shared/pedidos/components/SantaCasaPedidoDetails/SantaCasaPedidoDetails.module.css */
 
 .details {
+    width: 100%;
     min-width: 0;
+    max-width: 100%;
+}
+
+.details > * {
+    min-width: 0;
+    max-width: 100%;
 }

@@ -1,11 +1,17 @@
-/* src/features/santacasa/shared/pedidos/components/SantaCasaPedidoSummary/SantaCasaPedidoSummary.module.css */
+/* src/features/santacasa/shared/pedidos/components/SantaCasaPedidoCard/components/SantaCasaPedidoSummary/SantaCasaPedidoSummary.module.css */
 
 .summary {
     display: grid;
     grid-template-columns:
-        repeat(auto-fit, minmax(9rem, 1fr));
+        repeat(
+            auto-fit,
+            minmax(min(100%, 9rem), 1fr)
+        );
     gap: 0.45rem;
 
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
     margin: 0;
     padding: 0.55rem;
 
@@ -21,6 +27,7 @@
     gap: 0.16rem;
 
     min-width: 0;
+    max-width: 100%;
     min-height: 3.75rem;
     padding: 0.5rem 0.65rem;
 
@@ -30,6 +37,13 @@
 
 .dateItem {
     grid-column: span 2;
+}
+
+.summaryItem dt,
+.summaryItem dd {
+    max-width: 100%;
+
+    overflow-wrap: anywhere;
 }
 
 .summaryItem dt {
@@ -46,8 +60,6 @@
     min-width: 0;
     margin: 0;
 
-    overflow-wrap: anywhere;
-
     color: var(--clinic-ink-soft);
 
     font-size: 0.88rem;
@@ -63,6 +75,7 @@
 
 .summaryItem[data-tone="success"] {
     border-color: rgb(37 115 90 / 0.14);
+
     background: rgb(37 115 90 / 0.045);
 }
 
@@ -72,6 +85,7 @@
 
 .summaryItem[data-tone="danger"] {
     border-color: rgb(180 35 24 / 0.14);
+
     background: rgb(180 35 24 / 0.04);
 }
 
@@ -102,7 +116,6 @@
 }
 
 @media (max-width: 920px) {
-
     .summary[data-layout="pending-warning"],
     .summary[data-layout="validated-warning"] {
         grid-template-columns:
@@ -132,11 +145,10 @@
 }
 
 @media (max-width: 520px) {
-
     .summary,
     .summary[data-layout="pending-warning"],
     .summary[data-layout="validated-warning"] {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
     }
 
     .dateItem,
@@ -148,5 +160,11 @@
     .summaryItem {
         min-height: 0;
         padding: 0.62rem;
+    }
+}
+
+@media (max-width: 360px) {
+    .summary {
+        padding: 0.45rem;
     }
 }
