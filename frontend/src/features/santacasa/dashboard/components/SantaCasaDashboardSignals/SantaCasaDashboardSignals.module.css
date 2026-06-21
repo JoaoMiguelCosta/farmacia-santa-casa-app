@@ -4,9 +4,18 @@
 
     width: 100%;
     min-width: 0;
+    max-width: 100%;
+}
+
+.dashboardContent > * {
+    min-width: 0;
+    max-width: 100%;
 }
 
 .stateSection {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
     padding: clamp(1.25rem, 3vw, 1.6rem);
 
     border: 1px solid var(--clinic-border);
@@ -23,22 +32,28 @@
 .indicatorsHeader {
     width: 100%;
     min-width: 0;
-
+    max-width: 100%;
     padding: clamp(1.35rem, 3vw, 1.8rem);
 
     border: 1px solid var(--clinic-border);
     border-radius: var(--clinic-radius-2xl);
 
     background:
-        radial-gradient(circle at 10% 0%,
+        radial-gradient(
+            circle at 10% 0%,
             rgba(31, 95, 81, 0.085),
-            transparent 21rem),
-        radial-gradient(circle at 92% 0%,
+            transparent 21rem
+        ),
+        radial-gradient(
+            circle at 92% 0%,
             rgba(169, 120, 45, 0.075),
-            transparent 23rem),
-        linear-gradient(135deg,
+            transparent 23rem
+        ),
+        linear-gradient(
+            135deg,
             rgba(255, 255, 255, 0.99),
-            rgba(248, 250, 249, 0.96));
+            rgba(248, 250, 249, 0.96)
+        );
 
     box-shadow: var(--clinic-shadow-soft);
 }
@@ -52,11 +67,29 @@
     gap: 1.25rem;
 }
 
+.toolbar > button {
+    flex: 0 0 auto;
+
+    min-width: 0;
+    max-width: 100%;
+}
+
 .toolbarHeading {
     display: grid;
     gap: 0.55rem;
 
     min-width: 0;
+    max-width: 100%;
+}
+
+.toolbarTitle,
+.toolbarDescription,
+.indicatorsEyebrow,
+.indicatorsTitle,
+.indicatorsDescription {
+    max-width: 100%;
+
+    overflow-wrap: anywhere;
 }
 
 .toolbarTitle {
@@ -81,24 +114,42 @@
     line-height: 1.6;
 }
 
-
 /* Prioridades e último pedido */
 
 .overview {
     display: grid;
     grid-template-columns:
-        minmax(0, 1.55fr) minmax(17rem, 0.85fr);
+        minmax(0, 1.55fr)
+        minmax(17rem, 0.85fr);
     gap: clamp(1rem, 2vw, 1.25rem);
 
+    width: 100%;
     min-width: 0;
+    max-width: 100%;
+}
+
+.overview > * {
+    min-width: 0;
+    max-width: 100%;
 }
 
 .priorityGrid {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns:
+        repeat(
+            auto-fit,
+            minmax(min(100%, 16rem), 1fr)
+        );
     gap: 0.9rem;
 
+    width: 100%;
     min-width: 0;
+    max-width: 100%;
+}
+
+.priorityGrid > * {
+    min-width: 0;
+    max-width: 100%;
 }
 
 /* Indicadores */
@@ -107,7 +158,9 @@
     display: grid;
     gap: 1rem;
 
+    width: 100%;
     min-width: 0;
+    max-width: 100%;
 }
 
 .indicatorsHeader {
@@ -123,7 +176,7 @@
     width: fit-content;
     min-height: 1.9rem;
     margin: 0;
-    padding-inline: 0.75rem;
+    padding: 0.35rem 0.75rem;
 
     border: 1px solid rgba(31, 95, 81, 0.18);
     border-radius: 999px;
@@ -134,7 +187,8 @@
     font-size: var(--clinic-font-size-xs);
     font-weight: 750;
     letter-spacing: 0.08em;
-    line-height: 1;
+    line-height: 1.2;
+    text-align: center;
     text-transform: uppercase;
 }
 
@@ -162,17 +216,27 @@
 
 .groupGrid {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns:
+        repeat(
+            auto-fit,
+            minmax(min(100%, 20rem), 1fr)
+        );
     align-items: start;
     gap: clamp(1rem, 2vw, 1.2rem);
 
+    width: 100%;
     min-width: 0;
+    max-width: 100%;
 }
 
+.groupGrid > * {
+    min-width: 0;
+    max-width: 100%;
+}
 
 @media (max-width: 1020px) {
     .overview {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
     }
 }
 
@@ -185,16 +249,6 @@
     .toolbar > button {
         width: 100%;
     }
-
-    .groupGrid {
-        grid-template-columns: 1fr;
-    }
-}
-
-@media (max-width: 620px) {
-    .priorityGrid {
-        grid-template-columns: 1fr;
-    }
 }
 
 @media (max-width: 520px) {
@@ -202,31 +256,55 @@
         gap: 1.15rem;
     }
 
+    .stateSection {
+        padding: 1rem;
+
+        border-radius: var(--clinic-radius-lg);
+    }
+
     .toolbar,
     .indicatorsHeader {
-        padding: 1.2rem;
+        padding: 1.1rem;
 
-        border: 1px solid var(--clinic-border);
         border-radius: var(--clinic-radius-xl);
 
         background:
-            radial-gradient(circle at 15% 0%,
+            radial-gradient(
+                circle at 15% 0%,
                 rgba(31, 95, 81, 0.07),
-                transparent 15rem),
-            radial-gradient(circle at 95% 0%,
+                transparent 15rem
+            ),
+            radial-gradient(
+                circle at 95% 0%,
                 rgba(169, 120, 45, 0.06),
-                transparent 16rem),
+                transparent 16rem
+            ),
             var(--clinic-surface);
+    }
+
+    .indicatorsEyebrow {
+        border-radius: var(--clinic-radius-md);
     }
 
     .toolbarTitle,
     .indicatorsTitle {
-        font-size: clamp(1.6rem, 9vw, 1.95rem);
+        font-size: clamp(1.55rem, 8vw, 1.95rem);
     }
 
     .toolbarDescription,
     .indicatorsDescription {
         font-size: var(--clinic-font-size-sm);
         font-weight: 550;
+    }
+}
+
+@media (max-width: 360px) {
+    .dashboardContent {
+        gap: 1rem;
+    }
+
+    .toolbar,
+    .indicatorsHeader {
+        padding: 1rem;
     }
 }
