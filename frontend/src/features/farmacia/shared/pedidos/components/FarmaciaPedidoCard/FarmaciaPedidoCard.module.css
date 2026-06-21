@@ -1,23 +1,19 @@
-/* src/features/farmacia/shared/pedidos/components/FarmaciaPedidoCard/FarmaciaPedidoCard.module.css */
-
 .card {
     display: grid;
     gap: 0.8rem;
 
-    padding:
-        clamp(0.9rem, 1.8vw, 1.1rem);
+    min-width: 0;
+    inline-size: 100%;
+    max-inline-size: 100%;
+    padding: clamp(0.9rem, 1.8vw, 1.1rem);
 
     border: 1px solid var(--clinic-border);
-
     border-inline-start: 4px solid var(--clinic-border-strong);
-
-    border-radius:
-        var(--clinic-radius-lg);
+    border-radius: var(--clinic-radius-lg);
 
     background: var(--clinic-surface);
 
-    box-shadow:
-        var(--clinic-shadow-soft);
+    box-shadow: var(--clinic-shadow-soft);
 
     transition:
         border-color var(--clinic-transition),
@@ -27,33 +23,23 @@
 .card[data-compact="true"] {
     gap: 0.7rem;
 
-    padding:
-        clamp(0.85rem, 1.6vw, 1rem);
+    padding: clamp(0.85rem, 1.6vw, 1rem);
 }
 
 .card[data-status="PENDENTE"] {
-    border-inline-start-color:
-        var(--clinic-warning);
+    border-inline-start-color: var(--clinic-warning);
 }
 
 .card[data-status="VALIDADO"] {
-    border-inline-start-color:
-        var(--clinic-success);
+    border-inline-start-color: var(--clinic-success);
 }
 
 .card[data-status="REJEITADO"] {
-    border-inline-start-color:
-        var(--clinic-danger);
+    border-inline-start-color: var(--clinic-danger);
 }
 
 .card[data-has-warning="true"] {
-    border-inline-start-color:
-        var(--clinic-warning);
-}
-
-.card:hover {
-    border-color:
-        var(--clinic-border-strong);
+    border-inline-start-color: var(--clinic-warning);
 }
 
 .header {
@@ -61,16 +47,23 @@
     align-items: flex-start;
     justify-content: space-between;
     gap: 1rem;
+
+    min-width: 0;
 }
 
 .identity {
     display: grid;
     gap: 0.2rem;
+
     min-width: 0;
+    max-inline-size: 100%;
 }
 
 .eyebrow {
+    overflow-wrap: anywhere;
+
     color: var(--clinic-muted);
+
     font-size: 0.68rem;
     font-weight: 800;
     letter-spacing: 0.075em;
@@ -83,29 +76,36 @@
     flex-wrap: wrap;
     align-items: center;
     gap: 0.6rem;
+
+    min-width: 0;
+    max-inline-size: 100%;
 }
 
 .title {
+    min-width: 0;
     margin: 0;
+
+    overflow-wrap: anywhere;
 
     color: var(--clinic-ink);
 
-    font-size:
-        clamp(1.15rem, 1.8vw, 1.4rem);
-
-    line-height:
-        var(--clinic-line-height-tight);
+    font-size: clamp(1.15rem, 1.8vw, 1.4rem);
+    line-height: var(--clinic-line-height-tight);
 }
 
 .status {
     display: inline-flex;
     align-items: center;
 
+    min-width: 0;
     min-height: 1.75rem;
+    max-inline-size: 100%;
     padding: 0.28rem 0.58rem;
 
-    border: 1px solid var(--clinic-border);
+    overflow-wrap: anywhere;
+    text-align: center;
 
+    border: 1px solid var(--clinic-border);
     border-radius: 999px;
 
     background: var(--clinic-mist);
@@ -113,46 +113,34 @@
 
     font-size: 0.72rem;
     font-weight: 800;
-    line-height: 1;
+    line-height: 1.2;
 }
 
 .status[data-status="PENDENTE"] {
-    border-color:
-        rgba(161, 92, 7, 0.24);
+    border-color: rgba(161, 92, 7, 0.24);
 
-    background:
-        rgba(161, 92, 7, 0.09);
-
+    background: rgba(161, 92, 7, 0.09);
     color: var(--clinic-warning);
 }
 
 .status[data-status="VALIDADO"] {
-    border-color:
-        rgba(37, 115, 90, 0.24);
+    border-color: rgba(37, 115, 90, 0.24);
 
-    background:
-        rgba(37, 115, 90, 0.09);
-
+    background: rgba(37, 115, 90, 0.09);
     color: var(--clinic-success);
 }
 
 .status[data-status="REJEITADO"] {
-    border-color:
-        rgba(180, 35, 24, 0.22);
+    border-color: rgba(180, 35, 24, 0.22);
 
-    background:
-        rgba(180, 35, 24, 0.07);
-
+    background: rgba(180, 35, 24, 0.07);
     color: var(--clinic-danger);
 }
 
 .status[data-warning="true"] {
-    border-color:
-        rgba(161, 92, 7, 0.3);
+    border-color: rgba(161, 92, 7, 0.3);
 
-    background:
-        rgba(161, 92, 7, 0.09);
-
+    background: rgba(161, 92, 7, 0.09);
     color: var(--clinic-warning);
 }
 
@@ -160,19 +148,25 @@
     display: grid;
     gap: 0.25rem;
 
+    min-width: 0;
+    max-inline-size: 100%;
     padding: 0.75rem 0.85rem;
 
     border: 1px solid rgba(180, 35, 24, 0.18);
+    border-radius: var(--clinic-radius-md);
 
-    border-radius:
-        var(--clinic-radius-md);
+    background: rgba(180, 35, 24, 0.045);
+}
 
-    background:
-        rgba(180, 35, 24, 0.045);
+.closedReason span,
+.closedReason strong {
+    min-width: 0;
+    overflow-wrap: anywhere;
 }
 
 .closedReason span {
     color: var(--clinic-danger);
+
     font-size: 0.7rem;
     font-weight: 800;
     letter-spacing: 0.045em;
@@ -181,14 +175,27 @@
 
 .closedReason strong {
     color: var(--clinic-ink-soft);
+
     font-size: 0.88rem;
     line-height: 1.45;
 }
 
-@media (max-width: 620px) {
+@media (hover: hover) and (pointer: fine) {
+    .card:hover {
+        border-color: var(--clinic-border-strong);
+    }
+}
 
+@media (max-width: 620px) {
     .card,
     .card[data-compact="true"] {
         padding: 0.9rem;
+    }
+}
+
+@media (max-width: 380px) {
+    .titleRow {
+        align-items: flex-start;
+        flex-direction: column;
     }
 }

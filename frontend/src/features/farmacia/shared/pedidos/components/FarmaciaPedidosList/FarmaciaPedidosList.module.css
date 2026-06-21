@@ -1,7 +1,10 @@
 .section {
     display: grid;
     gap: 0.9rem;
+
+    min-width: 0;
     inline-size: 100%;
+    max-inline-size: 100%;
 }
 
 .header {
@@ -9,10 +12,16 @@
     align-items: center;
     justify-content: space-between;
     gap: 1.25rem;
+
+    min-width: 0;
+    max-inline-size: 100%;
     padding: clamp(0.95rem, 2vw, 1.15rem);
+
     border: 1px solid var(--clinic-border);
     border-radius: var(--clinic-radius-lg);
+
     background: var(--clinic-surface);
+
     box-shadow: var(--clinic-shadow-soft);
 }
 
@@ -23,12 +32,17 @@
 .heading {
     display: grid;
     gap: 0.3rem;
+
     min-width: 0;
 }
 
 .title {
     margin: 0;
+
+    overflow-wrap: anywhere;
+
     color: var(--clinic-ink);
+
     font-size: clamp(1.2rem, 2vw, 1.45rem);
     line-height: var(--clinic-line-height-tight);
 }
@@ -36,7 +50,11 @@
 .description {
     max-width: 68ch;
     margin: 0;
+
+    overflow-wrap: anywhere;
+
     color: var(--clinic-muted);
+
     font-size: var(--clinic-font-size-sm);
     line-height: 1.5;
 }
@@ -47,47 +65,75 @@
     align-items: center;
     justify-content: flex-end;
     gap: 0.7rem;
+
+    min-width: 0;
+    max-inline-size: 100%;
 }
 
 .count {
     display: flex;
     align-items: baseline;
+    justify-content: center;
     gap: 0.38rem;
-    min-height: 2.65rem;
+
+    min-width: 0;
+    min-height: 2.75rem;
+    max-inline-size: 100%;
     padding: 0.58rem 0.8rem;
+
     border: 1px solid rgba(161, 92, 7, 0.2);
     border-radius: var(--clinic-radius-md);
+
     background: rgba(161, 92, 7, 0.08);
     color: var(--clinic-warning);
-    white-space: nowrap;
+}
+
+.count strong,
+.count span {
+    overflow-wrap: anywhere;
 }
 
 .count strong {
+    flex: 0 0 auto;
+
     font-size: 1.1rem;
     line-height: 1;
 }
 
 .count span {
+    min-width: 0;
+
     font-size: var(--clinic-font-size-xs);
     font-weight: 750;
+    line-height: 1.35;
 }
 
 .controls {
+    min-width: 0;
+    max-inline-size: 100%;
     padding: 0.85rem;
+
     border: 1px solid var(--clinic-border);
     border-radius: var(--clinic-radius-lg);
+
     background: var(--clinic-surface);
+
     box-shadow: var(--clinic-shadow-soft);
 }
 
 .loadingStatus {
     margin: 0;
     padding: 0.55rem 0.75rem;
+
+    overflow-wrap: anywhere;
+
     border-inline-start: 3px solid var(--clinic-green-600);
     border-radius:
         0 var(--clinic-radius-sm) var(--clinic-radius-sm) 0;
+
     background: rgba(31, 95, 81, 0.06);
     color: var(--clinic-muted-strong);
+
     font-size: var(--clinic-font-size-xs);
     font-weight: 750;
 }
@@ -95,6 +141,10 @@
 .list {
     display: grid;
     gap: 0.85rem;
+
+    min-width: 0;
+    max-inline-size: 100%;
+
     transition: opacity var(--clinic-transition);
 }
 
@@ -111,6 +161,7 @@
 
     .tools {
         justify-content: space-between;
+        inline-size: 100%;
     }
 }
 
@@ -121,11 +172,17 @@
     }
 
     .count {
-        justify-content: center;
-        width: 100%;
+        inline-size: 100%;
     }
 
     .tools > button {
-        width: 100%;
+        inline-size: 100%;
+    }
+}
+
+@media (max-width: 380px) {
+    .header,
+    .controls {
+        padding: 0.8rem;
     }
 }
