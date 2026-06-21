@@ -3,16 +3,28 @@
     align-items: center;
     justify-content: space-between;
     gap: 1rem;
+
+    min-width: 0;
+    max-inline-size: 100%;
     padding: clamp(1rem, 2vw, 1.2rem);
+
     border: 1px solid var(--clinic-border);
     border-radius: var(--clinic-radius-xl);
+
     background: var(--clinic-surface);
+
     box-shadow: var(--clinic-shadow-soft);
 }
 
 .paginationInfo {
+    min-width: 0;
+    max-inline-size: 100%;
     margin: 0;
+
+    overflow-wrap: anywhere;
+
     color: var(--clinic-muted);
+
     font-size: var(--clinic-font-size-sm);
     font-weight: 750;
     line-height: var(--clinic-line-height-base);
@@ -20,22 +32,37 @@
 
 .paginationActions {
     display: flex;
+    flex: 0 0 auto;
     flex-wrap: wrap;
     justify-content: flex-end;
     gap: 0.55rem;
+
+    min-width: 0;
+    max-inline-size: 100%;
 }
 
 .paginationButton {
-    min-height: 2.45rem;
+    min-width: 0;
+    min-height: 2.75rem;
+    max-inline-size: 100%;
     padding: 0.65rem 0.95rem;
+
+    overflow-wrap: anywhere;
+    text-align: center;
+
     border: 1px solid var(--clinic-border);
     border-radius: 999px;
+
     background: var(--clinic-white);
     color: var(--clinic-green-700);
+
     font: inherit;
     font-size: var(--clinic-font-size-sm);
     font-weight: 800;
+    line-height: 1.25;
+
     cursor: pointer;
+
     transition:
         transform var(--clinic-transition),
         border-color var(--clinic-transition),
@@ -43,13 +70,6 @@
         color var(--clinic-transition),
         box-shadow var(--clinic-transition),
         opacity var(--clinic-transition);
-}
-
-.paginationButton:hover {
-    transform: translateY(-1px);
-    border-color: var(--clinic-border-strong);
-    background: var(--clinic-mist);
-    box-shadow: var(--clinic-shadow-soft);
 }
 
 .paginationButton:focus-visible {
@@ -64,6 +84,18 @@
     box-shadow: none;
 }
 
+@media (hover: hover) and (pointer: fine) {
+    .paginationButton:hover:not(:disabled) {
+        transform: translateY(-1px);
+
+        border-color: var(--clinic-border-strong);
+
+        background: var(--clinic-mist);
+
+        box-shadow: var(--clinic-shadow-soft);
+    }
+}
+
 @media (max-width: 760px) {
     .pagination {
         align-items: stretch;
@@ -72,20 +104,22 @@
 
     .paginationActions {
         justify-content: stretch;
+
+        inline-size: 100%;
     }
 
-    .paginationActions>* {
-        flex: 1;
+    .paginationButton {
+        flex: 1 1 0;
     }
 }
 
-@media (max-width: 640px) {
+@media (max-width: 420px) {
     .paginationActions {
         display: grid;
         grid-template-columns: 1fr;
     }
 
     .paginationButton {
-        width: 100%;
+        inline-size: 100%;
     }
 }

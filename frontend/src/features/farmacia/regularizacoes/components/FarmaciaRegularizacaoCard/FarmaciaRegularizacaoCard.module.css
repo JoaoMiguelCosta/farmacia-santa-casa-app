@@ -1,20 +1,23 @@
 .card {
     display: grid;
     gap: 1rem;
+
+    min-width: 0;
+    inline-size: 100%;
+    max-inline-size: 100%;
     padding: clamp(1rem, 2vw, 1.35rem);
+
     border: 1px solid var(--clinic-border);
     border-radius: var(--clinic-radius-2xl);
+
     background: var(--clinic-surface);
+
     box-shadow: var(--clinic-shadow-card);
+
     transition:
         border-color var(--clinic-transition),
         box-shadow var(--clinic-transition),
         transform var(--clinic-transition);
-}
-
-.card:hover {
-    transform: translateY(-1px);
-    box-shadow: var(--clinic-shadow-hover);
 }
 
 .card[data-status="PENDENTE"] {
@@ -34,143 +37,233 @@
     align-items: flex-start;
     justify-content: space-between;
     gap: 1rem;
+
+    min-width: 0;
+    max-inline-size: 100%;
 }
 
 .identity {
     display: grid;
     gap: 0.25rem;
+
     min-width: 0;
+    max-inline-size: 100%;
+}
+
+.eyebrow,
+.title {
+    min-width: 0;
+    max-inline-size: 100%;
+    overflow-wrap: anywhere;
 }
 
 .eyebrow {
     color: var(--clinic-muted-strong);
+
     font-size: var(--clinic-font-size-xs);
     font-weight: 800;
     letter-spacing: 0.07em;
+    line-height: 1.25;
     text-transform: uppercase;
 }
 
 .title {
     margin: 0;
-    overflow-wrap: anywhere;
+
     color: var(--clinic-ink);
+
     font-size: clamp(1.15rem, 2vw, 1.45rem);
     line-height: var(--clinic-line-height-tight);
 }
 
 .status {
-    flex: 0 0 auto;
+    display: inline-flex;
+    flex: 0 1 auto;
+    align-items: center;
+    justify-content: center;
+
+    min-width: 0;
+    min-height: 2rem;
+    max-inline-size: 100%;
     padding: 0.42rem 0.7rem;
+
+    overflow-wrap: anywhere;
+    text-align: center;
+
     border: 1px solid var(--clinic-border);
     border-radius: 999px;
+
     background: var(--clinic-mist);
     color: var(--clinic-muted-strong);
+
     font-size: var(--clinic-font-size-xs);
     font-weight: 850;
+    line-height: 1.25;
 }
 
 .status[data-status="PENDENTE"] {
     border-color: rgba(169, 120, 45, 0.32);
+
     background: rgba(169, 120, 45, 0.1);
     color: var(--clinic-warning);
 }
 
 .status[data-status="PARCIALMENTE_REGULARIZADO"] {
     border-color: rgba(35, 93, 115, 0.3);
+
     background: rgba(35, 93, 115, 0.09);
     color: var(--clinic-blue-700);
 }
 
 .status[data-status="REGULARIZADO"] {
     border-color: rgba(37, 115, 90, 0.3);
+
     background: rgba(37, 115, 90, 0.1);
     color: var(--clinic-success);
 }
 
 .summary {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr));
+    grid-template-columns:
+        repeat(
+            auto-fit,
+            minmax(min(100%, 10rem), 1fr)
+        );
     gap: 0.75rem;
+
+    min-width: 0;
+    max-inline-size: 100%;
     margin: 0;
 }
 
 .summaryItem {
     display: grid;
     gap: 0.25rem;
+
     min-width: 0;
+    max-inline-size: 100%;
     padding: 0.78rem;
+
     border: 1px solid var(--clinic-border);
     border-radius: var(--clinic-radius-lg);
+
     background: var(--clinic-mist);
+}
+
+.summaryItem dt,
+.summaryItem dd {
+    min-width: 0;
+    max-inline-size: 100%;
+    overflow-wrap: anywhere;
 }
 
 .summaryItem dt {
     color: var(--clinic-muted);
+
     font-size: var(--clinic-font-size-xs);
     font-weight: 750;
+    line-height: 1.35;
 }
 
 .summaryItem dd {
-    min-width: 0;
     margin: 0;
-    overflow-wrap: anywhere;
+
     color: var(--clinic-ink-soft);
+
     font-size: var(--clinic-font-size-sm);
     font-weight: 850;
+    line-height: 1.35;
 }
 
 .waitingRecipe {
     display: grid;
     gap: 0.3rem;
+
+    min-width: 0;
+    max-inline-size: 100%;
     padding: 0.85rem 0.95rem;
+
     border: 1px solid rgba(169, 120, 45, 0.28);
     border-radius: var(--clinic-radius-lg);
+
     background: var(--clinic-gold-soft);
     color: var(--clinic-warning);
 }
 
+.waitingRecipe strong,
+.waitingRecipe span {
+    min-width: 0;
+    max-inline-size: 100%;
+    overflow-wrap: anywhere;
+}
+
 .waitingRecipe strong {
     color: var(--clinic-warning);
+
     font-size: var(--clinic-font-size-xs);
     font-weight: 900;
     letter-spacing: 0.06em;
+    line-height: 1.3;
     text-transform: uppercase;
 }
 
 .waitingRecipe span {
     color: var(--clinic-muted-strong);
+
     font-size: var(--clinic-font-size-sm);
     line-height: var(--clinic-line-height-base);
 }
 
 .quantities {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
     gap: 0.75rem;
+
+    min-width: 0;
+    max-inline-size: 100%;
+    margin: 0;
 }
 
 .quantitiesHistory {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
 }
 
 .quantityBlock {
     display: grid;
     gap: 0.28rem;
+
+    min-width: 0;
+    max-inline-size: 100%;
     padding: 0.85rem;
+
     border: 1px solid var(--clinic-border);
     border-radius: var(--clinic-radius-lg);
+
     background: var(--clinic-white);
+}
+
+.quantityBlock dt,
+.quantityBlock dd {
+    min-width: 0;
+    max-inline-size: 100%;
+    overflow-wrap: anywhere;
 }
 
 .quantityBlock dt {
     color: var(--clinic-muted);
+
     font-size: var(--clinic-font-size-xs);
     font-weight: 750;
+    line-height: 1.35;
 }
 
 .quantityBlock dd {
     margin: 0;
+
     color: var(--clinic-green-700);
+
     font-size: 1.35rem;
     font-weight: 900;
     line-height: 1;
@@ -179,15 +272,30 @@
 .progressWrap {
     display: grid;
     gap: 0.45rem;
+
+    min-width: 0;
+    max-inline-size: 100%;
 }
 
 .progressHeader {
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;
-    gap: 1rem;
+    gap: 0.35rem 1rem;
+
+    min-width: 0;
+    max-inline-size: 100%;
+
     color: var(--clinic-muted-strong);
+
     font-size: var(--clinic-font-size-sm);
     font-weight: 800;
+}
+
+.progressHeader span,
+.progressHeader strong {
+    min-width: 0;
+    overflow-wrap: anywhere;
 }
 
 .progressHeader strong {
@@ -196,9 +304,14 @@
 
 .progressTrack {
     position: relative;
-    overflow: hidden;
+
+    min-width: 0;
     block-size: 0.65rem;
+    max-inline-size: 100%;
+    overflow: hidden;
+
     border-radius: 999px;
+
     background: var(--clinic-soft);
 }
 
@@ -206,9 +319,14 @@
     position: absolute;
     inset-block: 0;
     inset-inline-start: 0;
+
     inline-size: var(--progress-value, 0%);
+    max-inline-size: 100%;
+
     border-radius: inherit;
+
     background: var(--clinic-green-700);
+
     transition: inline-size var(--clinic-transition);
 }
 
@@ -227,32 +345,39 @@
 .actions {
     display: flex;
     justify-content: flex-start;
+
+    min-width: 0;
+    max-inline-size: 100%;
 }
 
 .detailsButton {
-    min-height: 2.5rem;
+    min-width: 0;
+    min-height: 2.75rem;
+    max-inline-size: 100%;
     padding: 0.68rem 1rem;
+
+    overflow-wrap: anywhere;
+    text-align: center;
+
     border: 1px solid var(--clinic-border);
     border-radius: 999px;
+
     background: var(--clinic-white);
     color: var(--clinic-green-700);
+
     font: inherit;
     font-size: var(--clinic-font-size-sm);
     font-weight: 850;
+    line-height: 1.25;
+
     cursor: pointer;
+
     transition:
         transform var(--clinic-transition),
         border-color var(--clinic-transition),
         background var(--clinic-transition),
         box-shadow var(--clinic-transition),
         opacity var(--clinic-transition);
-}
-
-.detailsButton:hover {
-    transform: translateY(-1px);
-    border-color: var(--clinic-border-strong);
-    background: var(--clinic-mist);
-    box-shadow: var(--clinic-shadow-soft);
 }
 
 .detailsButton:focus-visible {
@@ -270,34 +395,59 @@
 .details {
     display: grid;
     gap: 0.9rem;
+
+    min-width: 0;
+    max-inline-size: 100%;
     padding-top: 0.25rem;
 }
 
 .detailsTitle {
+    min-width: 0;
+    max-inline-size: 100%;
     margin: 0;
+
+    overflow-wrap: anywhere;
+
     color: var(--clinic-ink);
+
     font-size: var(--clinic-font-size-md);
 }
 
 .origins {
     display: grid;
     gap: 0.65rem;
+
+    min-width: 0;
+    max-inline-size: 100%;
+}
+
+.originList,
+.eventsList {
+    display: grid;
+
+    min-width: 0;
+    max-inline-size: 100%;
+    margin: 0;
+    padding: 0;
+
+    list-style: none;
 }
 
 .originList {
-    display: grid;
     gap: 0.65rem;
-    margin: 0;
-    padding: 0;
-    list-style: none;
 }
 
 .originItem {
     display: grid;
     gap: 0.65rem;
+
+    min-width: 0;
+    max-inline-size: 100%;
     padding: 0.85rem;
+
     border: 1px solid var(--clinic-border);
     border-radius: var(--clinic-radius-lg);
+
     background: var(--clinic-mist);
 }
 
@@ -306,104 +456,167 @@
     align-items: center;
     justify-content: space-between;
     gap: 0.75rem;
+
+    min-width: 0;
+    max-inline-size: 100%;
+}
+
+.originHeader strong,
+.originHeader span {
+    min-width: 0;
+    max-inline-size: 100%;
+    overflow-wrap: anywhere;
 }
 
 .originHeader strong {
     color: var(--clinic-ink);
+
     font-size: var(--clinic-font-size-sm);
+    line-height: 1.35;
 }
 
 .originHeader span {
-    flex: 0 0 auto;
+    display: inline-flex;
+    flex: 0 1 auto;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 1.9rem;
     padding: 0.28rem 0.55rem;
+
+    text-align: center;
+
     border: 1px solid var(--clinic-border);
     border-radius: 999px;
+
     background: var(--clinic-white);
     color: var(--clinic-muted-strong);
+
     font-size: var(--clinic-font-size-xs);
     font-weight: 800;
+    line-height: 1.25;
 }
 
 .originMetrics {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns:
+        repeat(4, minmax(0, 1fr));
     gap: 0.55rem;
+
+    min-width: 0;
+    max-inline-size: 100%;
     margin: 0;
 }
 
 .originMetrics div {
     display: grid;
     gap: 0.18rem;
+
     min-width: 0;
+    max-inline-size: 100%;
     padding: 0.55rem;
+
     border: 1px solid var(--clinic-border);
     border-radius: var(--clinic-radius-md);
+
     background: var(--clinic-white);
+}
+
+.originMetrics dt,
+.originMetrics dd {
+    min-width: 0;
+    max-inline-size: 100%;
+    overflow-wrap: anywhere;
 }
 
 .originMetrics dt {
     color: var(--clinic-muted);
+
     font-size: 0.72rem;
     font-weight: 750;
+    line-height: 1.35;
 }
 
 .originMetrics dd {
-    min-width: 0;
     margin: 0;
-    overflow-wrap: anywhere;
+
     color: var(--clinic-ink-soft);
+
     font-size: var(--clinic-font-size-sm);
     font-weight: 850;
+    line-height: 1.35;
 }
 
 .eventsList {
-    display: grid;
     gap: 0.75rem;
-    margin: 0;
-    padding: 0;
-    list-style: none;
 }
 
 .event {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-columns:
+        minmax(0, 1fr) auto;
     gap: 0.85rem;
+
+    min-width: 0;
+    max-inline-size: 100%;
     padding: 0.9rem;
+
     border: 1px solid var(--clinic-border);
     border-radius: var(--clinic-radius-xl);
+
     background: var(--clinic-mist);
 }
 
 .eventMain {
     display: grid;
     gap: 0.3rem;
+
     min-width: 0;
+    max-inline-size: 100%;
+}
+
+.eventTitle,
+.eventMeta {
+    min-width: 0;
+    max-inline-size: 100%;
+    overflow-wrap: anywhere;
 }
 
 .eventTitle {
-    overflow-wrap: anywhere;
     color: var(--clinic-ink);
+
     font-size: var(--clinic-font-size-md);
+    line-height: 1.35;
 }
 
 .eventMeta {
-    overflow-wrap: anywhere;
     color: var(--clinic-muted);
+
     font-size: var(--clinic-font-size-sm);
     line-height: var(--clinic-line-height-base);
 }
 
 .barcodePanel {
     display: grid;
-    grid-template-columns: repeat(3, minmax(7.5rem, 1fr));
+    grid-template-columns:
+        minmax(12rem, 1.4fr)
+        repeat(2, minmax(8rem, 0.8fr));
     gap: 0.6rem;
-    width: min(100%, 30rem);
-    margin-top: 0.75rem;
-    margin-bottom: 0.35rem;
+
+    min-width: 0;
+    inline-size: min(100%, 30rem);
+    max-inline-size: 100%;
+    margin-block: 0.75rem 0.35rem;
     padding: 0.65rem;
+
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+
     border: 1px solid var(--clinic-border);
     border-radius: var(--clinic-radius-lg);
+
     background: var(--clinic-white);
+
     box-shadow: var(--clinic-shadow-soft);
 }
 
@@ -411,49 +624,94 @@
     display: grid;
     align-content: center;
     justify-items: center;
+    gap: 0.2rem;
+
     min-width: 4rem;
+    max-inline-size: 100%;
     padding: 0.55rem;
+
     border: 1px solid var(--clinic-border);
     border-radius: var(--clinic-radius-md);
+
     background: var(--clinic-white);
+}
+
+.eventSide span,
+.eventSide strong {
+    min-width: 0;
+    max-inline-size: 100%;
+    overflow-wrap: anywhere;
+    text-align: center;
 }
 
 .eventSide span {
     color: var(--clinic-muted);
+
     font-size: 0.7rem;
     font-weight: 750;
+    line-height: 1.3;
 }
 
 .eventSide strong {
     color: var(--clinic-green-700);
+
     font-size: 1.25rem;
     line-height: 1;
 }
 
-@media (max-width: 960px) {
+@media (hover: hover) and (pointer: fine) {
+    .card:hover {
+        transform: translateY(-1px);
 
-    .quantities,
-    .quantitiesHistory,
+        box-shadow: var(--clinic-shadow-hover);
+    }
+
+    .detailsButton:hover:not(:disabled) {
+        transform: translateY(-1px);
+
+        border-color: var(--clinic-border-strong);
+
+        background: var(--clinic-mist);
+
+        box-shadow: var(--clinic-shadow-soft);
+    }
+}
+
+@media (max-width: 960px) {
     .originMetrics {
-        grid-template-columns: 1fr;
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
     }
 
     .barcodePanel {
         grid-template-columns: 1fr;
-        width: min(100%, 16rem);
+        inline-size: min(100%, 18rem);
+        overflow-x: visible;
+    }
+}
+
+@media (max-width: 760px) {
+    .quantities {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+
+    .quantitiesHistory {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
     }
 }
 
 @media (max-width: 620px) {
-
     .header,
     .originHeader {
-        flex-direction: column;
         align-items: flex-start;
+        flex-direction: column;
     }
 
-    .summary {
-        grid-template-columns: 1fr;
+    .status,
+    .originHeader span {
+        inline-size: fit-content;
     }
 
     .event {
@@ -462,9 +720,27 @@
 
     .eventSide {
         justify-items: start;
+        min-width: 0;
+    }
+
+    .eventSide span,
+    .eventSide strong {
+        text-align: start;
     }
 
     .detailsButton {
-        width: 100%;
+        inline-size: 100%;
+    }
+}
+
+@media (max-width: 520px) {
+    .quantities,
+    .quantitiesHistory,
+    .originMetrics {
+        grid-template-columns: 1fr;
+    }
+
+    .card {
+        border-radius: var(--clinic-radius-xl);
     }
 }
