@@ -22,15 +22,25 @@ https://farmacia-santacasa-backend-staging.onrender.com
 
 https://farmacia-santacasa-backend-staging.onrender.com/api
 
-### Contas demo
+### Acesso à demonstração
 
-| Role | Email |
-| --- | --- |
-| `ADMIN` | `demo.admin@sistema.local` |
-| `SANTACASA` | `demo.santacasa@sistema.local` |
-| `FARMACIA` | `demo.farmacia@sistema.local` |
+O ambiente utiliza exclusivamente dados fictícios e pode ser reposto periodicamente através do seed demo.
 
-As passwords não são guardadas no repositório. Devem ser fornecidas separadamente para demonstração.
+O primeiro carregamento pode demorar alguns segundos devido ao alojamento dos serviços.
+
+#### Santa Casa
+
+- **Utilizador:** `demo.santacasa@sistema.local`
+- **Palavra-passe:** `123456789123456789`
+
+#### Farmácia
+
+- **Utilizador:** `demo.farmacia@sistema.local`
+- **Palavra-passe:** `123456789123456789`
+
+> Estas credenciais são públicas e destinam-se exclusivamente ao ambiente de demonstração. Não são utilizadas numa produção real.
+
+> A conta de administração não é disponibilizada publicamente.
 
 ---
 
@@ -133,10 +143,8 @@ Permite:
 - GitHub Actions;
 - PostgreSQL em staging;
 - migrations Prisma;
-- testes unitários;
-- testes de integração;
-- testes E2E do backend;
-- coverage;
+- testes unitários, de integração e E2E do backend;
+- coverage do backend;
 - audit de dependências;
 - smoke test remoto read-only.
 
@@ -145,7 +153,7 @@ Permite:
 ## Estrutura do repositório
 
 ```text
-Farmacia-Santacasa-v2/
+farmacia-santa-casa-app/
 ├── .github/
 │   └── workflows/
 │       └── backend-ci.yml
@@ -496,14 +504,16 @@ frontend/.env
 .env
 ```
 
-Nunca colocar no frontend:
+Nunca colocar no código do frontend nem em variáveis `VITE_*`:
 
-- passwords;
+- passwords de utilizadores reais ou de produção;
 - `DATABASE_URL`;
 - `AUTH_JWT_SECRET`;
 - tokens privados;
 - chaves privadas;
-- credenciais reais.
+- credenciais privadas.
+
+As credenciais públicas de demonstração são exclusivas do staging, utilizam apenas dados fictícios e não são tratadas como secrets.
 
 Todas as variáveis `VITE_*` ficam acessíveis no bundle do browser.
 
@@ -666,7 +676,7 @@ O frontend é reconstruído quando esta variável muda.
 
 Foram validados:
 
-- login das três roles;
+- login das três roles, incluindo a conta `ADMIN` reservada a validações internas;
 - persistência da sessão após refresh;
 - logout;
 - CORS;
