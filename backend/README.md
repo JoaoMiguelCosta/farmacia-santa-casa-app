@@ -110,23 +110,29 @@ O staging:
 
 ---
 
-## 3. Contas demo
+## 3. Contas do ambiente demo
 
-Emails padrão:
+O seed demo cria ou atualiza três contas, uma por cada role da aplicação:
 
-| Role        | Email                          |
-| ----------- | ------------------------------ |
-| `ADMIN`     | `demo.admin@sistema.local`     |
-| `SANTACASA` | `demo.santacasa@sistema.local` |
-| `FARMACIA`  | `demo.farmacia@sistema.local`  |
+| Role | Email | Acesso público |
+| --- | --- | --- |
+| `ADMIN` | `demo.admin@sistema.local` | Não |
+| `SANTACASA` | `demo.santacasa@sistema.local` | Sim |
+| `FARMACIA` | `demo.farmacia@sistema.local` | Sim |
+
+As credenciais públicas das contas `SANTACASA` e `FARMACIA` estão disponíveis na secção de [demonstração pública do README principal](../README.md#demonstração-pública).
+
+A conta `ADMIN` é utilizada para validações técnicas e administrativas do ambiente, mas não é disponibilizada publicamente.
 
 As passwords:
 
-* não existem no código;
-* não existem nos templates;
-* são fornecidas através de variáveis de ambiente;
-* são guardadas como hash na base de dados;
-* podem ser sincronizadas pelo seed demo.
+- não existem no código;
+- não existem nos templates;
+- são fornecidas através de variáveis de ambiente;
+- são guardadas como hash na base de dados;
+- podem ser sincronizadas pelo seed demo.
+
+Estas contas e respetivas configurações são exclusivas do ambiente de demonstração e nunca devem ser utilizadas numa produção real.
 
 ---
 

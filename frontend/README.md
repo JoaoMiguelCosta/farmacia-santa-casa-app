@@ -4,7 +4,7 @@ Frontend da aplicação **Farmácia Santa Casa**, responsável pela interface op
 
 Construído com React, Vite, React Router e CSS Modules.
 
-> **Estado atual:** funcionalidades principais implementadas, integração com o backend validada e frontend publicado em staging.
+> **Estado atual:** funcionalidades principais implementadas, integração com o backend validada e frontend publicado num ambiente público de staging com dados fictícios.
 
 ---
 
@@ -18,15 +18,20 @@ https://farmacia-santacasa-frontend-staging.onrender.com
 
 https://farmacia-santacasa-backend-staging.onrender.com/api
 
-Contas demo:
+### Acesso à demonstração
 
-| Role | Email |
-| --- | --- |
-| `ADMIN` | `demo.admin@sistema.local` |
-| `SANTACASA` | `demo.santacasa@sistema.local` |
-| `FARMACIA` | `demo.farmacia@sistema.local` |
+O ambiente utiliza exclusivamente dados fictícios e pode ser reposto periodicamente.
 
-As passwords são fornecidas separadamente e não existem no repositório.
+O primeiro carregamento pode demorar alguns segundos devido ao alojamento dos serviços.
+
+Estão disponíveis contas públicas para os contextos:
+
+- **Santa Casa**
+- **Farmácia**
+
+As credenciais de acesso encontram-se no [README principal](../README.md#demonstração-pública).
+
+> A conta de administração não é disponibilizada publicamente.
 
 ---
 
@@ -272,14 +277,16 @@ VITE_API_BASE_URL="https://api.exemplo.pt/api"
 
 Todas as variáveis `VITE_*` ficam disponíveis no bundle do browser.
 
-Nunca colocar no frontend:
+Nunca colocar no código do frontend nem em variáveis `VITE_*`:
 
-- passwords;
+- passwords de utilizadores reais ou de produção;
 - `DATABASE_URL`;
 - `AUTH_JWT_SECRET`;
 - tokens privados;
 - chaves privadas;
-- credenciais reais.
+- credenciais privadas.
+
+As credenciais públicas de demonstração são exclusivas do staging, utilizam apenas dados fictícios e não são tratadas como secrets.
 
 ---
 
@@ -700,13 +707,15 @@ ALLOWED_ORIGINS="https://farmacia-santacasa-frontend-staging.onrender.com"
 
 ### Secrets
 
-Nunca expor no frontend:
+Nunca expor no frontend secrets ou credenciais privadas, incluindo:
 
-- passwords;
+- passwords de utilizadores reais ou de produção;
 - JWT secrets;
-- ligação à base;
+- ligações à base de dados;
 - tokens privados;
 - chaves de infraestrutura.
+
+As contas públicas de demonstração são uma exceção deliberada e pertencem exclusivamente ao ambiente de staging com dados fictícios.
 
 ### Guards
 
@@ -717,6 +726,8 @@ Os guards frontend melhoram a experiência, mas não substituem o controlo de pe
 ## Testes
 
 Ainda não existe uma suite automatizada de testes frontend.
+
+A conta `ADMIN` é utilizada em validações internas do staging, mas não é disponibilizada publicamente.
 
 A validação atual cobre:
 
