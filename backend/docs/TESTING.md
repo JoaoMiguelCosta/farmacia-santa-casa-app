@@ -301,7 +301,8 @@ Scripts automatizados:
   "test:e2e": "vitest tests/e2e --no-file-parallelism",
   "test:all": "npm run test:unit -- --run && npm run test:integration -- --run && npm run test:e2e -- --run",
   "test:coverage": "vitest --coverage --run",
-  "audit": "npm audit",
+  "audit": "npm audit --omit=dev",
+  "audit:all": "npm audit",
   "validate": "npm run test:all && npm run audit"
 }
 ```
@@ -1839,7 +1840,7 @@ npm run test:coverage
 
 Este comando faz parte do CI, mas não integra `npm run validate`.
 
-`validate` executa `test:all` seguido de `npm audit`. Coverage é um passo separado, executado pelo CI após os testes E2E.
+`validate` executa `test:all` seguido de `npm audit --omit=dev` (apenas dependências de produção; `npm run audit:all` inclui as ferramentas de desenvolvimento). Coverage é um passo separado, executado pelo CI após os testes E2E.
 
 Não existem thresholds obrigatórios na configuração atual. A medição serve para identificar zonas sem cobertura de testes, não para bloquear o pipeline por um valor mínimo.
 
