@@ -1106,6 +1106,8 @@ Não usar contra uma produção real.
 
 ## 19. Reposição controlada do staging demo
 
+Para renovar a base PostgreSQL gratuita do Render (expira a cada 30 dias), seguir o guia passo a passo em [RENEW_RENDER_DATABASE.md](RENEW_RENDER_DATABASE.md).
+
 Método preferencial:
 
 * One-Off Job;
