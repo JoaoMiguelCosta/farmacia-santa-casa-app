@@ -33,7 +33,8 @@
     "job:receita-expiry": "node -e \"require('./src/jobs/receitaExpiry.job').runOnce().then(console.log).catch((e)=>{console.error(e);process.exit(1)})\"",
     "job:higiene": "node -e \"require('./src/jobs/higiene.job').runOnce().then(console.log).catch((e)=>{console.error(e);process.exit(1)})\"",
     "job:purge-history": "node -e \"require('./src/jobs/purgeHistory.job').runOnce().then(console.log).catch((e)=>{console.error(e);process.exit(1)})\"",
-    "audit": "npm audit",
+    "audit": "npm audit --omit=dev",
+    "audit:all": "npm audit",
     "validate": "npm run test:all && npm run audit"
   },
   "prisma": {
@@ -51,10 +52,10 @@
     "node-cron": "^4.2.1"
   },
   "devDependencies": {
-    "@vitest/coverage-v8": "^4.1.7",
+    "@vitest/coverage-v8": "^4.1.11",
     "nodemon": "^3.1.10",
     "prisma": "^5.22.0",
     "supertest": "^7.2.2",
-    "vitest": "^4.1.7"
+    "vitest": "^4.1.11"
   }
 }
